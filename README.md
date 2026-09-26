@@ -1,9 +1,5 @@
 # HireFlow — AI-Powered Export Buyer Discovery & Outreach Automation Platform
 
-[![Python](https://img.shields.io/badge/Python-3.11+-blue)](https://python.org)
-[![FastAPI](https://img.shields.io/badge/FastAPI-0.111-green)](https://fastapi.tiangolo.com)
-[![React](https://img.shields.io/badge/React-18-blue)](https://react.dev)
-[![TypeScript](https://img.shields.io/badge/TypeScript-5-blue)](https://typescriptlang.org)
 
 ## Overview
 
@@ -98,36 +94,9 @@ Campaign          → Attachment (N:1)
 - Node.js 18+
 - (Optional) PostgreSQL
 
-### 1. Clone & Setup Environment
 
-```bash
-git clone <repo>
-cd HireFlow
 
-# Copy and configure environment
-cp .env.example backend/.env
-# Edit backend/.env with your values
-```
 
-### 2. Backend Setup
-
-```bash
-cd backend
-
-# Create virtual environment
-python -m venv venv
-
-# Activate (Windows)
-venv\Scripts\activate
-
-# Activate (Mac/Linux)
-source venv/bin/activate
-
-# Install dependencies
-pip install -r requirements.txt
-
-# Seed demo data (creates SQLite database + 25 buyers)
-python seed.py
 
 # Start backend server
 uvicorn app.main:app --reload --port 8000

@@ -23,6 +23,7 @@ import TradeMapPage from './pages/TradeMapPage';
 import LookbookGeneratorPage from './pages/LookbookGeneratorPage';
 import DealPipelinePage from './pages/DealPipelinePage';
 import DeliverabilityMeterPage from './pages/DeliverabilityMeterPage';
+import ProformaInvoicePage from './pages/ProformaInvoicePage';
 import LoadingSpinner from './components/ui/LoadingSpinner';
 
 const queryClient = new QueryClient({
@@ -53,6 +54,7 @@ export default function App() {
               <Route path="/ai-classification" element={<ProtectedRoute><Layout title="AI Lead Intelligence" subtitle="Classify, score, and prioritize international leads"><AIClassificationPage /></Layout></ProtectedRoute>} />
               <Route path="/deal-pipeline" element={<ProtectedRoute><Layout title="Deals Pipeline & AI Inbox" subtitle="Interactive export CRM and automated email reply sentiment classifier"><DealPipelinePage /></Layout></ProtectedRoute>} />
               <Route path="/lookbook" element={<ProtectedRoute><Layout title="AI Export Catalog Studio" subtitle="Generate luxury export lookbooks with HS codes, FOB tiers, and wholesale specifications"><LookbookGeneratorPage /></Layout></ProtectedRoute>} />
+              <Route path="/proforma-invoice" element={<ProtectedRoute><Layout title="Proforma Invoice & CBM Studio" subtitle="Generate commercial export quotations and calculate container cargo loading"><ProformaInvoicePage /></Layout></ProtectedRoute>} />
               <Route path="/campaigns" element={<ProtectedRoute><Layout title="Outreach Sequences" subtitle="Automated multi-touch export cold outreach campaigns"><CampaignsPage /></Layout></ProtectedRoute>} />
               <Route path="/campaigns/new" element={<ProtectedRoute><Layout title="New Outreach Sequence" subtitle="Build visual cadence steps, AI follow-ups & deliverability guardrails"><CampaignCreatePage /></Layout></ProtectedRoute>} />
               <Route path="/campaigns/:id" element={<ProtectedRoute><Layout title="Campaign Detail"><CampaignDetailPage /></Layout></ProtectedRoute>} />

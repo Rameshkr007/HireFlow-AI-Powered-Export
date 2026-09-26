@@ -1,0 +1,61 @@
+# Python
+__pycache__/
+*.py[cod]
+*$py.class
+*.so
+*.egg
+*.egg-info/
+dist/
+build/
+.eggs/
+venv/
+env/
+.venv/
+.env
+**/.env
+*.env
+
+# Database
+*.db
+*.sqlite
+*.sqlite3
+
+# Attachments (uploaded files)
+attachments/*
+!attachments/.gitkeep
+
+# Node
+node_modules/
+dist/
+.next/
+.nuxt/
+
+# Build
+*.tsbuildinfo
+
+# IDE
+.vscode/
+.idea/
+*.swp
+*.swo
+.DS_Store
+Thumbs.db
+
+# Logs
+*.log
+logs/
+
+# Test artifacts
+.pytest_cache/
+htmlcov/
+.coverage
+test_*.db
+
+# Secrets
+.env
+*.pem
+*.key
+
+# OS
+.DS_Store
+desktop.ini

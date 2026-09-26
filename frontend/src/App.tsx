@@ -19,6 +19,10 @@ import ReportsPage from './pages/ReportsPage';
 import CompanyProfilePage from './pages/CompanyProfilePage';
 import GmailIntegrationPage from './pages/GmailIntegrationPage';
 import SettingsPage from './pages/SettingsPage';
+import TradeMapPage from './pages/TradeMapPage';
+import LookbookGeneratorPage from './pages/LookbookGeneratorPage';
+import DealPipelinePage from './pages/DealPipelinePage';
+import DeliverabilityMeterPage from './pages/DeliverabilityMeterPage';
 import LoadingSpinner from './components/ui/LoadingSpinner';
 
 const queryClient = new QueryClient({
@@ -42,17 +46,21 @@ export default function App() {
               <Route path="/login" element={<LoginPage />} />
               <Route path="/register" element={<RegisterPage />} />
               <Route path="/" element={<ProtectedRoute><Layout title="Dashboard" subtitle="Your export outreach overview"><DashboardPage /></Layout></ProtectedRoute>} />
-              <Route path="/discovery" element={<ProtectedRoute><Layout title="Buyer Discovery" subtitle="Find international buyers for your products"><BuyerDiscoveryPage /></Layout></ProtectedRoute>} />
-              <Route path="/buyers" element={<ProtectedRoute><Layout title="Buyers" subtitle="Manage your buyer database"><BuyersPage /></Layout></ProtectedRoute>} />
+              <Route path="/discovery" element={<ProtectedRoute><Layout title="Buyer Discovery" subtitle="Find verified international buyers with live US trade intelligence"><BuyerDiscoveryPage /></Layout></ProtectedRoute>} />
+              <Route path="/trade-map" element={<ProtectedRoute><Layout title="US Trade & Buyer Map" subtitle="Geographic buyer concentration, major port terminals & logistics intelligence"><TradeMapPage /></Layout></ProtectedRoute>} />
+              <Route path="/buyers" element={<ProtectedRoute><Layout title="Buyers Directory" subtitle="Manage and segment your buyer database"><BuyersPage /></Layout></ProtectedRoute>} />
               <Route path="/buyers/:id" element={<ProtectedRoute><Layout title="Buyer Detail"><BuyerDetailPage /></Layout></ProtectedRoute>} />
-              <Route path="/ai-classification" element={<ProtectedRoute><Layout title="AI Classification" subtitle="Classify and score your leads with AI"><AIClassificationPage /></Layout></ProtectedRoute>} />
-              <Route path="/campaigns" element={<ProtectedRoute><Layout title="Campaigns" subtitle="Manage your outreach campaigns"><CampaignsPage /></Layout></ProtectedRoute>} />
-              <Route path="/campaigns/new" element={<ProtectedRoute><Layout title="New Campaign" subtitle="Create an outreach campaign"><CampaignCreatePage /></Layout></ProtectedRoute>} />
+              <Route path="/ai-classification" element={<ProtectedRoute><Layout title="AI Lead Intelligence" subtitle="Classify, score, and prioritize international leads"><AIClassificationPage /></Layout></ProtectedRoute>} />
+              <Route path="/deal-pipeline" element={<ProtectedRoute><Layout title="Deals Pipeline & AI Inbox" subtitle="Interactive export CRM and automated email reply sentiment classifier"><DealPipelinePage /></Layout></ProtectedRoute>} />
+              <Route path="/lookbook" element={<ProtectedRoute><Layout title="AI Export Catalog Studio" subtitle="Generate luxury export lookbooks with HS codes, FOB tiers, and wholesale specifications"><LookbookGeneratorPage /></Layout></ProtectedRoute>} />
+              <Route path="/campaigns" element={<ProtectedRoute><Layout title="Outreach Sequences" subtitle="Automated multi-touch export cold outreach campaigns"><CampaignsPage /></Layout></ProtectedRoute>} />
+              <Route path="/campaigns/new" element={<ProtectedRoute><Layout title="New Outreach Sequence" subtitle="Build visual cadence steps, AI follow-ups & deliverability guardrails"><CampaignCreatePage /></Layout></ProtectedRoute>} />
               <Route path="/campaigns/:id" element={<ProtectedRoute><Layout title="Campaign Detail"><CampaignDetailPage /></Layout></ProtectedRoute>} />
-              <Route path="/email-activity" element={<ProtectedRoute><Layout title="Email Activity" subtitle="Track all email activity"><EmailActivityPage /></Layout></ProtectedRoute>} />
-              <Route path="/reports" element={<ProtectedRoute><Layout title="Reports" subtitle="Campaign performance reports"><ReportsPage /></Layout></ProtectedRoute>} />
-              <Route path="/profile" element={<ProtectedRoute><Layout title="Company Profile" subtitle="Your exporter profile"><CompanyProfilePage /></Layout></ProtectedRoute>} />
-              <Route path="/gmail" element={<ProtectedRoute><Layout title="Gmail Integration" subtitle="Connect your Gmail account"><GmailIntegrationPage /></Layout></ProtectedRoute>} />
+              <Route path="/deliverability" element={<ProtectedRoute><Layout title="Email Deliverability & Domain Shield" subtitle="SPF, DKIM, DMARC validator and real-time spam keyword scanner"><DeliverabilityMeterPage /></Layout></ProtectedRoute>} />
+              <Route path="/email-activity" element={<ProtectedRoute><Layout title="Email Activity" subtitle="Real-time log of outbound export pitches"><EmailActivityPage /></Layout></ProtectedRoute>} />
+              <Route path="/reports" element={<ProtectedRoute><Layout title="Analytics & Export Reports" subtitle="Campaign conversions and buyer response performance"><ReportsPage /></Layout></ProtectedRoute>} />
+              <Route path="/profile" element={<ProtectedRoute><Layout title="Exporter Profile" subtitle="Your business profile and product catalog details"><CompanyProfilePage /></Layout></ProtectedRoute>} />
+              <Route path="/gmail" element={<ProtectedRoute><Layout title="Email Integration" subtitle="Connect your business email for verified delivery"><GmailIntegrationPage /></Layout></ProtectedRoute>} />
               <Route path="/settings" element={<ProtectedRoute><Layout title="Settings"><SettingsPage /></Layout></ProtectedRoute>} />
               <Route path="*" element={<Navigate to="/" />} />
             </Routes>

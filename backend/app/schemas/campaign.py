@@ -1,5 +1,5 @@
 from pydantic import BaseModel
-from typing import Optional, List
+from typing import Optional, List, Dict, Any
 from datetime import datetime
 
 class CampaignCreate(BaseModel):
@@ -9,6 +9,7 @@ class CampaignCreate(BaseModel):
     target_audience: Optional[str] = None
     email_subject: Optional[str] = None
     email_body: Optional[str] = None
+    sequence_steps: Optional[List[Dict[str, Any]]] = None
     sending_limit: int = 20
     delay_seconds: int = 60
     attachment_id: Optional[int] = None
@@ -21,6 +22,7 @@ class CampaignUpdate(BaseModel):
     target_audience: Optional[str] = None
     email_subject: Optional[str] = None
     email_body: Optional[str] = None
+    sequence_steps: Optional[List[Dict[str, Any]]] = None
     sending_limit: Optional[int] = None
     delay_seconds: Optional[int] = None
     attachment_id: Optional[int] = None
@@ -35,6 +37,7 @@ class CampaignResponse(BaseModel):
     target_audience: Optional[str] = None
     email_subject: Optional[str] = None
     email_body: Optional[str] = None
+    sequence_steps: Optional[List[Dict[str, Any]]] = None
     sending_limit: int
     delay_seconds: int
     attachment_id: Optional[int] = None

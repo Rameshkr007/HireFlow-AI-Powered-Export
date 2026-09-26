@@ -2,21 +2,26 @@ import React from 'react';
 import { Link, useLocation } from 'react-router-dom';
 import {
   LayoutDashboard, Search, Users, Brain, Mail, BarChart3,
-  Building2, Settings, Zap, Activity, LogOut, ChevronRight
+  Building2, Settings, Zap, Activity, LogOut, ChevronRight,
+  MapPin, BookOpen, Trello, ShieldCheck
 } from 'lucide-react';
 import { useAuth } from '../../contexts/AuthContext';
 
 const NAV_ITEMS = [
   { path: '/', label: 'Dashboard', icon: LayoutDashboard },
   { path: '/discovery', label: 'Buyer Discovery', icon: Search },
-  { path: '/buyers', label: 'Buyers', icon: Users },
+  { path: '/trade-map', label: 'Trade & Buyer Map', icon: MapPin },
+  { path: '/buyers', label: 'Buyers Directory', icon: Users },
   { path: '/ai-classification', label: 'AI Classification', icon: Brain },
-  { path: '/campaigns', label: 'Campaigns', icon: Zap },
+  { path: '/deal-pipeline', label: 'Deals Pipeline CRM', icon: Trello },
+  { path: '/lookbook', label: 'AI Catalog Studio', icon: BookOpen },
+  { path: '/campaigns', label: 'Outreach Sequences', icon: Zap },
+  { path: '/deliverability', label: 'Deliverability Shield', icon: ShieldCheck },
   { path: '/email-activity', label: 'Email Activity', icon: Activity },
-  { path: '/reports', label: 'Reports', icon: BarChart3 },
+  { path: '/reports', label: 'Analytics & Reports', icon: BarChart3 },
   null, // divider
   { path: '/profile', label: 'Company Profile', icon: Building2 },
-  { path: '/gmail', label: 'Gmail Integration', icon: Mail },
+  { path: '/gmail', label: 'Email Integration', icon: Mail },
   { path: '/settings', label: 'Settings', icon: Settings },
 ];
 
@@ -34,13 +39,13 @@ export default function Sidebar() {
           </div>
           <div>
             <span className="font-bold text-dark-50 text-base">HireFlow</span>
-            <div className="text-xs text-dark-500 -mt-0.5">Export Outreach</div>
+            <div className="text-xs text-dark-500 -mt-0.5">Export Intelligence</div>
           </div>
         </div>
-        {/* Demo badge */}
-        <div className="mt-3 flex items-center gap-1.5 px-2 py-1 bg-amber-500/10 border border-amber-500/20 rounded-lg">
-          <div className="w-1.5 h-1.5 bg-amber-400 rounded-full animate-pulse" />
-          <span className="text-xs text-amber-400 font-medium">DEMO MODE</span>
+        {/* Live badge */}
+        <div className="mt-3 flex items-center gap-1.5 px-2.5 py-1 bg-emerald-500/10 border border-emerald-500/20 rounded-lg">
+          <div className="w-1.5 h-1.5 bg-emerald-400 rounded-full animate-pulse" />
+          <span className="text-xs text-emerald-400 font-semibold tracking-wide">LIVE ENTERPRISE</span>
         </div>
       </div>
 

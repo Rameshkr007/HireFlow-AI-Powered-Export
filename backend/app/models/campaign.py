@@ -1,4 +1,4 @@
-from sqlalchemy import Column, Integer, String, DateTime, ForeignKey, Text, Boolean
+from sqlalchemy import Column, Integer, String, DateTime, ForeignKey, Text, Boolean, JSON
 from sqlalchemy.orm import relationship
 from sqlalchemy.sql import func
 from ..database import Base
@@ -13,6 +13,7 @@ class Campaign(Base):
     target_audience = Column(String, nullable=True)
     email_subject = Column(String, nullable=True)
     email_body = Column(Text, nullable=True)
+    sequence_steps = Column(JSON, nullable=True, default=list)
     sending_limit = Column(Integer, default=20)
     delay_seconds = Column(Integer, default=60)
     attachment_id = Column(Integer, ForeignKey("attachments.id"), nullable=True)

@@ -2,7 +2,7 @@ from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 import os
 
-from .database import engine, Base
+from .database import engine, Base, SessionLocal
 from .models import User, ExporterProfile, Buyer, Campaign, EmailLog, Attachment, GmailConnection
 from .api import auth, profile, buyers, discovery, campaigns, email_activity, reports, gmail, attachments, dashboard
 from .config import settings
@@ -23,9 +23,29 @@ app.add_middleware(
 
 @app.on_event("startup")
 def startup():
-    Base.metadata.create_all(bind=engine)
-    upload_dir = os.path.abspath(settings.UPLOAD_DIR)
-    os.makedirs(upload_dir, exist_ok=True)
+    try:
+        Base.metadata.create_all(bind=engine)
+    except Exception as e:
+        print(f"[STARTUP] Notice: {e}")
+
+    try:
+        upload_dir = os.path.abspath(settings.UPLOAD_DIR)
+        os.makedirs(upload_dir, exist_ok=True)
+    except Exception:
+        pass
+
+    try:
+        # Auto-seed if database has no users
+        from .models.user import User
+        from ..seed import seed
+        db = SessionLocal()
+        count = db.query(User).count()
+        db.close()
+        if count == 0:
+            print("[STARTUP] Fresh deployment detected. Seeding initial admin and buyers...")
+            seed()
+    except Exception as e:
+        print(f"[STARTUP] Auto-seed skipped: {e}")
 
 app.include_router(auth.router)
 app.include_router(profile.router)

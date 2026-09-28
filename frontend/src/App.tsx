@@ -20,6 +20,7 @@ import CompanyProfilePage from './pages/CompanyProfilePage';
 import GmailIntegrationPage from './pages/GmailIntegrationPage';
 import SettingsPage from './pages/SettingsPage';
 import TradeMapPage from './pages/TradeMapPage';
+import ManifestRadarPage from './pages/ManifestRadarPage';
 import LookbookGeneratorPage from './pages/LookbookGeneratorPage';
 import DealPipelinePage from './pages/DealPipelinePage';
 import DeliverabilityMeterPage from './pages/DeliverabilityMeterPage';
@@ -50,6 +51,7 @@ export default function App() {
               <Route path="/" element={<ProtectedRoute><Layout title="Dashboard" subtitle="Your export outreach overview"><DashboardPage /></Layout></ProtectedRoute>} />
               <Route path="/discovery" element={<ProtectedRoute><Layout title="Buyer Discovery" subtitle="Find verified international buyers with live US trade intelligence"><BuyerDiscoveryPage /></Layout></ProtectedRoute>} />
               <Route path="/trade-map" element={<ProtectedRoute><Layout title="US Trade & Buyer Map" subtitle="Geographic buyer concentration, major port terminals & logistics intelligence"><TradeMapPage /></Layout></ProtectedRoute>} />
+              <Route path="/manifest-radar" element={<ProtectedRoute><Layout title="US Customs Manifest & Bill of Lading (BoL) Radar" subtitle="Analyze verified ocean shipping records, supply chain origins & competitor displacement angles"><ManifestRadarPage /></Layout></ProtectedRoute>} />
               <Route path="/buyers" element={<ProtectedRoute><Layout title="Buyers Directory" subtitle="Manage and segment your buyer database"><BuyersPage /></Layout></ProtectedRoute>} />
               <Route path="/buyers/:id" element={<ProtectedRoute><Layout title="Buyer Detail"><BuyerDetailPage /></Layout></ProtectedRoute>} />
               <Route path="/ai-classification" element={<ProtectedRoute><Layout title="AI Lead Intelligence" subtitle="Classify, score, and prioritize international leads"><AIClassificationPage /></Layout></ProtectedRoute>} />

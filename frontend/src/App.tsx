@@ -24,6 +24,7 @@ import LookbookGeneratorPage from './pages/LookbookGeneratorPage';
 import DealPipelinePage from './pages/DealPipelinePage';
 import DeliverabilityMeterPage from './pages/DeliverabilityMeterPage';
 import ProformaInvoicePage from './pages/ProformaInvoicePage';
+import TariffCalculatorPage from './pages/TariffCalculatorPage';
 import LoadingSpinner from './components/ui/LoadingSpinner';
 
 const queryClient = new QueryClient({
@@ -55,6 +56,7 @@ export default function App() {
               <Route path="/deal-pipeline" element={<ProtectedRoute><Layout title="Deals Pipeline & AI Inbox" subtitle="Interactive export CRM and automated email reply sentiment classifier"><DealPipelinePage /></Layout></ProtectedRoute>} />
               <Route path="/lookbook" element={<ProtectedRoute><Layout title="AI Export Catalog Studio" subtitle="Generate luxury export lookbooks with HS codes, FOB tiers, and wholesale specifications"><LookbookGeneratorPage /></Layout></ProtectedRoute>} />
               <Route path="/proforma-invoice" element={<ProtectedRoute><Layout title="Proforma Invoice & CBM Studio" subtitle="Generate commercial export quotations and calculate container cargo loading"><ProformaInvoicePage /></Layout></ProtectedRoute>} />
+              <Route path="/tariff-calculator" element={<ProtectedRoute><Layout title="US Customs Tariff & Landed Cost Intelligence" subtitle="Calculate US HTS duty rates, harbor maintenance fees & estimated landed costs"><TariffCalculatorPage /></Layout></ProtectedRoute>} />
               <Route path="/campaigns" element={<ProtectedRoute><Layout title="Outreach Sequences" subtitle="Automated multi-touch export cold outreach campaigns"><CampaignsPage /></Layout></ProtectedRoute>} />
               <Route path="/campaigns/new" element={<ProtectedRoute><Layout title="New Outreach Sequence" subtitle="Build visual cadence steps, AI follow-ups & deliverability guardrails"><CampaignCreatePage /></Layout></ProtectedRoute>} />
               <Route path="/campaigns/:id" element={<ProtectedRoute><Layout title="Campaign Detail"><CampaignDetailPage /></Layout></ProtectedRoute>} />

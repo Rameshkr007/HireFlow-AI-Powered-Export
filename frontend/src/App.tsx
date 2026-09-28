@@ -28,6 +28,7 @@ import DeliverabilityMeterPage from './pages/DeliverabilityMeterPage';
 import ProformaInvoicePage from './pages/ProformaInvoicePage';
 import TariffCalculatorPage from './pages/TariffCalculatorPage';
 import TimezoneEnginePage from './pages/TimezoneEnginePage';
+import OmnichannelStudioPage from './pages/OmnichannelStudioPage';
 import LoadingSpinner from './components/ui/LoadingSpinner';
 
 const queryClient = new QueryClient({
@@ -62,6 +63,7 @@ export default function App() {
               <Route path="/lookbook" element={<ProtectedRoute><Layout title="AI Export Catalog Studio" subtitle="Generate luxury export lookbooks with HS codes, FOB tiers, and wholesale specifications"><LookbookGeneratorPage /></Layout></ProtectedRoute>} />
               <Route path="/proforma-invoice" element={<ProtectedRoute><Layout title="Proforma Invoice & CBM Studio" subtitle="Generate commercial export quotations and calculate container cargo loading"><ProformaInvoicePage /></Layout></ProtectedRoute>} />
               <Route path="/tariff-calculator" element={<ProtectedRoute><Layout title="US Customs Tariff & Landed Cost Intelligence" subtitle="Calculate US HTS duty rates, harbor maintenance fees & estimated landed costs"><TariffCalculatorPage /></Layout></ProtectedRoute>} />
+              <Route path="/omnichannel-studio" element={<ProtectedRoute><Layout title="Omnichannel WhatsApp & LinkedIn Export Studio" subtitle="Generate direct WhatsApp links, trade show QR codes & optimized InMail pitches"><OmnichannelStudioPage /></Layout></ProtectedRoute>} />
               <Route path="/timezone-engine" element={<ProtectedRoute><Layout title="Global Buyer Timezone Matrix & Smart Send Engine" subtitle="Real-time US & European office hours monitoring and optimal email dispatch windows"><TimezoneEnginePage /></Layout></ProtectedRoute>} />
               <Route path="/campaigns" element={<ProtectedRoute><Layout title="Outreach Sequences" subtitle="Automated multi-touch export cold outreach campaigns"><CampaignsPage /></Layout></ProtectedRoute>} />
               <Route path="/campaigns/new" element={<ProtectedRoute><Layout title="New Outreach Sequence" subtitle="Build visual cadence steps, AI follow-ups & deliverability guardrails"><CampaignCreatePage /></Layout></ProtectedRoute>} />

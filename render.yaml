@@ -21,6 +21,8 @@ services:
         value: demo
       - key: AI_PROVIDER
         value: openai
+      - key: PYTHON_VERSION
+        value: 3.11.9
 
   # ── Frontend React Static Site ────────────────────────────────────────
   - type: web

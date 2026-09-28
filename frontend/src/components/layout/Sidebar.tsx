@@ -3,7 +3,7 @@ import { Link, useLocation } from 'react-router-dom';
 import {
   LayoutDashboard, Search, Users, Brain, Mail, BarChart3,
   Building2, Settings, Zap, Activity, LogOut, ChevronRight,
-  MapPin, BookOpen, Trello, ShieldCheck, FileText, Scale, Anchor, Mic, Clock, Share2
+  MapPin, BookOpen, Trello, ShieldCheck, FileText, Scale, Anchor, Mic, Clock, Share2, FileCheck
 } from 'lucide-react';
 import { useAuth } from '../../contexts/AuthContext';
 
@@ -23,6 +23,7 @@ const NAV_ITEMS = [
   { path: '/omnichannel-studio', label: 'WhatsApp & LinkedIn Studio', icon: Share2 },
   { path: '/timezone-engine', label: 'Buyer Timezone Matrix', icon: Clock },
   { path: '/deliverability', label: 'Deliverability Shield', icon: ShieldCheck },
+  { path: '/compliance-audit', label: 'US Compliance Shield', icon: FileCheck },
   { path: '/email-activity', label: 'Email Activity', icon: Activity },
   { path: '/reports', label: 'Analytics & Reports', icon: BarChart3 },
   null, // divider

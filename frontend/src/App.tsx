@@ -29,6 +29,7 @@ import ProformaInvoicePage from './pages/ProformaInvoicePage';
 import TariffCalculatorPage from './pages/TariffCalculatorPage';
 import TimezoneEnginePage from './pages/TimezoneEnginePage';
 import OmnichannelStudioPage from './pages/OmnichannelStudioPage';
+import ComplianceAuditPage from './pages/ComplianceAuditPage';
 import LoadingSpinner from './components/ui/LoadingSpinner';
 
 const queryClient = new QueryClient({
@@ -69,6 +70,7 @@ export default function App() {
               <Route path="/campaigns/new" element={<ProtectedRoute><Layout title="New Outreach Sequence" subtitle="Build visual cadence steps, AI follow-ups & deliverability guardrails"><CampaignCreatePage /></Layout></ProtectedRoute>} />
               <Route path="/campaigns/:id" element={<ProtectedRoute><Layout title="Campaign Detail"><CampaignDetailPage /></Layout></ProtectedRoute>} />
               <Route path="/deliverability" element={<ProtectedRoute><Layout title="Email Deliverability & Domain Shield" subtitle="SPF, DKIM, DMARC validator and real-time spam keyword scanner"><DeliverabilityMeterPage /></Layout></ProtectedRoute>} />
+              <Route path="/compliance-audit" element={<ProtectedRoute><Layout title="US Retail Compliance & Audit Readiness Shield" subtitle="Audit California Prop 65, USDA Lacey Act, CPSC, FDA & SMETA retailer standards"><ComplianceAuditPage /></Layout></ProtectedRoute>} />
               <Route path="/email-activity" element={<ProtectedRoute><Layout title="Email Activity" subtitle="Real-time log of outbound export pitches"><EmailActivityPage /></Layout></ProtectedRoute>} />
               <Route path="/reports" element={<ProtectedRoute><Layout title="Analytics & Export Reports" subtitle="Campaign conversions and buyer response performance"><ReportsPage /></Layout></ProtectedRoute>} />
               <Route path="/profile" element={<ProtectedRoute><Layout title="Exporter Profile" subtitle="Your business profile and product catalog details"><CompanyProfilePage /></Layout></ProtectedRoute>} />

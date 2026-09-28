@@ -21,6 +21,7 @@ import GmailIntegrationPage from './pages/GmailIntegrationPage';
 import SettingsPage from './pages/SettingsPage';
 import TradeMapPage from './pages/TradeMapPage';
 import ManifestRadarPage from './pages/ManifestRadarPage';
+import BuyerSimulatorPage from './pages/BuyerSimulatorPage';
 import LookbookGeneratorPage from './pages/LookbookGeneratorPage';
 import DealPipelinePage from './pages/DealPipelinePage';
 import DeliverabilityMeterPage from './pages/DeliverabilityMeterPage';
@@ -56,6 +57,7 @@ export default function App() {
               <Route path="/buyers/:id" element={<ProtectedRoute><Layout title="Buyer Detail"><BuyerDetailPage /></Layout></ProtectedRoute>} />
               <Route path="/ai-classification" element={<ProtectedRoute><Layout title="AI Lead Intelligence" subtitle="Classify, score, and prioritize international leads"><AIClassificationPage /></Layout></ProtectedRoute>} />
               <Route path="/deal-pipeline" element={<ProtectedRoute><Layout title="Deals Pipeline & AI Inbox" subtitle="Interactive export CRM and automated email reply sentiment classifier"><DealPipelinePage /></Layout></ProtectedRoute>} />
+              <Route path="/buyer-simulator" element={<ProtectedRoute><Layout title="AI Virtual US Buyer Pitch Simulator" subtitle="Practice real-time cold pitching, price negotiation & objection handling"><BuyerSimulatorPage /></Layout></ProtectedRoute>} />
               <Route path="/lookbook" element={<ProtectedRoute><Layout title="AI Export Catalog Studio" subtitle="Generate luxury export lookbooks with HS codes, FOB tiers, and wholesale specifications"><LookbookGeneratorPage /></Layout></ProtectedRoute>} />
               <Route path="/proforma-invoice" element={<ProtectedRoute><Layout title="Proforma Invoice & CBM Studio" subtitle="Generate commercial export quotations and calculate container cargo loading"><ProformaInvoicePage /></Layout></ProtectedRoute>} />
               <Route path="/tariff-calculator" element={<ProtectedRoute><Layout title="US Customs Tariff & Landed Cost Intelligence" subtitle="Calculate US HTS duty rates, harbor maintenance fees & estimated landed costs"><TariffCalculatorPage /></Layout></ProtectedRoute>} />

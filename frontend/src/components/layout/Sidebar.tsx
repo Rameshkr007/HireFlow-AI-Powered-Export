@@ -3,7 +3,7 @@ import { Link, useLocation } from 'react-router-dom';
 import {
   LayoutDashboard, Search, Users, Brain, Mail, BarChart3,
   Building2, Settings, Zap, Activity, LogOut, ChevronRight,
-  MapPin, BookOpen, Trello, ShieldCheck, FileText, Scale, Anchor
+  MapPin, BookOpen, Trello, ShieldCheck, FileText, Scale, Anchor, Mic
 } from 'lucide-react';
 import { useAuth } from '../../contexts/AuthContext';
 
@@ -15,6 +15,7 @@ const NAV_ITEMS = [
   { path: '/buyers', label: 'Buyers Directory', icon: Users },
   { path: '/ai-classification', label: 'AI Classification', icon: Brain },
   { path: '/deal-pipeline', label: 'Deals Pipeline CRM', icon: Trello },
+  { path: '/buyer-simulator', label: 'Buyer Pitch Simulator', icon: Mic },
   { path: '/lookbook', label: 'AI Catalog Studio', icon: BookOpen },
   { path: '/proforma-invoice', label: 'Proforma & CBM Studio', icon: FileText },
   { path: '/tariff-calculator', label: 'US Tariff & Landed Cost', icon: Scale },

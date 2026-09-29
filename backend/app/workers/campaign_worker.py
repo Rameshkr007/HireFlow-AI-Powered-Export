@@ -6,6 +6,7 @@ from ..models.campaign import Campaign
 from ..models.buyer import Buyer
 from ..models.email_log import EmailLog
 from ..services.email_validation_service import validate_email_address
+from ..services.email_service import send_real_email_for_campaign
 
 DEMO_ERRORS = [
     "Temporary delivery failure",
@@ -174,8 +175,25 @@ def process_campaign(db: Session, campaign_id: int, user_id: int):
             )
             db.add(log)
         else:
-            # Real mode: would call Gmail API here
-            # For now: log as FAILED with helpful message
+            # Real mode: Dispatch email via SMTP / Gmail App Password
+            success, err_msg = send_real_email_for_campaign(
+                campaign=campaign,
+                buyer=buyer,
+                user_id=user_id,
+                personalized_body=personalized_body,
+                db=db
+            )
+            if success:
+                status = 'SENT'
+                error = None
+                sent += 1
+                buyer.outreach_status = 'CONTACTED'
+                buyer.last_contacted = datetime.utcnow()
+            else:
+                status = 'FAILED'
+                error = err_msg
+                failed += 1
+
             log = EmailLog(
                 campaign_id=campaign_id,
                 buyer_id=buyer.id,
@@ -183,11 +201,11 @@ def process_campaign(db: Session, campaign_id: int, user_id: int):
                 email_address=buyer.email,
                 subject=campaign.email_subject,
                 personalized_body=personalized_body,
-                status='FAILED',
-                error_message='Real Gmail not fully configured. Set GMAIL_MODE=demo or complete Gmail OAuth setup.'
+                status=status,
+                error_message=error,
+                sent_at=datetime.utcnow() if status == 'SENT' else None
             )
             db.add(log)
-            failed += 1
 
         # Update campaign counts
         campaign.sent_count = sent

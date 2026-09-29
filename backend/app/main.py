@@ -4,7 +4,7 @@ import os
 
 from .database import engine, Base, SessionLocal
 from .models import User, ExporterProfile, Buyer, Campaign, EmailLog, Attachment, GmailConnection
-from .api import auth, profile, buyers, discovery, campaigns, email_activity, reports, gmail, attachments, dashboard
+from .api import auth, profile, buyers, discovery, campaigns, email_activity, reports, gmail, attachments, dashboard, email_settings
 from .config import settings
 
 app = FastAPI(
@@ -55,6 +55,7 @@ app.include_router(campaigns.router)
 app.include_router(email_activity.router)
 app.include_router(reports.router)
 app.include_router(gmail.router)
+app.include_router(email_settings.router)
 app.include_router(attachments.router)
 app.include_router(dashboard.router)
 

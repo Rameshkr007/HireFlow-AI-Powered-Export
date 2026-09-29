@@ -17,4 +17,5 @@ class User(Base):
     campaigns = relationship("Campaign", back_populates="user")
     email_logs = relationship("EmailLog", back_populates="user")
     gmail_connection = relationship("GmailConnection", back_populates="user", uselist=False)
+    email_setting = relationship("EmailSetting", back_populates="user", uselist=False)
     attachments = relationship("Attachment", back_populates="user")

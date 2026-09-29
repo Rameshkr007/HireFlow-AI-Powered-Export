@@ -3,7 +3,7 @@ from typing import Optional
 
 class Settings(BaseSettings):
     DATABASE_URL: str = "sqlite:///./hireflow.db"
-    JWT_SECRET: str = "hireflow-super-secret-jwt-key-change-in-production"
+    JWT_SECRET: str = "hireflow-permanent-jwt-auth-secret-key-2026-om-enterprise"
     JWT_ALGORITHM: str = "HS256"
     JWT_EXPIRE_MINUTES: int = 1440
     AI_PROVIDER: str = "gemini"  # gemini or openai

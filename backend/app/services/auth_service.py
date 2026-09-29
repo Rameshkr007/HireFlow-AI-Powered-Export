@@ -82,7 +82,8 @@ def register_user(
     return user
 
 def authenticate_user(db: Session, email: str, password: str):
-    user = db.query(User).filter(User.email == email.lower()).first()
+    clean_email = email.lower().strip()
+    user = db.query(User).filter(User.email == clean_email).first()
     if not user or not verify_password(password, user.hashed_password):
         return None
     return user

@@ -13,31 +13,30 @@ def seed():
     Base.metadata.create_all(bind=engine)
     db = SessionLocal()
 
-    existing = db.query(User).filter(User.email == "admin@hireflow.com").first()
-    if existing:
-        print("Database already seeded. Skipping.")
-        db.close()
-        return
+    existing_admin = db.query(User).filter(User.email == "admin@hireflow.com").first()
+    if not existing_admin:
+        admin_user = User(email="admin@hireflow.com", hashed_password=hash_password("admin123"), is_active=True)
+        db.add(admin_user)
+        db.flush()
+        user = admin_user
 
-    user = User(email="admin@hireflow.com", hashed_password=hash_password("admin123"), is_active=True)
-    db.add(user)
-    db.flush()
-
-    profile = ExporterProfile(
-        user_id=user.id,
-        exporter_name="Raj Kumar",
-        company_name="Himalayan Exports Pvt Ltd",
-        company_email="exports@himalayanexports.com",
-        phone="+977-1-4567890",
-        website="https://www.himalayanexports.com",
-        country="Nepal",
-        address="Thamel, Kathmandu 44600, Nepal",
-        product_categories=["Singing Bowls", "Handicrafts", "Home Decor", "Textiles"],
-        company_description="Leading exporter of authentic Himalayan handicrafts and wellness products since 2005.",
-        sender_name="Raj Kumar"
-    )
-    db.add(profile)
-    db.flush()
+        profile = ExporterProfile(
+            user_id=admin_user.id,
+            exporter_name="Raj Kumar",
+            company_name="Himalayan Exports Pvt Ltd",
+            company_email="exports@himalayanexports.com",
+            phone="+977-1-4567890",
+            website="https://www.himalayanexports.com",
+            country="Nepal",
+            address="Thamel, Kathmandu 44600, Nepal",
+            product_categories=["Singing Bowls", "Handicrafts", "Home Decor", "Textiles"],
+            company_description="Leading exporter of authentic Himalayan handicrafts and wellness products since 2005.",
+            sender_name="Raj Kumar"
+        )
+        db.add(profile)
+        db.flush()
+    else:
+        user = existing_admin
 
     buyers_data = [
         {"buyer_name": "Michael Johnson", "company_name": "Global Wellness Imports LLC", "email": "info@globalwellnessimports.com", "website": "https://globalwellnessimports.com", "country": "USA", "business_type": "Importer", "ai_priority": "HIGH", "ai_score": 92, "email_status": "VALID", "product": "Singing Bowls", "company_description": "Leading importer and distributor of wellness and lifestyle products across North America."},
@@ -67,13 +66,14 @@ def seed():
         {"buyer_name": "Wolfgang Bauer", "company_name": "Hamburg Import GmbH", "email": "w.bauer@hamburgimport.de", "website": "https://hamburgimport.de", "country": "Germany", "business_type": "Wholesaler", "ai_priority": "HIGH", "ai_score": 91, "email_status": "VALID", "product": "Handicrafts", "company_description": "Major Hamburg-based importer and wholesaler of handcrafted products from Asia."},
     ]
 
-    buyer_objects = []
-    for bd in buyers_data:
-        buyer = Buyer(
-            user_id=user.id,
-            buyer_name=bd["buyer_name"],
-            company_name=bd["company_name"],
-            email=bd["email"],
+    if not existing_admin:
+        buyer_objects = []
+        for bd in buyers_data:
+            buyer = Buyer(
+                user_id=user.id,
+                buyer_name=bd["buyer_name"],
+                company_name=bd["company_name"],
+                email=bd["email"],
             normalized_email=normalize_email(bd["email"]),
             website=bd["website"],
             country=bd["country"],
@@ -93,16 +93,16 @@ def seed():
         db.add(buyer)
         buyer_objects.append(buyer)
 
-    db.flush()
+        db.flush()
 
-    campaign = Campaign(
-        user_id=user.id,
-        name="USA Singing Bowls Outreach 2026",
-        product="Singing Bowls",
-        target_country="USA",
-        target_audience="Importer",
-        email_subject="Export Partnership Opportunity – Singing Bowls",
-        email_body="""Dear <Buyer Name>,
+        campaign = Campaign(
+            user_id=user.id,
+            name="USA Singing Bowls Outreach 2026",
+            product="Singing Bowls",
+            target_country="USA",
+            target_audience="Importer",
+            email_subject="Export Partnership Opportunity – Singing Bowls",
+            email_body="""Dear <Buyer Name>,
 
 I hope this email finds you well.
 
@@ -131,54 +131,108 @@ Raj Kumar
 Himalayan Exports Pvt Ltd
 exports@himalayanexports.com
 +977-1-4567890""",
-        sending_limit=20,
-        delay_seconds=5,
-        status="COMPLETED",
-        sent_count=14,
-        failed_count=2,
-        skipped_count=4,
-        total_leads=20,
-        is_demo=True,
-        started_at=datetime.utcnow() - timedelta(days=1),
-        completed_at=datetime.utcnow() - timedelta(hours=22)
-    )
-    db.add(campaign)
-    db.flush()
-
-    statuses_pool = ['SENT'] * 14 + ['FAILED'] * 2 + ['SKIPPED'] * 2 + ['ALREADY_CONTACTED'] * 1 + ['INVALID_EMAIL'] * 1
-    demo_errors = ["Temporary delivery failure", "Connection timeout"]
-
-    for i, buyer in enumerate(buyer_objects[:20]):
-        status = statuses_pool[i % len(statuses_pool)]
-        error = None
-        if status == "FAILED":
-            error = demo_errors[i % 2]
-        elif status == "SKIPPED":
-            error = "Skipped by campaign rules"
-        elif status == "ALREADY_CONTACTED":
-            error = "Previously contacted in another campaign"
-        elif status == "INVALID_EMAIL":
-            error = "Invalid email format detected"
-
-        log = EmailLog(
-            campaign_id=campaign.id,
-            buyer_id=buyer.id,
-            user_id=user.id,
-            email_address=buyer.email,
-            subject=campaign.email_subject,
-            status=status,
-            error_message=error,
-            sent_at=datetime.utcnow() - timedelta(hours=22, minutes=i * 3) if status == 'SENT' else None
+            sending_limit=20,
+            delay_seconds=5,
+            status="COMPLETED",
+            sent_count=14,
+            failed_count=2,
+            skipped_count=4,
+            total_leads=20,
+            is_demo=True,
+            started_at=datetime.utcnow() - timedelta(days=1),
+            completed_at=datetime.utcnow() - timedelta(hours=22)
         )
-        db.add(log)
+        db.add(campaign)
+        db.flush()
 
-        if status == 'SENT':
-            buyer.outreach_status = 'CONTACTED'
-            buyer.last_contacted = datetime.utcnow() - timedelta(hours=22, minutes=i * 3)
+        statuses_pool = ['SENT'] * 14 + ['FAILED'] * 2 + ['SKIPPED'] * 2 + ['ALREADY_CONTACTED'] * 1 + ['INVALID_EMAIL'] * 1
+        demo_errors = ["Temporary delivery failure", "Connection timeout"]
 
-    db.commit()
+        for i, buyer in enumerate(buyer_objects[:20]):
+            status = statuses_pool[i % len(statuses_pool)]
+            error = None
+            if status == "FAILED":
+                error = demo_errors[i % 2]
+            elif status == "SKIPPED":
+                error = "Skipped by campaign rules"
+            elif status == "ALREADY_CONTACTED":
+                error = "Previously contacted in another campaign"
+            elif status == "INVALID_EMAIL":
+                error = "Invalid email format detected"
+
+            log = EmailLog(
+                campaign_id=campaign.id,
+                buyer_id=buyer.id,
+                user_id=user.id,
+                email_address=buyer.email,
+                subject=campaign.email_subject,
+                status=status,
+                error_message=error,
+                sent_at=datetime.utcnow() - timedelta(hours=22, minutes=i * 3) if status == 'SENT' else None
+            )
+            db.add(log)
+
+            if status == 'SENT':
+                buyer.outreach_status = 'CONTACTED'
+                buyer.last_contacted = datetime.utcnow() - timedelta(hours=22, minutes=i * 3)
+
+        db.commit()
+
+    # Also ensure Ramesh's OM Enterprise account exists
+    ramesh_user = db.query(User).filter(User.email == "rameshkrthakur1816@gmail.com").first()
+    if not ramesh_user:
+        ramesh_user = User(
+            email="rameshkrthakur1816@gmail.com",
+            hashed_password=hash_password("admin123"),
+            is_active=True
+        )
+        db.add(ramesh_user)
+        db.flush()
+
+        ramesh_profile = ExporterProfile(
+            user_id=ramesh_user.id,
+            exporter_name="Ramesh Kumar Thakur",
+            company_name="OM Enterprise",
+            company_email="exportindia2026us@gmail.com",
+            phone="+91 80577 10065",
+            country="India",
+            product_categories=["Singing Bowls", "Metal Candle Holders", "Handicrafts"],
+            company_description="Direct manufacturer and exporter of Himalayan Singing Bowls & Metal Candle Holders.",
+            sender_name="Ramesh Kumar Thakur | OM Enterprise"
+        )
+        db.add(ramesh_profile)
+
+        # Clone the 25 buyers for Ramesh's user account
+        for bd in buyers_data:
+            buyer_clone = Buyer(
+                user_id=ramesh_user.id,
+                buyer_name=bd["buyer_name"],
+                company_name=bd["company_name"],
+                email=bd["email"],
+                normalized_email=normalize_email(bd["email"]),
+                website=bd["website"],
+                country=bd["country"],
+                source_platform="US Importer Directory",
+                business_type=bd["business_type"],
+                product=bd["product"],
+                company_description=bd["company_description"],
+                email_status=bd["email_status"],
+                outreach_status="PENDING",
+                ai_priority=bd["ai_priority"],
+                ai_score=bd["ai_score"],
+                ai_confidence=round(bd["ai_score"] / 100.0, 2),
+                ai_reason=f"Classified as {bd['business_type']} with {bd['ai_priority']} priority for OM Enterprise.",
+                ai_business_type=bd["business_type"],
+                is_demo=False
+            )
+            db.add(buyer_clone)
+
+        db.commit()
+        print("[SUCCESS] Ramesh's OM Enterprise account seeded with 25 target buyers!")
+
     print("[SUCCESS] Database seeded successfully!")
     print("[ADMIN] Admin user: admin@hireflow.com / admin123")
+    print("[RAMESH] Ramesh user: rameshkrthakur1816@gmail.com / admin123")
     print(f"[DATA] Created {len(buyers_data)} demo buyers")
     print("[CAMPAIGN] Created 1 sample campaign with 20 email logs")
     db.close()

@@ -14,7 +14,7 @@ services:
           name: hireflow-postgres
           property: connectionString
       - key: JWT_SECRET
-        generateValue: true
+        value: hireflow-permanent-jwt-auth-secret-key-2026-om-enterprise
       - key: FRONTEND_URL
         value: https://hireflow-frontend.onrender.com
       - key: GMAIL_MODE

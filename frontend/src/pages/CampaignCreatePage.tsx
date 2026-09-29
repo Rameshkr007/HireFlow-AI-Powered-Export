@@ -1,9 +1,9 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { useNavigate, useLocation } from 'react-router-dom';
 import {
   ArrowLeft, ArrowRight, Save, Play, Plus, Trash2, Clock,
   Sparkles, CheckCircle2, AlertCircle, FileText, Send, Layers,
-  ShieldCheck, RefreshCw, Zap
+  ShieldCheck, RefreshCw, Zap, Paperclip, UploadCloud, Check
 } from 'lucide-react';
 import api from '../lib/api';
 import { useToast } from '../contexts/ToastContext';
@@ -104,6 +104,43 @@ export default function CampaignCreatePage() {
 
   const [steps, setSteps] = useState<SequenceStep[]>(DEFAULT_STEPS);
 
+  // Attachments State
+  const [attachments, setAttachments] = useState<Array<{ id: number; original_name: string; file_size?: number; created_at?: string }>>([]);
+  const [selectedAttachmentId, setSelectedAttachmentId] = useState<number | null>(null);
+  const [uploadingAttachment, setUploadingAttachment] = useState(false);
+
+  useEffect(() => {
+    api.get('/api/attachments')
+      .then(res => {
+        const list = res.data || [];
+        setAttachments(list);
+        if (list.length > 0) {
+          setSelectedAttachmentId(list[0].id);
+        }
+      })
+      .catch(err => console.error('Failed to load attachments', err));
+  }, []);
+
+  const handleUploadAttachment = async (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    if (!file) return;
+    setUploadingAttachment(true);
+    try {
+      const data = new FormData();
+      data.append('file', file);
+      const res = await api.post('/api/attachments', data, {
+        headers: { 'Content-Type': 'multipart/form-data' }
+      });
+      setAttachments(prev => [res.data, ...prev]);
+      setSelectedAttachmentId(res.data.id);
+      showToast(`Catalog "${file.name}" uploaded & attached!`, 'success');
+    } catch (err: any) {
+      showToast(err.response?.data?.detail || 'Failed to upload attachment', 'error');
+    } finally {
+      setUploadingAttachment(false);
+    }
+  };
+
   const currentStep = steps[activeStepIndex] || steps[0];
 
   const updateCurrentStep = (fields: Partial<SequenceStep>) => {
@@ -180,6 +217,7 @@ export default function CampaignCreatePage() {
         sequence_steps: steps,
         sending_limit: formData.sending_limit,
         delay_seconds: formData.delay_seconds,
+        attachment_id: selectedAttachmentId,
         is_demo: false,
       };
 
@@ -330,6 +368,84 @@ export default function CampaignCreatePage() {
                 <option value="All">All Commercial Prospects</option>
               </select>
             </div>
+          </div>
+
+          {/* Catalog / Poster PDF Attachment Section */}
+          <div className="p-4 rounded-xl bg-dark-900 border border-dark-700/80 space-y-3">
+            <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-2">
+              <div className="flex items-center gap-2">
+                <Paperclip className="w-4 h-4 text-primary-400" />
+                <span className="text-xs font-bold text-dark-100 uppercase tracking-wider">
+                  Attach Official Product Catalog / Lookbook (PDF)
+                </span>
+              </div>
+              <label className="cursor-pointer text-xs font-medium text-primary-400 hover:text-primary-300 flex items-center gap-1.5 bg-primary-500/10 hover:bg-primary-500/20 px-2.5 py-1.5 rounded-lg border border-primary-500/30 transition-colors self-start sm:self-auto">
+                <UploadCloud className="w-3.5 h-3.5" />
+                {uploadingAttachment ? 'Uploading PDF...' : '+ Upload New Catalog PDF'}
+                <input
+                  type="file"
+                  accept=".pdf,.docx,.doc,.xlsx,.pptx"
+                  onChange={handleUploadAttachment}
+                  disabled={uploadingAttachment}
+                  className="hidden"
+                />
+              </label>
+            </div>
+
+            <p className="text-xs text-dark-400">
+              Select which product catalog or poster will be attached with every email sent to US buyers:
+            </p>
+
+            <div className="grid grid-cols-1 sm:grid-cols-2 gap-2.5">
+              {attachments.length === 0 ? (
+                <div className="col-span-2 p-3 text-center text-xs text-dark-400 border border-dashed border-dark-700 rounded-lg">
+                  No catalogs uploaded yet. Click "+ Upload New Catalog PDF" above.
+                </div>
+              ) : (
+                attachments.map(att => {
+                  const isSelected = selectedAttachmentId === att.id;
+                  return (
+                    <div
+                      key={att.id}
+                      onClick={() => setSelectedAttachmentId(isSelected ? null : att.id)}
+                      className={`p-3 rounded-lg border cursor-pointer flex items-center justify-between transition-all ${
+                        isSelected
+                          ? 'bg-primary-500/15 border-primary-500 text-dark-100 shadow-sm'
+                          : 'bg-dark-800/80 border-dark-700 text-dark-300 hover:border-dark-600'
+                      }`}
+                    >
+                      <div className="flex items-center gap-2.5 min-w-0">
+                        <FileText className={`w-4 h-4 flex-shrink-0 ${isSelected ? 'text-primary-400' : 'text-dark-400'}`} />
+                        <div className="min-w-0">
+                          <div className="text-xs font-semibold truncate">{att.original_name}</div>
+                          {att.file_size && (
+                            <div className="text-[10px] text-dark-500 font-mono">
+                              {(att.file_size / (1024 * 1024)).toFixed(2)} MB
+                            </div>
+                          )}
+                        </div>
+                      </div>
+                      {isSelected ? (
+                        <span className="text-[10px] font-bold px-2 py-0.5 rounded bg-primary-500 text-white flex items-center gap-1 flex-shrink-0">
+                          <Check className="w-3 h-3 stroke-[3]" /> ATTACHED
+                        </span>
+                      ) : (
+                        <span className="text-[10px] text-dark-500 border border-dark-700 px-1.5 py-0.5 rounded flex-shrink-0">
+                          Click to attach
+                        </span>
+                      )}
+                    </div>
+                  );
+                })
+              )}
+            </div>
+
+            {selectedAttachmentId && (
+              <div className="text-[11px] text-emerald-400 flex items-center gap-1.5 pt-1">
+                <CheckCircle2 className="w-3.5 h-3.5" />
+                This catalog will be dispatched as a genuine file attachment with every outreach email.
+              </div>
+            )}
           </div>
 
           <div className="flex justify-end pt-4 border-t border-dark-800">
@@ -579,6 +695,24 @@ export default function CampaignCreatePage() {
         <div className="card p-6 space-y-5">
           <h2 className="text-base font-bold text-dark-100">Full Outreach Cadence Preview</h2>
           <div className="space-y-4">
+            {/* Attachment preview banner */}
+            <div className="p-3.5 rounded-xl bg-dark-950 border border-dark-800 flex items-center justify-between text-xs">
+              <div className="flex items-center gap-2.5">
+                <Paperclip className="w-4 h-4 text-primary-400" />
+                <div>
+                  <span className="text-dark-400">Attached Product Catalog: </span>
+                  <span className="font-semibold text-dark-100">
+                    {attachments.find(a => a.id === selectedAttachmentId)?.original_name || 'No attachment selected'}
+                  </span>
+                </div>
+              </div>
+              {selectedAttachmentId && (
+                <span className="px-2 py-0.5 rounded bg-emerald-500/20 text-emerald-400 border border-emerald-500/30 text-[10px] font-bold">
+                  PDF INCLUDED
+                </span>
+              )}
+            </div>
+
             {steps.map((st, i) => (
               <div key={st.id} className="p-4 rounded-xl bg-dark-900 border border-dark-800 space-y-2">
                 <div className="flex items-center justify-between text-xs">

@@ -1,8 +1,10 @@
 import smtplib
 import ssl
+import socket
 import os
 import re
 import html
+from contextlib import contextmanager
 from email.mime.multipart import MIMEMultipart
 from email.mime.text import MIMEText
 from email.mime.application import MIMEApplication
@@ -15,6 +17,21 @@ from ..models.email_setting import EmailSetting
 from ..models.user import User
 from ..models.attachment import Attachment
 from ..models.exporter_profile import ExporterProfile
+
+@contextmanager
+def force_ipv4():
+    """Forces socket operations to IPv4, preventing [Errno 101] Network is unreachable on Render/Docker."""
+    orig_getaddrinfo = socket.getaddrinfo
+
+    def getaddrinfo_ipv4(host, port, family=0, type=0, proto=0, flags=0):
+        # Override family to AF_INET (IPv4) to avoid unreachable IPv6 routing in cloud containers
+        return orig_getaddrinfo(host, port, socket.AF_INET, type, proto, flags)
+
+    socket.getaddrinfo = getaddrinfo_ipv4
+    try:
+        yield
+    finally:
+        socket.getaddrinfo = orig_getaddrinfo
 
 def clean_password(pwd: Optional[str]) -> str:
     """Removes whitespace and newlines from passwords (useful for 16-char Gmail app passwords)."""
@@ -163,25 +180,41 @@ def send_smtp_email(
             except Exception as att_err:
                 print(f"[HireFlow Email] Warning: Could not attach file {attachment_path}: {att_err}")
 
-        # Connect and send
-        if use_ssl or smtp_port == 465:
-            context = ssl.create_default_context()
-            server = smtplib.SMTP_SSL(smtp_host, smtp_port, context=context, timeout=30)
-            server.login(smtp_user, smtp_pass)
-            server.sendmail(from_email, [to_email], msg.as_string())
-            server.quit()
-        else:
-            server = smtplib.SMTP(smtp_host, smtp_port, timeout=30)
-            server.ehlo()
-            if use_tls:
-                context = ssl.create_default_context()
-                server.starttls(context=context)
-                server.ehlo()
-            server.login(smtp_user, smtp_pass)
-            server.sendmail(from_email, [to_email], msg.as_string())
-            server.quit()
+        def _dispatch_attempt(host: str, port: int, is_ssl: bool, is_tls: bool):
+            with force_ipv4():
+                if is_ssl or port == 465:
+                    context = ssl.create_default_context()
+                    server = smtplib.SMTP_SSL(host, port, context=context, timeout=25)
+                    server.login(smtp_user, smtp_pass)
+                    server.sendmail(from_email, [to_email], msg.as_string())
+                    server.quit()
+                else:
+                    server = smtplib.SMTP(host, port, timeout=25)
+                    server.ehlo()
+                    if is_tls:
+                        context = ssl.create_default_context()
+                        server.starttls(context=context)
+                        server.ehlo()
+                    server.login(smtp_user, smtp_pass)
+                    server.sendmail(from_email, [to_email], msg.as_string())
+                    server.quit()
 
-        return True, None
+        # Try primary configured port with IPv4 forced (avoids [Errno 101] Network is unreachable on Render)
+        try:
+            _dispatch_attempt(smtp_host, smtp_port, use_ssl, use_tls)
+            return True, None
+        except smtplib.SMTPAuthenticationError:
+            raise
+        except (OSError, smtplib.SMTPConnectError, socket.timeout) as first_err:
+            # Fallback to alternate port (if 587 failed, try 465 SSL; if 465 failed, try 587 TLS)
+            alt_port = 465 if smtp_port == 587 else 587
+            alt_ssl = True if alt_port == 465 else False
+            alt_tls = True if alt_port == 587 else False
+            try:
+                _dispatch_attempt(smtp_host, alt_port, alt_ssl, alt_tls)
+                return True, None
+            except Exception as second_err:
+                return False, f"Failed to deliver email: {str(first_err)} (Fallback port {alt_port} error: {str(second_err)})"
 
     except smtplib.SMTPAuthenticationError as auth_err:
         err_str = str(auth_err)

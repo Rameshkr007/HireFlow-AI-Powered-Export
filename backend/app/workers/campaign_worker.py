@@ -25,26 +25,59 @@ def check_already_contacted(db: Session, buyer_email: str) -> bool:
     ).first()
     return existing is not None
 
-def personalize_email_simple(template: str, buyer) -> str:
-    """Simple placeholder replacement without AI."""
+def personalize_email_simple(template: str, buyer, fallback_product: str = "") -> str:
+    """Simple placeholder replacement supporting {}, <>, and [] styles."""
     if not template:
         return ""
+    
+    buyer_name = (buyer.buyer_name or 'Sir/Madam').strip()
+    company_name = (buyer.company_name or 'your company').strip()
+    product = (buyer.product or fallback_product or 'our export products').strip()
+    country = (buyer.country or 'your region').strip()
+    website = (buyer.website or '').strip()
+
     replacements = {
-        '<Buyer Name>': buyer.buyer_name or 'Sir/Madam',
-        '<buyer_name>': buyer.buyer_name or 'Sir/Madam',
-        '[Buyer Name]': buyer.buyer_name or 'Sir/Madam',
-        'Dear Sir/Madam': f"Dear {buyer.buyer_name or 'Sir/Madam'}",
-        '<Company Name>': buyer.company_name or '',
-        '<company_name>': buyer.company_name or '',
-        '[Company Name]': buyer.company_name or '',
-        '<Product Name>': buyer.product or 'our products',
-        '[Product]': buyer.product or 'our products',
-        '<Country>': buyer.country or '',
-        '<Website>': buyer.website or '',
-        'Contact Name:': f'Contact Name: {buyer.buyer_name or ""}',
-        'Company Name:': f'Company Name: {buyer.company_name or ""}',
-        'Country:': f'Country: {buyer.country or ""}',
-        'Website:': f'Website: {buyer.website or ""}',
+        # Braces {}
+        '{buyer_name}': buyer_name,
+        '{Buyer Name}': buyer_name,
+        '{name}': buyer_name,
+        '{{buyer_name}}': buyer_name,
+        '{company_name}': company_name,
+        '{Company Name}': company_name,
+        '{company}': company_name,
+        '{{company_name}}': company_name,
+        '{product}': product,
+        '{Product}': product,
+        '{product_name}': product,
+        '{Product Name}': product,
+        '{{product}}': product,
+        '{country}': country,
+        '{Country}': country,
+        '{{country}}': country,
+        '{website}': website,
+        '{Website}': website,
+        # Brackets []
+        '[Buyer Name]': buyer_name,
+        '[buyer_name]': buyer_name,
+        '[Company Name]': company_name,
+        '[company_name]': company_name,
+        '[Product]': product,
+        '[Product Name]': product,
+        '[Country]': country,
+        # HTML tags <>
+        '<Buyer Name>': buyer_name,
+        '<buyer_name>': buyer_name,
+        '<Company Name>': company_name,
+        '<company_name>': company_name,
+        '<Product Name>': product,
+        '<product>': product,
+        '<Country>': country,
+        '<Website>': website,
+        'Dear Sir/Madam': f"Dear {buyer_name}",
+        'Contact Name:': f'Contact Name: {buyer_name}',
+        'Company Name:': f'Company Name: {company_name}',
+        'Country:': f'Country: {country}',
+        'Website:': f'Website: {website}',
         'Source Platform:': f'Source Platform: {buyer.source_platform or ""}',
     }
     result = template
@@ -139,8 +172,9 @@ def process_campaign(db: Session, campaign_id: int, user_id: int):
             db.commit()
             continue
 
-        # 4. Personalize email
-        personalized_body = personalize_email_simple(campaign.email_body or "", buyer)
+        # 4. Personalize subject and body
+        personalized_subject = personalize_email_simple(campaign.email_subject or "Export Partnership Opportunity", buyer, campaign.product or "")
+        personalized_body = personalize_email_simple(campaign.email_body or "", buyer, campaign.product or "")
 
         # 5. Send (demo or real)
         if campaign.is_demo:
@@ -167,7 +201,7 @@ def process_campaign(db: Session, campaign_id: int, user_id: int):
                 buyer_id=buyer.id,
                 user_id=user_id,
                 email_address=buyer.email,
-                subject=campaign.email_subject,
+                subject=personalized_subject,
                 personalized_body=personalized_body,
                 status=status,
                 error_message=error,
@@ -181,7 +215,8 @@ def process_campaign(db: Session, campaign_id: int, user_id: int):
                 buyer=buyer,
                 user_id=user_id,
                 personalized_body=personalized_body,
-                db=db
+                db=db,
+                personalized_subject=personalized_subject
             )
             if success:
                 status = 'SENT'
@@ -199,7 +234,7 @@ def process_campaign(db: Session, campaign_id: int, user_id: int):
                 buyer_id=buyer.id,
                 user_id=user_id,
                 email_address=buyer.email,
-                subject=campaign.email_subject,
+                subject=personalized_subject,
                 personalized_body=personalized_body,
                 status=status,
                 error_message=error,

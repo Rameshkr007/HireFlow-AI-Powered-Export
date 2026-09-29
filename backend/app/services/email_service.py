@@ -203,7 +203,8 @@ def send_real_email_for_campaign(
     buyer: Any,
     user_id: int,
     personalized_body: str,
-    db: Session
+    db: Session,
+    personalized_subject: Optional[str] = None
 ) -> Tuple[bool, Optional[str]]:
     """Dispatches a real outreach pitch for a campaign recipient."""
     smtp_config = get_effective_smtp_config(db, user_id)
@@ -228,7 +229,7 @@ def send_real_email_for_campaign(
             attachment_path = attachment.file_path
             attachment_filename = attachment.original_name
 
-    subject = campaign.email_subject or f"Export Partnership Inquiry – {campaign.product or 'Direct Supply'}"
+    subject = personalized_subject or campaign.email_subject or f"Export Partnership Inquiry – {campaign.product or 'Direct Supply'}"
     
     return send_smtp_email(
         smtp_config=smtp_config,

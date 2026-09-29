@@ -37,10 +37,16 @@ export default function LoginPage() {
     }
   };
 
+  const handleFillRamesh = () => {
+    setEmail('rameshkrthakur1816@gmail.com');
+    setPassword('admin123');
+    showToast('OM Enterprise credentials filled (rameshkrthakur1816@gmail.com / admin123)', 'info');
+  };
+
   const handleFillDemo = () => {
     setEmail('admin@hireflow.com');
     setPassword('admin123');
-    showToast('Demo credentials filled', 'info');
+    showToast('Demo credentials filled (admin@hireflow.com / admin123)', 'info');
   };
 
   return (
@@ -154,15 +160,25 @@ export default function LoginPage() {
             </button>
           </form>
 
-          {/* Quick Demo Access toggle for testing */}
-          <div className="text-center pt-2">
+          {/* Quick Access buttons */}
+          <div className="space-y-2 pt-2">
             <button
               type="button"
-              onClick={handleFillDemo}
-              className="text-xs text-dark-500 hover:text-dark-300 underline underline-offset-4 transition-colors"
+              onClick={handleFillRamesh}
+              className="w-full py-2.5 px-3 rounded-lg bg-emerald-500/10 hover:bg-emerald-500/20 border border-emerald-500/30 text-emerald-400 text-xs font-semibold flex items-center justify-center gap-2 transition-colors shadow-sm"
             >
-              Need quick demo preview? Click to fill test credentials
+              <CheckCircle2 className="w-4 h-4 text-emerald-400" />
+              <span>1-Click Fill: Ramesh Kumar (OM Enterprise)</span>
             </button>
+            <div className="text-center">
+              <button
+                type="button"
+                onClick={handleFillDemo}
+                className="text-xs text-dark-500 hover:text-dark-300 underline underline-offset-4 transition-colors"
+              >
+                Need quick admin preview? Click to fill admin@hireflow.com
+              </button>
+            </div>
           </div>
 
           <p className="text-center text-sm text-dark-400">

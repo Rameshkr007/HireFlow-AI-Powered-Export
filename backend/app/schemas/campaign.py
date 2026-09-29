@@ -13,6 +13,7 @@ class CampaignCreate(BaseModel):
     sending_limit: int = 20
     delay_seconds: int = 60
     attachment_id: Optional[int] = None
+    attachment_ids: Optional[List[int]] = []
     is_demo: bool = True
 
 class CampaignUpdate(BaseModel):
@@ -26,6 +27,7 @@ class CampaignUpdate(BaseModel):
     sending_limit: Optional[int] = None
     delay_seconds: Optional[int] = None
     attachment_id: Optional[int] = None
+    attachment_ids: Optional[List[int]] = None
     status: Optional[str] = None
 
 class CampaignResponse(BaseModel):
@@ -41,6 +43,7 @@ class CampaignResponse(BaseModel):
     sending_limit: int
     delay_seconds: int
     attachment_id: Optional[int] = None
+    attachment_ids: Optional[List[int]] = []
     status: str
     sent_count: int
     failed_count: int

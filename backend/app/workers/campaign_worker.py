@@ -91,21 +91,23 @@ def process_campaign(db: Session, campaign_id: int, user_id: int):
     if not campaign:
         return
 
-    # Get eligible buyers
-    buyers_query = db.query(Buyer).filter(Buyer.user_id == user_id)
-    
-    if campaign.target_country:
-        buyers_query = buyers_query.filter(
-            Buyer.country.ilike(f"%{campaign.target_country}%")
-        )
-    if campaign.target_audience:
-        buyers_query = buyers_query.filter(
-            Buyer.business_type.ilike(f"%{campaign.target_audience}%")
-        )
-    
-    # Don't include buyers with INVALID emails
-    buyers_query = buyers_query.filter(Buyer.email_status != 'INVALID')
-    buyers = buyers_query.limit(campaign.sending_limit).all()
+    from ..services.campaign_service import get_campaign_eligible_buyers
+    from ..models.attachment import Attachment
+
+    # Get eligible buyers with smart US matching and quota fallback
+    buyers = get_campaign_eligible_buyers(db, campaign)
+
+    # Resolve attachment names for logging
+    att_names = []
+    target_ids = []
+    if getattr(campaign, "attachment_ids", None):
+        target_ids.extend([int(aid) for aid in campaign.attachment_ids if aid])
+    if getattr(campaign, "attachment_id", None) and campaign.attachment_id not in target_ids:
+        target_ids.append(campaign.attachment_id)
+    if target_ids:
+        atts = db.query(Attachment).filter(Attachment.id.in_(target_ids)).all()
+        att_names = [a.original_name for a in atts if a.original_name]
+    attachment_name_str = ", ".join(att_names) if att_names else None
 
     sent = 0
     failed = 0
@@ -205,6 +207,7 @@ def process_campaign(db: Session, campaign_id: int, user_id: int):
                 personalized_body=personalized_body,
                 status=status,
                 error_message=error,
+                attachment_name=attachment_name_str,
                 sent_at=datetime.utcnow() if status == 'SENT' else None
             )
             db.add(log)
@@ -238,6 +241,7 @@ def process_campaign(db: Session, campaign_id: int, user_id: int):
                 personalized_body=personalized_body,
                 status=status,
                 error_message=error,
+                attachment_name=attachment_name_str,
                 sent_at=datetime.utcnow() if status == 'SENT' else None
             )
             db.add(log)

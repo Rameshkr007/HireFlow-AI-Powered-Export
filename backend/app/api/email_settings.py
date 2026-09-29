@@ -27,6 +27,29 @@ def get_email_settings(
 ):
     setting = db.query(EmailSetting).filter(EmailSetting.user_id == current_user.id).first()
     
+    # Fallback: if not configured for this user, check any recent saved EmailSetting in DB
+    if not (setting and (setting.smtp_password or setting.api_key or setting.smtp_user)):
+        shared = db.query(EmailSetting).filter(
+            (EmailSetting.smtp_password.isnot(None)) | (EmailSetting.api_key.isnot(None))
+        ).order_by(EmailSetting.updated_at.desc()).first()
+        if shared:
+            if not setting:
+                setting = EmailSetting(user_id=current_user.id)
+                db.add(setting)
+            setting.provider = shared.provider
+            setting.smtp_host = shared.smtp_host
+            setting.smtp_port = shared.smtp_port
+            setting.smtp_user = shared.smtp_user
+            setting.smtp_password = shared.smtp_password
+            setting.api_key = shared.api_key
+            setting.from_name = shared.from_name
+            setting.from_email = shared.from_email
+            setting.use_tls = shared.use_tls
+            setting.use_ssl = shared.use_ssl
+            setting.is_verified = shared.is_verified
+            db.commit()
+            db.refresh(setting)
+
     if setting:
         return EmailSettingResponse(
             id=setting.id,

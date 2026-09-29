@@ -17,6 +17,7 @@ class Campaign(Base):
     sending_limit = Column(Integer, default=20)
     delay_seconds = Column(Integer, default=60)
     attachment_id = Column(Integer, ForeignKey("attachments.id"), nullable=True)
+    attachment_ids = Column(JSON, nullable=True, default=list)
     status = Column(String, default="DRAFT")  # DRAFT, READY, RUNNING, PAUSED, COMPLETED, FAILED
     sent_count = Column(Integer, default=0)
     failed_count = Column(Integer, default=0)

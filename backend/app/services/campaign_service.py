@@ -1,4 +1,5 @@
 from sqlalchemy.orm import Session
+from sqlalchemy import or_
 from fastapi import HTTPException, BackgroundTasks
 from datetime import datetime
 from ..models.campaign import Campaign
@@ -85,11 +86,40 @@ def stop_campaign(db: Session, user_id: int, campaign_id: int) -> Campaign:
 
 def get_campaign_eligible_buyers(db: Session, campaign: Campaign):
     query = db.query(Buyer).filter(Buyer.user_id == campaign.user_id)
+    
+    # Smart country matching
     if campaign.target_country:
-        query = query.filter(Buyer.country.ilike(f"%{campaign.target_country}%"))
-    if campaign.target_audience:
+        tc = campaign.target_country.strip().lower()
+        if tc in ["united states", "usa", "us", "u.s.", "u.s.a."]:
+            query = query.filter(
+                or_(
+                    Buyer.country.ilike("%USA%"),
+                    Buyer.country.ilike("%United States%"),
+                    Buyer.country.ilike("%US%")
+                )
+            )
+        else:
+            query = query.filter(Buyer.country.ilike(f"%{campaign.target_country}%"))
+            
+    # Smart audience matching
+    if campaign.target_audience and campaign.target_audience.lower() not in ["all", "any", "all commercial prospects"]:
         query = query.filter(Buyer.business_type.ilike(f"%{campaign.target_audience}%"))
+        
     buyers = query.filter(Buyer.email_status != 'INVALID').limit(campaign.sending_limit).all()
+    
+    # If strict filter yields fewer than sending_limit, fallback to other valid buyers for this user
+    if len(buyers) < campaign.sending_limit:
+        remaining_limit = campaign.sending_limit - len(buyers)
+        existing_ids = [b.id for b in buyers]
+        fallback_query = db.query(Buyer).filter(
+            Buyer.user_id == campaign.user_id,
+            Buyer.email_status != 'INVALID'
+        )
+        if existing_ids:
+            fallback_query = fallback_query.filter(~Buyer.id.in_(existing_ids))
+        fallback_buyers = fallback_query.limit(remaining_limit).all()
+        buyers.extend(fallback_buyers)
+        
     return buyers
 
 def run_campaign_background(campaign_id: int, user_id: int):

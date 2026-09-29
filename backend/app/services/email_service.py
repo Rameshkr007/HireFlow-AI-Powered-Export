@@ -46,8 +46,15 @@ def get_effective_smtp_config(db: Session, user_id: int) -> Optional[Dict[str, A
     Retrieves the active SMTP configuration for a user.
     Falls back to global settings if user configuration is missing.
     """
-    # 1. Try DB configuration
+    # 1. Try DB configuration for current user
     db_setting = db.query(EmailSetting).filter(EmailSetting.user_id == user_id).first()
+    
+    # Fallback: if current user has not configured yet, check any recent saved EmailSetting in DB
+    if not (db_setting and (db_setting.smtp_password or db_setting.api_key or db_setting.smtp_user)):
+        db_setting = db.query(EmailSetting).filter(
+            (EmailSetting.smtp_password.isnot(None)) | (EmailSetting.api_key.isnot(None))
+        ).order_by(EmailSetting.updated_at.desc()).first()
+
     if db_setting and (db_setting.smtp_password or db_setting.api_key or db_setting.smtp_user):
         return {
             "provider": db_setting.provider or "gmail",
@@ -133,7 +140,8 @@ def send_via_brevo_http(
     body_html: Optional[str] = None,
     attachment_path: Optional[str] = None,
     attachment_filename: Optional[str] = None,
-    reply_to: Optional[str] = None
+    reply_to: Optional[str] = None,
+    attachment_list: Optional[list] = None
 ) -> Tuple[bool, Optional[str]]:
     """Sends email via Brevo REST API over HTTPS (Port 443) - completely bypasses cloud SMTP port blocks."""
     url = "https://api.brevo.com/v3/smtp/email"
@@ -154,14 +162,23 @@ def send_via_brevo_http(
     if reply_to:
         payload["replyTo"] = {"email": reply_to}
 
-    if attachment_path and os.path.exists(attachment_path):
-        try:
-            with open(attachment_path, "rb") as f:
-                content_b64 = base64.b64encode(f.read()).decode("utf-8")
-            fname = attachment_filename or os.path.basename(attachment_path)
-            payload["attachment"] = [{"name": fname, "content": content_b64}]
-        except Exception as e:
-            print(f"[Brevo Attachment Warning] {e}")
+    # Process multiple attachments
+    items = list(attachment_list or [])
+    if not items and attachment_path and os.path.exists(attachment_path):
+        items = [{"path": attachment_path, "name": attachment_filename or os.path.basename(attachment_path)}]
+
+    if items:
+        payload["attachment"] = []
+        for item in items:
+            p = item.get("path")
+            n = item.get("name") or os.path.basename(p)
+            if p and os.path.exists(p):
+                try:
+                    with open(p, "rb") as f:
+                        content_b64 = base64.b64encode(f.read()).decode("utf-8")
+                    payload["attachment"].append({"name": n, "content": content_b64})
+                except Exception as e:
+                    print(f"[Brevo Attachment Warning] {e}")
 
     try:
         with httpx.Client(timeout=30.0) as client:
@@ -187,7 +204,8 @@ def send_via_resend_http(
     body_html: Optional[str] = None,
     attachment_path: Optional[str] = None,
     attachment_filename: Optional[str] = None,
-    reply_to: Optional[str] = None
+    reply_to: Optional[str] = None,
+    attachment_list: Optional[list] = None
 ) -> Tuple[bool, Optional[str]]:
     """Sends email via Resend REST API over HTTPS (Port 443) - completely bypasses cloud SMTP port blocks."""
     url = "https://api.resend.com/emails"
@@ -207,14 +225,23 @@ def send_via_resend_http(
     if reply_to:
         payload["reply_to"] = reply_to
 
-    if attachment_path and os.path.exists(attachment_path):
-        try:
-            with open(attachment_path, "rb") as f:
-                content_b64 = base64.b64encode(f.read()).decode("utf-8")
-            fname = attachment_filename or os.path.basename(attachment_path)
-            payload["attachments"] = [{"filename": fname, "content": content_b64}]
-        except Exception as e:
-            print(f"[Resend Attachment Warning] {e}")
+    # Process multiple attachments
+    items = list(attachment_list or [])
+    if not items and attachment_path and os.path.exists(attachment_path):
+        items = [{"path": attachment_path, "name": attachment_filename or os.path.basename(attachment_path)}]
+
+    if items:
+        payload["attachments"] = []
+        for item in items:
+            p = item.get("path")
+            n = item.get("name") or os.path.basename(p)
+            if p and os.path.exists(p):
+                try:
+                    with open(p, "rb") as f:
+                        content_b64 = base64.b64encode(f.read()).decode("utf-8")
+                    payload["attachments"].append({"filename": n, "content": content_b64})
+                except Exception as e:
+                    print(f"[Resend Attachment Warning] {e}")
 
     try:
         with httpx.Client(timeout=30.0) as client:
@@ -237,11 +264,12 @@ def send_smtp_email(
     body_text: str,
     body_html: Optional[str] = None,
     attachment_path: Optional[str] = None,
-    attachment_filename: Optional[str] = None
+    attachment_filename: Optional[str] = None,
+    attachment_list: Optional[list] = None
 ) -> Tuple[bool, Optional[str]]:
     """
     Sends an email using standard Python smtplib with TLS/SSL.
-    Supports attachments, custom display names, and auto-generated HTML.
+    Supports multiple attachments, custom display names, and auto-generated HTML.
     """
     try:
         from_email = smtp_config["from_email"]
@@ -273,16 +301,22 @@ def send_smtp_email(
         alt_container.attach(MIMEText(final_html, "html", "utf-8"))
         msg.attach(alt_container)
 
-        # Attachment (e.g. Catalog PDF, Lookbook, Proforma)
-        if attachment_path and os.path.exists(attachment_path):
-            try:
-                with open(attachment_path, "rb") as f:
-                    part = MIMEApplication(f.read(), Name=attachment_filename or os.path.basename(attachment_path))
-                filename = attachment_filename or os.path.basename(attachment_path)
-                part['Content-Disposition'] = f'attachment; filename="{filename}"'
-                msg.attach(part)
-            except Exception as att_err:
-                print(f"[HireFlow Email] Warning: Could not attach file {attachment_path}: {att_err}")
+        # Multiple Attachments (e.g. Catalog PDF, Lookbook, Proforma)
+        items = list(attachment_list or [])
+        if not items and attachment_path and os.path.exists(attachment_path):
+            items = [{"path": attachment_path, "name": attachment_filename or os.path.basename(attachment_path)}]
+
+        for item in items:
+            p = item.get("path")
+            n = item.get("name") or os.path.basename(p)
+            if p and os.path.exists(p):
+                try:
+                    with open(p, "rb") as f:
+                        part = MIMEApplication(f.read(), Name=n)
+                    part['Content-Disposition'] = f'attachment; filename="{n}"'
+                    msg.attach(part)
+                except Exception as att_err:
+                    print(f"[HireFlow Email] Warning: Could not attach file {p}: {att_err}")
 
         def _dispatch_attempt(host: str, port: int, is_ssl: bool, is_tls: bool):
             with force_ipv4():
@@ -357,9 +391,10 @@ def dispatch_email_universal(
     body_html: Optional[str] = None,
     attachment_path: Optional[str] = None,
     attachment_filename: Optional[str] = None,
-    reply_to: Optional[str] = None
+    reply_to: Optional[str] = None,
+    attachment_list: Optional[list] = None
 ) -> Tuple[bool, Optional[str]]:
-    """Universal dispatcher: routes to Brevo HTTP API, Resend HTTP API, or Direct SMTP."""
+    """Universal dispatcher: routes to Brevo HTTP API, Resend HTTP API, or Direct SMTP with multi-attachment support."""
     provider = (smtp_config.get("provider") or "gmail").lower()
     api_key = smtp_config.get("api_key") or smtp_config.get("smtp_password") or ""
     from_name = smtp_config.get("from_name") or "OM Enterprise"
@@ -377,7 +412,8 @@ def dispatch_email_universal(
             body_html=body_html,
             attachment_path=attachment_path,
             attachment_filename=attachment_filename,
-            reply_to=reply_to or from_email
+            reply_to=reply_to or from_email,
+            attachment_list=attachment_list
         )
 
     # Check for Resend HTTP API
@@ -392,7 +428,8 @@ def dispatch_email_universal(
             body_html=body_html,
             attachment_path=attachment_path,
             attachment_filename=attachment_filename,
-            reply_to=reply_to or from_email
+            reply_to=reply_to or from_email,
+            attachment_list=attachment_list
         )
 
     # Direct SMTP fallback (Gmail App Password / Custom SMTP)
@@ -403,7 +440,8 @@ def dispatch_email_universal(
         body_text=body_text,
         body_html=body_html,
         attachment_path=attachment_path,
-        attachment_filename=attachment_filename
+        attachment_filename=attachment_filename,
+        attachment_list=attachment_list
     )
 
 def send_real_email_for_campaign(
@@ -414,7 +452,7 @@ def send_real_email_for_campaign(
     db: Session,
     personalized_subject: Optional[str] = None
 ) -> Tuple[bool, Optional[str]]:
-    """Dispatches a real outreach pitch for a campaign recipient."""
+    """Dispatches a real outreach pitch with multi-attachment support for a campaign recipient."""
     smtp_config = get_effective_smtp_config(db, user_id)
     if not smtp_config:
         return False, (
@@ -428,14 +466,25 @@ def send_real_email_for_campaign(
         if profile:
             smtp_config["from_name"] = profile.sender_name or profile.exporter_name or profile.company_name or ""
 
-    # Check for campaign attachment
-    attachment_path = None
-    attachment_filename = None
-    if campaign.attachment_id:
-        attachment = db.query(Attachment).filter(Attachment.id == campaign.attachment_id).first()
-        if attachment and os.path.exists(attachment.file_path):
-            attachment_path = attachment.file_path
-            attachment_filename = attachment.original_name
+    # Check for campaign attachments (multi-attachment support)
+    attachment_list = []
+    target_ids = []
+    if getattr(campaign, "attachment_ids", None):
+        target_ids.extend([int(aid) for aid in campaign.attachment_ids if aid])
+    if getattr(campaign, "attachment_id", None) and campaign.attachment_id not in target_ids:
+        target_ids.append(campaign.attachment_id)
+
+    if target_ids:
+        atts = db.query(Attachment).filter(Attachment.id.in_(target_ids)).all()
+        for att in atts:
+            if att.file_path and os.path.exists(att.file_path):
+                attachment_list.append({
+                    "path": att.file_path,
+                    "name": att.original_name or os.path.basename(att.file_path)
+                })
+
+    first_path = attachment_list[0]["path"] if attachment_list else None
+    first_name = attachment_list[0]["name"] if attachment_list else None
 
     subject = personalized_subject or campaign.email_subject or f"Export Partnership Inquiry – {campaign.product or 'Direct Supply'}"
     
@@ -444,8 +493,9 @@ def send_real_email_for_campaign(
         to_email=buyer.email,
         subject=subject,
         body_text=personalized_body,
-        attachment_path=attachment_path,
-        attachment_filename=attachment_filename,
+        attachment_path=first_path,
+        attachment_filename=first_name,
+        attachment_list=attachment_list,
         reply_to=smtp_config.get("from_email")
     )
 

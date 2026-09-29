@@ -104,9 +104,9 @@ export default function CampaignCreatePage() {
 
   const [steps, setSteps] = useState<SequenceStep[]>(DEFAULT_STEPS);
 
-  // Attachments State
+  // Attachments State (Multi-Attachment Support)
   const [attachments, setAttachments] = useState<Array<{ id: number; original_name: string; file_size?: number; created_at?: string }>>([]);
-  const [selectedAttachmentId, setSelectedAttachmentId] = useState<number | null>(null);
+  const [selectedAttachmentIds, setSelectedAttachmentIds] = useState<number[]>([]);
   const [uploadingAttachment, setUploadingAttachment] = useState(false);
 
   useEffect(() => {
@@ -115,11 +115,18 @@ export default function CampaignCreatePage() {
         const list = res.data || [];
         setAttachments(list);
         if (list.length > 0) {
-          setSelectedAttachmentId(list[0].id);
+          // Select all available catalogs by default so both Singing Bowls and Candle Holders are attached!
+          setSelectedAttachmentIds(list.map((a: any) => a.id));
         }
       })
       .catch(err => console.error('Failed to load attachments', err));
   }, []);
+
+  const toggleAttachment = (id: number) => {
+    setSelectedAttachmentIds(prev =>
+      prev.includes(id) ? prev.filter(x => x !== id) : [...prev, id]
+    );
+  };
 
   const handleUploadAttachment = async (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
@@ -132,8 +139,8 @@ export default function CampaignCreatePage() {
         headers: { 'Content-Type': 'multipart/form-data' }
       });
       setAttachments(prev => [res.data, ...prev]);
-      setSelectedAttachmentId(res.data.id);
-      showToast(`Catalog "${file.name}" uploaded & attached!`, 'success');
+      setSelectedAttachmentIds(prev => [...prev, res.data.id]);
+      showToast(`Catalog "${file.name}" uploaded & selected!`, 'success');
     } catch (err: any) {
       showToast(err.response?.data?.detail || 'Failed to upload attachment', 'error');
     } finally {
@@ -217,7 +224,8 @@ export default function CampaignCreatePage() {
         sequence_steps: steps,
         sending_limit: formData.sending_limit,
         delay_seconds: formData.delay_seconds,
-        attachment_id: selectedAttachmentId,
+        attachment_id: selectedAttachmentIds.length > 0 ? selectedAttachmentIds[0] : null,
+        attachment_ids: selectedAttachmentIds,
         is_demo: false,
       };
 
@@ -376,7 +384,7 @@ export default function CampaignCreatePage() {
               <div className="flex items-center gap-2">
                 <Paperclip className="w-4 h-4 text-primary-400" />
                 <span className="text-xs font-bold text-dark-100 uppercase tracking-wider">
-                  Attach Official Product Catalog / Lookbook (PDF)
+                  Attach Product Catalogs & Lookbooks (Multiple PDFs Allowed)
                 </span>
               </div>
               <label className="cursor-pointer text-xs font-medium text-primary-400 hover:text-primary-300 flex items-center gap-1.5 bg-primary-500/10 hover:bg-primary-500/20 px-2.5 py-1.5 rounded-lg border border-primary-500/30 transition-colors self-start sm:self-auto">
@@ -392,9 +400,14 @@ export default function CampaignCreatePage() {
               </label>
             </div>
 
-            <p className="text-xs text-dark-400">
-              Select which product catalog or poster will be attached with every email sent to US buyers:
-            </p>
+            <div className="flex items-center justify-between">
+              <p className="text-xs text-dark-400">
+                Click any catalog to attach or detach. You can select multiple catalogs to send together:
+              </p>
+              <span className="text-[11px] font-semibold text-emerald-400 bg-emerald-500/10 border border-emerald-500/20 px-2.5 py-0.5 rounded-full">
+                {selectedAttachmentIds.length} Selected (Multi-Attach Active)
+              </span>
+            </div>
 
             <div className="grid grid-cols-1 sm:grid-cols-2 gap-2.5">
               {attachments.length === 0 ? (
@@ -403,11 +416,11 @@ export default function CampaignCreatePage() {
                 </div>
               ) : (
                 attachments.map(att => {
-                  const isSelected = selectedAttachmentId === att.id;
+                  const isSelected = selectedAttachmentIds.includes(att.id);
                   return (
                     <div
                       key={att.id}
-                      onClick={() => setSelectedAttachmentId(isSelected ? null : att.id)}
+                      onClick={() => toggleAttachment(att.id)}
                       className={`p-3 rounded-lg border cursor-pointer flex items-center justify-between transition-all ${
                         isSelected
                           ? 'bg-primary-500/15 border-primary-500 text-dark-100 shadow-sm'
@@ -440,10 +453,10 @@ export default function CampaignCreatePage() {
               )}
             </div>
 
-            {selectedAttachmentId && (
+            {selectedAttachmentIds.length > 0 && (
               <div className="text-[11px] text-emerald-400 flex items-center gap-1.5 pt-1">
                 <CheckCircle2 className="w-3.5 h-3.5" />
-                This catalog will be dispatched as a genuine file attachment with every outreach email.
+                All {selectedAttachmentIds.length} selected files will be dispatched as real attachments with every outreach email.
               </div>
             )}
           </div>
@@ -695,21 +708,32 @@ export default function CampaignCreatePage() {
         <div className="card p-6 space-y-5">
           <h2 className="text-base font-bold text-dark-100">Full Outreach Cadence Preview</h2>
           <div className="space-y-4">
-            {/* Attachment preview banner */}
-            <div className="p-3.5 rounded-xl bg-dark-950 border border-dark-800 flex items-center justify-between text-xs">
-              <div className="flex items-center gap-2.5">
-                <Paperclip className="w-4 h-4 text-primary-400" />
-                <div>
-                  <span className="text-dark-400">Attached Product Catalog: </span>
-                  <span className="font-semibold text-dark-100">
-                    {attachments.find(a => a.id === selectedAttachmentId)?.original_name || 'No attachment selected'}
+            {/* Multi-Attachment preview banner */}
+            <div className="p-3.5 rounded-xl bg-dark-950 border border-dark-800 space-y-2 text-xs">
+              <div className="flex items-center justify-between">
+                <div className="flex items-center gap-2">
+                  <Paperclip className="w-4 h-4 text-primary-400" />
+                  <span className="text-dark-300 font-semibold">
+                    Attached Files ({selectedAttachmentIds.length}):
                   </span>
                 </div>
+                {selectedAttachmentIds.length > 0 ? (
+                  <span className="px-2 py-0.5 rounded bg-emerald-500/20 text-emerald-400 border border-emerald-500/30 text-[10px] font-bold">
+                    {selectedAttachmentIds.length} PDF{selectedAttachmentIds.length > 1 ? 's' : ''} ATTACHED
+                  </span>
+                ) : (
+                  <span className="text-dark-500 text-[10px]">No attachments selected</span>
+                )}
               </div>
-              {selectedAttachmentId && (
-                <span className="px-2 py-0.5 rounded bg-emerald-500/20 text-emerald-400 border border-emerald-500/30 text-[10px] font-bold">
-                  PDF INCLUDED
-                </span>
+              {selectedAttachmentIds.length > 0 && (
+                <div className="flex flex-wrap gap-2 pt-1">
+                  {attachments.filter(a => selectedAttachmentIds.includes(a.id)).map(att => (
+                    <span key={att.id} className="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-lg bg-dark-900 border border-dark-700 text-dark-200 text-xs font-medium">
+                      <FileText className="w-3.5 h-3.5 text-primary-400" />
+                      {att.original_name}
+                    </span>
+                  ))}
+                </div>
               )}
             </div>
 

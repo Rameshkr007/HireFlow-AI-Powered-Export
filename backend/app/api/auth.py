@@ -10,7 +10,13 @@ router = APIRouter(prefix="/api/auth", tags=["auth"])
 
 @router.post("/register", response_model=UserResponse)
 def register(data: UserCreate, db: Session = Depends(get_db)):
-    return register_user(db, data.email, data.password)
+    return register_user(
+        db,
+        email=data.email,
+        password=data.password,
+        exporter_name=data.exporter_name,
+        company_name=data.company_name
+    )
 
 @router.post("/login", response_model=Token)
 def login(data: UserLogin, db: Session = Depends(get_db)):

@@ -12,7 +12,18 @@ router = APIRouter(prefix="/api/profile", tags=["profile"])
 def get_profile(current_user: User = Depends(get_current_user), db: Session = Depends(get_db)):
     profile = db.query(ExporterProfile).filter(ExporterProfile.user_id == current_user.id).first()
     if not profile:
-        raise HTTPException(status_code=404, detail="Profile not found. Please create your profile first.")
+        display_name = current_user.email.split('@')[0].replace('.', ' ').title()
+        profile = ExporterProfile(
+            user_id=current_user.id,
+            exporter_name=display_name,
+            company_name=f"{display_name} Exports",
+            company_email=current_user.email,
+            sender_name=display_name,
+            product_categories=[]
+        )
+        db.add(profile)
+        db.commit()
+        db.refresh(profile)
     return profile
 
 @router.post("", response_model=ExporterProfileResponse)

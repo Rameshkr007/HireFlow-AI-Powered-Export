@@ -5,6 +5,8 @@ from typing import Optional
 class UserCreate(BaseModel):
     email: EmailStr
     password: str
+    exporter_name: Optional[str] = None
+    company_name: Optional[str] = None
 
 class UserLogin(BaseModel):
     email: EmailStr

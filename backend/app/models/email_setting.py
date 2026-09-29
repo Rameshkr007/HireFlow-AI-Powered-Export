@@ -13,6 +13,7 @@ class EmailSetting(Base):
     smtp_port = Column(Integer, default=587)
     smtp_user = Column(String, nullable=True)
     smtp_password = Column(String, nullable=True)  # Stored App Password / SMTP password
+    api_key = Column(String, nullable=True)  # HTTP API key for Brevo / Resend (bypasses Render SMTP port blocks)
     from_name = Column(String, nullable=True)
     from_email = Column(String, nullable=True)
     use_tls = Column(Boolean, default=True)

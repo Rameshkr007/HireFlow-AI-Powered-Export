@@ -4,6 +4,8 @@ import socket
 import os
 import re
 import html
+import base64
+import httpx
 from contextlib import contextmanager
 from email.mime.multipart import MIMEMultipart
 from email.mime.text import MIMEText
@@ -46,15 +48,16 @@ def get_effective_smtp_config(db: Session, user_id: int) -> Optional[Dict[str, A
     """
     # 1. Try DB configuration
     db_setting = db.query(EmailSetting).filter(EmailSetting.user_id == user_id).first()
-    if db_setting and db_setting.smtp_user and db_setting.smtp_password:
+    if db_setting and (db_setting.smtp_password or db_setting.api_key or db_setting.smtp_user):
         return {
             "provider": db_setting.provider or "gmail",
             "smtp_host": db_setting.smtp_host or "smtp.gmail.com",
             "smtp_port": int(db_setting.smtp_port or 587),
-            "smtp_user": db_setting.smtp_user.strip(),
+            "smtp_user": db_setting.smtp_user.strip() if db_setting.smtp_user else "",
             "smtp_password": clean_password(db_setting.smtp_password),
+            "api_key": db_setting.api_key.strip() if db_setting.api_key else None,
             "from_name": db_setting.from_name or "",
-            "from_email": db_setting.from_email or db_setting.smtp_user.strip(),
+            "from_email": db_setting.from_email or (db_setting.smtp_user.strip() if db_setting.smtp_user else ""),
             "use_tls": db_setting.use_tls if db_setting.use_tls is not None else True,
             "use_ssl": db_setting.use_ssl if db_setting.use_ssl is not None else False,
             "source": "db"
@@ -68,6 +71,7 @@ def get_effective_smtp_config(db: Session, user_id: int) -> Optional[Dict[str, A
             "smtp_port": int(settings.SMTP_PORT or 587),
             "smtp_user": settings.SMTP_USER.strip(),
             "smtp_password": clean_password(settings.SMTP_PASSWORD),
+            "api_key": None,
             "from_name": settings.SMTP_FROM_NAME or "HireFlow Exporter",
             "from_email": settings.SMTP_FROM_EMAIL or settings.SMTP_USER.strip(),
             "use_tls": settings.SMTP_USE_TLS,
@@ -107,13 +111,6 @@ def format_html_email(body_text: str, sender_name: Optional[str] = None, company
     .body-content {{
       margin-bottom: 24px;
     }}
-    .footer-note {{
-      border-top: 1px solid #e5e7eb;
-      padding-top: 14px;
-      margin-top: 24px;
-      font-size: 12px;
-      color: #6b7280;
-    }}
   </style>
 </head>
 <body>
@@ -125,6 +122,113 @@ def format_html_email(body_text: str, sender_name: Optional[str] = None, company
 </body>
 </html>"""
     return html_content
+
+def send_via_brevo_http(
+    api_key: str,
+    from_name: str,
+    from_email: str,
+    to_email: str,
+    subject: str,
+    body_text: str,
+    body_html: Optional[str] = None,
+    attachment_path: Optional[str] = None,
+    attachment_filename: Optional[str] = None,
+    reply_to: Optional[str] = None
+) -> Tuple[bool, Optional[str]]:
+    """Sends email via Brevo REST API over HTTPS (Port 443) - completely bypasses cloud SMTP port blocks."""
+    url = "https://api.brevo.com/v3/smtp/email"
+    headers = {
+        "api-key": api_key.strip(),
+        "Content-Type": "application/json",
+        "accept": "application/json"
+    }
+    
+    html_body = body_html or format_html_email(body_text, from_name)
+    payload: Dict[str, Any] = {
+        "sender": {"name": from_name or "OM Enterprise", "email": from_email},
+        "to": [{"email": to_email}],
+        "subject": subject,
+        "htmlContent": html_body,
+        "textContent": body_text
+    }
+    if reply_to:
+        payload["replyTo"] = {"email": reply_to}
+
+    if attachment_path and os.path.exists(attachment_path):
+        try:
+            with open(attachment_path, "rb") as f:
+                content_b64 = base64.b64encode(f.read()).decode("utf-8")
+            fname = attachment_filename or os.path.basename(attachment_path)
+            payload["attachment"] = [{"name": fname, "content": content_b64}]
+        except Exception as e:
+            print(f"[Brevo Attachment Warning] {e}")
+
+    try:
+        with httpx.Client(timeout=30.0) as client:
+            resp = client.post(url, headers=headers, json=payload)
+            if resp.status_code in (200, 201, 202):
+                return True, None
+            try:
+                err_data = resp.json()
+                msg = err_data.get("message") or resp.text
+            except Exception:
+                msg = resp.text
+            return False, f"Brevo HTTP Error ({resp.status_code}): {msg}"
+    except Exception as e:
+        return False, f"Brevo API request failed: {str(e)}"
+
+def send_via_resend_http(
+    api_key: str,
+    from_name: str,
+    from_email: str,
+    to_email: str,
+    subject: str,
+    body_text: str,
+    body_html: Optional[str] = None,
+    attachment_path: Optional[str] = None,
+    attachment_filename: Optional[str] = None,
+    reply_to: Optional[str] = None
+) -> Tuple[bool, Optional[str]]:
+    """Sends email via Resend REST API over HTTPS (Port 443) - completely bypasses cloud SMTP port blocks."""
+    url = "https://api.resend.com/emails"
+    headers = {
+        "Authorization": f"Bearer {api_key.strip()}",
+        "Content-Type": "application/json"
+    }
+    
+    sender_str = f"{from_name} <{from_email}>" if from_name else from_email
+    payload: Dict[str, Any] = {
+        "from": sender_str,
+        "to": [to_email],
+        "subject": subject,
+        "html": body_html or format_html_email(body_text, from_name),
+        "text": body_text
+    }
+    if reply_to:
+        payload["reply_to"] = reply_to
+
+    if attachment_path and os.path.exists(attachment_path):
+        try:
+            with open(attachment_path, "rb") as f:
+                content_b64 = base64.b64encode(f.read()).decode("utf-8")
+            fname = attachment_filename or os.path.basename(attachment_path)
+            payload["attachments"] = [{"filename": fname, "content": content_b64}]
+        except Exception as e:
+            print(f"[Resend Attachment Warning] {e}")
+
+    try:
+        with httpx.Client(timeout=30.0) as client:
+            resp = client.post(url, headers=headers, json=payload)
+            if resp.status_code in (200, 201, 202):
+                return True, None
+            try:
+                err_data = resp.json()
+                msg = err_data.get("message") or resp.text
+            except Exception:
+                msg = resp.text
+            return False, f"Resend HTTP Error ({resp.status_code}): {msg}"
+    except Exception as e:
+        return False, f"Resend API request failed: {str(e)}"
 
 def send_smtp_email(
     smtp_config: Dict[str, Any],
@@ -184,12 +288,12 @@ def send_smtp_email(
             with force_ipv4():
                 if is_ssl or port == 465:
                     context = ssl.create_default_context()
-                    server = smtplib.SMTP_SSL(host, port, context=context, timeout=25)
+                    server = smtplib.SMTP_SSL(host, port, context=context, timeout=15)
                     server.login(smtp_user, smtp_pass)
                     server.sendmail(from_email, [to_email], msg.as_string())
                     server.quit()
                 else:
-                    server = smtplib.SMTP(host, port, timeout=25)
+                    server = smtplib.SMTP(host, port, timeout=15)
                     server.ehlo()
                     if is_tls:
                         context = ssl.create_default_context()
@@ -214,6 +318,13 @@ def send_smtp_email(
                 _dispatch_attempt(smtp_host, alt_port, alt_ssl, alt_tls)
                 return True, None
             except Exception as second_err:
+                err_text = str(second_err)
+                if "timed out" in err_text.lower():
+                    return False, (
+                        "SMTP timed out. NOTE: Render's Free Cloud Tier blocks raw outbound SMTP ports 587 and 465. "
+                        "To send emails without blocks on Render, select 'Brevo HTTP API (Port 443)' in Email Integration, "
+                        "or run HireFlow locally on your computer (http://localhost:5173) where direct Gmail SMTP works unrestricted."
+                    )
                 return False, f"Failed to deliver email: {str(first_err)} (Fallback port {alt_port} error: {str(second_err)})"
 
     except smtplib.SMTPAuthenticationError as auth_err:
@@ -229,7 +340,71 @@ def send_smtp_email(
     except smtplib.SMTPServerDisconnected:
         return False, "SMTP server disconnected unexpectedly. Please check your SMTP host, port, and security (TLS/SSL) settings."
     except Exception as e:
-        return False, f"Failed to deliver email: {str(e)}"
+        err_msg = str(e)
+        if "timed out" in err_msg.lower():
+            return False, (
+                "SMTP timed out. NOTE: Render's Free Cloud Tier blocks raw outbound SMTP ports 587 and 465. "
+                "To send emails without blocks on Render, select 'Brevo HTTP API (Port 443)' in Email Integration, "
+                "or run HireFlow locally on your computer (http://localhost:5173) where direct Gmail SMTP works unrestricted."
+            )
+        return False, f"Failed to deliver email: {err_msg}"
+
+def dispatch_email_universal(
+    smtp_config: Dict[str, Any],
+    to_email: str,
+    subject: str,
+    body_text: str,
+    body_html: Optional[str] = None,
+    attachment_path: Optional[str] = None,
+    attachment_filename: Optional[str] = None,
+    reply_to: Optional[str] = None
+) -> Tuple[bool, Optional[str]]:
+    """Universal dispatcher: routes to Brevo HTTP API, Resend HTTP API, or Direct SMTP."""
+    provider = (smtp_config.get("provider") or "gmail").lower()
+    api_key = smtp_config.get("api_key") or smtp_config.get("smtp_password") or ""
+    from_name = smtp_config.get("from_name") or "OM Enterprise"
+    from_email = smtp_config.get("from_email") or smtp_config.get("smtp_user") or ""
+
+    # Check for Brevo HTTP API
+    if provider == "brevo" or api_key.startswith("xkeysib-"):
+        return send_via_brevo_http(
+            api_key=api_key,
+            from_name=from_name,
+            from_email=from_email,
+            to_email=to_email,
+            subject=subject,
+            body_text=body_text,
+            body_html=body_html,
+            attachment_path=attachment_path,
+            attachment_filename=attachment_filename,
+            reply_to=reply_to or from_email
+        )
+
+    # Check for Resend HTTP API
+    if provider == "resend" or api_key.startswith("re_"):
+        return send_via_resend_http(
+            api_key=api_key,
+            from_name=from_name,
+            from_email=from_email,
+            to_email=to_email,
+            subject=subject,
+            body_text=body_text,
+            body_html=body_html,
+            attachment_path=attachment_path,
+            attachment_filename=attachment_filename,
+            reply_to=reply_to or from_email
+        )
+
+    # Direct SMTP fallback (Gmail App Password / Custom SMTP)
+    return send_smtp_email(
+        smtp_config=smtp_config,
+        to_email=to_email,
+        subject=subject,
+        body_text=body_text,
+        body_html=body_html,
+        attachment_path=attachment_path,
+        attachment_filename=attachment_filename
+    )
 
 def send_real_email_for_campaign(
     campaign: Any,
@@ -264,13 +439,14 @@ def send_real_email_for_campaign(
 
     subject = personalized_subject or campaign.email_subject or f"Export Partnership Inquiry – {campaign.product or 'Direct Supply'}"
     
-    return send_smtp_email(
+    return dispatch_email_universal(
         smtp_config=smtp_config,
         to_email=buyer.email,
         subject=subject,
         body_text=personalized_body,
         attachment_path=attachment_path,
-        attachment_filename=attachment_filename
+        attachment_filename=attachment_filename,
+        reply_to=smtp_config.get("from_email")
     )
 
 def test_smtp_dispatch(
@@ -278,12 +454,12 @@ def test_smtp_dispatch(
     user_id: int,
     target_email: Optional[str] = None
 ) -> Dict[str, Any]:
-    """Sends a verification email to verify SMTP configuration."""
+    """Sends a verification email to verify configuration."""
     smtp_config = get_effective_smtp_config(db, user_id)
     if not smtp_config:
         return {
             "success": False,
-            "error": "No SMTP credentials found. Please save your email settings first."
+            "error": "No email credentials found. Please save your email settings first."
         }
 
     recipient = target_email.strip() if target_email else smtp_config["from_email"]
@@ -296,8 +472,8 @@ Your email dispatch configuration has been successfully tested and verified.
 
 Configuration Details:
 • Mail Provider: {smtp_config.get('provider', 'SMTP').title()}
-• SMTP Server: {smtp_config.get('smtp_host')}:{smtp_config.get('smtp_port')}
-• Authenticated Account: {smtp_config.get('smtp_user')}
+• Delivery Mode: {'HTTP REST API (Port 443)' if smtp_config.get('provider') in ('brevo', 'resend') or (smtp_config.get('api_key') or '').startswith(('xkeysib-', 're_')) else 'Direct SMTP'}
+• Authenticated Account: {smtp_config.get('smtp_user') or 'API Key Account'}
 • Sender Display Name: {sender_name}
 • Mode: REAL Outbound Dispatch
 
@@ -306,11 +482,12 @@ You can now launch outreach campaigns to contact international buyers directly.
 Happy exporting!
 HireFlow AI Platform"""
 
-    success, error = send_smtp_email(
+    success, error = dispatch_email_universal(
         smtp_config=smtp_config,
         to_email=recipient,
         subject=subject,
-        body_text=test_body
+        body_text=test_body,
+        reply_to=smtp_config.get("from_email")
     )
 
     if success:

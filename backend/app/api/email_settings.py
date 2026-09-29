@@ -42,6 +42,8 @@ def get_email_settings(
             is_verified=setting.is_verified or False,
             has_password=bool(setting.smtp_password),
             masked_password=mask_password(setting.smtp_password),
+            api_key=setting.api_key,
+            has_api_key=bool(setting.api_key),
             created_at=setting.created_at,
             updated_at=setting.updated_at
         )
@@ -104,6 +106,10 @@ def save_email_settings(
         # Password changed, re-verify
         setting.is_verified = False
 
+    if payload.api_key and payload.api_key.strip():
+        setting.api_key = payload.api_key.strip()
+        setting.is_verified = False
+
     setting.from_name = payload.from_name.strip() if payload.from_name else None
     setting.from_email = payload.from_email.strip() if payload.from_email else (payload.smtp_user.strip() if payload.smtp_user else None)
     setting.use_tls = payload.use_tls if payload.use_tls is not None else True
@@ -119,6 +125,8 @@ def save_email_settings(
         smtp_host=setting.smtp_host,
         smtp_port=setting.smtp_port,
         smtp_user=setting.smtp_user,
+        api_key=setting.api_key,
+        has_api_key=bool(setting.api_key),
         from_name=setting.from_name,
         from_email=setting.from_email,
         use_tls=setting.use_tls,

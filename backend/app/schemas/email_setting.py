@@ -3,11 +3,12 @@ from typing import Optional
 from datetime import datetime
 
 class EmailSettingCreateOrUpdate(BaseModel):
-    provider: Optional[str] = "gmail"  # "gmail", "zoho", "outlook", "custom"
+    provider: Optional[str] = "gmail"  # "gmail", "brevo", "resend", "zoho", "outlook", "custom"
     smtp_host: Optional[str] = "smtp.gmail.com"
     smtp_port: Optional[int] = 587
     smtp_user: Optional[str] = None
     smtp_password: Optional[str] = None
+    api_key: Optional[str] = None
     from_name: Optional[str] = None
     from_email: Optional[str] = None
     use_tls: Optional[bool] = True
@@ -20,6 +21,8 @@ class EmailSettingResponse(BaseModel):
     smtp_host: str = "smtp.gmail.com"
     smtp_port: int = 587
     smtp_user: Optional[str] = None
+    api_key: Optional[str] = None
+    has_api_key: bool = False
     from_name: Optional[str] = None
     from_email: Optional[str] = None
     use_tls: bool = True

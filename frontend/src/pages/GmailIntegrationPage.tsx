@@ -25,12 +25,20 @@ interface EmailSettings {
 
 const PROVIDER_PRESETS: Record<string, { name: string; host: string; port: number; tls: boolean; ssl: boolean; tip: string }> = {
   gmail: {
-    name: 'Google Gmail / Workspace',
+    name: 'Google Gmail (Direct SMTP)',
     host: 'smtp.gmail.com',
     port: 587,
     tls: true,
     ssl: false,
-    tip: 'Requires a 16-character Google App Password (not your normal Google login password).'
+    tip: 'Requires 16-character Google App Password from exportindia2026us@gmail.com. (Best on Localhost)'
+  },
+  brevo: {
+    name: 'Brevo HTTP API (Port 443 - Cloud Safe)',
+    host: 'api.brevo.com',
+    port: 443,
+    tls: true,
+    ssl: false,
+    tip: 'Free 300 emails/day. Bypasses Render cloud SMTP blocks via Port 443 HTTPS.'
   },
   zoho: {
     name: 'Zoho Mail',
@@ -54,7 +62,7 @@ const PROVIDER_PRESETS: Record<string, { name: string; host: string; port: numbe
     port: 587,
     tls: true,
     ssl: false,
-    tip: 'Works with Brevo, SendGrid, Amazon SES, Mailgun, Hostinger, cPanel, or private mail server.'
+    tip: 'Works with SendGrid, Amazon SES, Mailgun, Hostinger, cPanel, or private mail server.'
   }
 };
 
@@ -153,6 +161,9 @@ export default function GmailIntegrationPage() {
       };
       if (smtpPassword.trim()) {
         payload.smtp_password = smtpPassword.trim();
+        if (provider === 'brevo' || smtpPassword.trim().startsWith('xkeysib-') || smtpPassword.trim().startsWith('re_')) {
+          payload.api_key = smtpPassword.trim();
+        }
       }
 
       const res = await api.post('/api/email-settings', payload);
@@ -340,14 +351,44 @@ export default function GmailIntegrationPage() {
             </div>
             
             <ol className="list-decimal list-inside space-y-1.5 text-xs text-dark-300 leading-relaxed pl-1">
-              <li>Google Account me <strong className="text-dark-100">2-Step Verification</strong> ON karein (Security tab me).</li>
+              <li>Company Google Account (<strong className="text-dark-100">exportindia2026us@gmail.com</strong>) me login karein aur <strong className="text-dark-100">2-Step Verification</strong> ON karein.</li>
               <li>
                 <a href="https://myaccount.google.com/apppasswords" target="_blank" rel="noreferrer" className="text-primary-400 hover:underline">
                   myaccount.google.com/apppasswords
-                </a> par click karein.
+                </a> par jayein.
               </li>
               <li>App Name me <strong className="text-dark-100">"HireFlow"</strong> likhkar <strong className="text-dark-100">Create</strong> par click karein.</li>
-              <li>Google jo <strong className="text-emerald-400">16-character ka code</strong> dikhaye (jaise: <code className="bg-dark-900 px-1 py-0.5 rounded text-amber-300">abcd efgh ijkl mnop</code>), use copy karke niche password field me paste karein!</li>
+              <li>Google jo <strong className="text-emerald-400">16-letter ka App Password</strong> de (jaise: <code className="bg-dark-900 px-1 py-0.5 rounded text-amber-300">abcd efgh ijkl mnop</code>), use niche paste karein!</li>
+            </ol>
+            <p className="text-[11px] text-amber-300/80 bg-amber-500/10 p-2 rounded border border-amber-500/20">
+              💡 <strong>Note:</strong> Direct Gmail SMTP works best on your laptop (localhost:5173). Render's Free Cloud blocks SMTP ports 587/465, so on Render use the <strong>Brevo HTTP API</strong> option above.
+            </p>
+          </div>
+        )}
+
+        {/* Brevo Setup Helper Callout */}
+        {provider === 'brevo' && (
+          <div className="p-4 bg-emerald-950/40 border border-emerald-800/40 rounded-xl space-y-3 mt-4">
+            <div className="flex items-center justify-between">
+              <div className="flex items-center gap-2 text-emerald-300 font-medium text-sm">
+                <ShieldCheck className="w-4 h-4 text-emerald-400" />
+                <span>Brevo HTTP API (Best for Render Cloud - 300 Free Emails / Day):</span>
+              </div>
+              <a
+                href="https://app.brevo.com/settings/keys/api"
+                target="_blank"
+                rel="noreferrer"
+                className="text-xs text-emerald-400 hover:text-emerald-300 flex items-center gap-1 font-semibold underline underline-offset-2"
+              >
+                Get Free Brevo API Key <ExternalLink className="w-3.5 h-3.5" />
+              </a>
+            </div>
+            
+            <ol className="list-decimal list-inside space-y-1.5 text-xs text-dark-300 leading-relaxed pl-1">
+              <li><a href="https://app.brevo.com" target="_blank" rel="noreferrer" className="text-emerald-400 hover:underline">Brevo.com</a> par Free Account banayein (koi credit card nahi chahiye).</li>
+              <li>Settings &gt; <strong>SMTP & API Keys</strong> &gt; <strong>Generate a new API key</strong> par click karein.</li>
+              <li>Generated API Key (jaise <code className="bg-dark-900 px-1 py-0.5 rounded text-emerald-300">xkeysib-...</code>) copy karke niche password field me paste karein.</li>
+              <li>Render Cloud se bina kisi port block ke daily 300 genuine emails direct send honge!</li>
             </ol>
           </div>
         )}
@@ -362,11 +403,11 @@ export default function GmailIntegrationPage() {
         <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
           <div>
             <label className="text-xs font-semibold text-dark-300 block mb-1.5">
-              Sender Display Name <span className="text-dark-500 font-normal">(what buyers see)</span>
+              Sender Display Name <span className="text-dark-500 font-normal">(Buyer ko ye naam dikhega)</span>
             </label>
             <input
               type="text"
-              placeholder="e.g. Raj Kumar | Himalayan Exports"
+              placeholder="e.g. Ramesh Kumar Thakur | OM Enterprise"
               value={fromName}
               onChange={(e) => setFromName(e.target.value)}
               className="input-field"
@@ -375,11 +416,11 @@ export default function GmailIntegrationPage() {
 
           <div>
             <label className="text-xs font-semibold text-dark-300 block mb-1.5">
-              Your Email Address <span className="text-red-400">*</span>
+              Company Outbound Email <span className="text-red-400">*</span> <span className="text-dark-500 font-normal">(Jis email se mail send hoga)</span>
             </label>
             <input
               type="email"
-              placeholder="e.g. exports@himalayanexports.com or yourname@gmail.com"
+              placeholder="e.g. exportindia2026us@gmail.com"
               value={smtpUser}
               onChange={(e) => {
                 setSmtpUser(e.target.value);
@@ -395,7 +436,11 @@ export default function GmailIntegrationPage() {
           <div>
             <div className="flex items-center justify-between mb-1.5">
               <label className="text-xs font-semibold text-dark-300">
-                {provider === 'gmail' ? 'Gmail App Password (16 Letters)' : 'SMTP Password'} <span className="text-red-400">*</span>
+                {provider === 'brevo' 
+                  ? 'Brevo API Key (xkeysib-...)' 
+                  : provider === 'gmail' 
+                  ? 'Company Gmail App Password (16 Letters)' 
+                  : 'SMTP Password'} <span className="text-red-400">*</span>
               </label>
               {hasPassword && maskedPassword && (
                 <span className="text-xs text-emerald-400 font-mono">Saved: {maskedPassword}</span>
@@ -404,7 +449,7 @@ export default function GmailIntegrationPage() {
             <div className="relative">
               <input
                 type={showPassword ? 'text' : 'password'}
-                placeholder={hasPassword ? '•••••••••••••••• (Leave blank to keep saved password)' : 'Enter 16-character App Password'}
+                placeholder={hasPassword ? '•••••••••••••••• (Leave blank to keep saved)' : (provider === 'brevo' ? 'xkeysib-...' : '16-character App Password')}
                 value={smtpPassword}
                 onChange={(e) => setSmtpPassword(e.target.value)}
                 className="input-field pr-10 font-mono text-sm"
@@ -522,7 +567,7 @@ export default function GmailIntegrationPage() {
           <div className="flex-1">
             <input
               type="email"
-              placeholder="Send test email to (e.g. your personal email address)"
+              placeholder="Send test email to (e.g. rameshkrthakur1816@gmail.com)"
               value={testEmail}
               onChange={(e) => setTestEmail(e.target.value)}
               className="input-field"

@@ -91,8 +91,8 @@ async def personalize_email(buyer: dict, template: str, product: str) -> str:
         
     # High-impact professional fallback opening
     fallback_intro = (
-        f"We have been following {company}'s distinguished presence in the North American retail market "
-        f"and are pleased to present our direct-manufacturer catalogue for premium {product}."
+        f"While researching businesses in {buyer.get('country') or 'your region'}, we came across {company} "
+        f"and were impressed by your commitment to quality products."
     )
     return template.replace('I hope this email finds you well.', fallback_intro)
 

@@ -70,6 +70,10 @@ def personalize_email_simple(template: str, buyer, fallback_product: str = "", p
         # Sender & Company Profile Replacements
         '{sender_name}': p_sender_name,
         '{{sender_name}}': p_sender_name,
+        '{exporter_name}': p_sender_name,
+        '{{exporter_name}}': p_sender_name,
+        '{exporter_company}': p_company_name,
+        '{{exporter_company}}': p_company_name,
         '{sender_email}': p_personal_email,
         '{{sender_email}}': p_personal_email,
         '{email}': p_personal_email,

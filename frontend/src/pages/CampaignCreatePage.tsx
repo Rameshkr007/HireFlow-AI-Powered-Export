@@ -18,6 +18,110 @@ interface SequenceStep {
   email_body: string;
 }
 
+export const SINGING_BOWLS_TEMPLATE = {
+  subject: "Authentic Handmade Himalayan Singing Bowls – Direct Manufacturer | Wholesale & OEM",
+  body: `Authentic Handmade Himalayan Singing Bowls
+Direct Manufacturer from Nepal • Wholesale • OEM • Private Label
+
+Dear {buyer_name},
+
+While researching businesses in {country}, we came across {company_name} and were impressed by your commitment to quality wellness products.
+
+We are a Nepal-based manufacturer and exporter of authentic handmade Himalayan Singing Bowls crafted by skilled artisans using traditional techniques.
+
+Our Product Range:
+• Handmade Himalayan Singing Bowls
+• Full Moon Singing Bowls
+• Antique Finish Singing Bowls
+• Chakra Singing Bowl Sets
+• Meditation & Sound Healing Bowls
+• Tingsha Cymbals & Meditation Accessories
+• Custom Logo & Private Label Manufacturing
+
+Choose the Collection That Fits Your Business:
+✨ Premium Collection
+Individually handcrafted with superior finish and exceptional sound quality.
+NO MINIMUM ORDER QUANTITY – Order from a single bowl to large wholesale quantities.
+
+📦 Standard Collection
+Perfect for wholesalers and distributors seeking bulk procurement.
+Minimum Order Quantity: 200 Pieces
+Competitive pricing and consistent quality for high-volume orders.
+
+Why Partner With Us?
+✔ Direct Manufacturer from Nepal
+✔ Authentic Handmade Craftsmanship
+✔ OEM & Private Label Services
+✔ Worldwide Shipping
+✔ Dedicated Export Support
+
+Our latest catalogue is attached. Reply to this email for wholesale pricing, samples, shipping quotations, and customization options.
+
+Kind Regards,
+
+Ramesh Kumar Thakur
+Sales Executive
+OM Enterprise
+📧 Direct Outreach Email: rameshkrthakur1816@gmail.com
+🏢 Official Company Email: exportindia2026us@gmail.com
+📱 WhatsApp / Phone: +91 80577 10065
+🌐 Website: https://omenterprise.com
+
+Thank you for your valuable time. We look forward to building a successful and long-term partnership with {company_name}.`
+};
+
+export const CANDLE_STANDS_TEMPLATE = {
+  subject: "Handcrafted Metal Candle Stands, Candelabras & Lanterns – Direct Exporter | Wholesale & OEM",
+  body: `Authentic Handcrafted Metal Candle Stands, Candelabras & Lanterns
+Direct Manufacturer & Exporter • Wholesale • OEM • Custom Finishes
+
+Dear {buyer_name},
+
+While researching businesses in {country}, we came across {company_name} and were impressed by your curated collection of premium home decor and tabletop accessories.
+
+We are an India-based manufacturer and exporter of handcrafted metal Candle Stands, Candelabras, Lanterns, and Votives crafted by skilled artisans using traditional metal smithing techniques.
+
+Our Product Range:
+• Metal Pillar & Taper Candle Stands
+• Multi-Arm Candelabras (Brass, Antique Bronze, Matte Black)
+• Moroccan & Geometric Hanging Lanterns
+• Glass & Metal Hurricane Lanterns
+• Tea Light Holders & Votives
+• Tabletop Decor & Centerpieces
+• Custom Logo, Embossing & Private Label Packaging
+
+Choose the Collection That Fits Your Business:
+✨ Premium Collection
+Individually handcrafted with superior finish, durable lacquering, and exceptional artisanal design.
+NO MINIMUM ORDER QUANTITY – Order from small sample lots to bulk wholesale quantities.
+
+📦 Standard Wholesale Collection
+Perfect for wholesalers, retailers, and distributors seeking bulk procurement.
+Minimum Order Quantity: 100 Pieces
+Competitive FOB pricing and consistent export quality for high-volume orders.
+
+Why Partner With Us?
+✔ Direct Manufacturer & Exporter
+✔ Authentic Handcrafted Craftsmanship & Superior Finishes
+✔ OEM & Private Label Services
+✔ Worldwide Shipping & US Customs Documentation Support
+✔ Dedicated Export Support
+
+Our latest lookbook and catalogue are attached. Reply to this email for wholesale pricing, samples, shipping quotations, and customization options.
+
+Kind Regards,
+
+Ramesh Kumar Thakur
+Sales Executive
+OM Enterprise
+📧 Direct Outreach Email: rameshkrthakur1816@gmail.com
+🏢 Official Company Email: exportindia2026us@gmail.com
+📱 WhatsApp / Phone: +91 80577 10065
+🌐 Website: https://omenterprise.com
+
+Thank you for your valuable time. We look forward to building a successful and long-term partnership with {company_name}.`
+};
+
 const DEFAULT_STEPS: SequenceStep[] = [
   {
     id: 'step-1',
@@ -25,59 +129,54 @@ const DEFAULT_STEPS: SequenceStep[] = [
     step_name: 'Initial Introduction & Product Lookbook',
     delay_days: 0,
     condition: 'immediate',
-    email_subject: 'Export Supply Collaboration – {product} for {company_name}',
-    email_body: `Dear {buyer_name},
-
-I hope this email finds you well.
-
-We have been following {company_name}'s distinguished presence in the US market and noticed your focus on high-quality {product}.
-
-We are direct manufacturers and exporters specializing in authentic, high-grade {product}. We offer:
-• Competitive FOB / CIF pricing with flexible MOQ
-• Full US customs documentation & compliance certification
-• Custom packaging and private labeling
-
-Please find our export product lookbook and technical specifications attached. Would you be open to receiving a curated sample pack next week?
-
-Best regards,
-{sender_name}
-{exporter_company}`,
+    email_subject: SINGING_BOWLS_TEMPLATE.subject,
+    email_body: SINGING_BOWLS_TEMPLATE.body,
   },
   {
     id: 'step-2',
     step_number: 2,
-    step_name: 'Follow-up: Wholesale Price Tiers & MOQ',
+    step_name: 'Follow-up: Wholesale Price Tiers & Sample Pack',
     delay_days: 3,
     condition: 'if_no_reply',
-    email_subject: 'Quick follow-up: Wholesale pricing & MOQ for {product}',
+    email_subject: 'Re: Wholesale pricing & sample pack for {company_name}',
     email_body: `Hi {buyer_name},
 
-I wanted to quickly follow up on my previous message regarding {product} sourcing for {company_name}.
+I wanted to quickly follow up on my previous email regarding our handcrafted export collection for {company_name}.
 
-We recently updated our quarterly production capacity and can offer preferential FOB rates for US orders placed this month.
+We have updated our export capacity for this quarter and can offer preferential FOB/CIF pricing along with door-to-door air express or ocean freight logistics to the United States.
 
-If helpful, I can send over our tiered pricing matrix and estimated ocean freight lead times to your nearest port.
+Would you like me to courier a complimentary sample piece to your office address for quality evaluation?
 
-Let me know if this aligns with your current procurement schedule.
+Kind Regards,
 
-Warm regards,
-{sender_name}`,
+Ramesh Kumar Thakur
+Sales Executive | OM Enterprise
+📧 Direct Email: rameshkrthakur1816@gmail.com
+🏢 Company Email: exportindia2026us@gmail.com
+📱 WhatsApp: +91 80577 10065`,
   },
   {
     id: 'step-3',
     step_number: 3,
-    step_name: 'Value Proposition: Custom Samples & Compliance',
+    step_name: 'Value Proposition: Custom Samples & Private Labeling',
     delay_days: 7,
     condition: 'if_no_reply',
-    email_subject: 'Sample shipment for {company_name} – {product}',
+    email_subject: 'Private label & custom packaging options for {company_name}',
     email_body: `Dear {buyer_name},
 
-I understand you have a demanding schedule. To make your evaluation seamless, we would be delighted to courier complimentary production samples of our {product} directly to your office.
+I understand you have a demanding procurement schedule. As a direct manufacturer, we also provide complete OEM, custom laser engraving/branding, barcode tagging, and custom packaging tailored for US retail shelves.
 
-Could you confirm the best delivery address and recipient contact for your procurement team?
+If you have any current requirements or upcoming seasonal purchasing plans, please let us know how we can support your inventory.
 
-Best regards,
-{sender_name}`,
+Thank you again for your time and consideration.
+
+Warm Regards,
+
+Ramesh Kumar Thakur
+Sales Executive | OM Enterprise
+📧 Direct Email: rameshkrthakur1816@gmail.com
+🏢 Company Email: exportindia2026us@gmail.com
+📱 WhatsApp: +91 80577 10065`,
   },
 ];
 
@@ -618,6 +717,44 @@ export default function CampaignCreatePage() {
                     {v}
                   </button>
                 ))}
+              </div>
+
+              {/* Quick 1-Click Template Switcher for OM Enterprise */}
+              <div className="p-3 bg-dark-900 border border-primary-500/30 rounded-xl space-y-2">
+                <div className="flex items-center justify-between">
+                  <span className="text-xs font-bold text-dark-200 flex items-center gap-1.5">
+                    <Sparkles className="w-3.5 h-3.5 text-primary-400" /> 1-Click Professional OM Enterprise Templates:
+                  </span>
+                  <span className="text-[10px] text-dark-400">Click to fill subject & body</span>
+                </div>
+                <div className="flex flex-wrap gap-2">
+                  <button
+                    type="button"
+                    onClick={() => {
+                      updateCurrentStep({
+                        email_subject: SINGING_BOWLS_TEMPLATE.subject,
+                        email_body: SINGING_BOWLS_TEMPLATE.body,
+                      });
+                      showToast('Loaded Authentic Himalayan Singing Bowls Template!', 'success');
+                    }}
+                    className="btn-secondary text-xs py-1.5 px-3 flex items-center gap-1.5 text-primary-300 hover:text-primary-200 border-primary-500/40 bg-primary-500/10"
+                  >
+                    🔮 Load Singing Bowls Template
+                  </button>
+                  <button
+                    type="button"
+                    onClick={() => {
+                      updateCurrentStep({
+                        email_subject: CANDLE_STANDS_TEMPLATE.subject,
+                        email_body: CANDLE_STANDS_TEMPLATE.body,
+                      });
+                      showToast('Loaded Candle Stands & Lanterns Template!', 'success');
+                    }}
+                    className="btn-secondary text-xs py-1.5 px-3 flex items-center gap-1.5 text-amber-300 hover:text-amber-200 border-amber-500/40 bg-amber-500/10"
+                  >
+                    🕯️ Load Candle Stands & Lanterns Template
+                  </button>
+                </div>
               </div>
 
               {/* Email Subject */}

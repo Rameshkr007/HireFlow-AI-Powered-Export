@@ -22,7 +22,15 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     if (token) {
       api.get('/api/auth/me')
         .then(res => setUser(res.data))
-        .catch(() => { localStorage.removeItem('hireflow_token'); setToken(null); })
+        .catch((err) => {
+          // ONLY clear token if the server explicitly returned 401 Unauthorized
+          // Never log out the user on Render cold starts (502, 503, 504), network timeouts, or offline errors!
+          if (err.response?.status === 401) {
+            localStorage.removeItem('hireflow_token');
+            setToken(null);
+            setUser(null);
+          }
+        })
         .finally(() => setIsLoading(false));
     } else {
       setIsLoading(false);

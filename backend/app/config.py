@@ -5,7 +5,7 @@ class Settings(BaseSettings):
     DATABASE_URL: str = "sqlite:///./hireflow.db"
     JWT_SECRET: str = "hireflow-permanent-jwt-auth-secret-key-2026-om-enterprise"
     JWT_ALGORITHM: str = "HS256"
-    JWT_EXPIRE_MINUTES: int = 1440
+    JWT_EXPIRE_MINUTES: int = 525600  # 365 Days (1 year permanent login)
     AI_PROVIDER: str = "gemini"  # gemini or openai
     GEMINI_API_KEY: Optional[str] = None
     OPENAI_API_KEY: Optional[str] = None

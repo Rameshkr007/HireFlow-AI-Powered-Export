@@ -103,17 +103,15 @@ export default function GmailIntegrationPage() {
       setProvider(data.provider || 'gmail');
       setSmtpHost(data.smtp_host || 'smtp.gmail.com');
       setSmtpPort(data.smtp_port || 587);
-      setSmtpUser(data.smtp_user || '');
-      setFromName(data.from_name || '');
-      setFromEmail(data.from_email || data.smtp_user || '');
+      setSmtpUser(data.smtp_user || 'exportindia2026us@gmail.com');
+      setFromName(data.from_name || 'Ramesh Kumar Thakur | OM Enterprise');
+      setFromEmail(data.from_email || data.smtp_user || 'exportindia2026us@gmail.com');
       setUseTls(data.use_tls ?? true);
       setUseSsl(data.use_ssl ?? false);
       setIsVerified(data.is_verified || false);
       setHasPassword(data.has_password || false);
       setMaskedPassword(data.masked_password || null);
-      if (data.from_email || data.smtp_user) {
-        setTestEmail(data.from_email || data.smtp_user || '');
-      }
+      setTestEmail(data.from_email || data.smtp_user || 'exportindia2026us@gmail.com');
     } catch (err: any) {
       console.error('Failed to load email settings:', err);
     } finally {
@@ -399,6 +397,20 @@ export default function GmailIntegrationPage() {
         <h3 className="section-title flex items-center gap-2">
           <Mail className="w-4 h-4 text-primary-400" /> Account & Outbound Credentials
         </h3>
+
+        {hasPassword && (
+          <div className="p-3.5 rounded-xl bg-emerald-500/10 border border-emerald-500/30 text-emerald-400 flex flex-col sm:flex-row sm:items-center justify-between gap-2 text-xs">
+            <div className="flex items-center gap-2">
+              <CheckCircle2 className="w-4 h-4 text-emerald-400 shrink-0" />
+              <span>
+                <strong>Aapka Brevo API Key pehle se SAVED ({maskedPassword || '••••••••6UZn'}) hai!</strong> Ise dobara fill karne ki zaroorat nahi hai.
+              </span>
+            </div>
+            <span className="px-2 py-0.5 rounded bg-emerald-500/20 text-emerald-300 text-[10px] uppercase font-bold border border-emerald-500/40 self-start sm:self-auto">
+              ✓ Ready for Campaigns
+            </span>
+          </div>
+        )}
 
         <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
           <div>

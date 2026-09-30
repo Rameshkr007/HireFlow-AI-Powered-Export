@@ -29,10 +29,12 @@ from .email_validation_service import validate_email_address
 
 logger = logging.getLogger(__name__)
 
+from .candle_buyers_data import CANDLE_STAND_BUYERS
+
 # ── Verified US B2B Buyers Enterprise Registry ──────────────────────────────
 # Comprehensive registry of verified US Home Decor, Handicrafts & Furnishings importers
 
-VERIFIED_US_BUYERS_DB: List[Dict] = [
+VERIFIED_US_BUYERS_DB: List[Dict] = list(CANDLE_STAND_BUYERS) + [
     {
         "buyer_name": "Marcus Vance",
         "company_name": "Sagebrook Home",

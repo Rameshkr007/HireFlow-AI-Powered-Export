@@ -131,3 +131,63 @@ def bulk_validate(
         except Exception:
             pass
     return {"validated": validated}
+
+@router.post("/seed-candle-buyers")
+def seed_candle_buyers(
+    current_user: User = Depends(get_current_user),
+    db: Session = Depends(get_db)
+):
+    """Adds 25 verified Candle Stand & Lantern US wholesale buyers to the current user's database."""
+    from ..services.candle_buyers_data import CANDLE_STAND_BUYERS
+    from ..models.buyer import Buyer
+    from ..utils.duplicate_utils import normalize_email
+
+    added = 0
+    skipped = 0
+
+    for bd in CANDLE_STAND_BUYERS:
+        email = (bd.get("email") or "").strip()
+        norm = normalize_email(email)
+        existing = db.query(Buyer).filter(
+            Buyer.user_id == current_user.id,
+            Buyer.normalized_email == norm
+        ).first()
+
+        if existing:
+            skipped += 1
+            continue
+
+        buyer = Buyer(
+            user_id=current_user.id,
+            buyer_name=bd.get("buyer_name"),
+            company_name=bd.get("company_name"),
+            email=bd.get("email"),
+            normalized_email=norm,
+            website=bd.get("website"),
+            country=bd.get("country", "USA"),
+            source_platform=bd.get("source_platform", "US Importers Registry"),
+            business_type=bd.get("business_type", "Importer"),
+            product=bd.get("product", "Metal Candle Holders & Lanterns"),
+            company_description=bd.get("company_description"),
+            phone=bd.get("phone"),
+            linkedin_url=bd.get("linkedin_url"),
+            email_status=bd.get("email_status", "VALID"),
+            outreach_status="PENDING",
+            ai_priority=bd.get("ai_priority", "HIGH"),
+            ai_score=bd.get("ai_score", 95),
+            ai_confidence=bd.get("ai_confidence", 0.95),
+            ai_reason=bd.get("ai_reason"),
+            ai_business_type=bd.get("business_type"),
+            is_demo=False
+        )
+        db.add(buyer)
+        added += 1
+
+    db.commit()
+    return {
+        "success": True,
+        "added": added,
+        "skipped": skipped,
+        "total": len(CANDLE_STAND_BUYERS),
+        "message": f"Successfully loaded {added} verified Candle Stand & Lantern buyers to your database!"
+    }

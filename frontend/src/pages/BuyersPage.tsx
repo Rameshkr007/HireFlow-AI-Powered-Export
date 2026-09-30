@@ -49,14 +49,41 @@ export default function BuyersPage() {
     }
   };
 
+  const [seedingCandles, setSeedingCandles] = useState(false);
+
+  const handleSeedCandleBuyers = async () => {
+    setSeedingCandles(true);
+    try {
+      const res = await api.post('/api/buyers/seed-candle-buyers');
+      showToast(res.data.message || '25 Candle Stand & Lantern buyers loaded!', 'success');
+      refetch();
+    } catch {
+      showToast('Failed to load candle buyers', 'error');
+    } finally {
+      setSeedingCandles(false);
+    }
+  };
+
   return (
     <div className="space-y-6">
       <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
-        <h2 className="text-2xl font-bold text-dark-50">Buyers Database</h2>
-        <div className="flex gap-2">
-          <button className="btn-secondary"><Upload className="w-4 h-4" /> Import CSV</button>
-          <button className="btn-secondary"><Download className="w-4 h-4" /> Export</button>
-          <button className="btn-primary"><Plus className="w-4 h-4" /> Add Buyer</button>
+        <div>
+          <h2 className="text-2xl font-bold text-dark-50">Buyers Database</h2>
+          <p className="text-xs text-dark-400 mt-0.5">Verified wholesale importers for Himalayan Singing Bowls & Metal Candle Holders</p>
+        </div>
+        <div className="flex flex-wrap gap-2">
+          <button
+            onClick={handleSeedCandleBuyers}
+            disabled={seedingCandles}
+            className="px-3.5 py-2 rounded-lg bg-amber-500 hover:bg-amber-400 text-dark-950 font-bold text-xs flex items-center gap-1.5 shadow-lg shadow-amber-500/20 transition-all cursor-pointer"
+          >
+            <span>✨</span>
+            <span>{seedingCandles ? 'Loading Buyers...' : '+ 25 Candle Stand & Lantern Buyers (USA)'}</span>
+          </button>
+          <button onClick={() => navigate('/discovery')} className="btn-secondary text-xs">
+            Search More
+          </button>
+          <button className="btn-secondary text-xs"><Download className="w-4 h-4" /> Export</button>
         </div>
       </div>
 

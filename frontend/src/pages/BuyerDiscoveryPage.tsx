@@ -41,14 +41,13 @@ interface DiscoveryResult {
 const BUYER_TYPES = ['Importer', 'Wholesaler', 'Distributor', 'Retailer', 'Purchasing Manager'];
 const COUNTRIES = ['United States', 'United Kingdom', 'Canada', 'Australia', 'Germany', 'France', 'United Arab Emirates'];
 const QUICK_CATEGORIES = [
+  'Candle Stands & Lanterns',
+  'Metal Candelabras',
+  'Himalayan Singing Bowls',
   'Home Decor',
   'Handicrafts',
-  'Wall Art',
-  'Rugs & Carpets',
-  'Furniture',
   'Lighting & Lamps',
-  'Ceramics & Vases',
-  'Candles & Scents'
+  'Ceramics & Vases'
 ];
 
 export default function BuyerDiscoveryPage() {
@@ -56,7 +55,7 @@ export default function BuyerDiscoveryPage() {
   const navigate = useNavigate();
 
   // Search parameters
-  const [product, setProduct] = useState('Home Decor');
+  const [product, setProduct] = useState('Candle Stands & Lanterns');
   const [country, setCountry] = useState('United States');
   const [buyerType, setBuyerType] = useState('Importer');
   const [limit, setLimit] = useState(20);

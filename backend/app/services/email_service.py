@@ -162,6 +162,11 @@ def send_via_brevo_http(
     if reply_to:
         payload["replyTo"] = {"email": reply_to}
 
+    # Auto-BCC sender so sent copy is immediately visible in their Gmail inbox
+    bcc_addr = (reply_to or from_email or "").strip()
+    if bcc_addr and "@" in bcc_addr and bcc_addr.lower() != to_email.lower():
+        payload["bcc"] = [{"email": bcc_addr}]
+
     # Process multiple attachments
     items = list(attachment_list or [])
     if not items and attachment_path and os.path.exists(attachment_path):
@@ -224,6 +229,11 @@ def send_via_resend_http(
     }
     if reply_to:
         payload["reply_to"] = reply_to
+
+    # Auto-BCC sender so sent copy is immediately visible in their Gmail inbox
+    bcc_addr = (reply_to or from_email or "").strip()
+    if bcc_addr and "@" in bcc_addr and bcc_addr.lower() != to_email.lower():
+        payload["bcc"] = [bcc_addr]
 
     # Process multiple attachments
     items = list(attachment_list or [])

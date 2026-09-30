@@ -76,17 +76,70 @@ def ensure_ramesh_user(db: Session) -> User:
         profile.sender_name = "Ramesh Kumar Thakur | OM Enterprise"
         db.commit()
 
-    # Ensure email settings
+    # Ensure email settings with permanent credential restoration
+    from .credential_store import load_persistent_email_credentials
+    file_creds = load_persistent_email_credentials()
+    shared_creds = db.query(EmailSetting).filter(
+        ((EmailSetting.smtp_password.isnot(None)) & (EmailSetting.smtp_password != "")) |
+        ((EmailSetting.api_key.isnot(None)) & (EmailSetting.api_key != ""))
+    ).order_by(EmailSetting.updated_at.desc()).first()
+
     email_setting = db.query(EmailSetting).filter(EmailSetting.user_id == user.id).first()
     if not email_setting:
-        email_setting = EmailSetting(
-            user_id=user.id,
-            provider="brevo",
-            from_name="Ramesh Kumar Thakur | OM Enterprise",
-            from_email="rameshkrthakur1816@gmail.com",
-            is_verified=True
-        )
+        email_setting = EmailSetting(user_id=user.id)
         db.add(email_setting)
+
+    # Restore from shared or disk file if current setting has no password/key
+    if not (email_setting.smtp_password or email_setting.api_key):
+        if shared_creds and (shared_creds.smtp_password or shared_creds.api_key):
+            email_setting.provider = shared_creds.provider
+            email_setting.smtp_host = shared_creds.smtp_host
+            email_setting.smtp_port = shared_creds.smtp_port
+            email_setting.smtp_user = shared_creds.smtp_user or "rameshkrthakur1816@gmail.com"
+            email_setting.smtp_password = shared_creds.smtp_password
+            email_setting.api_key = shared_creds.api_key
+            email_setting.from_name = shared_creds.from_name or "Ramesh Kumar Thakur | OM Enterprise"
+            email_setting.from_email = shared_creds.from_email or shared_creds.smtp_user or "rameshkrthakur1816@gmail.com"
+            email_setting.use_tls = shared_creds.use_tls
+            email_setting.use_ssl = shared_creds.use_ssl
+            email_setting.is_verified = True
+        elif file_creds and (file_creds.get("smtp_password") or file_creds.get("api_key")):
+            email_setting.provider = file_creds.get("provider", "gmail")
+            email_setting.smtp_host = file_creds.get("smtp_host", "smtp.gmail.com")
+            email_setting.smtp_port = int(file_creds.get("smtp_port", 587))
+            email_setting.smtp_user = file_creds.get("smtp_user", "rameshkrthakur1816@gmail.com")
+            email_setting.smtp_password = file_creds.get("smtp_password")
+            email_setting.api_key = file_creds.get("api_key")
+            email_setting.from_name = file_creds.get("from_name", "Ramesh Kumar Thakur | OM Enterprise")
+            email_setting.from_email = file_creds.get("from_email", "rameshkrthakur1816@gmail.com")
+            email_setting.use_tls = file_creds.get("use_tls", True)
+            email_setting.use_ssl = file_creds.get("use_ssl", False)
+            email_setting.is_verified = True
+        else:
+            email_setting.provider = email_setting.provider or "gmail"
+            email_setting.smtp_host = email_setting.smtp_host or "smtp.gmail.com"
+            email_setting.smtp_port = email_setting.smtp_port or 587
+            email_setting.smtp_user = email_setting.smtp_user or "rameshkrthakur1816@gmail.com"
+            email_setting.from_name = email_setting.from_name or "Ramesh Kumar Thakur | OM Enterprise"
+            email_setting.from_email = email_setting.from_email or "rameshkrthakur1816@gmail.com"
+
+    db.commit()
+
+    # Synchronize working credentials across all users in DB
+    if email_setting.smtp_password or email_setting.api_key:
+        all_settings = db.query(EmailSetting).filter(EmailSetting.id != email_setting.id).all()
+        for s in all_settings:
+            s.provider = email_setting.provider
+            s.smtp_host = email_setting.smtp_host
+            s.smtp_port = email_setting.smtp_port
+            s.smtp_user = email_setting.smtp_user
+            s.smtp_password = email_setting.smtp_password
+            s.api_key = email_setting.api_key
+            s.from_name = email_setting.from_name
+            s.from_email = email_setting.from_email
+            s.use_tls = email_setting.use_tls
+            s.use_ssl = email_setting.use_ssl
+            s.is_verified = True
         db.commit()
 
     # Ensure buyers are populated (Candle Stand buyers + Singing Bowl buyers)

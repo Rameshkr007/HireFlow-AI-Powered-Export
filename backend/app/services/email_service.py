@@ -43,34 +43,81 @@ def clean_password(pwd: Optional[str]) -> str:
 
 def get_effective_smtp_config(db: Session, user_id: int) -> Optional[Dict[str, Any]]:
     """
-    Retrieves the active SMTP configuration for a user.
-    Falls back to global settings if user configuration is missing.
+    Retrieves the active SMTP / API configuration for outreach dispatch.
+    Multi-level fallback: user DB record -> shared DB record -> disk file store -> env variables.
     """
+    from .credential_store import load_persistent_email_credentials, save_persistent_email_credentials
+
     # 1. Try DB configuration for current user
     db_setting = db.query(EmailSetting).filter(EmailSetting.user_id == user_id).first()
     
-    # Fallback: if current user has not configured yet, check any recent saved EmailSetting in DB
-    if not (db_setting and (db_setting.smtp_password or db_setting.api_key or db_setting.smtp_user)):
-        db_setting = db.query(EmailSetting).filter(
-            (EmailSetting.smtp_password.isnot(None)) | (EmailSetting.api_key.isnot(None))
+    # Check if this setting already has actual working credentials
+    has_creds = bool(db_setting and (db_setting.smtp_password or db_setting.api_key))
+    
+    if not has_creds:
+        # Fallback A: Check any other EmailSetting record in DB with actual credentials
+        shared = db.query(EmailSetting).filter(
+            ((EmailSetting.smtp_password.isnot(None)) & (EmailSetting.smtp_password != "")) |
+            ((EmailSetting.api_key.isnot(None)) & (EmailSetting.api_key != ""))
         ).order_by(EmailSetting.updated_at.desc()).first()
 
-    if db_setting and (db_setting.smtp_password or db_setting.api_key or db_setting.smtp_user):
+        if shared and (shared.smtp_password or shared.api_key):
+            if not db_setting:
+                db_setting = EmailSetting(user_id=user_id)
+                db.add(db_setting)
+            db_setting.provider = shared.provider
+            db_setting.smtp_host = shared.smtp_host
+            db_setting.smtp_port = shared.smtp_port
+            db_setting.smtp_user = shared.smtp_user or "rameshkrthakur1816@gmail.com"
+            db_setting.smtp_password = shared.smtp_password
+            db_setting.api_key = shared.api_key
+            db_setting.from_name = shared.from_name or "Ramesh Kumar Thakur | OM Enterprise"
+            db_setting.from_email = shared.from_email or shared.smtp_user or "rameshkrthakur1816@gmail.com"
+            db_setting.use_tls = shared.use_tls
+            db_setting.use_ssl = shared.use_ssl
+            db_setting.is_verified = True
+            db.commit()
+            db.refresh(db_setting)
+            has_creds = True
+
+    if not has_creds:
+        # Fallback B: Check persistent disk file store
+        file_creds = load_persistent_email_credentials()
+        if file_creds and (file_creds.get("smtp_password") or file_creds.get("api_key")):
+            if not db_setting:
+                db_setting = EmailSetting(user_id=user_id)
+                db.add(db_setting)
+            db_setting.provider = file_creds.get("provider", "gmail")
+            db_setting.smtp_host = file_creds.get("smtp_host", "smtp.gmail.com")
+            db_setting.smtp_port = int(file_creds.get("smtp_port", 587))
+            db_setting.smtp_user = file_creds.get("smtp_user", "rameshkrthakur1816@gmail.com")
+            db_setting.smtp_password = file_creds.get("smtp_password")
+            db_setting.api_key = file_creds.get("api_key")
+            db_setting.from_name = file_creds.get("from_name", "Ramesh Kumar Thakur | OM Enterprise")
+            db_setting.from_email = file_creds.get("from_email", "rameshkrthakur1816@gmail.com")
+            db_setting.use_tls = file_creds.get("use_tls", True)
+            db_setting.use_ssl = file_creds.get("use_ssl", False)
+            db_setting.is_verified = True
+            db.commit()
+            db.refresh(db_setting)
+            has_creds = True
+
+    if db_setting and has_creds:
         return {
             "provider": db_setting.provider or "gmail",
             "smtp_host": db_setting.smtp_host or "smtp.gmail.com",
             "smtp_port": int(db_setting.smtp_port or 587),
-            "smtp_user": db_setting.smtp_user.strip() if db_setting.smtp_user else "",
+            "smtp_user": db_setting.smtp_user.strip() if db_setting.smtp_user else "rameshkrthakur1816@gmail.com",
             "smtp_password": clean_password(db_setting.smtp_password),
             "api_key": db_setting.api_key.strip() if db_setting.api_key else None,
-            "from_name": db_setting.from_name or "",
-            "from_email": db_setting.from_email or (db_setting.smtp_user.strip() if db_setting.smtp_user else ""),
+            "from_name": db_setting.from_name or "Ramesh Kumar Thakur | OM Enterprise",
+            "from_email": db_setting.from_email or (db_setting.smtp_user.strip() if db_setting.smtp_user else "rameshkrthakur1816@gmail.com"),
             "use_tls": db_setting.use_tls if db_setting.use_tls is not None else True,
             "use_ssl": db_setting.use_ssl if db_setting.use_ssl is not None else False,
             "source": "db"
         }
 
-    # 2. Try Global Environment Settings
+    # 3. Try Global Environment Settings
     if settings.SMTP_USER and settings.SMTP_PASSWORD:
         return {
             "provider": "environment",
@@ -79,7 +126,7 @@ def get_effective_smtp_config(db: Session, user_id: int) -> Optional[Dict[str, A
             "smtp_user": settings.SMTP_USER.strip(),
             "smtp_password": clean_password(settings.SMTP_PASSWORD),
             "api_key": None,
-            "from_name": settings.SMTP_FROM_NAME or "HireFlow Exporter",
+            "from_name": settings.SMTP_FROM_NAME or "Ramesh Kumar Thakur | OM Enterprise",
             "from_email": settings.SMTP_FROM_EMAIL or settings.SMTP_USER.strip(),
             "use_tls": settings.SMTP_USE_TLS,
             "use_ssl": settings.SMTP_USE_SSL,

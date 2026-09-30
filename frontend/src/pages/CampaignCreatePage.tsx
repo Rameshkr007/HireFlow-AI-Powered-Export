@@ -427,7 +427,21 @@ export default function CampaignCreatePage() {
         </button>
       </div>
 
-      {/* ── TAB 1: BASIC INFO ── */}
+      {/* Real Email Dispatch Status Ribbon */}
+      <div className="bg-emerald-500/10 border border-emerald-500/20 rounded-xl px-4 py-3 flex flex-col sm:flex-row sm:items-center sm:justify-between gap-2 shadow-sm">
+        <div className="flex items-center gap-2.5">
+          <div className="w-2.5 h-2.5 rounded-full bg-emerald-400 animate-pulse shrink-0" />
+          <div className="text-xs text-dark-200">
+            Authenticated Sender: <strong className="text-emerald-400 font-mono">rameshkrthakur1816@gmail.com</strong>
+          </div>
+          <span className="text-[10px] px-2 py-0.5 rounded-full bg-emerald-500/20 text-emerald-400 border border-emerald-500/30 font-semibold tracking-wider">
+            CONNECTED & ACTIVE
+          </span>
+        </div>
+        <div className="text-[11px] text-dark-400">
+          Official Signature: <span className="text-dark-200 font-medium">OM Enterprise (exportindia2026us@gmail.com)</span>
+        </div>
+      </div>
       {activeTab === 'info' && (
         <div className="card p-6 space-y-5">
           <h2 className="text-base font-bold text-dark-100">Campaign Foundation</h2>

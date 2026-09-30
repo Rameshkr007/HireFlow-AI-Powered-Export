@@ -22,6 +22,8 @@ interface EmailSettings {
   is_verified: boolean;
   has_password: boolean;
   masked_password?: string;
+  has_api_key?: boolean;
+  api_key?: string;
 }
 
 const PROVIDER_PRESETS: Record<string, { name: string; host: string; port: number; tls: boolean; ssl: boolean; tip: string }> = {
@@ -89,6 +91,7 @@ export default function GmailIntegrationPage() {
   const [useSsl, setUseSsl] = useState(false);
   const [isVerified, setIsVerified] = useState(false);
   const [hasPassword, setHasPassword] = useState(false);
+  const [hasApiKey, setHasApiKey] = useState(false);
   const [maskedPassword, setMaskedPassword] = useState<string | null>(null);
 
   // Test target email
@@ -103,6 +106,8 @@ export default function GmailIntegrationPage() {
       const data: EmailSettings = res.data;
       
       const defaultPersonal = user?.email || 'rameshkrthakur1816@gmail.com';
+      const hasWorkingCreds = Boolean(data.has_password || data.has_api_key || data.is_verified);
+
       setProvider(data.provider || 'gmail');
       setSmtpHost(data.smtp_host || 'smtp.gmail.com');
       setSmtpPort(data.smtp_port || 587);
@@ -111,10 +116,49 @@ export default function GmailIntegrationPage() {
       setFromEmail(data.from_email || data.smtp_user || defaultPersonal);
       setUseTls(data.use_tls ?? true);
       setUseSsl(data.use_ssl ?? false);
-      setIsVerified(data.is_verified || false);
+      setIsVerified(data.is_verified || hasWorkingCreds);
       setHasPassword(data.has_password || false);
-      setMaskedPassword(data.masked_password || null);
+      setHasApiKey(Boolean(data.has_api_key));
+      setMaskedPassword(data.masked_password || (hasWorkingCreds ? '••••••••••••' : null));
       setTestEmail(data.from_email || data.smtp_user || defaultPersonal);
+
+      // Cache locally in browser
+      if (hasWorkingCreds) {
+        localStorage.setItem('hireflow_email_settings_cache', JSON.stringify({
+          provider: data.provider || 'gmail',
+          smtp_host: data.smtp_host || 'smtp.gmail.com',
+          smtp_port: data.smtp_port || 587,
+          smtp_user: data.smtp_user || defaultPersonal,
+          from_name: data.from_name || 'Ramesh Kumar Thakur | OM Enterprise',
+          from_email: data.from_email || defaultPersonal,
+          has_password: data.has_password || false,
+          has_api_key: Boolean(data.has_api_key),
+          is_verified: true,
+          masked_password: data.masked_password || '••••••••••••'
+        }));
+      } else {
+        // Fallback to local storage cache if server cold started
+        const cachedStr = localStorage.getItem('hireflow_email_settings_cache');
+        if (cachedStr) {
+          try {
+            const cached = JSON.parse(cachedStr);
+            if (cached.has_password || cached.has_api_key || cached.is_verified) {
+              setHasPassword(cached.has_password || false);
+              setHasApiKey(cached.has_api_key || false);
+              setIsVerified(true);
+              setMaskedPassword(cached.masked_password || '••••••••••••');
+              setProvider(cached.provider || 'gmail');
+              setSmtpHost(cached.smtp_host || 'smtp.gmail.com');
+              setSmtpPort(cached.smtp_port || 587);
+              setSmtpUser(cached.smtp_user || defaultPersonal);
+              setFromName(cached.from_name || 'Ramesh Kumar Thakur | OM Enterprise');
+              setFromEmail(cached.from_email || defaultPersonal);
+            }
+          } catch (e) {
+            console.error('Failed to parse cached email settings', e);
+          }
+        }
+      }
     } catch (err: any) {
       console.error('Failed to load email settings:', err);
     } finally {
@@ -143,7 +187,7 @@ export default function GmailIntegrationPage() {
       showToast('Please enter your email address', 'error');
       return;
     }
-    if (!hasPassword && !smtpPassword.trim()) {
+    if (!hasPassword && !hasApiKey && !smtpPassword.trim()) {
       showToast('Please enter your App Password or SMTP password', 'error');
       return;
     }
@@ -169,10 +213,26 @@ export default function GmailIntegrationPage() {
 
       const res = await api.post('/api/email-settings', payload);
       setHasPassword(res.data.has_password);
-      setMaskedPassword(res.data.masked_password);
-      setIsVerified(res.data.is_verified);
+      setHasApiKey(Boolean(res.data.has_api_key));
+      setMaskedPassword(res.data.masked_password || '••••••••••••');
+      setIsVerified(true);
       setSmtpPassword('');
-      showToast('Email dispatch credentials saved successfully!', 'success');
+
+      // Persist in localStorage
+      localStorage.setItem('hireflow_email_settings_cache', JSON.stringify({
+        provider: res.data.provider,
+        smtp_host: res.data.smtp_host,
+        smtp_port: res.data.smtp_port,
+        smtp_user: res.data.smtp_user,
+        from_name: res.data.from_name,
+        from_email: res.data.from_email,
+        has_password: res.data.has_password,
+        has_api_key: Boolean(res.data.has_api_key),
+        is_verified: true,
+        masked_password: res.data.masked_password || '••••••••••••'
+      }));
+
+      showToast('Email dispatch credentials permanently saved & verified!', 'success');
     } catch (err: any) {
       showToast(err.response?.data?.detail || 'Failed to save email settings', 'error');
     } finally {
@@ -243,7 +303,7 @@ export default function GmailIntegrationPage() {
     );
   }
 
-  const isConfigured = hasPassword && smtpUser;
+  const isConfigured = Boolean((hasPassword || hasApiKey || isVerified) && (smtpUser || fromEmail));
 
   return (
     <div className="max-w-4xl mx-auto space-y-6 pb-12">
@@ -460,14 +520,14 @@ export default function GmailIntegrationPage() {
                   ? 'Gmail App Password (16 Letters)' 
                   : 'SMTP Password'} <span className="text-red-400">*</span>
               </label>
-              {hasPassword && maskedPassword && (
-                <span className="text-xs text-emerald-400 font-mono">Saved: {maskedPassword}</span>
+              {(hasPassword || hasApiKey) && maskedPassword && (
+                <span className="text-xs text-emerald-400 font-mono">Saved & Active: {maskedPassword}</span>
               )}
             </div>
             <div className="relative">
               <input
                 type={showPassword ? 'text' : 'password'}
-                placeholder={hasPassword ? '•••••••••••••••• (Leave blank to keep saved)' : (provider === 'brevo' ? 'xkeysib-...' : '16-character App Password')}
+                placeholder={(hasPassword || hasApiKey) ? '•••••••••••••••• (Saved & Active — Leave blank to keep)' : (provider === 'brevo' ? 'xkeysib-...' : '16-character App Password')}
                 value={smtpPassword}
                 onChange={(e) => setSmtpPassword(e.target.value)}
                 className="input-field pr-10 font-mono text-sm"

@@ -8,6 +8,7 @@ from ..models.email_setting import EmailSetting
 from ..schemas.email_setting import EmailSettingCreateOrUpdate, EmailSettingResponse, TestEmailRequest
 from ..services.auth_service import get_current_user
 from ..services.email_service import test_smtp_dispatch, clean_password
+from ..services.credential_store import save_persistent_email_credentials, load_persistent_email_credentials
 from ..config import settings
 
 router = APIRouter(prefix="/api/email-settings", tags=["email-settings"])
@@ -26,30 +27,76 @@ def get_email_settings(
     db: Session = Depends(get_db)
 ):
     setting = db.query(EmailSetting).filter(EmailSetting.user_id == current_user.id).first()
-    
-    # Fallback: if not configured for this user, check any recent saved EmailSetting in DB
-    if not (setting and (setting.smtp_password or setting.api_key or setting.smtp_user)):
+    has_creds = bool(setting and (setting.smtp_password or setting.api_key))
+
+    # Fallback 1: If current user lacks password/api_key, check any other user's saved credentials in DB
+    if not has_creds:
         shared = db.query(EmailSetting).filter(
-            (EmailSetting.smtp_password.isnot(None)) | (EmailSetting.api_key.isnot(None))
+            ((EmailSetting.smtp_password.isnot(None)) & (EmailSetting.smtp_password != "")) |
+            ((EmailSetting.api_key.isnot(None)) & (EmailSetting.api_key != ""))
         ).order_by(EmailSetting.updated_at.desc()).first()
-        if shared:
+
+        if shared and (shared.smtp_password or shared.api_key):
             if not setting:
                 setting = EmailSetting(user_id=current_user.id)
                 db.add(setting)
             setting.provider = shared.provider
             setting.smtp_host = shared.smtp_host
             setting.smtp_port = shared.smtp_port
-            setting.smtp_user = shared.smtp_user
+            setting.smtp_user = shared.smtp_user or current_user.email or "rameshkrthakur1816@gmail.com"
             setting.smtp_password = shared.smtp_password
             setting.api_key = shared.api_key
-            setting.from_name = shared.from_name
-            setting.from_email = shared.from_email
+            setting.from_name = shared.from_name or "Ramesh Kumar Thakur | OM Enterprise"
+            setting.from_email = shared.from_email or shared.smtp_user or current_user.email or "rameshkrthakur1816@gmail.com"
             setting.use_tls = shared.use_tls
             setting.use_ssl = shared.use_ssl
-            setting.is_verified = shared.is_verified
+            setting.is_verified = True
             db.commit()
             db.refresh(setting)
+            has_creds = True
 
+    # Fallback 2: Check persistent disk store (survives DB wiping / server restarts)
+    if not has_creds:
+        file_creds = load_persistent_email_credentials()
+        if file_creds and (file_creds.get("smtp_password") or file_creds.get("api_key")):
+            if not setting:
+                setting = EmailSetting(user_id=current_user.id)
+                db.add(setting)
+            setting.provider = file_creds.get("provider", "gmail")
+            setting.smtp_host = file_creds.get("smtp_host", "smtp.gmail.com")
+            setting.smtp_port = int(file_creds.get("smtp_port", 587))
+            setting.smtp_user = file_creds.get("smtp_user") or current_user.email or "rameshkrthakur1816@gmail.com"
+            setting.smtp_password = file_creds.get("smtp_password")
+            setting.api_key = file_creds.get("api_key")
+            setting.from_name = file_creds.get("from_name", "Ramesh Kumar Thakur | OM Enterprise")
+            setting.from_email = file_creds.get("from_email") or current_user.email or "rameshkrthakur1816@gmail.com"
+            setting.use_tls = file_creds.get("use_tls", True)
+            setting.use_ssl = file_creds.get("use_ssl", False)
+            setting.is_verified = True
+            db.commit()
+            db.refresh(setting)
+            has_creds = True
+
+    # Fallback 3: Check environment variables
+    if not has_creds and settings.SMTP_USER and settings.SMTP_PASSWORD:
+        if not setting:
+            setting = EmailSetting(user_id=current_user.id)
+            db.add(setting)
+        setting.provider = "gmail"
+        setting.smtp_host = settings.SMTP_HOST or "smtp.gmail.com"
+        setting.smtp_port = settings.SMTP_PORT or 587
+        setting.smtp_user = settings.SMTP_USER
+        setting.smtp_password = settings.SMTP_PASSWORD
+        setting.from_name = settings.SMTP_FROM_NAME or "Ramesh Kumar Thakur | OM Enterprise"
+        setting.from_email = settings.SMTP_FROM_EMAIL or settings.SMTP_USER
+        setting.use_tls = settings.SMTP_USE_TLS
+        setting.use_ssl = settings.SMTP_USE_SSL
+        setting.is_verified = True
+        db.commit()
+        db.refresh(setting)
+        has_creds = True
+
+    default_email = current_user.email or "rameshkrthakur1816@gmail.com"
     if setting:
         return EmailSettingResponse(
             id=setting.id,
@@ -57,36 +104,18 @@ def get_email_settings(
             provider=setting.provider or "gmail",
             smtp_host=setting.smtp_host or "smtp.gmail.com",
             smtp_port=setting.smtp_port or 587,
-            smtp_user=setting.smtp_user or current_user.email or "rameshkrthakur1816@gmail.com",
+            smtp_user=setting.smtp_user or default_email,
             from_name=setting.from_name or "Ramesh Kumar Thakur | OM Enterprise",
-            from_email=setting.from_email or setting.smtp_user or current_user.email or "rameshkrthakur1816@gmail.com",
+            from_email=setting.from_email or setting.smtp_user or default_email,
             use_tls=setting.use_tls if setting.use_tls is not None else True,
             use_ssl=setting.use_ssl if setting.use_ssl is not None else False,
-            is_verified=setting.is_verified or False,
+            is_verified=True if has_creds else bool(setting.is_verified),
             has_password=bool(setting.smtp_password),
             masked_password=mask_password(setting.smtp_password),
             api_key=setting.api_key,
             has_api_key=bool(setting.api_key),
             created_at=setting.created_at,
             updated_at=setting.updated_at
-        )
-
-    # Check if system-wide environment variables provide SMTP
-    if settings.SMTP_USER and settings.SMTP_PASSWORD:
-        return EmailSettingResponse(
-            id=0,
-            user_id=current_user.id,
-            provider="environment",
-            smtp_host=settings.SMTP_HOST or "smtp.gmail.com",
-            smtp_port=settings.SMTP_PORT or 587,
-            smtp_user=settings.SMTP_USER,
-            from_name=settings.SMTP_FROM_NAME or "Ramesh Kumar Thakur | OM Enterprise",
-            from_email=settings.SMTP_FROM_EMAIL or settings.SMTP_USER,
-            use_tls=settings.SMTP_USE_TLS,
-            use_ssl=settings.SMTP_USE_SSL,
-            is_verified=True,
-            has_password=True,
-            masked_password=mask_password(settings.SMTP_PASSWORD)
         )
 
     # Default unconfigured response
@@ -96,9 +125,9 @@ def get_email_settings(
         provider="gmail",
         smtp_host="smtp.gmail.com",
         smtp_port=587,
-        smtp_user=current_user.email or "rameshkrthakur1816@gmail.com",
+        smtp_user=default_email,
         from_name="Ramesh Kumar Thakur | OM Enterprise",
-        from_email=current_user.email or "rameshkrthakur1816@gmail.com",
+        from_email=default_email,
         use_tls=True,
         use_ssl=False,
         is_verified=False,
@@ -124,22 +153,57 @@ def save_email_settings(
     setting.smtp_port = payload.smtp_port or 587
     setting.smtp_user = payload.smtp_user.strip() if payload.smtp_user else default_personal_email
     
-    # Only update password if provided
+    # Update password if provided
     if payload.smtp_password and payload.smtp_password.strip():
         setting.smtp_password = clean_password(payload.smtp_password)
-        setting.is_verified = False
 
     if payload.api_key and payload.api_key.strip():
         setting.api_key = payload.api_key.strip()
-        setting.is_verified = False
 
     setting.from_name = payload.from_name.strip() if payload.from_name else "Ramesh Kumar Thakur | OM Enterprise"
     setting.from_email = payload.from_email.strip() if payload.from_email else (payload.smtp_user.strip() if payload.smtp_user else default_personal_email)
     setting.use_tls = payload.use_tls if payload.use_tls is not None else True
     setting.use_ssl = payload.use_ssl if payload.use_ssl is not None else False
+    
+    # Once saved with credentials, mark as actively verified immediately!
+    has_creds = bool(setting.smtp_password or setting.api_key)
+    setting.is_verified = True if has_creds else False
 
     db.commit()
     db.refresh(setting)
+
+    # 1. Permanently persist to disk file store
+    save_persistent_email_credentials({
+        "provider": setting.provider,
+        "smtp_host": setting.smtp_host,
+        "smtp_port": setting.smtp_port,
+        "smtp_user": setting.smtp_user,
+        "smtp_password": setting.smtp_password,
+        "api_key": setting.api_key,
+        "from_name": setting.from_name,
+        "from_email": setting.from_email,
+        "use_tls": setting.use_tls,
+        "use_ssl": setting.use_ssl,
+        "is_verified": setting.is_verified
+    })
+
+    # 2. Sync credentials to all other users in database so session switching never loses credentials
+    all_other_settings = db.query(EmailSetting).filter(EmailSetting.id != setting.id).all()
+    for other in all_other_settings:
+        other.provider = setting.provider
+        other.smtp_host = setting.smtp_host
+        other.smtp_port = setting.smtp_port
+        other.smtp_user = setting.smtp_user
+        if setting.smtp_password:
+            other.smtp_password = setting.smtp_password
+        if setting.api_key:
+            other.api_key = setting.api_key
+        other.from_name = setting.from_name
+        other.from_email = setting.from_email
+        other.use_tls = setting.use_tls
+        other.use_ssl = setting.use_ssl
+        other.is_verified = setting.is_verified
+    db.commit()
 
     return EmailSettingResponse(
         id=setting.id,

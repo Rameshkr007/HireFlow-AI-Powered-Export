@@ -57,9 +57,9 @@ def get_email_settings(
             provider=setting.provider or "gmail",
             smtp_host=setting.smtp_host or "smtp.gmail.com",
             smtp_port=setting.smtp_port or 587,
-            smtp_user=setting.smtp_user or "exportindia2026us@gmail.com",
+            smtp_user=setting.smtp_user or current_user.email or "rameshkrthakur1816@gmail.com",
             from_name=setting.from_name or "Ramesh Kumar Thakur | OM Enterprise",
-            from_email=setting.from_email or setting.smtp_user or "exportindia2026us@gmail.com",
+            from_email=setting.from_email or setting.smtp_user or current_user.email or "rameshkrthakur1816@gmail.com",
             use_tls=setting.use_tls if setting.use_tls is not None else True,
             use_ssl=setting.use_ssl if setting.use_ssl is not None else False,
             is_verified=setting.is_verified or False,
@@ -96,9 +96,9 @@ def get_email_settings(
         provider="gmail",
         smtp_host="smtp.gmail.com",
         smtp_port=587,
-        smtp_user=current_user.email,
+        smtp_user=current_user.email or "rameshkrthakur1816@gmail.com",
         from_name="Ramesh Kumar Thakur | OM Enterprise",
-        from_email=current_user.email,
+        from_email=current_user.email or "rameshkrthakur1816@gmail.com",
         use_tls=True,
         use_ssl=False,
         is_verified=False,
@@ -118,10 +118,11 @@ def save_email_settings(
         setting = EmailSetting(user_id=current_user.id)
         db.add(setting)
 
+    default_personal_email = current_user.email or "rameshkrthakur1816@gmail.com"
     setting.provider = payload.provider or "gmail"
     setting.smtp_host = payload.smtp_host or "smtp.gmail.com"
     setting.smtp_port = payload.smtp_port or 587
-    setting.smtp_user = payload.smtp_user.strip() if payload.smtp_user else "exportindia2026us@gmail.com"
+    setting.smtp_user = payload.smtp_user.strip() if payload.smtp_user else default_personal_email
     
     # Only update password if provided
     if payload.smtp_password and payload.smtp_password.strip():
@@ -133,7 +134,7 @@ def save_email_settings(
         setting.is_verified = False
 
     setting.from_name = payload.from_name.strip() if payload.from_name else "Ramesh Kumar Thakur | OM Enterprise"
-    setting.from_email = payload.from_email.strip() if payload.from_email else (payload.smtp_user.strip() if payload.smtp_user else "exportindia2026us@gmail.com")
+    setting.from_email = payload.from_email.strip() if payload.from_email else (payload.smtp_user.strip() if payload.smtp_user else default_personal_email)
     setting.use_tls = payload.use_tls if payload.use_tls is not None else True
     setting.use_ssl = payload.use_ssl if payload.use_ssl is not None else False
 

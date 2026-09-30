@@ -25,7 +25,7 @@ def check_already_contacted(db: Session, buyer_email: str) -> bool:
     ).first()
     return existing is not None
 
-def personalize_email_simple(template: str, buyer, fallback_product: str = "") -> str:
+def personalize_email_simple(template: str, buyer, fallback_product: str = "", profile=None, user_email: str = "") -> str:
     """Simple placeholder replacement supporting {}, <>, and [] styles."""
     if not template:
         return ""
@@ -36,16 +36,26 @@ def personalize_email_simple(template: str, buyer, fallback_product: str = "") -
     country = (buyer.country or 'your region').strip()
     website = (buyer.website or '').strip()
 
+    # Company & Sender details (Sender uses personal email, Description uses official company email)
+    p_sender_name = (getattr(profile, 'sender_name', None) or getattr(profile, 'exporter_name', None) or "Ramesh Kumar Thakur").strip()
+    p_company_name = (getattr(profile, 'company_name', None) or "OM Enterprise").strip()
+    p_company_email = (getattr(profile, 'company_email', None) or "exportindia2026us@gmail.com").strip()
+    p_personal_email = (user_email or "rameshkrthakur1816@gmail.com").strip()
+    p_phone = (getattr(profile, 'phone', None) or "+91 80577 10065").strip()
+    p_website = (getattr(profile, 'website', None) or "https://omenterprise.com").strip()
+
     replacements = {
         # Braces {}
         '{buyer_name}': buyer_name,
         '{Buyer Name}': buyer_name,
         '{name}': buyer_name,
         '{{buyer_name}}': buyer_name,
+        '{{name}}': buyer_name,
         '{company_name}': company_name,
         '{Company Name}': company_name,
         '{company}': company_name,
         '{{company_name}}': company_name,
+        '{{company}}': company_name,
         '{product}': product,
         '{Product}': product,
         '{product_name}': product,
@@ -54,8 +64,20 @@ def personalize_email_simple(template: str, buyer, fallback_product: str = "") -
         '{country}': country,
         '{Country}': country,
         '{{country}}': country,
-        '{website}': website,
-        '{Website}': website,
+        '{website}': website or p_website,
+        '{Website}': website or p_website,
+        '{{website}}': p_website,
+        # Sender & Company Profile Replacements
+        '{sender_name}': p_sender_name,
+        '{{sender_name}}': p_sender_name,
+        '{sender_email}': p_personal_email,
+        '{{sender_email}}': p_personal_email,
+        '{email}': p_personal_email,
+        '{{email}}': p_personal_email,
+        '{company_email}': p_company_email,
+        '{{company_email}}': p_company_email,
+        '{phone}': p_phone,
+        '{{phone}}': p_phone,
         # Brackets []
         '[Buyer Name]': buyer_name,
         '[buyer_name]': buyer_name,
@@ -64,6 +86,10 @@ def personalize_email_simple(template: str, buyer, fallback_product: str = "") -
         '[Product]': product,
         '[Product Name]': product,
         '[Country]': country,
+        '[Sender Name]': p_sender_name,
+        '[Company Email]': p_company_email,
+        '[Personal Email]': p_personal_email,
+        '[Phone]': p_phone,
         # HTML tags <>
         '<Buyer Name>': buyer_name,
         '<buyer_name>': buyer_name,
@@ -72,7 +98,10 @@ def personalize_email_simple(template: str, buyer, fallback_product: str = "") -
         '<Product Name>': product,
         '<product>': product,
         '<Country>': country,
-        '<Website>': website,
+        '<Website>': website or p_website,
+        '<Company Email>': p_company_email,
+        '<Sender Name>': p_sender_name,
+        '<Phone>': p_phone,
         'Dear Sir/Madam': f"Dear {buyer_name}",
         'Contact Name:': f'Contact Name: {buyer_name}',
         'Company Name:': f'Company Name: {company_name}',
@@ -93,6 +122,13 @@ def process_campaign(db: Session, campaign_id: int, user_id: int):
 
     from ..services.campaign_service import get_campaign_eligible_buyers
     from ..models.attachment import Attachment
+    from ..models.exporter_profile import ExporterProfile
+    from ..models.user import User
+
+    # Fetch user & profile for personalizations
+    user = db.query(User).filter(User.id == user_id).first()
+    user_email_str = user.email if user else "rameshkrthakur1816@gmail.com"
+    profile = db.query(ExporterProfile).filter(ExporterProfile.user_id == user_id).first()
 
     # Get eligible buyers with smart US matching and quota fallback
     buyers = get_campaign_eligible_buyers(db, campaign)
@@ -175,8 +211,8 @@ def process_campaign(db: Session, campaign_id: int, user_id: int):
             continue
 
         # 4. Personalize subject and body
-        personalized_subject = personalize_email_simple(campaign.email_subject or "Export Partnership Opportunity", buyer, campaign.product or "")
-        personalized_body = personalize_email_simple(campaign.email_body or "", buyer, campaign.product or "")
+        personalized_subject = personalize_email_simple(campaign.email_subject or "Export Partnership Opportunity", buyer, campaign.product or "", profile=profile, user_email=user_email_str)
+        personalized_body = personalize_email_simple(campaign.email_body or "", buyer, campaign.product or "", profile=profile, user_email=user_email_str)
 
         # 5. Send (demo or real)
         if campaign.is_demo:

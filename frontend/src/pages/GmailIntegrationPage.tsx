@@ -6,6 +6,7 @@ import {
 } from 'lucide-react';
 import api from '../lib/api';
 import { useToast } from '../contexts/ToastContext';
+import { useAuth } from '../contexts/AuthContext';
 
 interface EmailSettings {
   id?: number;
@@ -30,7 +31,7 @@ const PROVIDER_PRESETS: Record<string, { name: string; host: string; port: numbe
     port: 587,
     tls: true,
     ssl: false,
-    tip: 'Requires 16-character Google App Password from exportindia2026us@gmail.com. (Best on Localhost)'
+    tip: 'Requires 16-character Google App Password from rameshkrthakur1816@gmail.com. (Best on Localhost)'
   },
   brevo: {
     name: 'Brevo HTTP API (Port 443 - Cloud Safe)',
@@ -68,6 +69,7 @@ const PROVIDER_PRESETS: Record<string, { name: string; host: string; port: numbe
 
 export default function GmailIntegrationPage() {
   const { showToast } = useToast();
+  const { user } = useAuth();
   
   const [loading, setLoading] = useState(true);
   const [saving, setSaving] = useState(false);
@@ -100,18 +102,19 @@ export default function GmailIntegrationPage() {
       const res = await api.get('/api/email-settings');
       const data: EmailSettings = res.data;
       
+      const defaultPersonal = user?.email || 'rameshkrthakur1816@gmail.com';
       setProvider(data.provider || 'gmail');
       setSmtpHost(data.smtp_host || 'smtp.gmail.com');
       setSmtpPort(data.smtp_port || 587);
-      setSmtpUser(data.smtp_user || 'exportindia2026us@gmail.com');
+      setSmtpUser(data.smtp_user || defaultPersonal);
       setFromName(data.from_name || 'Ramesh Kumar Thakur | OM Enterprise');
-      setFromEmail(data.from_email || data.smtp_user || 'exportindia2026us@gmail.com');
+      setFromEmail(data.from_email || data.smtp_user || defaultPersonal);
       setUseTls(data.use_tls ?? true);
       setUseSsl(data.use_ssl ?? false);
       setIsVerified(data.is_verified || false);
       setHasPassword(data.has_password || false);
       setMaskedPassword(data.masked_password || null);
-      setTestEmail(data.from_email || data.smtp_user || 'exportindia2026us@gmail.com');
+      setTestEmail(data.from_email || data.smtp_user || defaultPersonal);
     } catch (err: any) {
       console.error('Failed to load email settings:', err);
     } finally {
@@ -121,7 +124,7 @@ export default function GmailIntegrationPage() {
 
   useEffect(() => {
     fetchSettings();
-  }, []);
+  }, [user]);
 
   const handleProviderSelect = (key: string) => {
     setProvider(key);
@@ -349,7 +352,7 @@ export default function GmailIntegrationPage() {
             </div>
             
             <ol className="list-decimal list-inside space-y-1.5 text-xs text-dark-300 leading-relaxed pl-1">
-              <li>Company Google Account (<strong className="text-dark-100">exportindia2026us@gmail.com</strong>) me login karein aur <strong className="text-dark-100">2-Step Verification</strong> ON karein.</li>
+              <li>Aapka Personal Google Account (<strong className="text-dark-100">rameshkrthakur1816@gmail.com</strong>) me login karein aur <strong className="text-dark-100">2-Step Verification</strong> ON karein.</li>
               <li>
                 <a href="https://myaccount.google.com/apppasswords" target="_blank" rel="noreferrer" className="text-primary-400 hover:underline">
                   myaccount.google.com/apppasswords
@@ -428,11 +431,11 @@ export default function GmailIntegrationPage() {
 
           <div>
             <label className="text-xs font-semibold text-dark-300 block mb-1.5">
-              Company Outbound Email <span className="text-red-400">*</span> <span className="text-dark-500 font-normal">(Jis email se mail send hoga)</span>
+              Outbound Sender Email (Aapka Personal Email) <span className="text-red-400">*</span> <span className="text-dark-500 font-normal">(Is email se mail dispatch hoga aur BCC copy aayegi)</span>
             </label>
             <input
               type="email"
-              placeholder="e.g. exportindia2026us@gmail.com"
+              placeholder="e.g. rameshkrthakur1816@gmail.com"
               value={smtpUser}
               onChange={(e) => {
                 setSmtpUser(e.target.value);
@@ -441,6 +444,9 @@ export default function GmailIntegrationPage() {
               required
               className="input-field"
             />
+            <p className="text-[11px] text-dark-400 mt-1">
+              🏢 Official Company Email (<strong className="text-dark-200">exportindia2026us@gmail.com</strong>) sirf email body / signature / description me use hoga.
+            </p>
           </div>
         </div>
 
@@ -451,7 +457,7 @@ export default function GmailIntegrationPage() {
                 {provider === 'brevo' 
                   ? 'Brevo API Key (xkeysib-...)' 
                   : provider === 'gmail' 
-                  ? 'Company Gmail App Password (16 Letters)' 
+                  ? 'Gmail App Password (16 Letters)' 
                   : 'SMTP Password'} <span className="text-red-400">*</span>
               </label>
               {hasPassword && maskedPassword && (

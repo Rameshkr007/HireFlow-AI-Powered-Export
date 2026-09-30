@@ -29,23 +29,45 @@ def startup():
         print(f"[STARTUP] Notice: {e}")
 
     try:
+        from sqlalchemy import text
+        with engine.connect() as conn:
+            try:
+                conn.execute(text("ALTER TABLE buyers ADD COLUMN IF NOT EXISTS city VARCHAR;"))
+                conn.execute(text("ALTER TABLE buyers ADD COLUMN IF NOT EXISTS state VARCHAR;"))
+                conn.commit()
+            except Exception:
+                try:
+                    conn.execute(text("ALTER TABLE buyers ADD COLUMN city VARCHAR;"))
+                except Exception:
+                    pass
+                try:
+                    conn.execute(text("ALTER TABLE buyers ADD COLUMN state VARCHAR;"))
+                except Exception:
+                    pass
+                conn.commit()
+    except Exception as e:
+        print(f"[STARTUP] Migration notice: {e}")
+
+    try:
         upload_dir = os.path.abspath(settings.UPLOAD_DIR)
         os.makedirs(upload_dir, exist_ok=True)
     except Exception:
         pass
 
     try:
-        # Auto-seed if database has no users
         from .models.user import User
+        from .services.auth_service import ensure_ramesh_user
         from ..seed import seed
         db = SessionLocal()
         count = db.query(User).count()
-        db.close()
         if count == 0:
             print("[STARTUP] Fresh deployment detected. Seeding initial admin and buyers...")
             seed()
+        # Always guarantee Ramesh Kumar Thakur's account exists
+        ensure_ramesh_user(db)
+        db.close()
     except Exception as e:
-        print(f"[STARTUP] Auto-seed skipped: {e}")
+        print(f"[STARTUP] User initialization notice: {e}")
 
 app.include_router(auth.router)
 app.include_router(profile.router)

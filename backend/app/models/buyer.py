@@ -21,6 +21,7 @@ class Buyer(Base):
     country = Column(String, nullable=True)
     city = Column(String, nullable=True)
     state = Column(String, nullable=True)
+    address = Column(Text, nullable=True)
     source_platform = Column(String, nullable=True)
     business_type = Column(String, nullable=True)
     page_url = Column(String, nullable=True)

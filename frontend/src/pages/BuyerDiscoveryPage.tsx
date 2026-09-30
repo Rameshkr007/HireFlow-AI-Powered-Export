@@ -4,7 +4,7 @@ import {
   Search, Zap, Globe, Mail, Building2, ExternalLink,
   CheckCircle, ChevronDown, ChevronUp, Users,
   Loader2, ShoppingBag, ShieldCheck, Sparkles, Send,
-  Download, Filter, Phone, Award
+  Download, Filter, Phone, Award, MapPin
 } from 'lucide-react';
 import api from '../lib/api';
 import { useToast } from '../contexts/ToastContext';
@@ -26,6 +26,7 @@ interface DiscoveredBuyer {
   email_status?: string;
   city?: string;
   state?: string;
+  address?: string;
 }
 
 interface DiscoveryResult {
@@ -466,6 +467,11 @@ export default function BuyerDiscoveryPage() {
                             </>
                           )}
                         </div>
+                        {buyer.address && (
+                          <div className="text-[10px] text-emerald-400 font-mono truncate mt-0.5" title={buyer.address}>
+                            {buyer.address}
+                          </div>
+                        )}
                         <div className="text-[11px] text-dark-400 truncate mt-0.5">
                           <span className="px-1.5 py-0.5 rounded bg-dark-700 border border-dark-600 font-mono text-[10px]">
                             {buyer.business_type}
@@ -508,6 +514,12 @@ export default function BuyerDiscoveryPage() {
                         <strong className="text-dark-200">Commercial Profile:</strong>{' '}
                         {buyer.company_description}
                       </div>
+                      {buyer.address && (
+                        <div className="flex items-center gap-1.5 text-emerald-300 font-mono text-xs bg-emerald-950/40 p-2 rounded border border-emerald-800/40">
+                          <MapPin className="w-3.5 h-3.5 text-emerald-400 shrink-0" />
+                          <span><strong>Physical Street Address:</strong> {buyer.address}</span>
+                        </div>
+                      )}
                       <div className="flex flex-wrap gap-4 text-dark-400 pt-1">
                         <span><strong>Product Vertical:</strong> {buyer.product}</span>
                         <span><strong>Direct Website:</strong> <a href={buyer.website} target="_blank" rel="noreferrer" className="text-primary-400 underline">{buyer.website}</a></span>

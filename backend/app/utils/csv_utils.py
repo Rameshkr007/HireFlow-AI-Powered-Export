@@ -4,7 +4,7 @@ from typing import List, Dict, Tuple, Any
 
 EXPECTED_COLUMNS = [
     "buyer_name", "company_name", "email", "website",
-    "country", "source_platform", "business_type",
+    "country", "city", "state", "address", "source_platform", "business_type",
     "page_url", "product", "company_description", "phone"
 ]
 

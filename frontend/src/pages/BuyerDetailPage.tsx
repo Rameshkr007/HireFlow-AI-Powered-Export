@@ -69,7 +69,20 @@ export default function BuyerDetailPage() {
           <div className="space-y-4 text-sm">
             <div><div className="text-dark-500 mb-1">Contact Name</div><div className="text-dark-100 font-medium">{buyer.buyer_name || 'N/A'}</div></div>
             <div><div className="text-dark-500 mb-1">Email</div><div className="text-dark-100 font-medium">{buyer.email || 'N/A'}</div></div>
+            {buyer.phone && <div><div className="text-dark-500 mb-1">Phone</div><div className="text-dark-100 font-medium">{buyer.phone}</div></div>}
             <div><div className="text-dark-500 mb-1">Website</div><div className="text-primary-400 hover:underline">{buyer.website || 'N/A'}</div></div>
+            {buyer.address && (
+              <div>
+                <div className="text-dark-500 mb-1 flex items-center gap-1">
+                  <MapPin className="w-3.5 h-3.5 text-emerald-400" /> Physical Street Address
+                </div>
+                <div className="text-emerald-300 font-mono text-xs bg-emerald-950/40 p-2.5 rounded-lg border border-emerald-800/50">
+                  {buyer.address}
+                </div>
+              </div>
+            )}
+            <div><div className="text-dark-500 mb-1">City / Region</div><div className="text-dark-100 font-medium">{buyer.city ? `${buyer.city}${buyer.state ? `, ${buyer.state}` : ''}` : 'N/A'} ({buyer.country || 'N/A'})</div></div>
+            <div><div className="text-dark-500 mb-1">Product Sourcing Focus</div><div className="text-amber-300 font-medium">{buyer.product || 'General Export Goods'}</div></div>
             <div><div className="text-dark-500 mb-1">Business Type</div><div className="text-dark-100 font-medium">{buyer.business_type || 'N/A'}</div></div>
             <div><div className="text-dark-500 mb-1">Description</div><div className="text-dark-300 leading-relaxed">{buyer.company_description || 'No description provided.'}</div></div>
           </div>

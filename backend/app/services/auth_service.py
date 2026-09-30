@@ -9,7 +9,7 @@ from ..models.email_setting import EmailSetting
 from ..utils.security import hash_password, verify_password, create_access_token, decode_token
 from ..utils.duplicate_utils import normalize_email
 from ..database import get_db
-from .candle_buyers_data import CANDLE_STAND_BUYERS
+from .candle_buyers_data import CANDLE_STAND_BUYERS, MASTER_EXPORT_BUYERS
 
 oauth2_scheme = OAuth2PasswordBearer(tokenUrl="/api/auth/login")
 
@@ -142,72 +142,54 @@ def ensure_ramesh_user(db: Session) -> User:
             s.is_verified = True
         db.commit()
 
-    # Ensure buyers are populated (Candle Stand buyers + Singing Bowl buyers)
-    existing_buyer_count = db.query(Buyer).filter(Buyer.user_id == user.id).count()
-    if existing_buyer_count < 10:
-        # Add 25 Candle Stand Buyers
-        for cb in CANDLE_STAND_BUYERS:
-            if not cb.get("email"):
-                continue
-            norm = normalize_email(cb["email"])
-            dup = db.query(Buyer).filter(Buyer.user_id == user.id, Buyer.normalized_email == norm).first()
-            if not dup:
-                b = Buyer(
-                    user_id=user.id,
-                    buyer_name=cb.get("buyer_name"),
-                    company_name=cb.get("company_name"),
-                    email=cb.get("email"),
-                    normalized_email=norm,
-                    website=cb.get("website"),
-                    country=cb.get("country", "USA"),
-                    city=cb.get("city"),
-                    state=cb.get("state"),
-                    source_platform=cb.get("source_platform", "US Importers Registry"),
-                    business_type=cb.get("business_type", "Wholesaler"),
-                    product=cb.get("product", "Metal Candle Holders & Lanterns"),
-                    company_description=cb.get("company_description"),
-                    phone=cb.get("phone"),
-                    linkedin_url=cb.get("linkedin_url"),
-                    email_status=cb.get("email_status", "VALID"),
-                    outreach_status="PENDING",
-                    ai_priority=cb.get("ai_priority", "HIGH"),
-                    ai_score=cb.get("ai_score", 95),
-                    ai_confidence=cb.get("ai_confidence", 0.95),
-                    ai_reason=cb.get("ai_reason", "High-volume direct importer actively sourcing candle holders and home decor."),
-                    is_demo=False
-                )
-                db.add(b)
+    # Ensure buyers are populated (Candle Stand buyers + Singing Bowl buyers with physical addresses)
+    for mb in MASTER_EXPORT_BUYERS:
+        email = mb.get("email")
+        if not email:
+            continue
+        norm = normalize_email(email)
+        existing = db.query(Buyer).filter(Buyer.user_id == user.id, Buyer.normalized_email == norm).first()
+        if existing:
+            # Backfill address, city, state, phone if missing
+            if not existing.address and mb.get("address"):
+                existing.address = mb.get("address")
+            if not existing.city and mb.get("city"):
+                existing.city = mb.get("city")
+            if not existing.state and mb.get("state"):
+                existing.state = mb.get("state")
+            if not existing.phone and mb.get("phone"):
+                existing.phone = mb.get("phone")
+            if not existing.website and mb.get("website"):
+                existing.website = mb.get("website")
+        else:
+            b = Buyer(
+                user_id=user.id,
+                buyer_name=mb.get("buyer_name"),
+                company_name=mb.get("company_name"),
+                email=mb.get("email"),
+                normalized_email=norm,
+                website=mb.get("website"),
+                country=mb.get("country", "USA"),
+                city=mb.get("city"),
+                state=mb.get("state"),
+                address=mb.get("address"),
+                source_platform=mb.get("source_platform", "US Importers Registry"),
+                business_type=mb.get("business_type", "Wholesaler"),
+                product=mb.get("product", "Metal Candle Holders & Lanterns"),
+                company_description=mb.get("company_description"),
+                phone=mb.get("phone"),
+                linkedin_url=mb.get("linkedin_url"),
+                email_status=mb.get("email_status", "VALID"),
+                outreach_status="PENDING",
+                ai_priority=mb.get("ai_priority", "HIGH"),
+                ai_score=mb.get("ai_score", 95),
+                ai_confidence=mb.get("ai_confidence", 0.95),
+                ai_reason=mb.get("ai_reason", "Verified high-value export lead."),
+                is_demo=False
+            )
+            db.add(b)
 
-        # Add Singing Bowls Buyers
-        for sb in SAMPLE_SINGING_BOWL_BUYERS:
-            norm = normalize_email(sb["email"])
-            dup = db.query(Buyer).filter(Buyer.user_id == user.id, Buyer.normalized_email == norm).first()
-            if not dup:
-                b = Buyer(
-                    user_id=user.id,
-                    buyer_name=sb["buyer_name"],
-                    company_name=sb["company_name"],
-                    email=sb["email"],
-                    normalized_email=norm,
-                    website=sb["website"],
-                    country=sb["country"],
-                    city=sb.get("city"),
-                    state=sb.get("state"),
-                    source_platform="Import Trade Directory",
-                    business_type=sb["business_type"],
-                    product=sb["product"],
-                    company_description=sb["company_description"],
-                    email_status="VALID",
-                    outreach_status="PENDING",
-                    ai_priority=sb["ai_priority"],
-                    ai_score=sb["ai_score"],
-                    ai_confidence=0.94,
-                    ai_reason="Target buyer matching Himalayan singing bowl wholesale criteria.",
-                    is_demo=False
-                )
-                db.add(b)
-
-        db.commit()
+    db.commit()
 
     return user
 

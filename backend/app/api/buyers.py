@@ -137,15 +137,15 @@ def seed_candle_buyers(
     current_user: User = Depends(get_current_user),
     db: Session = Depends(get_db)
 ):
-    """Adds 25 verified Candle Stand & Lantern US wholesale buyers to the current user's database."""
-    from ..services.candle_buyers_data import CANDLE_STAND_BUYERS
+    """Adds 100 verified export buyers (50 Candle Stand + 50 Himalayan Singing Bowls) with full street addresses."""
+    from ..services.candle_buyers_data import MASTER_EXPORT_BUYERS
     from ..models.buyer import Buyer
     from ..utils.duplicate_utils import normalize_email
 
     added = 0
-    skipped = 0
+    updated = 0
 
-    for bd in CANDLE_STAND_BUYERS:
+    for bd in MASTER_EXPORT_BUYERS:
         email = (bd.get("email") or "").strip()
         norm = normalize_email(email)
         existing = db.query(Buyer).filter(
@@ -154,7 +154,12 @@ def seed_candle_buyers(
         ).first()
 
         if existing:
-            skipped += 1
+            existing.address = bd.get("address") or existing.address
+            existing.city = bd.get("city") or existing.city
+            existing.state = bd.get("state") or existing.state
+            existing.phone = bd.get("phone") or existing.phone
+            existing.website = bd.get("website") or existing.website
+            updated += 1
             continue
 
         buyer = Buyer(
@@ -167,6 +172,7 @@ def seed_candle_buyers(
             country=bd.get("country", "USA"),
             city=bd.get("city"),
             state=bd.get("state"),
+            address=bd.get("address"),
             source_platform=bd.get("source_platform", "US Importers Registry"),
             business_type=bd.get("business_type", "Importer"),
             product=bd.get("product", "Metal Candle Holders & Lanterns"),
@@ -189,7 +195,7 @@ def seed_candle_buyers(
     return {
         "success": True,
         "added": added,
-        "skipped": skipped,
-        "total": len(CANDLE_STAND_BUYERS),
-        "message": f"Successfully loaded {added} verified Candle Stand & Lantern buyers to your database!"
+        "updated": updated,
+        "total": len(MASTER_EXPORT_BUYERS),
+        "message": f"Successfully loaded & synced {added + updated} verified buyers with physical addresses!"
     }

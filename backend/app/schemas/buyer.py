@@ -10,6 +10,7 @@ class BuyerCreate(BaseModel):
     country: Optional[str] = None
     city: Optional[str] = None
     state: Optional[str] = None
+    address: Optional[str] = None
     source_platform: Optional[str] = None
     business_type: Optional[str] = None
     page_url: Optional[str] = None
@@ -34,6 +35,7 @@ class BuyerResponse(BaseModel):
     country: Optional[str] = None
     city: Optional[str] = None
     state: Optional[str] = None
+    address: Optional[str] = None
     source_platform: Optional[str] = None
     business_type: Optional[str] = None
     page_url: Optional[str] = None

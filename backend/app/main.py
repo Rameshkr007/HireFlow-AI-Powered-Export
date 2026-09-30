@@ -34,6 +34,7 @@ def startup():
             try:
                 conn.execute(text("ALTER TABLE buyers ADD COLUMN IF NOT EXISTS city VARCHAR;"))
                 conn.execute(text("ALTER TABLE buyers ADD COLUMN IF NOT EXISTS state VARCHAR;"))
+                conn.execute(text("ALTER TABLE buyers ADD COLUMN IF NOT EXISTS address TEXT;"))
                 conn.commit()
             except Exception:
                 try:
@@ -42,6 +43,10 @@ def startup():
                     pass
                 try:
                     conn.execute(text("ALTER TABLE buyers ADD COLUMN state VARCHAR;"))
+                except Exception:
+                    pass
+                try:
+                    conn.execute(text("ALTER TABLE buyers ADD COLUMN address TEXT;"))
                 except Exception:
                     pass
                 conn.commit()

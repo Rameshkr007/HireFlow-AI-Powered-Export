@@ -78,7 +78,7 @@ export default function BuyersPage() {
             className="px-3.5 py-2 rounded-lg bg-amber-500 hover:bg-amber-400 text-dark-950 font-bold text-xs flex items-center gap-1.5 shadow-lg shadow-amber-500/20 transition-all cursor-pointer"
           >
             <span>✨</span>
-            <span>{seedingCandles ? 'Loading Buyers...' : '+ 25 Candle Stand & Lantern Buyers (USA)'}</span>
+            <span>{seedingCandles ? 'Syncing Directory...' : 'Sync 100+ Verified Buyers (Singing Bowls & Candle Stands)'}</span>
           </button>
           <button onClick={() => navigate('/discovery')} className="btn-secondary text-xs">
             Search More
@@ -91,7 +91,7 @@ export default function BuyersPage() {
         <div className="p-4 border-b border-dark-800 flex gap-4">
           <div className="relative flex-1 max-w-md">
             <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-dark-500" />
-            <input type="text" placeholder="Search buyers, companies..." className="input pl-9" value={search} onChange={e => { setSearch(e.target.value); setPage(1); }} />
+            <input type="text" placeholder="Search buyers, companies, addresses..." className="input pl-9" value={search} onChange={e => { setSearch(e.target.value); setPage(1); }} />
           </div>
           <button className="btn-secondary"><Filter className="w-4 h-4" /> Filters</button>
         </div>
@@ -104,7 +104,7 @@ export default function BuyersPage() {
                   <input type="checkbox" className="rounded border-dark-600 bg-dark-700 text-primary-500" checked={(data?.buyers?.length ?? 0) > 0 && selectedIds.length === data?.buyers?.length} onChange={toggleSelectAll} />
                 </th>
                 <th className="px-4 py-3">Company / Contact</th>
-                <th className="px-4 py-3">Location / City</th>
+                <th className="px-4 py-3">Physical Address & Location</th>
                 <th className="px-4 py-3">Email Status</th>
                 <th className="px-4 py-3">AI Priority</th>
                 <th className="px-4 py-3">Actions</th>
@@ -123,26 +123,27 @@ export default function BuyersPage() {
                     </td>
                     <td className="px-4 py-3">
                       <Link to={`/buyers/${buyer.id}`} className="font-medium text-dark-100 hover:text-primary-400 block">{buyer.company_name}</Link>
-                      <div className="text-xs text-dark-400">{buyer.buyer_name || 'No Name'} • {buyer.email}</div>
+                      <div className="text-xs text-dark-400">{buyer.buyer_name || 'Procurement Executive'} • {buyer.email}</div>
+                      {buyer.phone && <div className="text-[11px] text-dark-500 mt-0.5">{buyer.phone}</div>}
                     </td>
-                    <td className="px-4 py-3">
+                    <td className="px-4 py-3 max-w-[340px]">
                       <div className="font-semibold text-dark-100 flex items-center gap-1.5">
-                        {buyer.city ? (
-                          <>
-                            <span className="text-amber-400 text-xs">📍</span>
-                            <span>{buyer.city}{buyer.state ? `, ${buyer.state}` : ''}</span>
-                          </>
-                        ) : (
-                          <span>{buyer.country}</span>
-                        )}
+                        <span className="text-amber-400 text-xs shrink-0">📍</span>
+                        <span>{buyer.city ? `${buyer.city}${buyer.state ? `, ${buyer.state}` : ''}` : buyer.country}</span>
+                        {buyer.city && <span className="text-[11px] text-dark-400 font-normal">({buyer.country})</span>}
                       </div>
-                      {buyer.city && <div className="text-[11px] text-dark-400 pl-4">{buyer.country}</div>}
+                      {buyer.address && (
+                        <div className="text-[11px] text-emerald-400/90 font-mono mt-1 flex items-start gap-1 bg-emerald-950/20 px-2 py-0.5 rounded border border-emerald-900/30 truncate" title={buyer.address}>
+                          <span className="text-[10px] uppercase font-sans text-emerald-500 font-semibold shrink-0">ADDR:</span>
+                          <span className="truncate">{buyer.address}</span>
+                        </div>
+                      )}
                     </td>
                     <td className="px-4 py-3"><StatusBadge status={buyer.email_status || 'UNKNOWN'} /></td>
                     <td className="px-4 py-3"><StatusBadge status={buyer.ai_priority || 'UNCLASSIFIED'} /></td>
                     <td className="px-4 py-3 flex gap-2">
-                      <button onClick={() => navigate(`/buyers/${buyer.id}`)} className="p-1.5 text-dark-400 hover:text-primary-400 rounded bg-dark-800"><MoreHorizontal className="w-4 h-4" /></button>
-                      <button onClick={() => setDeleteId(buyer.id)} className="p-1.5 text-dark-400 hover:text-red-400 rounded bg-dark-800"><Trash2 className="w-4 h-4" /></button>
+                      <button onClick={() => navigate(`/buyers/${buyer.id}`)} className="p-1.5 text-dark-400 hover:text-primary-400 rounded bg-dark-800" title="View Full Details"><MoreHorizontal className="w-4 h-4" /></button>
+                      <button onClick={() => setDeleteId(buyer.id)} className="p-1.5 text-dark-400 hover:text-red-400 rounded bg-dark-800" title="Delete Buyer"><Trash2 className="w-4 h-4" /></button>
                     </td>
                   </tr>
                 ))

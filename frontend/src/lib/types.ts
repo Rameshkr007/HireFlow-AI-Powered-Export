@@ -30,6 +30,7 @@ export interface Buyer {
   country?: string;
   city?: string;
   state?: string;
+  address?: string;
   source_platform?: string;
   business_type?: string;
   page_url?: string;

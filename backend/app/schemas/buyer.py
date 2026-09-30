@@ -8,6 +8,8 @@ class BuyerCreate(BaseModel):
     email: Optional[str] = None
     website: Optional[str] = None
     country: Optional[str] = None
+    city: Optional[str] = None
+    state: Optional[str] = None
     source_platform: Optional[str] = None
     business_type: Optional[str] = None
     page_url: Optional[str] = None
@@ -30,6 +32,8 @@ class BuyerResponse(BaseModel):
     email: Optional[str] = None
     website: Optional[str] = None
     country: Optional[str] = None
+    city: Optional[str] = None
+    state: Optional[str] = None
     source_platform: Optional[str] = None
     business_type: Optional[str] = None
     page_url: Optional[str] = None

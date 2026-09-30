@@ -38,6 +38,8 @@ VERIFIED_US_BUYERS_DB: List[Dict] = list(CANDLE_STAND_BUYERS) + [
     {
         "buyer_name": "Marcus Vance",
         "company_name": "Sagebrook Home",
+        "city": "Los Angeles",
+        "state": "CA",
         "email": "purchasing@sagebrookhome.com",
         "website": "https://www.sagebrookhome.com",
         "country": "United States",
@@ -52,6 +54,8 @@ VERIFIED_US_BUYERS_DB: List[Dict] = list(CANDLE_STAND_BUYERS) + [
     {
         "buyer_name": "Jennifer Hayes",
         "company_name": "Creative Co-Op",
+        "city": "Memphis",
+        "state": "TN",
         "email": "sourcing@creativecoop.com",
         "website": "https://www.creativecoop.com",
         "country": "United States",
@@ -66,6 +70,8 @@ VERIFIED_US_BUYERS_DB: List[Dict] = list(CANDLE_STAND_BUYERS) + [
     {
         "buyer_name": "Satya Tiwari",
         "company_name": "Surya Inc",
+        "city": "Atlanta",
+        "state": "GA",
         "email": "procurement@surya.com",
         "website": "https://www.surya.com",
         "country": "United States",
@@ -80,6 +86,8 @@ VERIFIED_US_BUYERS_DB: List[Dict] = list(CANDLE_STAND_BUYERS) + [
     {
         "buyer_name": "David Alcorn",
         "company_name": "IMAX Worldwide Home",
+        "city": "Tulsa",
+        "state": "OK",
         "email": "buyers@imaxcorp.com",
         "website": "https://www.imaxcorp.com",
         "country": "United States",
@@ -94,6 +102,8 @@ VERIFIED_US_BUYERS_DB: List[Dict] = list(CANDLE_STAND_BUYERS) + [
     {
         "buyer_name": "Mac Cooper",
         "company_name": "The Uttermost Company",
+        "city": "Rocky Mount",
+        "state": "VA",
         "email": "orders@uttermost.com",
         "website": "https://www.uttermost.com",
         "country": "United States",
@@ -108,6 +118,8 @@ VERIFIED_US_BUYERS_DB: List[Dict] = list(CANDLE_STAND_BUYERS) + [
     {
         "buyer_name": "Todd Smith",
         "company_name": "Park Hill Collection",
+        "city": "Little Rock",
+        "state": "AR",
         "email": "wholesale@parkhillcollection.com",
         "website": "https://www.parkhillcollection.com",
         "country": "United States",
@@ -122,6 +134,8 @@ VERIFIED_US_BUYERS_DB: List[Dict] = list(CANDLE_STAND_BUYERS) + [
     {
         "buyer_name": "Bobbie Gottlieb",
         "company_name": "Two's Company Inc",
+        "city": "New York",
+        "state": "NY",
         "email": "purchasing@twoscompany.com",
         "website": "https://www.twoscompany.com",
         "country": "United States",
@@ -150,6 +164,8 @@ VERIFIED_US_BUYERS_DB: List[Dict] = list(CANDLE_STAND_BUYERS) + [
     {
         "buyer_name": "Doug Hurst",
         "company_name": "Kalalou Inc",
+        "city": "Jackson",
+        "state": "MS",
         "email": "procurement@kalalou.com",
         "website": "https://www.kalalou.com",
         "country": "United States",
@@ -164,6 +180,8 @@ VERIFIED_US_BUYERS_DB: List[Dict] = list(CANDLE_STAND_BUYERS) + [
     {
         "buyer_name": "David Gebhart",
         "company_name": "Global Views",
+        "city": "Dallas",
+        "state": "TX",
         "email": "buyer@globalviews.com",
         "website": "https://www.globalviews.com",
         "country": "United States",
@@ -178,6 +196,8 @@ VERIFIED_US_BUYERS_DB: List[Dict] = list(CANDLE_STAND_BUYERS) + [
     {
         "buyer_name": "Angela Lin",
         "company_name": "A&B Home Group Inc",
+        "city": "Rancho Cucamonga",
+        "state": "CA",
         "email": "purchasing@abhomeinc.com",
         "website": "https://www.abhomeinc.com",
         "country": "United States",
@@ -192,6 +212,8 @@ VERIFIED_US_BUYERS_DB: List[Dict] = list(CANDLE_STAND_BUYERS) + [
     {
         "buyer_name": "Brian Elliott",
         "company_name": "Howard Elliott Collection",
+        "city": "Chicago",
+        "state": "IL",
         "email": "procurement@howardelliott.com",
         "website": "https://www.howardelliott.com",
         "country": "United States",
@@ -234,6 +256,8 @@ VERIFIED_US_BUYERS_DB: List[Dict] = list(CANDLE_STAND_BUYERS) + [
     {
         "buyer_name": "Steve Dunn",
         "company_name": "Zuo Modern Inc",
+        "city": "Oakland",
+        "state": "CA",
         "email": "sourcing@zuomod.com",
         "website": "https://www.zuomod.com",
         "country": "United States",
@@ -262,6 +286,8 @@ VERIFIED_US_BUYERS_DB: List[Dict] = list(CANDLE_STAND_BUYERS) + [
     {
         "buyer_name": "Rajesh Sharma",
         "company_name": "Benzara Inc",
+        "city": "Ontario",
+        "state": "CA",
         "email": "procurement@benzara.com",
         "website": "https://www.benzara.com",
         "country": "United States",
@@ -276,6 +302,8 @@ VERIFIED_US_BUYERS_DB: List[Dict] = list(CANDLE_STAND_BUYERS) + [
     {
         "buyer_name": "Jack Perez",
         "company_name": "Privilege International",
+        "city": "San Diego",
+        "state": "CA",
         "email": "sales@privilege-inc.com",
         "website": "https://www.privilege-inc.com",
         "country": "United States",
@@ -290,6 +318,8 @@ VERIFIED_US_BUYERS_DB: List[Dict] = list(CANDLE_STAND_BUYERS) + [
     {
         "buyer_name": "David Cyan",
         "company_name": "Cyan Design",
+        "city": "Fort Worth",
+        "state": "TX",
         "email": "trade@cyandesign.biz",
         "website": "https://www.cyandesign.biz",
         "country": "United States",

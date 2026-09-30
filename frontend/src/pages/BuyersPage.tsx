@@ -104,7 +104,7 @@ export default function BuyersPage() {
                   <input type="checkbox" className="rounded border-dark-600 bg-dark-700 text-primary-500" checked={(data?.buyers?.length ?? 0) > 0 && selectedIds.length === data?.buyers?.length} onChange={toggleSelectAll} />
                 </th>
                 <th className="px-4 py-3">Company / Contact</th>
-                <th className="px-4 py-3">Country</th>
+                <th className="px-4 py-3">Location / City</th>
                 <th className="px-4 py-3">Email Status</th>
                 <th className="px-4 py-3">AI Priority</th>
                 <th className="px-4 py-3">Actions</th>
@@ -125,7 +125,19 @@ export default function BuyersPage() {
                       <Link to={`/buyers/${buyer.id}`} className="font-medium text-dark-100 hover:text-primary-400 block">{buyer.company_name}</Link>
                       <div className="text-xs text-dark-400">{buyer.buyer_name || 'No Name'} • {buyer.email}</div>
                     </td>
-                    <td className="px-4 py-3 text-dark-300">{buyer.country}</td>
+                    <td className="px-4 py-3">
+                      <div className="font-semibold text-dark-100 flex items-center gap-1.5">
+                        {buyer.city ? (
+                          <>
+                            <span className="text-amber-400 text-xs">📍</span>
+                            <span>{buyer.city}{buyer.state ? `, ${buyer.state}` : ''}</span>
+                          </>
+                        ) : (
+                          <span>{buyer.country}</span>
+                        )}
+                      </div>
+                      {buyer.city && <div className="text-[11px] text-dark-400 pl-4">{buyer.country}</div>}
+                    </td>
                     <td className="px-4 py-3"><StatusBadge status={buyer.email_status || 'UNKNOWN'} /></td>
                     <td className="px-4 py-3"><StatusBadge status={buyer.ai_priority || 'UNCLASSIFIED'} /></td>
                     <td className="px-4 py-3 flex gap-2">

@@ -165,6 +165,8 @@ def seed_candle_buyers(
             normalized_email=norm,
             website=bd.get("website"),
             country=bd.get("country", "USA"),
+            city=bd.get("city"),
+            state=bd.get("state"),
             source_platform=bd.get("source_platform", "US Importers Registry"),
             business_type=bd.get("business_type", "Importer"),
             product=bd.get("product", "Metal Candle Holders & Lanterns"),

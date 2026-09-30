@@ -28,6 +28,8 @@ export interface Buyer {
   email?: string;
   website?: string;
   country?: string;
+  city?: string;
+  state?: string;
   source_platform?: string;
   business_type?: string;
   page_url?: string;

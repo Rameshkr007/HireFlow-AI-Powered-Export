@@ -34,6 +34,9 @@ def personalize_email_simple(template: str, buyer, fallback_product: str = "", p
     company_name = (buyer.company_name or 'your company').strip()
     product = (buyer.product or fallback_product or 'our export products').strip()
     country = (buyer.country or 'your region').strip()
+    city = (getattr(buyer, 'city', None) or '').strip()
+    state = (getattr(buyer, 'state', None) or '').strip()
+    city_display = f"{city}, {state}" if city and state else (city or country)
     website = (buyer.website or '').strip()
 
     # Company & Sender details (Sender uses personal email, Description uses official company email)
@@ -64,6 +67,14 @@ def personalize_email_simple(template: str, buyer, fallback_product: str = "", p
         '{country}': country,
         '{Country}': country,
         '{{country}}': country,
+        '{city}': city or country,
+        '{City}': city or country,
+        '{{city}}': city or country,
+        '{state}': state,
+        '{State}': state,
+        '{{state}}': state,
+        '{location}': city_display,
+        '{{location}}': city_display,
         '{website}': website or p_website,
         '{Website}': website or p_website,
         '{{website}}': p_website,

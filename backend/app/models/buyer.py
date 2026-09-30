@@ -19,6 +19,8 @@ class Buyer(Base):
     normalized_email = Column(String, nullable=True)
     website = Column(String, nullable=True)
     country = Column(String, nullable=True)
+    city = Column(String, nullable=True)
+    state = Column(String, nullable=True)
     source_platform = Column(String, nullable=True)
     business_type = Column(String, nullable=True)
     page_url = Column(String, nullable=True)

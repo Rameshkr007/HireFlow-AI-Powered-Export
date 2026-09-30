@@ -24,6 +24,8 @@ interface DiscoveredBuyer {
   product?: string;
   company_description?: string;
   email_status?: string;
+  city?: string;
+  state?: string;
 }
 
 interface DiscoveryResult {
@@ -50,6 +52,19 @@ const QUICK_CATEGORIES = [
   'Ceramics & Vases'
 ];
 
+const USA_CITIES = [
+  'All USA Cities',
+  'Dallas, TX',
+  'Atlanta, GA',
+  'New York, NY',
+  'Los Angeles, CA',
+  'Chicago, IL',
+  'San Francisco, CA',
+  'Denver, CO',
+  'Seattle, WA',
+  'Memphis, TN'
+];
+
 export default function BuyerDiscoveryPage() {
   const { showToast } = useToast();
   const navigate = useNavigate();
@@ -66,6 +81,7 @@ export default function BuyerDiscoveryPage() {
   const [result, setResult] = useState<DiscoveryResult | null>(null);
   const [selected, setSelected] = useState<Set<number>>(new Set());
   const [filterEmailOnly, setFilterEmailOnly] = useState(false);
+  const [selectedCity, setSelectedCity] = useState('All USA Cities');
   const [expandedIndex, setExpandedIndex] = useState<number | null>(null);
 
   // Auto-run initial discovery on load so the screen is immediately populated!
@@ -120,6 +136,14 @@ export default function BuyerDiscoveryPage() {
 
   const filteredBuyers = (result?.buyers || []).filter(b => {
     if (filterEmailOnly && !b.email) return false;
+    if (selectedCity !== 'All USA Cities') {
+      const cityKeyword = selectedCity.split(',')[0].toLowerCase().trim();
+      const bCity = (b.city || '').toLowerCase();
+      const bDesc = (b.company_description || '').toLowerCase();
+      if (!bCity.includes(cityKeyword) && !bDesc.includes(cityKeyword)) {
+        return false;
+      }
+    }
     return true;
   });
 
@@ -213,6 +237,32 @@ export default function BuyerDiscoveryPage() {
               {cat}
             </button>
           ))}
+        </div>
+
+        {/* USA Cities Filter */}
+        <div className="pt-3 border-t border-dark-800 space-y-2">
+          <div className="flex flex-wrap items-center justify-between gap-2">
+            <span className="text-xs font-semibold text-dark-300 uppercase tracking-wider flex items-center gap-1.5">
+              <span>📍</span> Filter By USA Commercial Hub City
+            </span>
+            <span className="text-[11px] text-dark-400">Target buyers in key wholesale trade centers</span>
+          </div>
+          <div className="flex flex-wrap gap-1.5">
+            {USA_CITIES.map(c => (
+              <button
+                key={c}
+                type="button"
+                onClick={() => setSelectedCity(c)}
+                className={`text-xs px-2.5 py-1 rounded-md border transition-all font-medium ${
+                  selectedCity === c
+                    ? 'bg-amber-500/20 border-amber-500 text-amber-300 font-bold shadow-sm'
+                    : 'bg-dark-800/80 border-dark-700 text-dark-400 hover:border-dark-600 hover:text-dark-200'
+                }`}
+              >
+                {c}
+              </button>
+            ))}
+          </div>
         </div>
 
         {/* Input Parameters Form */}
@@ -403,9 +453,18 @@ export default function BuyerDiscoveryPage() {
 
                       {/* Market & Classification */}
                       <div className="min-w-0">
-                        <div className="text-xs text-dark-200 flex items-center gap-1 truncate font-medium">
-                          <Globe className="w-3.5 h-3.5 text-dark-400" />
-                          <span>{buyer.country}</span>
+                        <div className="text-xs text-dark-200 flex items-center gap-1.5 truncate font-medium">
+                          {buyer.city ? (
+                            <>
+                              <span className="text-amber-400 text-xs flex-shrink-0">📍</span>
+                              <span className="truncate">{buyer.city}{buyer.state ? `, ${buyer.state}` : ''}, {buyer.country}</span>
+                            </>
+                          ) : (
+                            <>
+                              <Globe className="w-3.5 h-3.5 text-dark-400 flex-shrink-0" />
+                              <span>{buyer.country}</span>
+                            </>
+                          )}
                         </div>
                         <div className="text-[11px] text-dark-400 truncate mt-0.5">
                           <span className="px-1.5 py-0.5 rounded bg-dark-700 border border-dark-600 font-mono text-[10px]">

@@ -23,7 +23,9 @@ def get_buyers(
             Buyer.buyer_name.ilike(search_term),
             Buyer.company_name.ilike(search_term),
             Buyer.email.ilike(search_term),
-            Buyer.country.ilike(search_term)
+            Buyer.country.ilike(search_term),
+            Buyer.city.ilike(search_term),
+            Buyer.state.ilike(search_term)
         ))
     if country:
         query = query.filter(Buyer.country.ilike(f"%{country}%"))
@@ -159,6 +161,8 @@ def import_buyers_csv(db: Session, user_id: int, csv_content: bytes) -> BuyerImp
             country=row.get('country'),
             source_platform=row.get('source_platform', 'CSV Import'),
             business_type=row.get('business_type'),
+            city=row.get('city'),
+            state=row.get('state'),
             page_url=row.get('page_url'),
             product=row.get('product'),
             company_description=row.get('company_description'),
@@ -196,6 +200,8 @@ def export_buyers_csv(db: Session, user_id: int, priority: Optional[str] = None,
             'email': b.email,
             'website': b.website,
             'country': b.country,
+            'city': b.city,
+            'state': b.state,
             'source_platform': b.source_platform,
             'business_type': b.business_type,
             'product': b.product,

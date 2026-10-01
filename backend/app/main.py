@@ -35,6 +35,8 @@ def startup():
                 conn.execute(text("ALTER TABLE buyers ADD COLUMN IF NOT EXISTS city VARCHAR;"))
                 conn.execute(text("ALTER TABLE buyers ADD COLUMN IF NOT EXISTS state VARCHAR;"))
                 conn.execute(text("ALTER TABLE buyers ADD COLUMN IF NOT EXISTS address TEXT;"))
+                conn.execute(text("ALTER TABLE campaigns ADD COLUMN IF NOT EXISTS sequence_steps JSON;"))
+                conn.execute(text("ALTER TABLE campaigns ADD COLUMN IF NOT EXISTS attachment_ids JSON;"))
                 conn.commit()
             except Exception:
                 try:
@@ -47,6 +49,14 @@ def startup():
                     pass
                 try:
                     conn.execute(text("ALTER TABLE buyers ADD COLUMN address TEXT;"))
+                except Exception:
+                    pass
+                try:
+                    conn.execute(text("ALTER TABLE campaigns ADD COLUMN sequence_steps JSON;"))
+                except Exception:
+                    pass
+                try:
+                    conn.execute(text("ALTER TABLE campaigns ADD COLUMN attachment_ids JSON;"))
                 except Exception:
                     pass
                 conn.commit()

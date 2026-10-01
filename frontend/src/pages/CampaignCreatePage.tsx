@@ -65,7 +65,6 @@ OM Enterprise
 📧 Direct Outreach Email: rameshkrthakur1816@gmail.com
 🏢 Official Company Email: exportindia2026us@gmail.com
 📱 WhatsApp / Phone: +91 80577 10065
-🌐 Website: https://omenterprise.com
 
 Thank you for your valuable time. We look forward to building a successful and long-term partnership with {company_name}.`
 };
@@ -117,7 +116,6 @@ OM Enterprise
 📧 Direct Outreach Email: rameshkrthakur1816@gmail.com
 🏢 Official Company Email: exportindia2026us@gmail.com
 📱 WhatsApp / Phone: +91 80577 10065
-🌐 Website: https://omenterprise.com
 
 Thank you for your valuable time. We look forward to building a successful and long-term partnership with {company_name}.`
 };

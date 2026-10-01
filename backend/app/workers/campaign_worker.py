@@ -1,5 +1,6 @@
 import time
 import random
+import re
 from datetime import datetime
 from sqlalchemy.orm import Session
 from ..models.campaign import Campaign
@@ -46,7 +47,14 @@ def personalize_email_simple(template: str, buyer, fallback_product: str = "", p
     p_company_email = (getattr(profile, 'company_email', None) or "exportindia2026us@gmail.com").strip()
     p_personal_email = (user_email or "rameshkrthakur1816@gmail.com").strip()
     p_phone = (getattr(profile, 'phone', None) or "+91 80577 10065").strip()
-    p_website = (getattr(profile, 'website', None) or "https://omenterprise.com").strip()
+    p_website = (getattr(profile, 'website', None) or "").strip()
+
+    # Clean company website lines from template if no company website is available
+    if not p_website:
+        template = re.sub(r'^[ \t]*[🌐]?[ \t]*(?:Website|website)?[:\s]*(?:https?://)?(?:www\.)?omenterprise\.com[^\n]*\n?', '', template, flags=re.MULTILINE | re.IGNORECASE)
+        template = re.sub(r'^[ \t]*[🌐]?[ \t]*(?:Website|website)?[:\s]*\{\{website\}\}[^\n]*\n?', '', template, flags=re.MULTILINE | re.IGNORECASE)
+        template = re.sub(r'^[ \t]*[🌐]?[ \t]*(?:Website|website)?[:\s]*\{website\}[^\n]*\n?', '', template, flags=re.MULTILINE | re.IGNORECASE)
+        template = re.sub(r'^[ \t]*[🌐]?[ \t]*(?:Website|website)?[:\s]*<Website>[^\n]*\n?', '', template, flags=re.MULTILINE | re.IGNORECASE)
 
     replacements = {
         # Braces {}
@@ -81,8 +89,8 @@ def personalize_email_simple(template: str, buyer, fallback_product: str = "", p
         '{{address}}': address or city_display,
         '{location}': city_display,
         '{{location}}': city_display,
-        '{website}': website or p_website,
-        '{Website}': website or p_website,
+        '{website}': website,
+        '{Website}': website,
         '{{website}}': p_website,
         # Sender & Company Profile Replacements
         '{sender_name}': p_sender_name,
@@ -119,7 +127,7 @@ def personalize_email_simple(template: str, buyer, fallback_product: str = "", p
         '<Product Name>': product,
         '<product>': product,
         '<Country>': country,
-        '<Website>': website or p_website,
+        '<Website>': website,
         '<Company Email>': p_company_email,
         '<Sender Name>': p_sender_name,
         '<Phone>': p_phone,
@@ -127,7 +135,7 @@ def personalize_email_simple(template: str, buyer, fallback_product: str = "", p
         'Contact Name:': f'Contact Name: {buyer_name}',
         'Company Name:': f'Company Name: {company_name}',
         'Country:': f'Country: {country}',
-        'Website:': f'Website: {website}',
+        'Website:': f'Website: {website}' if website else '',
         'Source Platform:': f'Source Platform: {buyer.source_platform or ""}',
     }
     result = template

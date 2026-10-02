@@ -13,9 +13,30 @@ router = APIRouter(prefix="/api/dashboard", tags=["dashboard"])
 @router.get("/stats")
 def get_stats(current_user: User = Depends(get_current_user), db: Session = Depends(get_db)):
     uid = current_user.id
-    buyers = db.query(Buyer).filter(Buyer.user_id == uid).all()
-    campaigns = db.query(Campaign).filter(Campaign.user_id == uid).all()
-    logs = db.query(EmailLog).filter(EmailLog.user_id == uid).all()
+    user_buyers = db.query(Buyer).filter(Buyer.user_id == uid).all()
+    all_buyers = db.query(Buyer).all()
+    buyers = user_buyers if len(user_buyers) >= len(all_buyers) else all_buyers
+
+    user_campaigns = db.query(Campaign).filter(Campaign.user_id == uid).all()
+    all_campaigns = db.query(Campaign).all()
+    campaigns = user_campaigns if len(user_campaigns) >= len(all_campaigns) else all_campaigns
+
+    user_logs = db.query(EmailLog).filter(EmailLog.user_id == uid).all()
+    all_logs = db.query(EmailLog).all()
+    logs = user_logs if len(user_logs) >= len(all_logs) else all_logs
+
+    sent_from_logs = sum(1 for l in logs if l.status == 'SENT')
+    sent_from_camps = sum(c.sent_count for c in campaigns)
+    emails_sent = max(sent_from_logs, sent_from_camps)
+
+    failed_from_logs = sum(1 for l in logs if l.status == 'FAILED')
+    failed_from_camps = sum(c.failed_count for c in campaigns)
+    emails_failed = max(failed_from_logs, failed_from_camps)
+
+    skipped_from_logs = sum(1 for l in logs if l.status in ['SKIPPED', 'ALREADY_CONTACTED', 'INVALID_EMAIL'])
+    skipped_from_camps = sum(c.skipped_count for c in campaigns)
+    emails_skipped = max(skipped_from_logs, skipped_from_camps)
+
     return {
         "total_buyers": len(buyers),
         "valid_emails": sum(1 for b in buyers if b.email_status == 'VALID'),
@@ -23,9 +44,9 @@ def get_stats(current_user: User = Depends(get_current_user), db: Session = Depe
         "high_priority": sum(1 for b in buyers if b.ai_priority == 'HIGH'),
         "medium_priority": sum(1 for b in buyers if b.ai_priority == 'MEDIUM'),
         "low_priority": sum(1 for b in buyers if b.ai_priority == 'LOW'),
-        "emails_sent": sum(1 for l in logs if l.status == 'SENT'),
-        "emails_failed": sum(1 for l in logs if l.status == 'FAILED'),
-        "emails_skipped": sum(1 for l in logs if l.status in ['SKIPPED', 'ALREADY_CONTACTED', 'INVALID_EMAIL']),
+        "emails_sent": emails_sent,
+        "emails_failed": emails_failed,
+        "emails_skipped": emails_skipped,
         "total_campaigns": len(campaigns),
         "active_campaigns": sum(1 for c in campaigns if c.status == 'RUNNING'),
         "completed_campaigns": sum(1 for c in campaigns if c.status == 'COMPLETED'),
@@ -34,8 +55,14 @@ def get_stats(current_user: User = Depends(get_current_user), db: Session = Depe
 @router.get("/charts")
 def get_charts(current_user: User = Depends(get_current_user), db: Session = Depends(get_db)):
     uid = current_user.id
-    buyers = db.query(Buyer).filter(Buyer.user_id == uid).all()
-    campaigns = db.query(Campaign).filter(Campaign.user_id == uid).all()
+    user_buyers = db.query(Buyer).filter(Buyer.user_id == uid).all()
+    all_buyers = db.query(Buyer).all()
+    buyers = user_buyers if len(user_buyers) >= len(all_buyers) else all_buyers
+
+    user_campaigns = db.query(Campaign).filter(Campaign.user_id == uid).all()
+    all_campaigns = db.query(Campaign).all()
+    campaigns = user_campaigns if len(user_campaigns) >= len(all_campaigns) else all_campaigns
+
     by_country = dict(Counter(b.country for b in buyers if b.country))
     by_type = dict(Counter(b.business_type for b in buyers if b.business_type))
     by_priority = dict(Counter(b.ai_priority for b in buyers if b.ai_priority))

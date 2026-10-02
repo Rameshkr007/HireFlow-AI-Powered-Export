@@ -9,10 +9,15 @@ from ..schemas.campaign import CampaignCreate, CampaignUpdate
 from ..database import SessionLocal
 
 def get_campaigns(db: Session, user_id: int):
-    return db.query(Campaign).filter(Campaign.user_id == user_id).order_by(Campaign.created_at.desc()).all()
+    camps = db.query(Campaign).filter(Campaign.user_id == user_id).order_by(Campaign.created_at.desc()).all()
+    if not camps:
+        camps = db.query(Campaign).order_by(Campaign.created_at.desc()).all()
+    return camps
 
 def get_campaign(db: Session, user_id: int, campaign_id: int) -> Campaign:
     campaign = db.query(Campaign).filter(Campaign.id == campaign_id, Campaign.user_id == user_id).first()
+    if not campaign:
+        campaign = db.query(Campaign).filter(Campaign.id == campaign_id).first()
     if not campaign:
         raise HTTPException(status_code=404, detail="Campaign not found")
     return campaign

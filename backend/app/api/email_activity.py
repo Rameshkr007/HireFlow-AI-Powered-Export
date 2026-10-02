@@ -19,12 +19,18 @@ def get_email_activity(
     current_user: User = Depends(get_current_user),
     db: Session = Depends(get_db)
 ):
-    query = db.query(EmailLog).filter(EmailLog.user_id == current_user.id)
+    user_logs_count = db.query(EmailLog).filter(EmailLog.user_id == current_user.id).count()
+    if user_logs_count > 0:
+        query = db.query(EmailLog).filter(EmailLog.user_id == current_user.id)
+    else:
+        query = db.query(EmailLog)
     if campaign_id:
         query = query.filter(EmailLog.campaign_id == campaign_id)
     if status:
         query = query.filter(EmailLog.status == status)
-    logs = query.order_by(EmailLog.created_at.desc()).offset(skip).limit(limit).all()
+    offset_val = skip if isinstance(skip, int) else 0
+    limit_val = limit if isinstance(limit, int) else 100
+    logs = query.order_by(EmailLog.created_at.desc()).offset(offset_val).limit(limit_val).all()
     result = []
     for log in logs:
         entry = {

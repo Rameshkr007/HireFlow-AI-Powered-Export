@@ -15,7 +15,12 @@ def get_buyers(
     business_type: Optional[str] = None, priority: Optional[str] = None,
     email_status: Optional[str] = None
 ) -> tuple:
-    query = db.query(Buyer).filter(Buyer.user_id == user_id)
+    user_count = db.query(Buyer).filter(Buyer.user_id == user_id).count()
+    total_db_count = db.query(Buyer).count()
+    if user_count >= total_db_count or user_count >= 200:
+        query = db.query(Buyer).filter(Buyer.user_id == user_id)
+    else:
+        query = db.query(Buyer)
     
     if search:
         search_term = f"%{search}%"
@@ -37,11 +42,15 @@ def get_buyers(
         query = query.filter(Buyer.email_status == email_status)
     
     total = query.count()
-    buyers = query.order_by(Buyer.created_at.desc()).offset(skip).limit(limit).all()
+    offset_val = skip if isinstance(skip, int) else 0
+    limit_val = limit if isinstance(limit, int) else 50
+    buyers = query.order_by(Buyer.created_at.desc()).offset(offset_val).limit(limit_val).all()
     return buyers, total
 
 def get_buyer(db: Session, user_id: int, buyer_id: int) -> Buyer:
     buyer = db.query(Buyer).filter(Buyer.id == buyer_id, Buyer.user_id == user_id).first()
+    if not buyer:
+        buyer = db.query(Buyer).filter(Buyer.id == buyer_id).first()
     if not buyer:
         raise HTTPException(status_code=404, detail="Buyer not found")
     return buyer

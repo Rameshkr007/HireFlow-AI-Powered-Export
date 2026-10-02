@@ -1,8 +1,9 @@
-from fastapi import FastAPI
+from fastapi import FastAPI, Depends
 from fastapi.middleware.cors import CORSMiddleware
+from sqlalchemy.orm import Session
 import os
 
-from .database import engine, Base, SessionLocal
+from .database import engine, Base, SessionLocal, get_db
 from .models import User, ExporterProfile, Buyer, Campaign, EmailLog, Attachment, GmailConnection
 from .api import auth, profile, buyers, discovery, campaigns, email_activity, reports, gmail, attachments, dashboard, email_settings
 from .config import settings
@@ -72,12 +73,19 @@ def startup():
     try:
         from .models.user import User
         from .services.auth_service import ensure_ramesh_user
-        from ..seed import seed
+        seed_fn = None
+        try:
+            from seed import seed as seed_fn
+        except Exception:
+            try:
+                from ..seed import seed as seed_fn
+            except Exception:
+                pass
         db = SessionLocal()
         count = db.query(User).count()
-        if count == 0:
+        if count == 0 and seed_fn:
             print("[STARTUP] Fresh deployment detected. Seeding initial admin and buyers...")
-            seed()
+            seed_fn()
         # Always guarantee Ramesh Kumar Thakur's account exists
         ensure_ramesh_user(db)
         db.close()

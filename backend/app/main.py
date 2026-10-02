@@ -102,4 +102,12 @@ def root():
 
 @app.get("/health")
 def health():
-    return {"status": "ok"}
+    return {
+        "status": "ok",
+        "engines": {
+            "tradewind": bool(settings.TRADEWIND_API_KEY),
+            "serpapi": bool(settings.SERPAPI_KEY),
+            "apollo": bool(settings.APOLLO_API_KEY),
+            "openai": bool(settings.OPENAI_API_KEY),
+        },
+    }

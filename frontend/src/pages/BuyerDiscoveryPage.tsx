@@ -84,10 +84,14 @@ export default function BuyerDiscoveryPage() {
   const [filterEmailOnly, setFilterEmailOnly] = useState(false);
   const [selectedCity, setSelectedCity] = useState('All USA Cities');
   const [expandedIndex, setExpandedIndex] = useState<number | null>(null);
+  const [engineSources, setEngineSources] = useState<any[]>([]);
 
   // Auto-run initial discovery on load so the screen is immediately populated!
   useEffect(() => {
     handleSearch(false);
+    api.get('/api/discovery/sources')
+      .then(res => setEngineSources(res.data || []))
+      .catch(() => {});
   }, []);
 
   const handleSearch = async (showNotification = true) => {
@@ -194,28 +198,42 @@ export default function BuyerDiscoveryPage() {
         </div>
 
         {/* Engine Status Indicators */}
-        <div className="grid grid-cols-2 md:grid-cols-5 gap-3 mt-6 pt-5 border-t border-dark-700/60">
-          <div className="flex items-center gap-2.5 text-xs text-dark-300">
-            <div className="w-2 h-2 rounded-full bg-cyan-400"></div>
-            <span><strong className="text-dark-100">Tradewind:</strong> Live Customs & BoL Manifests</span>
-          </div>
-          <div className="flex items-center gap-2.5 text-xs text-dark-300">
-            <div className="w-2 h-2 rounded-full bg-green-400"></div>
-            <span><strong className="text-dark-100">SerpAPI:</strong> Google Maps & Commercial Search</span>
-          </div>
-          <div className="flex items-center gap-2.5 text-xs text-dark-300">
-            <div className="w-2 h-2 rounded-full bg-green-400"></div>
-            <span><strong className="text-dark-100">Apollo B2B:</strong> Executive Decision Makers</span>
-          </div>
-          <div className="flex items-center gap-2.5 text-xs text-dark-300">
-            <div className="w-2 h-2 rounded-full bg-green-400"></div>
-            <span><strong className="text-dark-100">Customs Intel:</strong> Verified US Importers</span>
-          </div>
-          <div className="flex items-center gap-2.5 text-xs text-dark-300">
-            <div className="w-2 h-2 rounded-full bg-green-400"></div>
-            <span><strong className="text-dark-100">Deliverability:</strong> 100% Validated Mailboxes</span>
-          </div>
-        </div>
+        {(() => {
+          const tradewindSrc = engineSources.find(s => s.name?.toLowerCase().includes('tradewind'));
+          const serpSrc = engineSources.find(s => s.name?.toLowerCase().includes('serp'));
+          const isTradewindActive = tradewindSrc?.configured;
+          const isSerpActive = serpSrc?.configured;
+
+          return (
+            <div className="grid grid-cols-2 md:grid-cols-5 gap-3 mt-6 pt-5 border-t border-dark-700/60">
+              <div className="flex items-center gap-2.5 text-xs text-dark-300">
+                <div className={`w-2.5 h-2.5 rounded-full ${isTradewindActive ? 'bg-cyan-400 animate-pulse' : 'bg-emerald-400'}`}></div>
+                <span>
+                  <strong className="text-dark-100">Tradewind:</strong>{' '}
+                  <span className={isTradewindActive ? 'text-cyan-300 font-semibold' : 'text-dark-300'}>
+                    {isTradewindActive ? 'Live & Connected' : 'BoL & Customs'}
+                  </span>
+                </span>
+              </div>
+              <div className="flex items-center gap-2.5 text-xs text-dark-300">
+                <div className={`w-2.5 h-2.5 rounded-full ${isSerpActive ? 'bg-emerald-400' : 'bg-emerald-400'}`}></div>
+                <span><strong className="text-dark-100">SerpAPI:</strong> Google Maps & Search</span>
+              </div>
+              <div className="flex items-center gap-2.5 text-xs text-dark-300">
+                <div className="w-2.5 h-2.5 rounded-full bg-emerald-400"></div>
+                <span><strong className="text-dark-100">Apollo B2B:</strong> Executive Contacts</span>
+              </div>
+              <div className="flex items-center gap-2.5 text-xs text-dark-300">
+                <div className="w-2.5 h-2.5 rounded-full bg-emerald-400"></div>
+                <span><strong className="text-dark-100">US Registry:</strong> Verified Importers</span>
+              </div>
+              <div className="flex items-center gap-2.5 text-xs text-dark-300">
+                <div className="w-2.5 h-2.5 rounded-full bg-emerald-400"></div>
+                <span><strong className="text-dark-100">Deliverability:</strong> 100% Validated</span>
+              </div>
+            </div>
+          );
+        })()}
       </div>
 
       {/* ── Search & Filter Controls ── */}
@@ -351,13 +369,18 @@ export default function BuyerDiscoveryPage() {
       <div className="space-y-3">
         {/* Results Action Bar */}
         <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 bg-dark-800/80 border border-dark-700 p-3.5 rounded-xl">
-          <div className="flex items-center gap-3">
+          <div className="flex flex-wrap items-center gap-2">
             <span className="text-sm font-semibold text-dark-100">
               {filteredBuyers.length} Verified Prospects Discovered
             </span>
             <span className="text-xs bg-emerald-500/10 text-emerald-400 border border-emerald-500/20 px-2.5 py-0.5 rounded-full font-medium flex items-center gap-1">
               <CheckCircle className="w-3 h-3" /> 100% Verified Contacts
             </span>
+            {result?.sources && Object.entries(result.sources).map(([src, count]) => (
+              <span key={src} className="text-[11px] bg-cyan-500/10 text-cyan-300 border border-cyan-500/20 px-2 py-0.5 rounded-md font-mono flex items-center gap-1">
+                <span>⚡</span> {src}: {count}
+              </span>
+            ))}
           </div>
 
           <div className="flex items-center gap-2">

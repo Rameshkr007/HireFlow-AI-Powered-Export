@@ -194,7 +194,11 @@ export default function BuyerDiscoveryPage() {
         </div>
 
         {/* Engine Status Indicators */}
-        <div className="grid grid-cols-2 md:grid-cols-4 gap-3 mt-6 pt-5 border-t border-dark-700/60">
+        <div className="grid grid-cols-2 md:grid-cols-5 gap-3 mt-6 pt-5 border-t border-dark-700/60">
+          <div className="flex items-center gap-2.5 text-xs text-dark-300">
+            <div className="w-2 h-2 rounded-full bg-cyan-400"></div>
+            <span><strong className="text-dark-100">Tradewind:</strong> Live Customs & BoL Manifests</span>
+          </div>
           <div className="flex items-center gap-2.5 text-xs text-dark-300">
             <div className="w-2 h-2 rounded-full bg-green-400"></div>
             <span><strong className="text-dark-100">SerpAPI:</strong> Google Maps & Commercial Search</span>

@@ -34,6 +34,8 @@ export default function SettingsPage() {
           <h3 className="section-title flex items-center gap-2 mb-4"><Globe className="w-5 h-5 text-blue-400" /> API Configuration</h3>
           <p className="text-sm text-dark-400 mb-4">To run HireFlow in production mode, you must configure the following environment variables in the backend <code>.env</code> file:</p>
           <div className="bg-dark-950 p-4 rounded-lg font-mono text-sm text-dark-300 border border-dark-800 space-y-2">
+            <div>TRADEWIND_API_KEY=<span className="text-dark-500">your_tradewind_key (Live BoL & Customs Intel)</span></div>
+            <div>TRADEWIND_API_URL=<span className="text-dark-500">https://api.tradewind.com/v1</span></div>
             <div>GEMINI_API_KEY=<span className="text-dark-500">your_gemini_key</span></div>
             <div>SERPAPI_KEY=<span className="text-dark-500">your_serpapi_key</span></div>
             <div>GMAIL_CLIENT_ID=<span className="text-dark-500">your_oauth_client_id</span></div>

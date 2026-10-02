@@ -41,6 +41,10 @@ class Settings(BaseSettings):
     TOMBA_API_KEY: Optional[str] = None
     TOMBA_API_SECRET: Optional[str] = None
 
+    # Tradewind Trade Intelligence API (Bill of Lading, Customs & Importers)
+    TRADEWIND_API_KEY: Optional[str] = None
+    TRADEWIND_API_URL: str = "https://api.tradewind.com/v1"
+
     class Config:
         env_file = ".env"
         extra = "allow"

@@ -43,7 +43,7 @@ class Settings(BaseSettings):
 
     # Tradewind Trade Intelligence API (Bill of Lading, Customs & Importers)
     TRADEWIND_API_KEY: Optional[str] = None
-    TRADEWIND_API_URL: str = "https://api.tradewind.com/v1"
+    TRADEWIND_API_URL: str = "https://app.trade-wind.co"
 
     class Config:
         env_file = ".env"

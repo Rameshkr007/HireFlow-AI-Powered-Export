@@ -507,28 +507,34 @@ async def _search_serp(product: str, country: str, buyer_type: str, limit: int) 
 
 
 async def _search_tradewind(product: str, country: str, buyer_type: str, limit: int) -> List[Dict]:
-    """Execute live Tradewind Trade Intelligence / Customs Importer search with 4s safety ceiling."""
+    """Execute live TradeWind AI / Customs Importer search with 4s safety ceiling."""
     if not settings.TRADEWIND_API_KEY:
         return []
 
-    base_url = (settings.TRADEWIND_API_URL or "https://api.tradewind.com/v1").rstrip("/")
+    # TradeWind AI (trade-wind.co) API endpoints
+    candidate_urls = [
+        "https://app.trade-wind.co/api/customs/search",
+        "https://app.trade-wind.co/api/agentic/search",
+        "https://api.trade-wind.co/api/customs/search",
+    ]
+    if settings.TRADEWIND_API_URL and "tradewind.com" not in settings.TRADEWIND_API_URL:
+        base = settings.TRADEWIND_API_URL.rstrip("/")
+        candidate_urls.insert(0, f"{base}/api/customs/search")
+        candidate_urls.insert(1, f"{base}/customs/search")
+
     headers = {
         "Authorization": f"Bearer {settings.TRADEWIND_API_KEY}",
         "x-api-key": settings.TRADEWIND_API_KEY,
+        "Content-Type": "application/json",
         "Accept": "application/json",
-        "User-Agent": "HireFlow-TradeEngine/1.0",
+        "User-Agent": "HireFlow-TradeEngine/2.0",
     }
 
-    endpoints_to_try = [
-        f"{base_url}/buyers/search",
-        f"{base_url}/customs/search",
-        f"{base_url}/importers",
-    ]
-
-    params = {
+    payload = {
         "query": product,
         "product": product,
         "country": country,
+        "buyer_type": buyer_type or "Importer",
         "role": buyer_type or "Importer",
         "limit": min(limit, 20),
     }
@@ -536,16 +542,22 @@ async def _search_tradewind(product: str, country: str, buyer_type: str, limit: 
     try:
         async with httpx.AsyncClient(timeout=4.0) as client:
             resp = None
-            for ep in endpoints_to_try:
+            for ep in candidate_urls:
                 try:
-                    resp = await client.get(ep, headers=headers, params=params)
+                    # 1. Try POST (standard for search APIs in TradeWind AI 2.0)
+                    resp = await client.post(ep, headers=headers, json=payload)
                     if resp.status_code == 200:
                         break
+                    # 2. Try GET with params if POST not allowed
+                    if resp.status_code in [404, 405]:
+                        resp = await client.get(ep, headers=headers, params=payload)
+                        if resp.status_code == 200:
+                            break
                 except Exception:
                     continue
 
             if not resp or resp.status_code != 200:
-                logger.info(f"Tradewind API check (status: {resp.status_code if resp else 'no response'})")
+                logger.info(f"Tradewind API check status: {resp.status_code if resp else 'no response'}")
                 return []
 
             data = resp.json()
@@ -553,19 +565,34 @@ async def _search_tradewind(product: str, country: str, buyer_type: str, limit: 
             if isinstance(data, list):
                 raw_records = data
             elif isinstance(data, dict):
-                raw_records = data.get("data") or data.get("results") or data.get("buyers") or data.get("records") or data.get("importers") or []
+                raw_records = (
+                    data.get("data")
+                    or data.get("results")
+                    or data.get("buyers")
+                    or data.get("records")
+                    or data.get("importers")
+                    or data.get("companies")
+                    or data.get("items")
+                    or []
+                )
 
             buyers = []
             for r in raw_records:
                 if not isinstance(r, dict):
                     continue
 
-                comp_name = r.get("company_name") or r.get("importer_name") or r.get("name")
+                comp_name = (
+                    r.get("company_name")
+                    or r.get("importer_name")
+                    or r.get("consignee")
+                    or r.get("importer")
+                    or r.get("name")
+                )
                 if not comp_name:
                     continue
 
                 website = r.get("website") or ""
-                domain = _clean_domain(website) if website else re.sub(r'[^a-zA-Z0-9]', '', comp_name).lower() + ".com"
+                domain = _clean_domain(website) if website else re.sub(r'[^a-zA-Z0-9]', '', str(comp_name)).lower() + ".com"
 
                 email = r.get("email") or f"import@{domain}"
                 city = r.get("city") or "New York"

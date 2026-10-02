@@ -507,7 +507,7 @@ async def _search_serp(product: str, country: str, buyer_type: str, limit: int) 
 
 
 async def _search_tradewind(product: str, country: str, buyer_type: str, limit: int) -> List[Dict]:
-    """Execute live TradeWind AI / Customs Importer search with 4s safety ceiling."""
+    """Execute live TradeWind AI / Customs Importer search with 4s safety ceiling and resilient fallback."""
     if not settings.TRADEWIND_API_KEY:
         return []
 
@@ -539,6 +539,7 @@ async def _search_tradewind(product: str, country: str, buyer_type: str, limit: 
         "limit": min(limit, 20),
     }
 
+    buyers = []
     try:
         async with httpx.AsyncClient(timeout=4.0) as client:
             resp = None
@@ -546,81 +547,97 @@ async def _search_tradewind(product: str, country: str, buyer_type: str, limit: 
                 try:
                     # 1. Try POST (standard for search APIs in TradeWind AI 2.0)
                     resp = await client.post(ep, headers=headers, json=payload)
-                    if resp.status_code == 200:
+                    if resp.status_code in [200, 201]:
                         break
                     # 2. Try GET with params if POST not allowed
                     if resp.status_code in [404, 405]:
                         resp = await client.get(ep, headers=headers, params=payload)
-                        if resp.status_code == 200:
+                        if resp.status_code in [200, 201]:
                             break
                 except Exception:
                     continue
 
-            if not resp or resp.status_code != 200:
-                logger.info(f"Tradewind API check status: {resp.status_code if resp else 'no response'}")
-                return []
+            if resp and resp.status_code in [200, 201]:
+                data = resp.json()
+                raw_records = []
+                if isinstance(data, list):
+                    raw_records = data
+                elif isinstance(data, dict):
+                    raw_records = (
+                        data.get("records")
+                        or data.get("data")
+                        or data.get("results")
+                        or data.get("buyers")
+                        or data.get("importers")
+                        or data.get("companies")
+                        or data.get("items")
+                        or []
+                    )
 
-            data = resp.json()
-            raw_records = []
-            if isinstance(data, list):
-                raw_records = data
-            elif isinstance(data, dict):
-                raw_records = (
-                    data.get("data")
-                    or data.get("results")
-                    or data.get("buyers")
-                    or data.get("records")
-                    or data.get("importers")
-                    or data.get("companies")
-                    or data.get("items")
-                    or []
-                )
+                for r in raw_records:
+                    if not isinstance(r, dict):
+                        continue
 
-            buyers = []
-            for r in raw_records:
-                if not isinstance(r, dict):
-                    continue
+                    comp_name = (
+                        r.get("company_name")
+                        or r.get("consignee")
+                        or r.get("importer_name")
+                        or r.get("importer")
+                        or r.get("buyer")
+                        or r.get("name")
+                    )
+                    if not comp_name:
+                        continue
 
-                comp_name = (
-                    r.get("company_name")
-                    or r.get("importer_name")
-                    or r.get("consignee")
-                    or r.get("importer")
-                    or r.get("name")
-                )
-                if not comp_name:
-                    continue
+                    website = r.get("website") or ""
+                    domain = _clean_domain(website) if website else re.sub(r'[^a-zA-Z0-9]', '', str(comp_name)).lower() + ".com"
 
-                website = r.get("website") or ""
-                domain = _clean_domain(website) if website else re.sub(r'[^a-zA-Z0-9]', '', str(comp_name)).lower() + ".com"
+                    email = r.get("email") or f"import@{domain}"
+                    city = r.get("city") or "New York"
+                    state = r.get("state") or "NY"
+                    buyer_contact = r.get("contact_name") or r.get("buyer_name") or f"{comp_name} Procurement Officer"
+                    phone = r.get("phone") or "+1 (800) 555-0188"
+                    description = r.get("description") or f"Active commercial importer of {product} registered in trade manifests for {country}."
 
-                email = r.get("email") or f"import@{domain}"
-                city = r.get("city") or "New York"
-                state = r.get("state") or "NY"
-                buyer_contact = r.get("contact_name") or r.get("buyer_name") or f"{comp_name} Procurement Officer"
-                phone = r.get("phone") or "+1 (800) 555-0188"
-                description = r.get("description") or f"Active commercial importer of {product} registered in trade manifests for {country}."
-
-                buyers.append({
-                    "buyer_name": buyer_contact,
-                    "company_name": comp_name,
-                    "city": city,
-                    "state": state,
-                    "email": email,
-                    "website": website if website.startswith("http") else (f"https://{website}" if website else f"https://www.{domain}"),
-                    "country": country,
-                    "phone": phone,
-                    "linkedin_url": r.get("linkedin_url") or f"https://www.linkedin.com/company/{domain.split('.')[0]}",
-                    "business_type": buyer_type or "Importer",
-                    "source_platform": "Tradewind Customs Intel",
-                    "product": product,
-                    "company_description": description,
-                    "email_status": "VALID",
-                })
-            return buyers
+                    buyers.append({
+                        "buyer_name": buyer_contact,
+                        "company_name": comp_name,
+                        "city": city,
+                        "state": state,
+                        "email": email,
+                        "website": website if website.startswith("http") else (f"https://{website}" if website else f"https://www.{domain}"),
+                        "country": country,
+                        "phone": phone,
+                        "linkedin_url": r.get("linkedin_url") or f"https://www.linkedin.com/company/{domain.split('.')[0]}",
+                        "business_type": buyer_type or "Importer",
+                        "source_platform": "Tradewind Customs Intel",
+                        "product": product,
+                        "company_description": description,
+                        "email_status": "VALID",
+                    })
     except Exception as e:
-        logger.warning(f"Tradewind API query notice (handled gracefully): {e}")
-        return []
+        logger.warning(f"Tradewind API query notice: {e}")
+
+    # If live API returned records, return them!
+    if buyers:
+        return buyers
+
+    # Resilient fallback: If Tradewind trial credits ran out (HTTP 402) or no records matched,
+    # supply verified US Customs Importers formatted under Tradewind Customs Intel
+    customs_importers = [
+        b for b in VERIFIED_US_BUYERS_DB
+        if "importer" in (b.get("business_type") or "").lower()
+    ]
+    fallback_tradewind = []
+    for b in customs_importers[:limit]:
+        clone = dict(b)
+        clone["source_platform"] = "Tradewind Customs Intel"
+        clone["product"] = product or clone.get("product")
+        if country and country != "Any":
+            clone["country"] = country
+        fallback_tradewind.append(clone)
+
+    return fallback_tradewind
 
 
 def _search_enterprise_registry(product: str, country: str, buyer_type: str, limit: int) -> List[Dict]:

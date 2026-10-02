@@ -112,6 +112,25 @@ def health():
         },
     }
 
+@app.get("/api/db-diagnostics")
+def db_diagnostics(db: Session = Depends(get_db)):
+    users = db.query(User).all()
+    campaigns = db.query(Campaign).all()
+    logs = db.query(EmailLog).all()
+    buyers_count = db.query(Buyer).count()
+    return {
+        "users": [{"id": u.id, "email": u.email} for u in users],
+        "campaigns": [{"id": c.id, "user_id": c.user_id, "name": c.name, "sent": c.sent_count, "total": c.total_leads, "status": c.status} for c in campaigns],
+        "email_logs_count": len(logs),
+        "email_logs_summary": {
+            "sent": sum(1 for l in logs if l.status == 'SENT'),
+            "failed": sum(1 for l in logs if l.status == 'FAILED'),
+            "skipped": sum(1 for l in logs if l.status in ['SKIPPED', 'ALREADY_CONTACTED', 'INVALID_EMAIL']),
+            "by_user": {str(uid): sum(1 for l in logs if l.user_id == uid) for uid in set(l.user_id for l in logs)}
+        },
+        "total_buyers": buyers_count
+    }
+
 @app.get("/api/test-tradewind")
 async def test_tradewind():
     if not settings.TRADEWIND_API_KEY:

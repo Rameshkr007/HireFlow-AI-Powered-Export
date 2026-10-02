@@ -111,3 +111,68 @@ def health():
             "openai": bool(settings.OPENAI_API_KEY),
         },
     }
+
+@app.get("/api/test-tradewind")
+async def test_tradewind():
+    if not settings.TRADEWIND_API_KEY:
+        return {"configured": False, "message": "TRADEWIND_API_KEY is not set"}
+
+    key_len = len(settings.TRADEWIND_API_KEY)
+    key_preview = (settings.TRADEWIND_API_KEY[:4] + "..." + settings.TRADEWIND_API_KEY[-4:]) if key_len > 8 else "***"
+
+    endpoints = [
+        "https://app.trade-wind.co/api/customs/search",
+        "https://app.trade-wind.co/api/agentic/search",
+        "https://api.trade-wind.co/api/customs/search",
+    ]
+    if settings.TRADEWIND_API_URL and "tradewind.com" not in settings.TRADEWIND_API_URL:
+        base = settings.TRADEWIND_API_URL.rstrip("/")
+        endpoints.insert(0, f"{base}/api/customs/search")
+        endpoints.insert(1, base)
+
+    headers = {
+        "Authorization": f"Bearer {settings.TRADEWIND_API_KEY}",
+        "x-api-key": settings.TRADEWIND_API_KEY,
+        "Accept": "application/json",
+        "User-Agent": "HireFlow/2.0",
+    }
+
+    import httpx
+    diagnostic_results = []
+    async with httpx.AsyncClient(timeout=5.0) as client:
+        for ep in endpoints:
+            try:
+                r_post = await client.post(ep, headers=headers, json={"query": "Singing Bowls", "limit": 5})
+                diagnostic_results.append({
+                    "endpoint": ep,
+                    "method": "POST",
+                    "status_code": r_post.status_code,
+                    "response": r_post.text[:200]
+                })
+            except Exception as e:
+                diagnostic_results.append({
+                    "endpoint": ep,
+                    "method": "POST",
+                    "error": str(e)
+                })
+
+            try:
+                r_get = await client.get(ep, headers=headers, params={"query": "Singing Bowls", "limit": 5})
+                diagnostic_results.append({
+                    "endpoint": ep,
+                    "method": "GET",
+                    "status_code": r_get.status_code,
+                    "response": r_get.text[:200]
+                })
+            except Exception as e:
+                diagnostic_results.append({
+                    "endpoint": ep,
+                    "method": "GET",
+                    "error": str(e)
+                })
+
+    return {
+        "key_preview": key_preview,
+        "key_length": key_len,
+        "results": diagnostic_results
+    }

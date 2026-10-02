@@ -226,17 +226,16 @@ def ensure_ramesh_user(db: Session) -> User:
         user_camps = db.query(Campaign).filter(Campaign.user_id == user.id).all()
         user_logs_count = db.query(EmailLog).filter(EmailLog.user_id == user.id).count()
         
-        if not user_camps or user_logs_count == 0:
-            campaign = db.query(Campaign).filter(Campaign.user_id == user.id).first()
-            if not campaign:
-                campaign = Campaign(
-                    user_id=user.id,
-                    name="USA Singing Bowls & Brass Decor Outreach 2026",
-                    product="Handmade Himalayan Singing Bowls & Metal Candle Holders",
-                    target_country="USA",
-                    target_audience="Importer & Wholesaler",
-                    email_subject="Direct Manufacturer Export Catalog 2026 - Singing Bowls & Candle Holders",
-                    email_body="""Dear <Buyer Name>,
+        campaign = db.query(Campaign).filter(Campaign.user_id == user.id).first()
+        if not campaign:
+            campaign = Campaign(
+                user_id=user.id,
+                name="USA Singing Bowls & Brass Decor Outreach 2026",
+                product="Handmade Himalayan Singing Bowls & Metal Candle Holders",
+                target_country="USA",
+                target_audience="Importer & Wholesaler",
+                email_subject="Direct Manufacturer Export Catalog 2026 - Singing Bowls & Candle Holders",
+                email_body="""Dear <Buyer Name>,
 
 I hope this email finds you well.
 
@@ -262,49 +261,53 @@ Export Sales Executive | OM Enterprise
 exportindia2026us@gmail.com
 Phone: +91 80577 10065
 Moradabad, Uttar Pradesh, India""",
-                    sending_limit=25,
-                    delay_seconds=5,
-                    status="COMPLETED",
-                    sent_count=18,
-                    failed_count=2,
-                    skipped_count=5,
-                    total_leads=25,
-                    is_demo=True,
-                    started_at=datetime.utcnow() - timedelta(days=1),
-                    completed_at=datetime.utcnow() - timedelta(hours=20)
-                )
-                db.add(campaign)
-                db.flush()
+                sending_limit=25,
+                delay_seconds=5,
+                status="COMPLETED",
+                sent_count=18,
+                failed_count=2,
+                skipped_count=5,
+                total_leads=25,
+                is_demo=True,
+                started_at=datetime.utcnow() - timedelta(days=1),
+                completed_at=datetime.utcnow() - timedelta(hours=20)
+            )
+            db.add(campaign)
+            db.flush()
 
-            # Create email activity logs for the campaign using Ramesh's top buyers
-            if user_logs_count == 0:
-                top_buyers = db.query(Buyer).filter(Buyer.user_id == user.id).limit(25).all()
-                statuses = ['SENT'] * 18 + ['FAILED'] * 2 + ['SKIPPED'] * 5
-                for idx, b in enumerate(top_buyers):
-                    st = statuses[idx % len(statuses)]
-                    err = None
-                    if st == 'FAILED':
-                        err = "Temporary delivery failure - Mailbox busy"
-                    elif st == 'SKIPPED':
-                        err = "Skipped by target audience criteria"
-                    
-                    elog = EmailLog(
-                        campaign_id=campaign.id,
-                        buyer_id=b.id,
-                        user_id=user.id,
-                        email_address=b.email,
-                        subject=f"Export Partnership Opportunity - {b.company_name}",
-                        personalized_body=f"Dear {b.buyer_name or 'Sir/Madam'},\n\nWe would like to introduce OM Enterprise and explore potential export supply opportunities...",
-                        status=st,
-                        error_message=err,
-                        sent_at=datetime.utcnow() - timedelta(hours=20, minutes=idx*2) if st == 'SENT' else None,
-                        created_at=datetime.utcnow() - timedelta(hours=20, minutes=idx*2)
-                    )
-                    db.add(elog)
-                    if st == 'SENT':
-                        b.outreach_status = 'CONTACTED'
-                        b.last_contacted = datetime.utcnow() - timedelta(hours=20, minutes=idx*2)
-                db.commit()
+        # Create email activity logs for the campaign using Ramesh's top buyers if fewer than 15 logs exist
+        if user_logs_count < 15:
+            top_buyers = db.query(Buyer).filter(Buyer.user_id == user.id).limit(25).all()
+            statuses = ['SENT'] * 18 + ['FAILED'] * 2 + ['SKIPPED'] * 5
+            for idx, b in enumerate(top_buyers):
+                # Avoid duplicate logs for same buyer in same campaign
+                already = db.query(EmailLog).filter(EmailLog.campaign_id == campaign.id, EmailLog.buyer_id == b.id).first()
+                if already:
+                    continue
+                st = statuses[idx % len(statuses)]
+                err = None
+                if st == 'FAILED':
+                    err = "Temporary delivery failure - Mailbox busy"
+                elif st == 'SKIPPED':
+                    err = "Skipped by target audience criteria"
+                
+                elog = EmailLog(
+                    campaign_id=campaign.id,
+                    buyer_id=b.id,
+                    user_id=user.id,
+                    email_address=b.email,
+                    subject=f"Export Partnership Opportunity - {b.company_name}",
+                    personalized_body=f"Dear {b.buyer_name or 'Sir/Madam'},\n\nWe would like to introduce OM Enterprise and explore potential export supply opportunities...",
+                    status=st,
+                    error_message=err,
+                    sent_at=datetime.utcnow() - timedelta(hours=20, minutes=idx*2) if st == 'SENT' else None,
+                    created_at=datetime.utcnow() - timedelta(hours=20, minutes=idx*2)
+                )
+                db.add(elog)
+                if st == 'SENT':
+                    b.outreach_status = 'CONTACTED'
+                    b.last_contacted = datetime.utcnow() - timedelta(hours=20, minutes=idx*2)
+            db.commit()
     except Exception as e:
         db.rollback()
         print(f"[CAMPAIGN INIT ERROR] {e}")

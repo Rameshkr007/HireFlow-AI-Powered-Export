@@ -78,7 +78,7 @@ export default function BuyersPage() {
             className="px-3.5 py-2 rounded-lg bg-amber-500 hover:bg-amber-400 text-dark-950 font-bold text-xs flex items-center gap-1.5 shadow-lg shadow-amber-500/20 transition-all cursor-pointer"
           >
             <span>✨</span>
-            <span>{seedingCandles ? 'Syncing Directory...' : 'Sync 100+ Verified Buyers (Singing Bowls & Candle Stands)'}</span>
+            <span>{seedingCandles ? 'Syncing Directory...' : 'Sync 320+ Verified Buyers (100+ California Buyers Included)'}</span>
           </button>
           <button onClick={() => navigate('/discovery')} className="btn-secondary text-xs">
             Search More
@@ -88,12 +88,34 @@ export default function BuyersPage() {
       </div>
 
       <div className="card">
-        <div className="p-4 border-b border-dark-800 flex gap-4">
-          <div className="relative flex-1 max-w-md">
-            <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-dark-500" />
-            <input type="text" placeholder="Search buyers, companies, addresses..." className="input pl-9" value={search} onChange={e => { setSearch(e.target.value); setPage(1); }} />
+        <div className="p-4 border-b border-dark-800 flex flex-wrap items-center justify-between gap-4">
+          <div className="flex flex-wrap items-center gap-3 flex-1">
+            <div className="relative flex-1 min-w-[240px] max-w-md">
+              <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-dark-500" />
+              <input type="text" placeholder="Search buyers, cities, CA addresses..." className="input pl-9" value={search} onChange={e => { setSearch(e.target.value); setPage(1); }} />
+            </div>
+            <div className="flex items-center gap-1.5">
+              <button
+                onClick={() => { setSearch(search === 'California' ? '' : 'California'); setPage(1); }}
+                className={`text-xs px-2.5 py-1.5 rounded-lg border font-medium transition-all flex items-center gap-1 ${
+                  search.toLowerCase().includes('california') || search === 'CA'
+                    ? 'bg-amber-500/20 text-amber-300 border-amber-500/40 shadow-sm'
+                    : 'bg-dark-800 text-dark-300 border-dark-700 hover:border-dark-600'
+                }`}
+              >
+                <span>🌴</span>
+                <span>California Buyers (100+)</span>
+              </button>
+              {search && (
+                <button
+                  onClick={() => { setSearch(''); setPage(1); }}
+                  className="text-xs text-dark-400 hover:text-dark-200 px-2 py-1"
+                >
+                  Clear filter
+                </button>
+              )}
+            </div>
           </div>
-          <button className="btn-secondary"><Filter className="w-4 h-4" /> Filters</button>
         </div>
 
         <div className="overflow-x-auto min-h-[400px]">

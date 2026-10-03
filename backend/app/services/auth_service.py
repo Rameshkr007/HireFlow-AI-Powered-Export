@@ -275,6 +275,57 @@ Moradabad, Uttar Pradesh, India""",
             db.add(campaign)
             db.flush()
 
+        # Ensure California Statewide campaign is pre-created for Ramesh
+        cal_camp = db.query(Campaign).filter(
+            Campaign.user_id == user.id,
+            Campaign.name == "California Statewide Export Outreach 2026"
+        ).first()
+        if not cal_camp:
+            cal_camp = Campaign(
+                user_id=user.id,
+                name="California Statewide Export Outreach 2026",
+                product="Handmade Himalayan Singing Bowls & Metal Candle Holders",
+                target_country="USA - California (All Cities)",
+                target_audience="Importer & Wholesaler",
+                email_subject="Direct Manufacturer Export Catalog 2026 - Singing Bowls & Candle Holders (California)",
+                email_body="""Dear <Buyer Name>,
+
+I hope this email finds you well.
+
+While researching prominent home decor, tabletop and wellness businesses across California, we came across <Company Name> and were very impressed with your curation.
+
+We would like to introduce OM Enterprise and explore direct B2B export supply opportunities with your business.
+
+We are direct manufacturers and exporters based in Moradabad, India, specializing in:
+1. Authentic Handcrafted Himalayan Singing Bowls & Full Moon Healing Sets
+2. Metal Candle Holders, Wrought Iron Lanterns & Banquet Candelabras
+
+Key Advantages for California Importers:
+- Direct Factory Pricing (no intermediate trading markups)
+- Strict Acoustic & Metal Quality Control
+- Custom Designs, Private Labeling & Laser Engraving
+- Reliable Door-to-Port / Door-to-Door Logistics to Los Angeles & Long Beach Ports
+
+We would be delighted to share our 2026 Digital Catalog and discuss sample shipments for your upcoming season.
+
+Best regards,
+Ramesh Kumar Thakur
+Export Sales Executive | OM Enterprise
+exportindia2026us@gmail.com
+Phone: +91 80577 10065
+Moradabad, Uttar Pradesh, India""",
+                sending_limit=50,
+                delay_seconds=5,
+                status="READY",
+                sent_count=0,
+                failed_count=0,
+                skipped_count=0,
+                total_leads=50,
+                is_demo=False
+            )
+            db.add(cal_camp)
+            db.commit()
+
         # Create email activity logs for the campaign using Ramesh's top buyers if fewer than 15 logs exist
         if user_logs_count < 15:
             top_buyers = db.query(Buyer).filter(Buyer.user_id == user.id).limit(25).all()

@@ -465,14 +465,66 @@ export default function CampaignCreatePage() {
               />
             </div>
             <div>
-              <label className="label text-xs">Target Destination Country</label>
+              <label className="label text-xs">Target Destination Country / State</label>
               <input
                 type="text"
                 value={formData.target_country}
                 onChange={e => setFormData({ ...formData, target_country: e.target.value })}
                 className="input text-xs"
-                placeholder="e.g. United States"
+                placeholder="e.g. United States or USA - California"
               />
+              <div className="flex flex-wrap gap-1.5 mt-2">
+                <button
+                  type="button"
+                  onClick={() => setFormData({ ...formData, target_country: 'USA - California (All Cities)' })}
+                  className={`text-[11px] px-2.5 py-1 rounded-md border font-medium transition-all ${
+                    formData.target_country.toLowerCase().includes('california') || formData.target_country.toLowerCase().includes('ca')
+                      ? 'bg-amber-500/20 text-amber-300 border-amber-500/40 shadow-sm'
+                      : 'bg-dark-800 text-dark-300 border-dark-700 hover:border-dark-600'
+                  }`}
+                >
+                  🌴 USA - California (All Cities) [100+ Verified Buyers]
+                </button>
+                <button
+                  type="button"
+                  onClick={() => setFormData({ ...formData, target_country: 'United States' })}
+                  className={`text-[11px] px-2.5 py-1 rounded-md border font-medium transition-all ${
+                    formData.target_country === 'United States'
+                      ? 'bg-primary-500/20 text-primary-300 border-primary-500/40'
+                      : 'bg-dark-800 text-dark-300 border-dark-700 hover:border-dark-600'
+                  }`}
+                >
+                  🇺🇸 United States (All 50 States)
+                </button>
+                <button
+                  type="button"
+                  onClick={() => setFormData({ ...formData, target_country: 'United Kingdom' })}
+                  className="text-[11px] px-2 py-1 rounded-md border bg-dark-800 text-dark-300 border-dark-700 hover:border-dark-600"
+                >
+                  🇬🇧 UK
+                </button>
+                <button
+                  type="button"
+                  onClick={() => setFormData({ ...formData, target_country: 'Germany' })}
+                  className="text-[11px] px-2 py-1 rounded-md border bg-dark-800 text-dark-300 border-dark-700 hover:border-dark-600"
+                >
+                  🇩🇪 Germany
+                </button>
+              </div>
+
+              {(formData.target_country.toLowerCase().includes('california') || formData.target_country.toLowerCase().includes('ca')) && (
+                <div className="mt-2.5 p-3 rounded-lg bg-amber-500/10 border border-amber-500/30 flex items-start gap-2.5">
+                  <span className="text-lg leading-none">🌴</span>
+                  <div>
+                    <div className="text-xs font-bold text-amber-300">
+                      Strict California Statewide Lead Filter Active
+                    </div>
+                    <p className="text-[11px] text-amber-200/90 mt-0.5 leading-relaxed">
+                      Only verified buyers located across California cities (Los Angeles, San Francisco, San Diego, San Jose, Sacramento, Santa Barbara, Encinitas, Ojai, and 40+ CA cities) will receive emails. Non-California leads are strictly excluded.
+                    </p>
+                  </div>
+                </div>
+              )}
             </div>
             <div>
               <label className="label text-xs">Target Buyer Classification</label>

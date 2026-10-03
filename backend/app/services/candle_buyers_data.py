@@ -2125,6 +2125,7 @@ SINGING_BOWL_BUYERS: List[Dict] = [
     }
 ]
 
-# Combined Master Directory (250 Verified Enterprise Buyers with Full Street Addresses)
+# Combined Master Directory (320 Verified Enterprise Buyers with Full Street Addresses)
 from .expanded_buyers_data import EXPANDED_USA_BUYERS
-MASTER_EXPORT_BUYERS: List[Dict] = CANDLE_STAND_BUYERS + SINGING_BOWL_BUYERS + EXPANDED_USA_BUYERS
+from .california_buyers_data import CALIFORNIA_ALL_BUYERS
+MASTER_EXPORT_BUYERS: List[Dict] = CANDLE_STAND_BUYERS + SINGING_BOWL_BUYERS + EXPANDED_USA_BUYERS + CALIFORNIA_ALL_BUYERS

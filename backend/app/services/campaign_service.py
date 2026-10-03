@@ -1,5 +1,5 @@
 from sqlalchemy.orm import Session
-from sqlalchemy import or_
+from sqlalchemy import or_, and_
 from fastapi import HTTPException, BackgroundTasks
 from datetime import datetime
 from ..models.campaign import Campaign
@@ -92,9 +92,42 @@ def stop_campaign(db: Session, user_id: int, campaign_id: int) -> Campaign:
 def get_campaign_eligible_buyers(db: Session, campaign: Campaign):
     query = db.query(Buyer).filter(Buyer.user_id == campaign.user_id)
     
-    # Smart country matching
-    if campaign.target_country:
-        tc = campaign.target_country.strip().lower()
+    tc = (campaign.target_country or "").strip().lower()
+    camp_name = (campaign.name or "").strip().lower()
+    camp_prod = (campaign.product or "").strip().lower()
+    
+    is_california_targeted = (
+        "california" in tc or 
+        tc == "ca" or 
+        "usa - california" in tc or 
+        "california, usa" in tc or
+        "california" in camp_name or
+        "california" in camp_prod
+    )
+    
+    if is_california_targeted:
+        from .california_buyers_data import CALIFORNIA_CITIES
+        query = query.filter(
+            or_(
+                Buyer.state == "CA",
+                and_(
+                    or_(
+                        Buyer.address.ilike("%California%"),
+                        Buyer.address.ilike("%, CA %"),
+                        Buyer.address.ilike("% CA %"),
+                        Buyer.address.ilike("%, CA,%"),
+                        Buyer.address.ilike("%CA, USA%")
+                    ),
+                    or_(Buyer.state == "CA", Buyer.state.is_(None), Buyer.state == "")
+                ),
+                and_(
+                    Buyer.city.in_(CALIFORNIA_CITIES),
+                    or_(Buyer.state == "CA", Buyer.state.is_(None), Buyer.state == "")
+                )
+            ),
+            or_(Buyer.state.is_(None), Buyer.state == "", Buyer.state == "CA")
+        )
+    elif campaign.target_country:
         if tc in ["united states", "usa", "us", "u.s.", "u.s.a."]:
             query = query.filter(
                 or_(
@@ -112,8 +145,8 @@ def get_campaign_eligible_buyers(db: Session, campaign: Campaign):
         
     buyers = query.filter(Buyer.email_status != 'INVALID').limit(campaign.sending_limit).all()
     
-    # If strict filter yields fewer than sending_limit, fallback to other valid buyers for this user
-    if len(buyers) < campaign.sending_limit:
+    # If strict filter yields fewer than sending_limit, fallback ONLY IF NOT state-specific (never mix outside California)
+    if not is_california_targeted and len(buyers) < campaign.sending_limit:
         remaining_limit = campaign.sending_limit - len(buyers)
         existing_ids = [b.id for b in buyers]
         fallback_query = db.query(Buyer).filter(

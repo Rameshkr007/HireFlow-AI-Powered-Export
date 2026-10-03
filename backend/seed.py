@@ -22,21 +22,37 @@ def seed():
 
         profile = ExporterProfile(
             user_id=admin_user.id,
-            exporter_name="Raj Kumar",
-            company_name="Himalayan Exports Pvt Ltd",
-            company_email="exports@himalayanexports.com",
-            phone="+977-1-4567890",
-            website="https://www.himalayanexports.com",
-            country="Nepal",
-            address="Thamel, Kathmandu 44600, Nepal",
-            product_categories=["Singing Bowls", "Handicrafts", "Home Decor", "Textiles"],
-            company_description="Leading exporter of authentic Himalayan handicrafts and wellness products since 2005.",
-            sender_name="Raj Kumar"
+            exporter_name="Ramesh Kumar Thakur",
+            company_name="OM Enterprise",
+            company_email="exportindia2026us@gmail.com",
+            phone="+91 80577 10065",
+            website="",
+            country="India",
+            address="Moradabad, Uttar Pradesh, India",
+            product_categories=[
+                "Handmade Himalayan Singing Bowls",
+                "Metal Candle Holders & Lanterns",
+                "Candelabras & Centerpieces",
+                "Handicrafts & Decor"
+            ],
+            company_description="Direct manufacturer and exporter of authentic handmade Himalayan Singing Bowls, Full Moon Singing Bowls, and handcrafted metal candle holders, candelabras, and lanterns.",
+            sender_name="Ramesh Kumar Thakur"
         )
         db.add(profile)
         db.flush()
     else:
         user = existing_admin
+        existing_profile = db.query(ExporterProfile).filter(ExporterProfile.user_id == existing_admin.id).first()
+        if existing_profile:
+            existing_profile.exporter_name = "Ramesh Kumar Thakur"
+            existing_profile.sender_name = "Ramesh Kumar Thakur"
+            existing_profile.company_name = "OM Enterprise"
+            existing_profile.company_email = "exportindia2026us@gmail.com"
+            existing_profile.phone = "+91 80577 10065"
+            existing_profile.website = ""
+            existing_profile.country = "India"
+            existing_profile.address = "Moradabad, Uttar Pradesh, India"
+            db.commit()
 
     buyers_data = [
         {"buyer_name": "Michael Johnson", "company_name": "Global Wellness Imports LLC", "email": "info@globalwellnessimports.com", "website": "https://globalwellnessimports.com", "country": "USA", "business_type": "Importer", "ai_priority": "HIGH", "ai_score": 92, "email_status": "VALID", "product": "Singing Bowls", "company_description": "Leading importer and distributor of wellness and lifestyle products across North America."},

@@ -8,22 +8,45 @@ from ..models.exporter_profile import ExporterProfile
 
 router = APIRouter(prefix="/api/profile", tags=["profile"])
 
+DEFAULT_PROFILE = {
+    "exporter_name": "Ramesh Kumar Thakur",
+    "sender_name": "Ramesh Kumar Thakur",
+    "company_name": "OM Enterprise",
+    "company_email": "exportindia2026us@gmail.com",
+    "phone": "+91 80577 10065",
+    "website": "",
+    "country": "India",
+    "address": "Moradabad, Uttar Pradesh, India",
+    "product_categories": [
+        "Handmade Himalayan Singing Bowls",
+        "Metal Candle Holders & Lanterns",
+        "Candelabras & Centerpieces",
+        "Handicrafts & Decor"
+    ],
+    "company_description": "Direct manufacturer and exporter of authentic handmade Himalayan Singing Bowls, Full Moon Singing Bowls, and handcrafted metal candle holders, candelabras, and lanterns."
+}
+
 @router.get("", response_model=ExporterProfileResponse)
 def get_profile(current_user: User = Depends(get_current_user), db: Session = Depends(get_db)):
     profile = db.query(ExporterProfile).filter(ExporterProfile.user_id == current_user.id).first()
     if not profile:
-        display_name = current_user.email.split('@')[0].replace('.', ' ').title()
-        profile = ExporterProfile(
-            user_id=current_user.id,
-            exporter_name=display_name,
-            company_name=f"{display_name} Exports",
-            company_email=current_user.email,
-            sender_name=display_name,
-            product_categories=[]
-        )
+        profile = ExporterProfile(user_id=current_user.id, **DEFAULT_PROFILE)
         db.add(profile)
         db.commit()
         db.refresh(profile)
+    else:
+        # Guarantee permanent profile data for OM Enterprise
+        if (
+            profile.company_name != "OM Enterprise" or
+            profile.company_email != "exportindia2026us@gmail.com" or
+            profile.sender_name != "Ramesh Kumar Thakur" or
+            profile.website != "" or
+            profile.company_name in ["Himalayan Exports Pvt Ltd", "Raj Kumar Exports", "", None]
+        ):
+            for k, v in DEFAULT_PROFILE.items():
+                setattr(profile, k, v)
+            db.commit()
+            db.refresh(profile)
     return profile
 
 @router.post("", response_model=ExporterProfileResponse)

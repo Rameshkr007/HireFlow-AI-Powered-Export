@@ -79,8 +79,8 @@ export default function CompanyProfilePage() {
               <input type="text" className="input" value={formData.phone || ''} onChange={e => setFormData({...formData, phone: e.target.value})} />
             </div>
             <div>
-              <label className="label">Website</label>
-              <input type="url" className="input" value={formData.website || ''} onChange={e => setFormData({...formData, website: e.target.value})} />
+              <label className="label">Website (Optional)</label>
+              <input type="text" className="input" placeholder="Leave blank (No website)" value={formData.website || ''} onChange={e => setFormData({...formData, website: e.target.value})} />
             </div>
             <div>
               <label className="label">Country</label>

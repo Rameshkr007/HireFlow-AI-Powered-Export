@@ -42,7 +42,16 @@ interface DiscoveryResult {
 // ── Constants ─────────────────────────────────────────────────────────────────
 
 const BUYER_TYPES = ['Importer', 'Wholesaler', 'Distributor', 'Retailer', 'Purchasing Manager'];
-const COUNTRIES = ['United States', 'United Kingdom', 'Canada', 'Australia', 'Germany', 'France', 'United Arab Emirates'];
+const COUNTRIES = [
+  'United States',
+  'USA - California (All Cities)',
+  'United Kingdom',
+  'Canada',
+  'Australia',
+  'Germany',
+  'France',
+  'United Arab Emirates'
+];
 const QUICK_CATEGORIES = [
   'Candle Stands & Lanterns',
   'Metal Candelabras',
@@ -55,12 +64,20 @@ const QUICK_CATEGORIES = [
 
 const USA_CITIES = [
   'All USA Cities',
+  '🌴 California (All Cities)',
+  'Los Angeles, CA',
+  'San Francisco, CA',
+  'San Diego, CA',
+  'San Jose, CA',
+  'Sacramento, CA',
+  'Santa Barbara, CA',
+  'Encinitas & Ojai, CA',
+  'Pasadena, CA',
+  'Beverly Hills, CA',
   'Dallas, TX',
   'Atlanta, GA',
   'New York, NY',
-  'Los Angeles, CA',
   'Chicago, IL',
-  'San Francisco, CA',
   'Denver, CO',
   'Seattle, WA',
   'Memphis, TN'
@@ -102,10 +119,14 @@ export default function BuyerDiscoveryPage() {
     setSearching(true);
     setSelected(new Set());
 
+    const searchCountry = (selectedCity.includes('California') && country === 'United States')
+      ? 'USA - California (All Cities)'
+      : country;
+
     try {
       const resp = await api.post('/api/discovery/search', {
         product,
-        country,
+        country: searchCountry,
         buyer_type: buyerType,
         limit,
         auto_import: autoImport,
@@ -142,10 +163,19 @@ export default function BuyerDiscoveryPage() {
   const filteredBuyers = (result?.buyers || []).filter(b => {
     if (filterEmailOnly && !b.email) return false;
     if (selectedCity !== 'All USA Cities') {
-      const cityKeyword = selectedCity.split(',')[0].toLowerCase().trim();
+      if (selectedCity.includes('California (All Cities)')) {
+        const bState = (b.state || '').toUpperCase();
+        const bAddr = (b.address || '').toLowerCase();
+        const bCity = (b.city || '').toLowerCase();
+        const bDesc = (b.company_description || '').toLowerCase();
+        return bState === 'CA' || bAddr.includes('california') || bAddr.includes(', ca') || bCity.includes('california') || bDesc.includes('california');
+      }
+      const cityKeyword = selectedCity.split(',')[0].replace(/[^\w\s]/gi, '').toLowerCase().trim();
       const bCity = (b.city || '').toLowerCase();
       const bDesc = (b.company_description || '').toLowerCase();
-      if (!bCity.includes(cityKeyword) && !bDesc.includes(cityKeyword)) {
+      const bAddr = (b.address || '').toLowerCase();
+      const bState = (b.state || '').toLowerCase();
+      if (!bCity.includes(cityKeyword) && !bDesc.includes(cityKeyword) && !bAddr.includes(cityKeyword) && !bState.includes(cityKeyword)) {
         return false;
       }
     }
@@ -271,20 +301,40 @@ export default function BuyerDiscoveryPage() {
             <span className="text-[11px] text-dark-400">Target buyers in key wholesale trade centers</span>
           </div>
           <div className="flex flex-wrap gap-1.5">
-            {USA_CITIES.map(c => (
-              <button
-                key={c}
-                type="button"
-                onClick={() => setSelectedCity(c)}
-                className={`text-xs px-2.5 py-1 rounded-md border transition-all font-medium ${
-                  selectedCity === c
-                    ? 'bg-amber-500/20 border-amber-500 text-amber-300 font-bold shadow-sm'
-                    : 'bg-dark-800/80 border-dark-700 text-dark-400 hover:border-dark-600 hover:text-dark-200'
-                }`}
-              >
-                {c}
-              </button>
-            ))}
+            {USA_CITIES.map(c => {
+              const isCalAll = c.includes('California (All Cities)');
+              const isSelected = selectedCity === c;
+              return (
+                <button
+                  key={c}
+                  type="button"
+                  onClick={() => {
+                    setSelectedCity(c);
+                    if (isCalAll || c.endsWith(', CA')) {
+                      setCountry('USA - California (All Cities)');
+                    } else if (c === 'All USA Cities' && country === 'USA - California (All Cities)') {
+                      setCountry('United States');
+                    }
+                  }}
+                  className={`text-xs px-2.5 py-1 rounded-md border transition-all font-medium flex items-center gap-1.5 ${
+                    isSelected
+                      ? isCalAll
+                        ? 'bg-amber-500/25 border-amber-400 text-amber-200 font-bold shadow-md shadow-amber-900/30 ring-1 ring-amber-400/50'
+                        : 'bg-amber-500/20 border-amber-500 text-amber-300 font-bold shadow-sm'
+                      : isCalAll
+                      ? 'bg-amber-950/30 border-amber-700/60 text-amber-300/90 hover:border-amber-500 hover:text-amber-200 font-semibold'
+                      : 'bg-dark-800/80 border-dark-700 text-dark-400 hover:border-dark-600 hover:text-dark-200'
+                  }`}
+                >
+                  <span>{c}</span>
+                  {isCalAll && (
+                    <span className="px-1.5 py-0.2 text-[9px] bg-amber-500/30 text-amber-200 rounded-full font-bold border border-amber-500/30">
+                      100+ CA Leads
+                    </span>
+                  )}
+                </button>
+              );
+            })}
           </div>
         </div>
 

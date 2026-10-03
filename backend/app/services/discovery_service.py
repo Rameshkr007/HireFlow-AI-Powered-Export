@@ -624,9 +624,10 @@ async def _search_tradewind(product: str, country: str, buyer_type: str, limit: 
 
     # Resilient fallback: If Tradewind trial credits ran out (HTTP 402) or no records matched,
     # supply verified US Customs Importers formatted under Tradewind Customs Intel
+    is_ca = "california" in (country or "").lower() or "ca" in (country or "").lower().split()
     customs_importers = [
         b for b in VERIFIED_US_BUYERS_DB
-        if "importer" in (b.get("business_type") or "").lower()
+        if "importer" in (b.get("business_type") or "").lower() and (not is_ca or ((b.get("state") or "").upper() == "CA" or "california" in (b.get("address") or "").lower()))
     ]
     fallback_tradewind = []
     for b in customs_importers[:limit]:
@@ -634,7 +635,7 @@ async def _search_tradewind(product: str, country: str, buyer_type: str, limit: 
         clone["source_platform"] = "Tradewind Customs Intel"
         clone["product"] = product or clone.get("product")
         if country and country != "Any":
-            clone["country"] = country
+            clone["country"] = "United States" if is_ca else country
         fallback_tradewind.append(clone)
 
     return fallback_tradewind
@@ -644,15 +645,23 @@ def _search_enterprise_registry(product: str, country: str, buyer_type: str, lim
     """Search verified US B2B buyers database with dynamic category contextualization."""
     matched = []
     b_type = (buyer_type or "").lower()
+    is_ca = "california" in (country or "").lower() or "ca" in (country or "").lower().split()
 
     for item in VERIFIED_US_BUYERS_DB:
+        if is_ca:
+            state = (item.get("state") or "").upper()
+            addr = (item.get("address") or "").lower()
+            city = (item.get("city") or "").lower()
+            if state != "CA" and "california" not in addr and ", ca" not in addr and "california" not in city:
+                continue
+
         clone = dict(item)
-        clone["product"] = product or clone["product"]
+        clone["product"] = product or clone.get("product")
         if country and country != "Any":
-            clone["country"] = country
+            clone["country"] = "United States" if is_ca else country
 
         # Priority matching if buyer type matches
-        if b_type and b_type != "any" and b_type in clone["business_type"].lower():
+        if b_type and b_type != "any" and b_type in (clone.get("business_type") or "").lower():
             matched.insert(0, clone)
         else:
             matched.append(clone)

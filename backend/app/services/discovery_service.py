@@ -595,6 +595,8 @@ async def _search_tradewind(product: str, country: str, buyer_type: str, limit: 
                     email = r.get("email") or f"import@{domain}"
                     city = r.get("city") or "New York"
                     state = r.get("state") or "NY"
+                    if is_ca and state.upper() != "CA" and "california" not in (str(r) + city).lower():
+                        continue
                     buyer_contact = r.get("contact_name") or r.get("buyer_name") or f"{comp_name} Procurement Officer"
                     phone = r.get("phone") or "+1 (800) 555-0188"
                     description = r.get("description") or f"Active commercial importer of {product} registered in trade manifests for {country}."
@@ -713,6 +715,23 @@ async def discover_buyers(
 
     # Deduplicate
     all_buyers = _dedup(all_buyers)
+
+    # If California is specifically requested, enforce California leads
+    is_ca = "california" in (country or "").lower() or "ca" in (country or "").lower().split()
+    if is_ca:
+        ca_buyers = [
+            b for b in all_buyers
+            if (b.get("state") or "").upper() == "CA"
+            or "california" in (b.get("address") or "").lower()
+            or ", ca" in (b.get("address") or "").lower()
+            or "california" in (b.get("city") or "").lower()
+            or "california" in (b.get("company_description") or "").lower()
+        ]
+        if len(ca_buyers) < limit:
+            more_ca = _search_enterprise_registry(product, "California", buyer_type, limit)
+            ca_buyers.extend(more_ca)
+            ca_buyers = _dedup(ca_buyers)
+        all_buyers = ca_buyers
 
     # Sort so entries with full contact information and verified emails are at the top
     all_buyers.sort(key=lambda b: (1 if b.get("email") else 0, 1 if b.get("buyer_name") != "Procurement Lead" else 0), reverse=True)

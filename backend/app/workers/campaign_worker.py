@@ -41,25 +41,25 @@ def personalize_email_simple(template: str, buyer, fallback_product: str = "", p
     city_display = f"{city}, {state}" if city and state else (city or country)
     website = (buyer.website or '').strip()
 
-    # Company & Sender details (Sender uses personal email, Description uses official company email)
+    # Company & Sender details (Sender uses exportindia2026us@gmail.com as requested by user)
     p_sender_name = (getattr(profile, 'sender_name', None) or getattr(profile, 'exporter_name', None) or "Ramesh Kumar Thakur").strip()
     p_company_name = (getattr(profile, 'company_name', None) or "OM Enterprise").strip()
-    p_company_email = (getattr(profile, 'company_email', None) or "exportindia2026us@gmail.com").strip()
-    p_personal_email = (user_email or "rameshkrthakur1816@gmail.com").strip()
+    p_company_email = "exportindia2026us@gmail.com"
+    p_personal_email = "exportindia2026us@gmail.com"
     p_phone = (getattr(profile, 'phone', None) or "+91 80577 10065").strip()
-    p_website = (getattr(profile, 'website', None) or "").strip()
+    p_website = ""  # No company website per user instruction
 
     result = template
 
-    # Signature contextual replacement: ensure Sales Executive company is ALWAYS exporter company
+    # Signature contextual replacement: ensure Sales Executive company is ALWAYS OM Enterprise
     result = re.sub(r'Sales Executive\s*(\{\{|\{)?company_name(\}\})?', f'Sales Executive\n{p_company_name}', result, flags=re.IGNORECASE)
 
-    # Clean company website lines from template if no company website is available
-    if not p_website:
-        result = re.sub(r'^[ \t]*[🌐]?[ \t]*(?:Website|website)?[:\s]*(?:https?://)?(?:www\.)?omenterprise\.com[^\n]*\n?', '', result, flags=re.MULTILINE | re.IGNORECASE)
-        result = re.sub(r'^[ \t]*[🌐]?[ \t]*(?:Website|website)?[:\s]*\{\{website\}\}[^\n]*\n?', '', result, flags=re.MULTILINE | re.IGNORECASE)
-        result = re.sub(r'^[ \t]*[🌐]?[ \t]*(?:Website|website)?[:\s]*\{website\}[^\n]*\n?', '', result, flags=re.MULTILINE | re.IGNORECASE)
-        result = re.sub(r'^[ \t]*[🌐]?[ \t]*(?:Website|website)?[:\s]*<Website>[^\n]*\n?', '', result, flags=re.MULTILINE | re.IGNORECASE)
+    # Clean company website lines from template completely (no website)
+    result = re.sub(r'^[ \t]*[🌐]?[ \t]*(?:Website|website)?[:\s]*(?:https?://)?(?:www\.)?omenterprise\.com[^\n]*\n?', '', result, flags=re.MULTILINE | re.IGNORECASE)
+    result = re.sub(r'^[ \t]*[🌐]?[ \t]*(?:Website|website)?[:\s]*\{\{website\}\}[^\n]*\n?', '', result, flags=re.MULTILINE | re.IGNORECASE)
+    result = re.sub(r'^[ \t]*[🌐]?[ \t]*(?:Website|website)?[:\s]*\{website\}[^\n]*\n?', '', result, flags=re.MULTILINE | re.IGNORECASE)
+    result = re.sub(r'^[ \t]*[🌐]?[ \t]*(?:Website|website)?[:\s]*<Website>[^\n]*\n?', '', result, flags=re.MULTILINE | re.IGNORECASE)
+    result = re.sub(r'^[ \t]*[🌐][^\n]*\n?', '', result, flags=re.MULTILINE)
 
     # 1. First Pass: Process all DOUBLE-BRACE placeholders {{...}} first to prevent bracket nesting
     double_brace_replacements = [
@@ -110,8 +110,8 @@ def personalize_email_simple(template: str, buyer, fallback_product: str = "", p
         '{client_address}': address or city_display,
         '{buyer_address}': address or city_display,
         '{location}': city_display,
-        '{website}': website,
-        '{Website}': website,
+        '{website}': '',
+        '{Website}': '',
         '{sender_name}': p_sender_name,
         '{exporter_name}': p_sender_name,
         '{exporter_company}': p_company_name,
@@ -141,7 +141,7 @@ def personalize_email_simple(template: str, buyer, fallback_product: str = "", p
         '<product>': product,
         '<Country>': country,
         '<City>': city or country,
-        '<Website>': website,
+        '<Website>': '',
         '<Company Email>': p_company_email,
         '<Sender Name>': p_sender_name,
         '<Phone>': p_phone,

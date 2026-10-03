@@ -66,7 +66,6 @@ Sales Executive
 {{company_name}}
 📧 {{email}}
 📱 {{phone}}
-🌐 {{website}}
 
 Thank you for your valuable time. We look forward to building a successful and long-term partnership with {{company}}.`
 };
@@ -92,9 +91,8 @@ Best regards,
 
 Ramesh Kumar Thakur
 Export Sales Executive | OM Enterprise
-📧 Direct Outreach: rameshkrthakur1816@gmail.com
-🏢 Official Company: exportindia2026us@gmail.com
-📱 WhatsApp / Phone: +91 80577 10065
+📧 exportindia2026us@gmail.com
+📱 +91 80577 10065
 Moradabad, Uttar Pradesh, India`
 };
 
@@ -118,8 +116,8 @@ Best regards,
 
 Ramesh Kumar Thakur
 Export Sales Executive | OM Enterprise
-📧 Direct: rameshkrthakur1816@gmail.com | 🏢 Company: exportindia2026us@gmail.com
-📱 WhatsApp / Phone: +91 80577 10065
+📧 exportindia2026us@gmail.com
+📱 +91 80577 10065
 Moradabad, Uttar Pradesh, India`
 };
 
@@ -143,8 +141,8 @@ Best regards,
 
 Ramesh Kumar Thakur
 Export Sales Executive | OM Enterprise
-📧 Direct: rameshkrthakur1816@gmail.com | 🏢 Company: exportindia2026us@gmail.com
-📱 WhatsApp / Phone: +91 80577 10065
+📧 exportindia2026us@gmail.com
+📱 +91 80577 10065
 Moradabad, Uttar Pradesh, India`
 };
 

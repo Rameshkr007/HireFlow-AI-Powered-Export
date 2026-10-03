@@ -55,6 +55,7 @@ def ensure_ramesh_user(db: Session) -> User:
             company_name="OM Enterprise",
             company_email="exportindia2026us@gmail.com",
             phone="+91 80577 10065",
+            website="",
             country="India",
             address="Moradabad, Uttar Pradesh, India",
             product_categories=[
@@ -64,7 +65,7 @@ def ensure_ramesh_user(db: Session) -> User:
                 "Handicrafts & Decor"
             ],
             company_description="Direct manufacturer and exporter of authentic handmade Himalayan Singing Bowls, Full Moon Singing Bowls, and handcrafted metal candle holders, candelabras, and lanterns.",
-            sender_name="Ramesh Kumar Thakur | OM Enterprise"
+            sender_name="Ramesh Kumar Thakur"
         )
         db.add(profile)
         db.commit()
@@ -73,7 +74,8 @@ def ensure_ramesh_user(db: Session) -> User:
         profile.company_name = "OM Enterprise"
         profile.company_email = "exportindia2026us@gmail.com"
         profile.phone = "+91 80577 10065"
-        profile.sender_name = "Ramesh Kumar Thakur | OM Enterprise"
+        profile.website = ""
+        profile.sender_name = "Ramesh Kumar Thakur"
         db.commit()
 
     # Ensure email settings with permanent credential restoration
@@ -307,8 +309,7 @@ Best regards,
 
 Ramesh Kumar Thakur
 Export Sales Executive | OM Enterprise
-📧 Direct Outreach: rameshkrthakur1816@gmail.com
-🏢 Official Company: exportindia2026us@gmail.com
+📧 exportindia2026us@gmail.com
 📱 WhatsApp / Phone: +91 80577 10065
 Moradabad, Uttar Pradesh, India""",
                 sending_limit=50,
@@ -343,8 +344,7 @@ Best regards,
 
 Ramesh Kumar Thakur
 Export Sales Executive | OM Enterprise
-📧 Direct Outreach: rameshkrthakur1816@gmail.com
-🏢 Official Company: exportindia2026us@gmail.com
+📧 exportindia2026us@gmail.com
 📱 WhatsApp / Phone: +91 80577 10065
 Moradabad, Uttar Pradesh, India"""
             db.commit()
@@ -400,7 +400,6 @@ Sales Executive
 {{company_name}}
 📧 {{email}}
 📱 {{phone}}
-🌐 {{website}}
 
 Thank you for your valuable time. We look forward to building a successful and long-term partnership with {{company}}."""
 

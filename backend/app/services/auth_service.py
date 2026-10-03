@@ -287,32 +287,29 @@ Moradabad, Uttar Pradesh, India""",
                 product="Handmade Himalayan Singing Bowls & Metal Candle Holders",
                 target_country="USA - California (All Cities)",
                 target_audience="Importer & Wholesaler",
-                email_subject="Direct Manufacturer Export Catalog 2026 - Singing Bowls & Candle Holders (California)",
-                email_body="""Dear <Buyer Name>,
+                email_subject="Quick question regarding <Company Name>'s decor & singing bowls sourcing",
+                email_body="""Hi <Buyer Name>,
 
-I hope this email finds you well.
+I came across <Company Name> while reviewing leading home decor showrooms and wellness businesses across California.
 
-While researching prominent home decor, tabletop and wellness businesses across California, we came across <Company Name> and were very impressed with your curation.
+We are a direct manufacturing and export unit based in Moradabad, India (the traditional handcrafted brass and metalware center), specializing in:
+• Handcrafted Metal Candle Stands, Lanterns & Table Candelabras
+• Authentic Hand-Hammered Himalayan Singing Bowls & Meditation Sets
 
-We would like to introduce OM Enterprise and explore direct B2B export supply opportunities with your business.
+Because we produce directly in our Moradabad facility:
+1. Pricing is strictly factory-direct FOB (eliminating 20-30% middleman trading margins).
+2. We provide custom finishes (matte black, antique bronze, raw brass), laser engraving & private label packaging.
+3. Direct consolidated ocean shipments to Los Angeles & Long Beach ports.
 
-We are direct manufacturers and exporters based in Moradabad, India, specializing in:
-1. Authentic Handcrafted Himalayan Singing Bowls & Full Moon Healing Sets
-2. Metal Candle Holders, Wrought Iron Lanterns & Banquet Candelabras
-
-Key Advantages for California Importers:
-- Direct Factory Pricing (no intermediate trading markups)
-- Strict Acoustic & Metal Quality Control
-- Custom Designs, Private Labeling & Laser Engraving
-- Reliable Door-to-Port / Door-to-Door Logistics to Los Angeles & Long Beach Ports
-
-We would be delighted to share our 2026 Digital Catalog and discuss sample shipments for your upcoming season.
+Would it make sense to courier a complimentary sample piece to your California office for quality evaluation?
 
 Best regards,
+
 Ramesh Kumar Thakur
 Export Sales Executive | OM Enterprise
-exportindia2026us@gmail.com
-Phone: +91 80577 10065
+📧 Direct Outreach: rameshkrthakur1816@gmail.com
+🏢 Official Company: exportindia2026us@gmail.com
+📱 WhatsApp / Phone: +91 80577 10065
 Moradabad, Uttar Pradesh, India""",
                 sending_limit=50,
                 delay_seconds=5,
@@ -324,6 +321,32 @@ Moradabad, Uttar Pradesh, India""",
                 is_demo=False
             )
             db.add(cal_camp)
+            db.commit()
+        else:
+            cal_camp.email_subject = "Quick question regarding <Company Name>'s decor & singing bowls sourcing"
+            cal_camp.email_body = """Hi <Buyer Name>,
+
+I came across <Company Name> while reviewing leading home decor showrooms and wellness businesses across California.
+
+We are a direct manufacturing and export unit based in Moradabad, India (the traditional handcrafted brass and metalware center), specializing in:
+• Handcrafted Metal Candle Stands, Lanterns & Table Candelabras
+• Authentic Hand-Hammered Himalayan Singing Bowls & Meditation Sets
+
+Because we produce directly in our Moradabad facility:
+1. Pricing is strictly factory-direct FOB (eliminating 20-30% middleman trading margins).
+2. We provide custom finishes (matte black, antique bronze, raw brass), laser engraving & private label packaging.
+3. Direct consolidated ocean shipments to Los Angeles & Long Beach ports.
+
+Would it make sense to courier a complimentary sample piece to your California office for quality evaluation?
+
+Best regards,
+
+Ramesh Kumar Thakur
+Export Sales Executive | OM Enterprise
+📧 Direct Outreach: rameshkrthakur1816@gmail.com
+🏢 Official Company: exportindia2026us@gmail.com
+📱 WhatsApp / Phone: +91 80577 10065
+Moradabad, Uttar Pradesh, India"""
             db.commit()
 
         # Create email activity logs for the campaign using Ramesh's top buyers if fewer than 15 logs exist

@@ -18,163 +18,134 @@ interface SequenceStep {
   email_body: string;
 }
 
-export const SINGING_BOWLS_TEMPLATE = {
-  subject: "Authentic Handmade Himalayan Singing Bowls – Direct Manufacturer | Wholesale & OEM",
-  body: `Authentic Handmade Himalayan Singing Bowls
-Direct Manufacturer from Nepal • Wholesale • OEM • Private Label
+export const HIGH_CONVERTING_DUAL_TEMPLATE = {
+  subject: "Quick question regarding {company_name}'s decor & singing bowls sourcing",
+  body: `Hi {buyer_name},
 
-Dear {buyer_name},
+I came across {company_name} while reviewing leading home decor showrooms and wellness businesses across {country}.
 
-While researching businesses in {country}, we came across {company_name} and were impressed by your commitment to quality wellness products.
+We are a direct manufacturing and export unit based in Moradabad, India (the traditional handcrafted brass and metalware center), specializing in:
+• Handcrafted Metal Candle Stands, Lanterns & Table Candelabras
+• Authentic Hand-Hammered Himalayan Singing Bowls & Meditation Sets
 
-We are a Nepal-based manufacturer and exporter of authentic handmade Himalayan Singing Bowls crafted by skilled artisans using traditional techniques.
+Because we produce directly in our Moradabad facility:
+1. Pricing is strictly factory-direct FOB (eliminating 20-30% middleman trading margins).
+2. We provide custom finishes (matte black, antique bronze, raw brass), laser engraving & private label packaging.
+3. Direct consolidated ocean shipments to Los Angeles & Long Beach ports.
 
-Our Product Range:
-• Handmade Himalayan Singing Bowls
-• Full Moon Singing Bowls
-• Antique Finish Singing Bowls
-• Chakra Singing Bowl Sets
-• Meditation & Sound Healing Bowls
-• Tingsha Cymbals & Meditation Accessories
-• Custom Logo & Private Label Manufacturing
+Would it make sense to courier a complimentary sample piece to your office for quality evaluation?
 
-Choose the Collection That Fits Your Business:
-✨ Premium Collection
-Individually handcrafted with superior finish and exceptional sound quality.
-NO MINIMUM ORDER QUANTITY – Order from a single bowl to large wholesale quantities.
-
-📦 Standard Collection
-Perfect for wholesalers and distributors seeking bulk procurement.
-Minimum Order Quantity: 200 Pieces
-Competitive pricing and consistent quality for high-volume orders.
-
-Why Partner With Us?
-✔ Direct Manufacturer from Nepal
-✔ Authentic Handmade Craftsmanship
-✔ OEM & Private Label Services
-✔ Worldwide Shipping
-✔ Dedicated Export Support
-
-Our latest catalogue is attached. Reply to this email for wholesale pricing, samples, shipping quotations, and customization options.
-
-Kind Regards,
+Best regards,
 
 Ramesh Kumar Thakur
-Sales Executive
-OM Enterprise
-📧 Direct Outreach Email: rameshkrthakur1816@gmail.com
-🏢 Official Company Email: exportindia2026us@gmail.com
+Export Sales Executive | OM Enterprise
+📧 Direct Outreach: rameshkrthakur1816@gmail.com
+🏢 Official Company: exportindia2026us@gmail.com
 📱 WhatsApp / Phone: +91 80577 10065
-
-Thank you for your valuable time. We look forward to building a successful and long-term partnership with {company_name}.`
+Moradabad, Uttar Pradesh, India`
 };
 
 export const CANDLE_STANDS_TEMPLATE = {
-  subject: "Handcrafted Metal Candle Stands, Candelabras & Lanterns – Direct Exporter | Wholesale & OEM",
-  body: `Authentic Handcrafted Metal Candle Stands, Candelabras & Lanterns
-Direct Manufacturer & Exporter • Wholesale • OEM • Custom Finishes
+  subject: "Direct factory sourcing for {company_name} – Handcrafted metal candle holders & lanterns",
+  body: `Hi {buyer_name},
 
-Dear {buyer_name},
+I noticed {company_name}'s impressive collection of premium home accents and tabletop accessories.
 
-While researching businesses in {country}, we came across {company_name} and were impressed by your curated collection of premium home decor and tabletop accessories.
+We are OM Enterprise, a direct manufacturer and exporter of handcrafted metal candle holders, candelabras, and wrought iron lanterns based in Moradabad, India.
 
-We are an India-based manufacturer and exporter of handcrafted metal Candle Stands, Candelabras, Lanterns, and Votives crafted by skilled artisans using traditional metal smithing techniques.
+How we support US wholesalers & design showrooms:
+• Custom OEM designs, private label packaging & barcode retail tagging
+• Solid brass, wrought iron, and antique finishes built to export standards
+• Factory FOB pricing with low minimum orders for test shipments
+• Direct door-to-door express or ocean freight to major US ports (LA & Long Beach)
 
-Our Product Range:
-• Metal Pillar & Taper Candle Stands
-• Multi-Arm Candelabras (Brass, Antique Bronze, Matte Black)
-• Moroccan & Geometric Hanging Lanterns
-• Glass & Metal Hurricane Lanterns
-• Tea Light Holders & Votives
-• Tabletop Decor & Centerpieces
-• Custom Logo, Embossing & Private Label Packaging
+Our digital lookbook is attached for your review. Would you be open to receiving a physical sample at {company_name} so your team can test our metal finishing firsthand?
 
-Choose the Collection That Fits Your Business:
-✨ Premium Collection
-Individually handcrafted with superior finish, durable lacquering, and exceptional artisanal design.
-NO MINIMUM ORDER QUANTITY – Order from small sample lots to bulk wholesale quantities.
-
-📦 Standard Wholesale Collection
-Perfect for wholesalers, retailers, and distributors seeking bulk procurement.
-Minimum Order Quantity: 100 Pieces
-Competitive FOB pricing and consistent export quality for high-volume orders.
-
-Why Partner With Us?
-✔ Direct Manufacturer & Exporter
-✔ Authentic Handcrafted Craftsmanship & Superior Finishes
-✔ OEM & Private Label Services
-✔ Worldwide Shipping & US Customs Documentation Support
-✔ Dedicated Export Support
-
-Our latest lookbook and catalogue are attached. Reply to this email for wholesale pricing, samples, shipping quotations, and customization options.
-
-Kind Regards,
+Best regards,
 
 Ramesh Kumar Thakur
-Sales Executive
-OM Enterprise
-📧 Direct Outreach Email: rameshkrthakur1816@gmail.com
-🏢 Official Company Email: exportindia2026us@gmail.com
+Export Sales Executive | OM Enterprise
+📧 Direct: rameshkrthakur1816@gmail.com | 🏢 Company: exportindia2026us@gmail.com
 📱 WhatsApp / Phone: +91 80577 10065
+Moradabad, Uttar Pradesh, India`
+};
 
-Thank you for your valuable time. We look forward to building a successful and long-term partnership with {company_name}.`
+export const SINGING_BOWLS_TEMPLATE = {
+  subject: "Question regarding {company_name}'s singing bowls & sound healing collection",
+  body: `Hi {buyer_name},
+
+While exploring reputable sound wellness and meditation brands in {country}, {company_name} caught our attention.
+
+We are direct artisan exporters of authentic hand-hammered Himalayan Singing Bowls, Full Moon healing sets, and meditation accessories.
+
+Why US wellness importers partner with us:
+• Handcrafted from 7 traditional acoustic metals by skilled Himalayan artisans
+• Master-tested frequencies (432Hz / 528Hz tuned sets available)
+• Direct artisan pricing with no intermediary markups
+• Custom branding, silk cushions, and wooden mallet gift sets
+
+Would you like us to mail a complimentary sample bowl to your office so you can experience the sustained acoustic vibration firsthand?
+
+Best regards,
+
+Ramesh Kumar Thakur
+Export Sales Executive | OM Enterprise
+📧 Direct: rameshkrthakur1816@gmail.com | 🏢 Company: exportindia2026us@gmail.com
+📱 WhatsApp / Phone: +91 80577 10065
+Moradabad, Uttar Pradesh, India`
 };
 
 const DEFAULT_STEPS: SequenceStep[] = [
   {
     id: 'step-1',
     step_number: 1,
-    step_name: 'Initial Introduction & Product Lookbook',
+    step_name: 'Initial Introduction & Complimentary Sample Offer',
     delay_days: 0,
     condition: 'immediate',
-    email_subject: SINGING_BOWLS_TEMPLATE.subject,
-    email_body: SINGING_BOWLS_TEMPLATE.body,
+    email_subject: HIGH_CONVERTING_DUAL_TEMPLATE.subject,
+    email_body: HIGH_CONVERTING_DUAL_TEMPLATE.body,
   },
   {
     id: 'step-2',
     step_number: 2,
-    step_name: 'Follow-up: Wholesale Price Tiers & Sample Pack',
+    step_name: 'Follow-up: Wholesale FOB Price Tiers & Port Freight',
     delay_days: 3,
     condition: 'if_no_reply',
-    email_subject: 'Re: Wholesale pricing & sample pack for {company_name}',
+    email_subject: 'Re: Sourcing inquiry for {company_name}',
     email_body: `Hi {buyer_name},
 
-I wanted to quickly follow up on my previous email regarding our handcrafted export collection for {company_name}.
+I wanted to quickly follow up on my note regarding our handcrafted metalware and wellness collection for {company_name}.
 
-We have updated our export capacity for this quarter and can offer preferential FOB/CIF pricing along with door-to-door air express or ocean freight logistics to the United States.
+We have updated our export capacity for this quarter and can offer preferential FOB pricing along with direct shipping to US ports (including Los Angeles / Long Beach).
 
-Would you like me to courier a complimentary sample piece to your office address for quality evaluation?
+Can I send over our 2-page wholesale price list and sample request form?
 
-Kind Regards,
+Best regards,
 
 Ramesh Kumar Thakur
-Sales Executive | OM Enterprise
-📧 Direct Email: rameshkrthakur1816@gmail.com
-🏢 Company Email: exportindia2026us@gmail.com
-📱 WhatsApp: +91 80577 10065`,
+Export Sales Executive | OM Enterprise
+📧 rameshkrthakur1816@gmail.com | 📱 +91 80577 10065`,
   },
   {
     id: 'step-3',
     step_number: 3,
-    step_name: 'Value Proposition: Custom Samples & Private Labeling',
+    step_name: 'Value Proposition: Custom OEM, Private Label & Low MOQ',
     delay_days: 7,
     condition: 'if_no_reply',
     email_subject: 'Private label & custom packaging options for {company_name}',
-    email_body: `Dear {buyer_name},
+    email_body: `Hi {buyer_name},
 
-I understand you have a demanding procurement schedule. As a direct manufacturer, we also provide complete OEM, custom laser engraving/branding, barcode tagging, and custom packaging tailored for US retail shelves.
+I understand you have a demanding procurement schedule. As a direct manufacturer, we also provide complete OEM customization, laser logo engraving, and custom barcode packaging tailored for US retail shelves.
 
-If you have any current requirements or upcoming seasonal purchasing plans, please let us know how we can support your inventory.
+If you have any upcoming seasonal purchasing requirements, please let us know how we can support {company_name}'s inventory.
 
-Thank you again for your time and consideration.
+Would you be open to a brief 5-minute phone or WhatsApp call this week?
 
-Warm Regards,
+Warm regards,
 
 Ramesh Kumar Thakur
-Sales Executive | OM Enterprise
-📧 Direct Email: rameshkrthakur1816@gmail.com
-🏢 Company Email: exportindia2026us@gmail.com
-📱 WhatsApp: +91 80577 10065`,
+Export Sales Executive | OM Enterprise
+📧 rameshkrthakur1816@gmail.com | 📱 +91 80577 10065`,
   },
 ];
 
@@ -640,7 +611,71 @@ export default function CampaignCreatePage() {
         <div className="grid grid-cols-1 lg:grid-cols-12 gap-6 items-start">
           {/* Left Column: Visual Steps Timeline */}
           <div className="lg:col-span-4 space-y-3">
-            <div className="flex items-center justify-between pb-1">
+            {/* High-Response Advisory */}
+            <div className="p-3 rounded-xl bg-gradient-to-r from-amber-500/10 via-emerald-500/10 to-dark-900 border border-amber-500/20 text-xs space-y-1.5 shadow-sm">
+              <div className="flex items-center gap-1.5 text-amber-300 font-bold text-[11px] uppercase tracking-wider">
+                <Sparkles className="w-3.5 h-3.5 text-amber-400" />
+                <span>US / California High Response Guide</span>
+              </div>
+              <ul className="text-[11px] text-dark-300 space-y-1 list-disc list-inside">
+                <li><strong className="text-dark-100">Send Timing:</strong> Tue – Thu, <strong>9:00 PM – 11:30 PM IST</strong> (8:30 AM – 11:00 AM PST).</li>
+                <li><strong className="text-dark-100">Free Sample Offer:</strong> 8x higher response than asking for bulk orders directly.</li>
+                <li><strong className="text-dark-100">3-Step Cadence:</strong> 80% of wholesale deals happen on follow-ups.</li>
+              </ul>
+            </div>
+
+            {/* Quick Template Switcher */}
+            <div className="p-3 rounded-xl bg-dark-900 border border-dark-800 space-y-2">
+              <div className="text-[11px] font-bold text-dark-300 uppercase tracking-wider flex items-center gap-1.5">
+                <Zap className="w-3.5 h-3.5 text-amber-400" />
+                <span>1-Click High-Converting Templates:</span>
+              </div>
+              <div className="flex flex-col gap-1.5">
+                <button
+                  type="button"
+                  onClick={() => {
+                    setSteps([
+                      { ...DEFAULT_STEPS[0] },
+                      { ...DEFAULT_STEPS[1] },
+                      { ...DEFAULT_STEPS[2] },
+                    ]);
+                    showToast('Loaded: Direct Manufacturer + Free Sample Offer Template', 'success');
+                  }}
+                  className="text-xs px-2.5 py-1.5 rounded-lg bg-emerald-500/15 text-emerald-300 border border-emerald-500/30 hover:bg-emerald-500/25 font-medium text-left transition-all flex items-center justify-between"
+                >
+                  <span>🎯 High-Response Sample Offer (Dual)</span>
+                  <span className="text-[10px] text-emerald-400 font-bold">BEST</span>
+                </button>
+                <button
+                  type="button"
+                  onClick={() => {
+                    updateCurrentStep({
+                      email_subject: CANDLE_STANDS_TEMPLATE.subject,
+                      email_body: CANDLE_STANDS_TEMPLATE.body,
+                    });
+                    showToast('Loaded: Metal Candle Stands & Lanterns Template', 'success');
+                  }}
+                  className="text-xs px-2.5 py-1.5 rounded-lg bg-dark-800 text-dark-200 border border-dark-700 hover:border-dark-600 font-medium text-left transition-all"
+                >
+                  🪔 Candle Holders & Lanterns Direct
+                </button>
+                <button
+                  type="button"
+                  onClick={() => {
+                    updateCurrentStep({
+                      email_subject: SINGING_BOWLS_TEMPLATE.subject,
+                      email_body: SINGING_BOWLS_TEMPLATE.body,
+                    });
+                    showToast('Loaded: Himalayan Singing Bowls Template', 'success');
+                  }}
+                  className="text-xs px-2.5 py-1.5 rounded-lg bg-dark-800 text-dark-200 border border-dark-700 hover:border-dark-600 font-medium text-left transition-all"
+                >
+                  🥣 Himalayan Singing Bowls Direct
+                </button>
+              </div>
+            </div>
+
+            <div className="flex items-center justify-between pb-1 pt-1">
               <span className="text-xs font-bold text-dark-300 uppercase tracking-wider">Outreach Cadence</span>
               <button
                 onClick={addStep}

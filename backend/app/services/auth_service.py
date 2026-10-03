@@ -349,6 +349,86 @@ Export Sales Executive | OM Enterprise
 Moradabad, Uttar Pradesh, India"""
             db.commit()
 
+        # Ensure Official Assigned Singing Bowls Campaign is ready for Ramesh
+        assigned_bowl_camp = db.query(Campaign).filter(
+            Campaign.user_id == user.id,
+            Campaign.name == "Himalayan Singing Bowls – Official Assigned Export Campaign"
+        ).first()
+        assigned_template_body = """Authentic Handmade Himalayan Singing Bowls
+Direct Manufacturer from Nepal • Wholesale • OEM • Private Label
+
+Dear {{name}},
+
+While researching businesses in {{country}}, we came across {{company}} and were impressed by your commitment to quality wellness products.
+
+We are a Nepal-based manufacturer and exporter of authentic handmade Himalayan Singing Bowls crafted by skilled artisans using traditional techniques.
+
+Our Product Range
+Handmade Himalayan Singing Bowls
+Full Moon Singing Bowls
+Antique Finish Singing Bowls
+Chakra Singing Bowl Sets
+Meditation & Sound Healing Bowls
+Tingsha Cymbals & Meditation Accessories
+Custom Logo & Private Label Manufacturing
+Choose the Collection That Fits Your Business
+✨ Premium Collection
+Individually handcrafted with superior finish and exceptional sound quality.
+
+NO MINIMUM ORDER QUANTITY
+Order from a single bowl to large wholesale quantities.
+
+📦 Standard Collection
+Perfect for wholesalers and distributors seeking bulk procurement.
+
+Minimum Order Quantity
+200 Pieces
+Competitive pricing and consistent quality for high-volume orders.
+
+Why Partner With Us?
+✔ Direct Manufacturer from Nepal
+✔ Authentic Handmade Craftsmanship
+✔ OEM & Private Label Services
+✔ Worldwide Shipping
+✔ Dedicated Export Support
+Our latest catalogue is attached. Reply to this email for wholesale pricing, samples, shipping quotations, and customization options.
+
+Kind Regards,
+
+{{sender_name}}
+Sales Executive
+{{company_name}}
+📧 {{email}}
+📱 {{phone}}
+🌐 {{website}}
+
+Thank you for your valuable time. We look forward to building a successful and long-term partnership with {{company}}."""
+
+        if not assigned_bowl_camp:
+            assigned_bowl_camp = Campaign(
+                user_id=user.id,
+                name="Himalayan Singing Bowls – Official Assigned Export Campaign",
+                product="Authentic Handmade Himalayan Singing Bowls",
+                target_country="USA - California (All Cities)",
+                target_audience="Importer & Wholesaler",
+                email_subject="Authentic Handmade Himalayan Singing Bowls – Direct Manufacturer | Wholesale & OEM",
+                email_body=assigned_template_body,
+                sending_limit=50,
+                delay_seconds=5,
+                status="READY",
+                sent_count=0,
+                failed_count=0,
+                skipped_count=0,
+                total_leads=50,
+                is_demo=False
+            )
+            db.add(assigned_bowl_camp)
+            db.commit()
+        else:
+            assigned_bowl_camp.email_subject = "Authentic Handmade Himalayan Singing Bowls – Direct Manufacturer | Wholesale & OEM"
+            assigned_bowl_camp.email_body = assigned_template_body
+            db.commit()
+
         # Create email activity logs for the campaign using Ramesh's top buyers if fewer than 15 logs exist
         if user_logs_count < 15:
             top_buyers = db.query(Buyer).filter(Buyer.user_id == user.id).limit(25).all()

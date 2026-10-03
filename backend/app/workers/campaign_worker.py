@@ -49,64 +49,76 @@ def personalize_email_simple(template: str, buyer, fallback_product: str = "", p
     p_phone = (getattr(profile, 'phone', None) or "+91 80577 10065").strip()
     p_website = (getattr(profile, 'website', None) or "").strip()
 
+    result = template
+
+    # Signature contextual replacement: ensure Sales Executive company is ALWAYS exporter company
+    result = re.sub(r'Sales Executive\s*(\{\{|\{)?company_name(\}\})?', f'Sales Executive\n{p_company_name}', result, flags=re.IGNORECASE)
+
     # Clean company website lines from template if no company website is available
     if not p_website:
-        template = re.sub(r'^[ \t]*[🌐]?[ \t]*(?:Website|website)?[:\s]*(?:https?://)?(?:www\.)?omenterprise\.com[^\n]*\n?', '', template, flags=re.MULTILINE | re.IGNORECASE)
-        template = re.sub(r'^[ \t]*[🌐]?[ \t]*(?:Website|website)?[:\s]*\{\{website\}\}[^\n]*\n?', '', template, flags=re.MULTILINE | re.IGNORECASE)
-        template = re.sub(r'^[ \t]*[🌐]?[ \t]*(?:Website|website)?[:\s]*\{website\}[^\n]*\n?', '', template, flags=re.MULTILINE | re.IGNORECASE)
-        template = re.sub(r'^[ \t]*[🌐]?[ \t]*(?:Website|website)?[:\s]*<Website>[^\n]*\n?', '', template, flags=re.MULTILINE | re.IGNORECASE)
+        result = re.sub(r'^[ \t]*[🌐]?[ \t]*(?:Website|website)?[:\s]*(?:https?://)?(?:www\.)?omenterprise\.com[^\n]*\n?', '', result, flags=re.MULTILINE | re.IGNORECASE)
+        result = re.sub(r'^[ \t]*[🌐]?[ \t]*(?:Website|website)?[:\s]*\{\{website\}\}[^\n]*\n?', '', result, flags=re.MULTILINE | re.IGNORECASE)
+        result = re.sub(r'^[ \t]*[🌐]?[ \t]*(?:Website|website)?[:\s]*\{website\}[^\n]*\n?', '', result, flags=re.MULTILINE | re.IGNORECASE)
+        result = re.sub(r'^[ \t]*[🌐]?[ \t]*(?:Website|website)?[:\s]*<Website>[^\n]*\n?', '', result, flags=re.MULTILINE | re.IGNORECASE)
 
-    replacements = {
-        # Braces {}
+    # 1. First Pass: Process all DOUBLE-BRACE placeholders {{...}} first to prevent bracket nesting
+    double_brace_replacements = [
+        ('{{name}}', buyer_name),
+        ('{{buyer_name}}', buyer_name),
+        ('{{company}}', company_name),
+        ('{{buyer_company}}', company_name),
+        ('{{country}}', country),
+        ('{{city}}', city or country),
+        ('{{state}}', state),
+        ('{{address}}', address or city_display),
+        ('{{location}}', city_display),
+        ('{{product}}', product),
+        ('{{product_name}}', product),
+        ('{{sender_name}}', p_sender_name),
+        ('{{exporter_name}}', p_sender_name),
+        ('{{company_name}}', p_company_name),
+        ('{{exporter_company}}', p_company_name),
+        ('{{email}}', p_personal_email),
+        ('{{sender_email}}', p_personal_email),
+        ('{{company_email}}', p_company_email),
+        ('{{phone}}', p_phone),
+        ('{{website}}', p_website),
+    ]
+    for placeholder, val in double_brace_replacements:
+        result = result.replace(placeholder, val)
+
+    # 2. Second Pass: Process single-brace {}, <>, and [] placeholders
+    single_replacements = {
         '{buyer_name}': buyer_name,
         '{Buyer Name}': buyer_name,
         '{name}': buyer_name,
-        '{{buyer_name}}': buyer_name,
-        '{{name}}': buyer_name,
         '{company_name}': company_name,
         '{Company Name}': company_name,
         '{company}': company_name,
-        '{{company_name}}': company_name,
-        '{{company}}': company_name,
         '{product}': product,
         '{Product}': product,
         '{product_name}': product,
         '{Product Name}': product,
-        '{{product}}': product,
         '{country}': country,
         '{Country}': country,
-        '{{country}}': country,
         '{city}': city or country,
         '{City}': city or country,
-        '{{city}}': city or country,
         '{state}': state,
         '{State}': state,
-        '{{state}}': state,
         '{address}': address or city_display,
         '{Address}': address or city_display,
         '{client_address}': address or city_display,
         '{buyer_address}': address or city_display,
-        '{{address}}': address or city_display,
         '{location}': city_display,
-        '{{location}}': city_display,
         '{website}': website,
         '{Website}': website,
-        '{{website}}': p_website,
-        # Sender & Company Profile Replacements
         '{sender_name}': p_sender_name,
-        '{{sender_name}}': p_sender_name,
         '{exporter_name}': p_sender_name,
-        '{{exporter_name}}': p_sender_name,
         '{exporter_company}': p_company_name,
-        '{{exporter_company}}': p_company_name,
         '{sender_email}': p_personal_email,
-        '{{sender_email}}': p_personal_email,
         '{email}': p_personal_email,
-        '{{email}}': p_personal_email,
         '{company_email}': p_company_email,
-        '{{company_email}}': p_company_email,
         '{phone}': p_phone,
-        '{{phone}}': p_phone,
         # Brackets []
         '[Buyer Name]': buyer_name,
         '[buyer_name]': buyer_name,
@@ -115,6 +127,7 @@ def personalize_email_simple(template: str, buyer, fallback_product: str = "", p
         '[Product]': product,
         '[Product Name]': product,
         '[Country]': country,
+        '[City]': city or country,
         '[Sender Name]': p_sender_name,
         '[Company Email]': p_company_email,
         '[Personal Email]': p_personal_email,
@@ -127,6 +140,7 @@ def personalize_email_simple(template: str, buyer, fallback_product: str = "", p
         '<Product Name>': product,
         '<product>': product,
         '<Country>': country,
+        '<City>': city or country,
         '<Website>': website,
         '<Company Email>': p_company_email,
         '<Sender Name>': p_sender_name,
@@ -138,9 +152,9 @@ def personalize_email_simple(template: str, buyer, fallback_product: str = "", p
         'Website:': f'Website: {website}' if website else '',
         'Source Platform:': f'Source Platform: {buyer.source_platform or ""}',
     }
-    result = template
-    for placeholder, value in replacements.items():
+    for placeholder, value in single_replacements.items():
         result = result.replace(placeholder, value)
+
     return result
 
 def process_campaign(db: Session, campaign_id: int, user_id: int):

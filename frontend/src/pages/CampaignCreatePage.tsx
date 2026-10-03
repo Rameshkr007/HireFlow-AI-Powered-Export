@@ -18,6 +18,59 @@ interface SequenceStep {
   email_body: string;
 }
 
+export const ASSIGNED_SINGING_BOWLS_TEMPLATE = {
+  subject: "Authentic Handmade Himalayan Singing Bowls – Direct Manufacturer | Wholesale & OEM",
+  body: `Authentic Handmade Himalayan Singing Bowls
+Direct Manufacturer from Nepal • Wholesale • OEM • Private Label
+
+Dear {{name}},
+
+While researching businesses in {{country}}, we came across {{company}} and were impressed by your commitment to quality wellness products.
+
+We are a Nepal-based manufacturer and exporter of authentic handmade Himalayan Singing Bowls crafted by skilled artisans using traditional techniques.
+
+Our Product Range
+Handmade Himalayan Singing Bowls
+Full Moon Singing Bowls
+Antique Finish Singing Bowls
+Chakra Singing Bowl Sets
+Meditation & Sound Healing Bowls
+Tingsha Cymbals & Meditation Accessories
+Custom Logo & Private Label Manufacturing
+Choose the Collection That Fits Your Business
+✨ Premium Collection
+Individually handcrafted with superior finish and exceptional sound quality.
+
+NO MINIMUM ORDER QUANTITY
+Order from a single bowl to large wholesale quantities.
+
+📦 Standard Collection
+Perfect for wholesalers and distributors seeking bulk procurement.
+
+Minimum Order Quantity
+200 Pieces
+Competitive pricing and consistent quality for high-volume orders.
+
+Why Partner With Us?
+✔ Direct Manufacturer from Nepal
+✔ Authentic Handmade Craftsmanship
+✔ OEM & Private Label Services
+✔ Worldwide Shipping
+✔ Dedicated Export Support
+Our latest catalogue is attached. Reply to this email for wholesale pricing, samples, shipping quotations, and customization options.
+
+Kind Regards,
+
+{{sender_name}}
+Sales Executive
+{{company_name}}
+📧 {{email}}
+📱 {{phone}}
+🌐 {{website}}
+
+Thank you for your valuable time. We look forward to building a successful and long-term partnership with {{company}}.`
+};
+
 export const HIGH_CONVERTING_DUAL_TEMPLATE = {
   subject: "Quick question regarding {company_name}'s decor & singing bowls sourcing",
   body: `Hi {buyer_name},
@@ -99,11 +152,11 @@ const DEFAULT_STEPS: SequenceStep[] = [
   {
     id: 'step-1',
     step_number: 1,
-    step_name: 'Initial Introduction & Complimentary Sample Offer',
+    step_name: 'Initial Introduction: Authentic Himalayan Singing Bowls (Official Assigned)',
     delay_days: 0,
     condition: 'immediate',
-    email_subject: HIGH_CONVERTING_DUAL_TEMPLATE.subject,
-    email_body: HIGH_CONVERTING_DUAL_TEMPLATE.body,
+    email_subject: ASSIGNED_SINGING_BOWLS_TEMPLATE.subject,
+    email_body: ASSIGNED_SINGING_BOWLS_TEMPLATE.body,
   },
   {
     id: 'step-2',
@@ -631,6 +684,20 @@ export default function CampaignCreatePage() {
                 <span>1-Click High-Converting Templates:</span>
               </div>
               <div className="flex flex-col gap-1.5">
+                <button
+                  type="button"
+                  onClick={() => {
+                    updateCurrentStep({
+                      email_subject: ASSIGNED_SINGING_BOWLS_TEMPLATE.subject,
+                      email_body: ASSIGNED_SINGING_BOWLS_TEMPLATE.body,
+                    });
+                    showToast('Loaded: Official Assigned Himalayan Singing Bowls Template', 'success');
+                  }}
+                  className="text-xs px-2.5 py-1.5 rounded-lg bg-amber-500/20 text-amber-300 border border-amber-500/40 hover:bg-amber-500/30 font-bold text-left transition-all flex items-center justify-between shadow-sm"
+                >
+                  <span>⭐ Official Assigned Singing Bowls (Nepal)</span>
+                  <span className="text-[10px] bg-amber-400 text-dark-950 px-1.5 py-0.5 rounded font-extrabold">OFFICIAL</span>
+                </button>
                 <button
                   type="button"
                   onClick={() => {

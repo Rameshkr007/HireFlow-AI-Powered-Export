@@ -199,7 +199,7 @@ export default function DashboardPage() {
           <MessageSquare className="w-4 h-4" />
           <span>Buyer Responses & Live Inbox</span>
           <span className="px-1.5 py-0.2 text-[10px] font-bold rounded-full bg-emerald-500/20 text-emerald-300 border border-emerald-500/30">
-            {responseData?.total_responses || 5} Live
+            {responseData?.total_responses || 0} Live
           </span>
         </button>
       </div>
@@ -401,8 +401,8 @@ export default function DashboardPage() {
                 <span className="text-xs font-semibold text-emerald-400 uppercase tracking-wider">Total Inquiries</span>
                 <MessageSquare className="w-4 h-4 text-emerald-400" />
               </div>
-              <div className="text-2xl font-bold text-dark-50 mt-2">{responseData?.total_responses || 5}</div>
-              <div className="text-[11px] text-emerald-400 mt-0.5">22.4% Direct Response Rate</div>
+              <div className="text-2xl font-bold text-dark-50 mt-2">{responseData?.total_responses || 0}</div>
+              <div className="text-[11px] text-emerald-400 mt-0.5">{responseData?.response_rate || '0.0%'} Live Reply Rate</div>
             </div>
 
             <div className="card p-4 bg-primary-950/20 border-primary-500/30">
@@ -410,7 +410,7 @@ export default function DashboardPage() {
                 <span className="text-xs font-semibold text-primary-400 uppercase tracking-wider">Sample Requests</span>
                 <Package className="w-4 h-4 text-primary-400" />
               </div>
-              <div className="text-2xl font-bold text-dark-50 mt-2">{responseData?.sample_requests || 2}</div>
+              <div className="text-2xl font-bold text-dark-50 mt-2">{responseData?.sample_requests || 0}</div>
               <div className="text-[11px] text-primary-300 mt-0.5">DHL Express Dispatch Ready</div>
             </div>
 
@@ -419,7 +419,7 @@ export default function DashboardPage() {
                 <span className="text-xs font-semibold text-purple-400 uppercase tracking-wider">FOB Quotes Asked</span>
                 <DollarSign className="w-4 h-4 text-purple-400" />
               </div>
-              <div className="text-2xl font-bold text-dark-50 mt-2">{responseData?.fob_quotes_requested || 2}</div>
+              <div className="text-2xl font-bold text-dark-50 mt-2">{responseData?.fob_quotes_requested || 0}</div>
               <div className="text-[11px] text-purple-300 mt-0.5">20ft / 40ft Container Orders</div>
             </div>
 
@@ -428,17 +428,17 @@ export default function DashboardPage() {
                 <span className="text-xs font-semibold text-amber-400 uppercase tracking-wider">Pipeline Value</span>
                 <TrendingUp className="w-4 h-4 text-amber-400" />
               </div>
-              <div className="text-2xl font-bold text-amber-300 mt-2">{responseData?.pipeline_potential_usd || '$188,000'}</div>
+              <div className="text-2xl font-bold text-amber-300 mt-2">{responseData?.pipeline_potential_usd || '$0'}</div>
               <div className="text-[11px] text-amber-400/80 mt-0.5">Qualified Commercial Pipeline</div>
             </div>
 
             <div className="card p-4 bg-cyan-950/20 border-cyan-500/30">
               <div className="flex items-center justify-between">
-                <span className="text-xs font-semibold text-cyan-400 uppercase tracking-wider">AI Sentiment</span>
+                <span className="text-xs font-semibold text-cyan-400 uppercase tracking-wider">Outreach Sent</span>
                 <Sparkles className="w-4 h-4 text-cyan-400" />
               </div>
-              <div className="text-2xl font-bold text-dark-50 mt-2">80% Positive</div>
-              <div className="text-[11px] text-cyan-300 mt-0.5">4 High-Intent Prospects</div>
+              <div className="text-2xl font-bold text-dark-50 mt-2">{responseData?.total_sent || stats?.emails_sent || 0}</div>
+              <div className="text-[11px] text-cyan-300 mt-0.5">Active Outbound Pitches</div>
             </div>
           </div>
 
@@ -447,10 +447,10 @@ export default function DashboardPage() {
             <div className="flex items-center gap-2">
               <span className="text-xs text-dark-400 font-medium">Filter Inquiries:</span>
               {[
-                { id: 'all', label: 'All Responses (5)' },
-                { id: 'sample', label: '📦 Sample Requests (2)' },
-                { id: 'fob', label: '💲 FOB Pricing Quotes (2)' },
-                { id: 'wholesale', label: '🏢 Wholesale Terms (1)' },
+                { id: 'all', label: `All Responses (${responseData?.total_responses || 0})` },
+                { id: 'sample', label: `📦 Sample Requests (${responseData?.sample_requests || 0})` },
+                { id: 'fob', label: `💲 FOB Pricing Quotes (${responseData?.fob_quotes_requested || 0})` },
+                { id: 'wholesale', label: '🏢 Wholesale Terms' },
               ].map(f => (
                 <button
                   key={f.id}
@@ -475,8 +475,36 @@ export default function DashboardPage() {
             </button>
           </div>
 
-          {/* Response Feed List */}
-          <div className="space-y-4">
+          {/* Response Feed List or Empty State */}
+          {filteredResponses.length === 0 ? (
+            <div className="card p-12 text-center border-dashed border-dark-700 bg-dark-900/40 space-y-4">
+              <div className="w-14 h-14 bg-emerald-500/10 border border-emerald-500/20 rounded-2xl flex items-center justify-center mx-auto text-emerald-400">
+                <Mail className="w-7 h-7 animate-pulse" />
+              </div>
+              <div className="space-y-1.5 max-w-lg mx-auto">
+                <h4 className="text-base font-bold text-dark-100">Live Response Listener Active (0 Real Buyer Replies Yet)</h4>
+                <p className="text-xs text-dark-400 leading-relaxed">
+                  Your export pitches are actively dispatched to verified California and US buyers. When an importer or procurement manager replies to your email (<strong className="text-emerald-300">exportindia2026us@gmail.com</strong>), their incoming message, commercial quotation request, and AI next actions will appear here in real time.
+                </p>
+              </div>
+              <div className="pt-2 flex items-center justify-center gap-3">
+                <button
+                  onClick={() => navigate('/campaigns')}
+                  className="btn-primary text-xs px-4 py-2 flex items-center gap-1.5 shadow-md shadow-primary-500/10"
+                >
+                  <Play className="w-3.5 h-3.5 fill-current" />
+                  <span>Check Active Campaigns</span>
+                </button>
+                <button
+                  onClick={() => navigate('/email-activity')}
+                  className="px-4 py-2 rounded-lg bg-dark-800 hover:bg-dark-700 border border-dark-700 text-dark-200 text-xs font-medium"
+                >
+                  View Outbound Sent Activity
+                </button>
+              </div>
+            </div>
+          ) : (
+            <div className="space-y-4">
             {filteredResponses.map((resp: any) => (
               <div
                 key={resp.id}
@@ -537,7 +565,8 @@ export default function DashboardPage() {
                 </div>
               </div>
             ))}
-          </div>
+            </div>
+          )}
         </div>
       )}
 

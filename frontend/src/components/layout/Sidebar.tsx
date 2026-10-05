@@ -14,7 +14,7 @@ const NAV_ITEMS = [
   { path: '/manifest-radar', label: 'US Manifest & BoL Radar', icon: Anchor },
   { path: '/buyers', label: 'Buyers Directory', icon: Users },
   { path: '/ai-classification', label: 'AI Classification', icon: Brain },
-  { path: '/deal-pipeline', label: 'Deals Pipeline CRM', icon: Trello },
+  { path: '/deal-pipeline', label: 'Buyer Responses & CRM', icon: Trello },
   { path: '/buyer-simulator', label: 'Buyer Pitch Simulator', icon: Mic },
   { path: '/lookbook', label: 'AI Catalog Studio', icon: BookOpen },
   { path: '/proforma-invoice', label: 'Proforma & CBM Studio', icon: FileText },

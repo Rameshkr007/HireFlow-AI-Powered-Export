@@ -5,7 +5,9 @@ import {
   Users, Mail, CheckCircle, Brain, Play, BarChart3,
   TrendingUp, RefreshCw, MessageSquare, Clock, MapPin,
   Send, Sparkles, DollarSign, Package, FileText, ArrowUpRight,
-  ShieldCheck, Check, AlertCircle, ArrowRight
+  ShieldCheck, Check, AlertCircle, ArrowRight, Calendar,
+  Building2, ChevronDown, ChevronUp, Download, Search, Filter,
+  CheckCircle2, XCircle, Info
 } from 'lucide-react';
 import {
   BarChart, Bar, XAxis, YAxis, Tooltip, ResponsiveContainer,
@@ -34,12 +36,18 @@ export default function DashboardPage() {
   const queryClient = useQueryClient();
   const navigate = useNavigate();
 
-  const [activeTab, setActiveTab] = useState<'overview' | 'responses'>('overview');
+  const [activeTab, setActiveTab] = useState<'overview' | 'daywise' | 'responses'>('overview');
   const [selectedIntentFilter, setSelectedIntentFilter] = useState<string>('all');
   const [replyModalBuyer, setReplyModalBuyer] = useState<any | null>(null);
   const [replyText, setReplyText] = useState('');
   const [sendingReply, setSendingReply] = useState(false);
   const [isManualSyncing, setIsManualSyncing] = useState(false);
+
+  // Day-wise tracker filters and states
+  const [daySearch, setDaySearch] = useState('');
+  const [dayStatusFilter, setDayStatusFilter] = useState<string>('all');
+  const [expandedDates, setExpandedDates] = useState<Record<string, boolean>>({});
+  const [previewEmailModal, setPreviewEmailModal] = useState<any | null>(null);
 
   // ── 1. Real-time auto-polling queries (every 3 seconds) ───────────────────
   const { data: stats, isLoading: statsLoading, isFetching: statsFetching } = useQuery<DashboardStats>({
@@ -82,6 +90,31 @@ export default function DashboardPage() {
     staleTime: 1000
   });
 
+  const { data: dayWiseData, isLoading: dayWiseLoading } = useQuery<any>({
+    queryKey: ['dashboard-day-wise'],
+    queryFn: async () => {
+      const res = await api.get('/api/email-activity/day-wise');
+      return res.data;
+    },
+    refetchInterval: 3000,
+    staleTime: 1000
+  });
+
+  // Toggle accordion for a specific date
+  const toggleDateAccordion = (dateKey: string) => {
+    setExpandedDates(prev => ({
+      ...prev,
+      [dateKey]: prev[dateKey] !== undefined ? !prev[dateKey] : false // default is true for first
+    }));
+  };
+
+  const isDateExpanded = (dateKey: string, index: number) => {
+    if (expandedDates[dateKey] !== undefined) {
+      return expandedDates[dateKey];
+    }
+    return index === 0; // Expand first day by default
+  };
+
   // Manual Trigger Refresh All
   const handleManualRefresh = async () => {
     setIsManualSyncing(true);
@@ -90,11 +123,16 @@ export default function DashboardPage() {
       queryClient.invalidateQueries({ queryKey: ['dashboard-charts'] }),
       queryClient.invalidateQueries({ queryKey: ['dashboard-recent-logs'] }),
       queryClient.invalidateQueries({ queryKey: ['dashboard-responses'] }),
+      queryClient.invalidateQueries({ queryKey: ['dashboard-day-wise'] }),
     ]);
     setTimeout(() => {
       setIsManualSyncing(false);
       showToast('Real-time dashboard metrics refreshed successfully', 'success');
     }, 400);
+  };
+
+  const handleDownloadDayWiseCSV = () => {
+    window.open('/api/email-activity/export-csv', '_blank');
   };
 
   const handleOpenReplyModal = (resp: any) => {
@@ -128,6 +166,26 @@ export default function DashboardPage() {
     if (selectedIntentFilter === 'wholesale') return r.intent.toLowerCase().includes('wholesale');
     return true;
   });
+
+  // Filter day-wise data
+  const filteredDays = (dayWiseData?.days || []).map((day: any) => {
+    const matchedEmails = day.emails.filter((e: any) => {
+      const matchSearch = daySearch === '' ||
+        e.company_name.toLowerCase().includes(daySearch.toLowerCase()) ||
+        e.buyer_name.toLowerCase().includes(daySearch.toLowerCase()) ||
+        e.email_address.toLowerCase().includes(daySearch.toLowerCase()) ||
+        e.city.toLowerCase().includes(daySearch.toLowerCase()) ||
+        e.subject.toLowerCase().includes(daySearch.toLowerCase());
+
+      const matchStatus = dayStatusFilter === 'all' || e.status === dayStatusFilter;
+      return matchSearch && matchStatus;
+    });
+
+    return {
+      ...day,
+      filtered_emails: matchedEmails
+    };
+  }).filter((day: any) => daySearch === '' && dayStatusFilter === 'all' ? true : day.filtered_emails.length > 0);
 
   return (
     <div className="space-y-6 pb-12">
@@ -185,6 +243,22 @@ export default function DashboardPage() {
         >
           <BarChart3 className="w-4 h-4" />
           <span>Overview Analytics</span>
+        </button>
+
+        <button
+          type="button"
+          onClick={() => setActiveTab('daywise')}
+          className={`pb-3 px-4 text-sm font-semibold flex items-center gap-2 border-b-2 transition-all relative ${
+            activeTab === 'daywise'
+              ? 'border-cyan-500 text-cyan-400'
+              : 'border-transparent text-dark-400 hover:text-dark-200 hover:border-dark-700'
+          }`}
+        >
+          <Calendar className="w-4 h-4" />
+          <span>📅 Day-Wise Dispatch Tracker</span>
+          <span className="px-1.5 py-0.2 text-[10px] font-bold rounded-full bg-cyan-500/20 text-cyan-300 border border-cyan-500/30">
+            {dayWiseData?.summary?.total_days_active || 0} Days
+          </span>
         </button>
 
         <button
@@ -346,13 +420,22 @@ export default function DashboardPage() {
                 <h3 className="section-title">Live Outbound Email Dispatch Log</h3>
                 <p className="text-xs text-dark-400 mt-0.5">Real-time status of automated Himalayan Singing Bowls & Candle Stand pitches</p>
               </div>
-              <button
-                onClick={() => navigate('/email-activity')}
-                className="text-xs text-primary-400 hover:text-primary-300 font-medium flex items-center gap-1"
-              >
-                <span>View Full Activity</span>
-                <ArrowRight className="w-3.5 h-3.5" />
-              </button>
+              <div className="flex items-center gap-2">
+                <button
+                  onClick={() => setActiveTab('daywise')}
+                  className="px-3 py-1.5 rounded-lg bg-cyan-500/10 hover:bg-cyan-500/20 border border-cyan-500/30 text-cyan-400 text-xs font-medium flex items-center gap-1.5 transition-all"
+                >
+                  <Calendar className="w-3.5 h-3.5" />
+                  <span>View Day-Wise Breakdown</span>
+                </button>
+                <button
+                  onClick={() => navigate('/email-activity')}
+                  className="text-xs text-primary-400 hover:text-primary-300 font-medium flex items-center gap-1"
+                >
+                  <span>All Activity</span>
+                  <ArrowRight className="w-3.5 h-3.5" />
+                </button>
+              </div>
             </div>
             <div className="overflow-x-auto">
               <table className="w-full">
@@ -391,7 +474,256 @@ export default function DashboardPage() {
         </div>
       )}
 
-      {/* ── VIEW 2: BUYER RESPONSES & LIVE INBOX DASHBOARD ── */}
+      {/* ── VIEW 2: 📅 DAY-WISE EMAIL DISPATCH TRACKER ── */}
+      {activeTab === 'daywise' && (
+        <div className="space-y-6">
+          {/* Day-Wise Summary Cards */}
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-5 gap-4">
+            <div className="card p-4 bg-cyan-950/20 border-cyan-500/30">
+              <div className="flex items-center justify-between">
+                <span className="text-xs font-semibold text-cyan-400 uppercase tracking-wider">Total Emails Sent</span>
+                <Mail className="w-4 h-4 text-cyan-400" />
+              </div>
+              <div className="text-2xl font-bold text-dark-50 mt-2">{dayWiseData?.summary?.total_emails_sent || 0}</div>
+              <div className="text-[11px] text-cyan-300 mt-0.5">Across All Campaigns</div>
+            </div>
+
+            <div className="card p-4 bg-emerald-950/20 border-emerald-500/30">
+              <div className="flex items-center justify-between">
+                <span className="text-xs font-semibold text-emerald-400 uppercase tracking-wider">Today's Dispatches</span>
+                <Sparkles className="w-4 h-4 text-emerald-400" />
+              </div>
+              <div className="text-2xl font-bold text-emerald-300 mt-2">{dayWiseData?.summary?.today_sent || 0}</div>
+              <div className="text-[11px] text-emerald-400 mt-0.5">Dispatched Today</div>
+            </div>
+
+            <div className="card p-4 bg-primary-950/20 border-primary-500/30">
+              <div className="flex items-center justify-between">
+                <span className="text-xs font-semibold text-primary-400 uppercase tracking-wider">Active Days</span>
+                <Calendar className="w-4 h-4 text-primary-400" />
+              </div>
+              <div className="text-2xl font-bold text-dark-50 mt-2">{dayWiseData?.summary?.total_days_active || 0}</div>
+              <div className="text-[11px] text-primary-300 mt-0.5">Days with Dispatch Activity</div>
+            </div>
+
+            <div className="card p-4 bg-purple-950/20 border-purple-500/30">
+              <div className="flex items-center justify-between">
+                <span className="text-xs font-semibold text-purple-400 uppercase tracking-wider">Unique Companies</span>
+                <Building2 className="w-4 h-4 text-purple-400" />
+              </div>
+              <div className="text-2xl font-bold text-dark-50 mt-2">{dayWiseData?.summary?.total_unique_companies || 0}</div>
+              <div className="text-[11px] text-purple-300 mt-0.5">Distinct US Enterprises Contacted</div>
+            </div>
+
+            <div className="card p-4 bg-amber-950/20 border-amber-500/30">
+              <div className="flex items-center justify-between">
+                <span className="text-xs font-semibold text-amber-400 uppercase tracking-wider">Daily Average</span>
+                <TrendingUp className="w-4 h-4 text-amber-400" />
+              </div>
+              <div className="text-2xl font-bold text-amber-300 mt-2">{dayWiseData?.summary?.avg_per_day || 0}</div>
+              <div className="text-[11px] text-amber-400/80 mt-0.5">Emails / Active Day</div>
+            </div>
+          </div>
+
+          {/* Search, Filter & CSV Export Toolbar */}
+          <div className="card p-4 flex flex-col md:flex-row items-stretch md:items-center justify-between gap-3">
+            <div className="flex flex-1 items-center gap-3">
+              <div className="relative flex-1 max-w-md">
+                <Search className="w-4 h-4 absolute left-3 top-1/2 -translate-y-1/2 text-dark-400" />
+                <input
+                  type="text"
+                  value={daySearch}
+                  onChange={e => setDaySearch(e.target.value)}
+                  placeholder="Search by company name, contact, email, city..."
+                  className="w-full bg-dark-900 border border-dark-700 rounded-lg pl-9 pr-3 py-2 text-xs text-dark-100 placeholder-dark-500 focus:outline-none focus:border-cyan-500"
+                />
+              </div>
+
+              <div className="flex items-center gap-2">
+                <Filter className="w-3.5 h-3.5 text-dark-400 shrink-0" />
+                <select
+                  value={dayStatusFilter}
+                  onChange={e => setDayStatusFilter(e.target.value)}
+                  className="bg-dark-900 border border-dark-700 rounded-lg px-3 py-2 text-xs text-dark-200 focus:outline-none focus:border-cyan-500"
+                >
+                  <option value="all">All Delivery Statuses</option>
+                  <option value="SENT">Delivered (SENT)</option>
+                  <option value="FAILED">Failed</option>
+                  <option value="SKIPPED">Skipped / Contacted</option>
+                </select>
+              </div>
+            </div>
+
+            <button
+              onClick={handleDownloadDayWiseCSV}
+              className="px-4 py-2 rounded-lg bg-dark-800 hover:bg-dark-750 border border-dark-700 text-dark-100 text-xs font-medium flex items-center justify-center gap-2 transition-all shadow-sm"
+              title="Download full day-wise logs as CSV"
+            >
+              <Download className="w-3.5 h-3.5 text-cyan-400" />
+              <span>Export Day-Wise CSV</span>
+            </button>
+          </div>
+
+          {/* Day-by-Day Accordion Section */}
+          {dayWiseLoading ? (
+            <div className="flex justify-center p-12"><LoadingSpinner size="lg" /></div>
+          ) : filteredDays.length === 0 ? (
+            <div className="card p-12 text-center space-y-3">
+              <Calendar className="w-12 h-12 text-dark-600 mx-auto" />
+              <h4 className="text-base font-bold text-dark-200">No Email Dispatches Found</h4>
+              <p className="text-xs text-dark-400 max-w-md mx-auto">
+                {daySearch || dayStatusFilter !== 'all'
+                  ? 'No email dispatches match your search filters. Try clearing the search or changing the filter.'
+                  : 'No emails have been dispatched yet. Launch an outreach campaign to start tracking day-wise outreach.'}
+              </p>
+              {daySearch && (
+                <button
+                  onClick={() => { setDaySearch(''); setDayStatusFilter('all'); }}
+                  className="btn-secondary text-xs px-3 py-1.5 inline-flex items-center gap-1.5"
+                >
+                  Reset Filters
+                </button>
+              )}
+            </div>
+          ) : (
+            <div className="space-y-4">
+              {filteredDays.map((day: any, idx: number) => {
+                const expanded = isDateExpanded(day.date, idx);
+                return (
+                  <div
+                    key={day.date}
+                    className="card overflow-hidden border-dark-750 hover:border-cyan-500/30 transition-all"
+                  >
+                    {/* Accordion Header */}
+                    <div
+                      onClick={() => toggleDateAccordion(day.date)}
+                      className="p-4 bg-dark-850 hover:bg-dark-800/80 cursor-pointer flex flex-col md:flex-row md:items-center justify-between gap-3 border-b border-dark-800 transition-colors"
+                    >
+                      <div className="flex items-center gap-3">
+                        <div className="w-10 h-10 rounded-xl bg-cyan-500/10 border border-cyan-500/20 flex items-center justify-center shrink-0">
+                          <Calendar className="w-5 h-5 text-cyan-400" />
+                        </div>
+                        <div>
+                          <div className="flex items-center gap-2.5">
+                            <span className="text-base font-bold text-dark-50">{day.display_date}</span>
+                            <span className="text-xs text-dark-400 font-medium">({day.day_name})</span>
+                            <span className={`text-[10px] font-bold px-2 py-0.5 rounded-full border ${
+                              day.relative_label === 'Today'
+                                ? 'bg-emerald-500/20 text-emerald-300 border-emerald-500/40 animate-pulse'
+                                : day.relative_label === 'Yesterday'
+                                ? 'bg-primary-500/20 text-primary-300 border-primary-500/40'
+                                : 'bg-dark-700 text-dark-300 border-dark-600'
+                            }`}>
+                              {day.relative_label}
+                            </span>
+                          </div>
+                          <p className="text-xs text-dark-400 mt-0.5">
+                            <strong className="text-dark-200">{day.filtered_emails?.length || 0}</strong> emails dispatched to{' '}
+                            <strong className="text-dark-200">{day.unique_companies_count}</strong> distinct companies
+                          </p>
+                        </div>
+                      </div>
+
+                      <div className="flex items-center gap-2.5 ml-auto md:ml-0">
+                        <div className="flex items-center gap-1.5 text-xs">
+                          <span className="px-2.5 py-1 rounded-md bg-emerald-500/10 text-emerald-400 border border-emerald-500/20 font-medium">
+                            ✓ {day.total_sent} Sent
+                          </span>
+                          {day.total_failed > 0 && (
+                            <span className="px-2.5 py-1 rounded-md bg-red-500/10 text-red-400 border border-red-500/20 font-medium">
+                              ✕ {day.total_failed} Failed
+                            </span>
+                          )}
+                          {day.total_skipped > 0 && (
+                            <span className="px-2.5 py-1 rounded-md bg-dark-700 text-dark-300 border border-dark-600 font-medium">
+                              ⊘ {day.total_skipped} Skipped
+                            </span>
+                          )}
+                        </div>
+
+                        <button
+                          type="button"
+                          className="p-1.5 rounded-lg bg-dark-800 text-dark-300 hover:text-dark-100 hover:bg-dark-700 transition-colors"
+                          aria-label="Toggle details"
+                        >
+                          {expanded ? <ChevronUp className="w-4 h-4" /> : <ChevronDown className="w-4 h-4" />}
+                        </button>
+                      </div>
+                    </div>
+
+                    {/* Accordion Content Table */}
+                    {expanded && (
+                      <div className="overflow-x-auto">
+                        <table className="w-full text-xs">
+                          <thead className="bg-dark-900/90 text-dark-400 uppercase font-semibold border-b border-dark-800">
+                            <tr>
+                              <th className="px-4 py-2.5 text-left">Time</th>
+                              <th className="px-4 py-2.5 text-left">Company & Decision Maker</th>
+                              <th className="px-4 py-2.5 text-left">Recipient Email</th>
+                              <th className="px-4 py-2.5 text-left">Location (California)</th>
+                              <th className="px-4 py-2.5 text-left">Product Vertical</th>
+                              <th className="px-4 py-2.5 text-left">Campaign & Subject</th>
+                              <th className="px-4 py-2.5 text-left">Delivery Status</th>
+                              <th className="px-4 py-2.5 text-right">Preview</th>
+                            </tr>
+                          </thead>
+                          <tbody className="divide-y divide-dark-800">
+                            {day.filtered_emails?.map((e: any) => (
+                              <tr key={e.id} className="hover:bg-dark-800/50 transition-colors">
+                                <td className="px-4 py-3 text-dark-300 whitespace-nowrap font-mono">
+                                  {e.time}
+                                </td>
+                                <td className="px-4 py-3">
+                                  <div className="font-bold text-dark-100">{e.company_name}</div>
+                                  <div className="text-[11px] text-dark-400">{e.buyer_name}</div>
+                                </td>
+                                <td className="px-4 py-3 text-dark-300 font-mono">
+                                  {e.email_address}
+                                </td>
+                                <td className="px-4 py-3 whitespace-nowrap">
+                                  <span className="inline-flex items-center gap-1 text-[11px] text-amber-300 bg-amber-500/10 px-2 py-0.5 rounded border border-amber-500/20">
+                                    <MapPin className="w-3 h-3 text-amber-400" />
+                                    {e.city}, {e.state}
+                                  </span>
+                                </td>
+                                <td className="px-4 py-3 text-dark-300">
+                                  {e.product}
+                                </td>
+                                <td className="px-4 py-3 max-w-xs">
+                                  <div className="text-[11px] font-semibold text-primary-400 truncate" title={e.campaign_name}>
+                                    {e.campaign_name}
+                                  </div>
+                                  <div className="text-dark-300 truncate text-[11px]" title={e.subject}>
+                                    {e.subject}
+                                  </div>
+                                </td>
+                                <td className="px-4 py-3 whitespace-nowrap">
+                                  <StatusBadge status={e.status} />
+                                </td>
+                                <td className="px-4 py-3 text-right whitespace-nowrap">
+                                  <button
+                                    onClick={() => setPreviewEmailModal(e)}
+                                    className="p-1.5 rounded-md bg-dark-800 hover:bg-dark-700 text-dark-300 hover:text-dark-100 transition-colors"
+                                    title="View dispatched email details"
+                                  >
+                                    <Info className="w-3.5 h-3.5 text-cyan-400" />
+                                  </button>
+                                </td>
+                              </tr>
+                            ))}
+                          </tbody>
+                        </table>
+                      </div>
+                    )}
+                  </div>
+                );
+              })}
+            </div>
+          )}
+        </div>
+      )}
+
+      {/* ── VIEW 3: BUYER RESPONSES & LIVE INBOX DASHBOARD ── */}
       {activeTab === 'responses' && (
         <div className="space-y-6">
           {/* Response Metrics Ribbon */}
@@ -624,6 +956,82 @@ export default function DashboardPage() {
                   )}
                 </button>
               </div>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/* ── Email Dispatch Details Modal ── */}
+      {previewEmailModal && (
+        <div className="fixed inset-0 bg-black/75 backdrop-blur-sm z-50 flex items-center justify-center p-4">
+          <div className="bg-dark-850 border border-dark-700 rounded-2xl max-w-xl w-full p-6 space-y-4 shadow-2xl animate-in fade-in zoom-in-95">
+            <div className="flex items-center justify-between pb-3 border-b border-dark-700">
+              <div className="flex items-center gap-2.5">
+                <div className="w-8 h-8 rounded-lg bg-cyan-500/10 border border-cyan-500/20 flex items-center justify-center">
+                  <Mail className="w-4 h-4 text-cyan-400" />
+                </div>
+                <div>
+                  <h3 className="text-base font-bold text-dark-50">{previewEmailModal.company_name}</h3>
+                  <p className="text-xs text-dark-400">{previewEmailModal.buyer_name} &bull; {previewEmailModal.email_address}</p>
+                </div>
+              </div>
+              <button
+                onClick={() => setPreviewEmailModal(null)}
+                className="text-dark-400 hover:text-dark-100 text-lg font-bold px-2 py-1"
+              >
+                ✕
+              </button>
+            </div>
+
+            <div className="space-y-3 text-xs">
+              <div className="grid grid-cols-2 gap-3 p-3 bg-dark-900 rounded-lg border border-dark-800">
+                <div>
+                  <span className="text-dark-400">Dispatch Time:</span>
+                  <div className="text-dark-100 font-semibold mt-0.5">{previewEmailModal.time} ({previewEmailModal.datetime?.split('T')[0]})</div>
+                </div>
+                <div>
+                  <span className="text-dark-400">Delivery Status:</span>
+                  <div className="mt-0.5"><StatusBadge status={previewEmailModal.status} /></div>
+                </div>
+                <div>
+                  <span className="text-dark-400">Location:</span>
+                  <div className="text-amber-300 font-medium mt-0.5">{previewEmailModal.city}, {previewEmailModal.state} ({previewEmailModal.country})</div>
+                </div>
+                <div>
+                  <span className="text-dark-400">Product Line:</span>
+                  <div className="text-dark-100 font-medium mt-0.5">{previewEmailModal.product}</div>
+                </div>
+              </div>
+
+              <div>
+                <label className="text-dark-400 font-semibold">Campaign Name:</label>
+                <div className="p-2.5 mt-1 bg-dark-900 border border-dark-800 rounded-lg text-primary-300 font-medium">
+                  {previewEmailModal.campaign_name}
+                </div>
+              </div>
+
+              <div>
+                <label className="text-dark-400 font-semibold">Dispatched Subject Line:</label>
+                <div className="p-2.5 mt-1 bg-dark-900 border border-dark-800 rounded-lg text-dark-100">
+                  {previewEmailModal.subject}
+                </div>
+              </div>
+
+              {previewEmailModal.error_message && (
+                <div className="p-3 bg-red-500/10 border border-red-500/30 rounded-lg text-red-300">
+                  <span className="font-bold">Error Notice: </span>
+                  {previewEmailModal.error_message}
+                </div>
+              )}
+            </div>
+
+            <div className="flex justify-end pt-2 border-t border-dark-800">
+              <button
+                onClick={() => setPreviewEmailModal(null)}
+                className="btn-secondary text-xs px-4 py-2"
+              >
+                Close
+              </button>
             </div>
           </div>
         </div>

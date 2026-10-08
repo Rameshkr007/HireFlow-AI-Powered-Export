@@ -175,7 +175,7 @@ Best regards,
 
 Ramesh Kumar Thakur
 Export Sales Executive | OM Enterprise
-📧 rameshkrthakur1816@gmail.com | 📱 +91 80577 10065`,
+📧 exportindia2026us@gmail.com | 📱 +91 80577 10065`,
   },
   {
     id: 'step-3',
@@ -196,7 +196,7 @@ Warm regards,
 
 Ramesh Kumar Thakur
 Export Sales Executive | OM Enterprise
-📧 rameshkrthakur1816@gmail.com | 📱 +91 80577 10065`,
+📧 exportindia2026us@gmail.com | 📱 +91 80577 10065`,
   },
 ];
 
@@ -213,9 +213,9 @@ export default function CampaignCreatePage() {
   const [activeStepIndex, setActiveStepIndex] = useState(0);
 
   const [formData, setFormData] = useState({
-    name: `US ${defaultProduct} Strategic Outreach 2026`,
+    name: `California ${defaultProduct} Strategic Outreach 2026`,
     product: defaultProduct,
-    target_country: 'United States',
+    target_country: 'USA - California (All Cities)',
     target_audience: 'Importer',
     sending_limit: 50,
     delay_seconds: 45,

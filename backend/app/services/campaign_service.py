@@ -102,7 +102,9 @@ def get_campaign_eligible_buyers(db: Session, campaign: Campaign):
         "usa - california" in tc or 
         "california, usa" in tc or
         "california" in camp_name or
-        "california" in camp_prod
+        "california" in camp_prod or
+        tc in ["united states", "usa", "us", "u.s.", "u.s.a.", ""] or
+        not tc
     )
     
     if is_california_targeted:
@@ -110,54 +112,30 @@ def get_campaign_eligible_buyers(db: Session, campaign: Campaign):
         query = query.filter(
             or_(
                 Buyer.state == "CA",
-                and_(
-                    or_(
-                        Buyer.address.ilike("%California%"),
-                        Buyer.address.ilike("%, CA %"),
-                        Buyer.address.ilike("% CA %"),
-                        Buyer.address.ilike("%, CA,%"),
-                        Buyer.address.ilike("%CA, USA%")
-                    ),
-                    or_(Buyer.state == "CA", Buyer.state.is_(None), Buyer.state == "")
-                ),
-                and_(
-                    Buyer.city.in_(CALIFORNIA_CITIES),
-                    or_(Buyer.state == "CA", Buyer.state.is_(None), Buyer.state == "")
-                )
-            ),
-            or_(Buyer.state.is_(None), Buyer.state == "", Buyer.state == "CA")
+                Buyer.address.ilike("%California%"),
+                Buyer.address.ilike("%, CA %"),
+                Buyer.address.ilike("% CA %"),
+                Buyer.address.ilike("%, CA,%"),
+                Buyer.address.ilike("%CA, USA%"),
+                Buyer.city.in_(CALIFORNIA_CITIES)
+            )
+        )
+        # Strictly ensure no non-California state leads are included
+        query = query.filter(
+            or_(
+                Buyer.state == "CA",
+                Buyer.state.is_(None),
+                Buyer.state == ""
+            )
         )
     elif campaign.target_country:
-        if tc in ["united states", "usa", "us", "u.s.", "u.s.a."]:
-            query = query.filter(
-                or_(
-                    Buyer.country.ilike("%USA%"),
-                    Buyer.country.ilike("%United States%"),
-                    Buyer.country.ilike("%US%")
-                )
-            )
-        else:
-            query = query.filter(Buyer.country.ilike(f"%{campaign.target_country}%"))
+        query = query.filter(Buyer.country.ilike(f"%{campaign.target_country}%"))
             
     # Smart audience matching
     if campaign.target_audience and campaign.target_audience.lower() not in ["all", "any", "all commercial prospects"]:
         query = query.filter(Buyer.business_type.ilike(f"%{campaign.target_audience}%"))
         
     buyers = query.filter(Buyer.email_status != 'INVALID').limit(campaign.sending_limit).all()
-    
-    # If strict filter yields fewer than sending_limit, fallback ONLY IF NOT state-specific (never mix outside California)
-    if not is_california_targeted and len(buyers) < campaign.sending_limit:
-        remaining_limit = campaign.sending_limit - len(buyers)
-        existing_ids = [b.id for b in buyers]
-        fallback_query = db.query(Buyer).filter(
-            Buyer.user_id == campaign.user_id,
-            Buyer.email_status != 'INVALID'
-        )
-        if existing_ids:
-            fallback_query = fallback_query.filter(~Buyer.id.in_(existing_ids))
-        fallback_buyers = fallback_query.limit(remaining_limit).all()
-        buyers.extend(fallback_buyers)
-        
     return buyers
 
 def run_campaign_background(campaign_id: int, user_id: int):

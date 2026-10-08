@@ -371,19 +371,6 @@ Chakra Singing Bowl Sets
 Meditation & Sound Healing Bowls
 Tingsha Cymbals & Meditation Accessories
 Custom Logo & Private Label Manufacturing
-Choose the Collection That Fits Your Business
-✨ Premium Collection
-Individually handcrafted with superior finish and exceptional sound quality.
-
-NO MINIMUM ORDER QUANTITY
-Order from a single bowl to large wholesale quantities.
-
-📦 Standard Collection
-Perfect for wholesalers and distributors seeking bulk procurement.
-
-Minimum Order Quantity
-200 Pieces
-Competitive pricing and consistent quality for high-volume orders.
 
 Why Partner With Us?
 ✔ Direct Manufacturer from Nepal

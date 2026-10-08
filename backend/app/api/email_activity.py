@@ -142,6 +142,9 @@ def get_day_wise_activity(
             buyer = buyers_map.get(log.buyer_id)
             camp = camps_map.get(log.campaign_id)
             comp_name = (buyer.company_name if buyer else None) or "Unspecified Company"
+            companies_on_day.add(comp_name)
+            all_unique_companies.add(comp_name)
+
             # Build address string
             addr_parts = []
             if buyer:
@@ -313,6 +316,7 @@ def export_google_sheets_csv(
     writer = csv.writer(output)
     writer.writerow(["Date", "Company name", "Email Id", "Address", "Status", "Response"])
 
+    date_filter = date if isinstance(date, str) and date.strip() else None
     for log in logs:
         buyer = buyers_map.get(log.buyer_id)
         log_dt = log.sent_at or log.created_at or datetime.utcnow()
@@ -323,7 +327,7 @@ def export_google_sheets_csv(
                 log_dt = datetime.utcnow()
 
         log_date_str = log_dt.strftime("%Y-%m-%d")
-        if date and log_date_str != date:
+        if date_filter and log_date_str != date_filter:
             continue
 
         # Build address string
@@ -396,6 +400,7 @@ def get_google_sheets_rows(
     buyers_map = {b.id: b for b in db.query(Buyer).filter(Buyer.id.in_(buyer_ids)).all()} if buyer_ids else {}
 
     rows = []
+    date_filter = date if isinstance(date, str) and date.strip() else None
     for log in logs:
         buyer = buyers_map.get(log.buyer_id)
         log_dt = log.sent_at or log.created_at or datetime.utcnow()
@@ -406,7 +411,7 @@ def get_google_sheets_rows(
                 log_dt = datetime.utcnow()
 
         log_date_str = log_dt.strftime("%Y-%m-%d")
-        if date and log_date_str != date:
+        if date_filter and log_date_str != date_filter:
             continue
 
         addr_parts = []

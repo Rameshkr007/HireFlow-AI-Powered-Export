@@ -79,46 +79,20 @@ def get_charts(current_user: User = Depends(get_current_user), db: Session = Dep
 
 @router.get("/responses")
 def get_responses(current_user: User = Depends(get_current_user), db: Session = Depends(get_db)):
-    """Returns real-time buyer responses and engagement analytics calculated strictly from live database records."""
+    """Returns real-time buyer responses calculated strictly from genuine inbound replies (0 dummy responses)."""
     uid = current_user.id
     buyers = db.query(Buyer).filter(Buyer.user_id == uid).all()
     logs = db.query(EmailLog).filter(EmailLog.user_id == uid).all()
     
     total_sent = sum(1 for l in logs if l.status == 'SENT')
-    replied_buyers = [b for b in buyers if b.outreach_status in ['REPLIED', 'INTERESTED', 'SAMPLE_REQUESTED']]
+    # Real buyer responses (only if genuine reply received)
+    replied_buyers = [b for b in buyers if b.outreach_status in ['REPLIED', 'INTERESTED', 'SAMPLE_REQUESTED', 'FOB_REQUESTED'] and not getattr(b, 'is_demo', False)]
     
-    # Realistic B2B trade inquiry templates based on buyer's product vertical and status
-    inquiry_templates = {
-        'SAMPLE_REQUESTED': [
-            "We reviewed your singing bowl specifications. Could you courier a 7-metal sample piece to our California office for acoustic testing?",
-            "Interested in your handcrafted metal candle lanterns. Please arrange a sample set and confirm shipping timeline to USA.",
-            "We would like to evaluate sample quality for your Full Moon Singing Bowls before placing our bulk spring order."
-        ],
-        'INTERESTED': [
-            "Thank you for reaching out. We are currently looking for a direct factory in India for singing bowls and decorative metalware. Please send your full 2026 wholesale catalog.",
-            "We received your export introduction. Do you provide custom laser engraving and private label packaging for US retail boutiques?",
-            "Your product range aligns well with our upcoming catalog. Let's schedule a call to discuss container MOQ and delivery terms to Long Beach port."
-        ],
-        'REPLIED': [
-            "Please share your latest FOB prices and MOQ for singing bowls and wrought iron candelabras.",
-            "We are interested in distributing your wellness products in our West Coast retail stores. Please email your wholesale tier pricing.",
-            "Could you share lead times for 500 pcs singing bowls shipment to our Los Angeles warehouse?"
-        ]
-    }
-
     responses_feed = []
-    for idx, b in enumerate(replied_buyers):
-        st_key = b.outreach_status if b.outreach_status in inquiry_templates else 'REPLIED'
-        tpl_list = inquiry_templates.get(st_key, inquiry_templates['REPLIED'])
-        inquiry_text = tpl_list[idx % len(tpl_list)]
-
+    for b in replied_buyers:
         loc_city = b.city or "Los Angeles"
         loc_state = b.state or ("CA" if (b.country == "USA" or not b.country) else "")
         loc_country = b.country or "USA"
-
-        # Correct any mismatched Australia + California artifacts
-        if loc_country != "USA" and loc_state == "CA":
-            loc_state = ""
 
         responses_feed.append({
             "id": f"resp-{b.id}",
@@ -129,15 +103,15 @@ def get_responses(current_user: User = Depends(get_current_user), db: Session = 
             "state": loc_state,
             "country": loc_country,
             "product": b.product or "Handmade Himalayan Singing Bowls",
-            "intent": "Sample Request" if b.outreach_status == 'SAMPLE_REQUESTED' else ("FOB Price Quote" if b.outreach_status == 'FOB_REQUESTED' else "Wholesale Inquiry"),
+            "intent": "Buyer Inbound Inquiry",
             "sentiment": "POSITIVE",
             "confidence": b.ai_confidence or 0.95,
-            "received_at": str(b.last_contacted or "2026-10-08 14:30:00"),
-            "message_snippet": inquiry_text,
+            "received_at": str(b.last_contacted or "Recent"),
+            "message_snippet": getattr(b, 'last_reply_snippet', None) or "Direct inbound reply received from buyer.",
             "recommended_action": "Follow up with factory catalog and quotation",
             "deal_value": "$25,000",
             "status": "AWAITING_REPLY",
-            "is_simulated": True
+            "is_simulated": False
         })
 
     response_rate = f"{round((len(responses_feed) / total_sent * 100), 1)}%" if total_sent > 0 else "0.0%"
@@ -147,7 +121,7 @@ def get_responses(current_user: User = Depends(get_current_user), db: Session = 
         "total_responses": len(responses_feed),
         "positive_replies": len(responses_feed),
         "sample_requests": sum(1 for b in replied_buyers if b.outreach_status == 'SAMPLE_REQUESTED'),
-        "fob_quotes_requested": len(responses_feed),
+        "fob_quotes_requested": sum(1 for b in replied_buyers if b.outreach_status == 'FOB_REQUESTED'),
         "total_sent": total_sent,
         "response_rate": response_rate,
         "pipeline_potential_usd": pipeline_val,

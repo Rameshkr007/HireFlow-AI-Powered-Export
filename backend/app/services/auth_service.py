@@ -505,18 +505,9 @@ Thank you for your valuable time. We look forward to building a successful and l
                 )
                 db.add(elog)
 
-                # Update buyer outreach status
+                # Update buyer outreach status strictly as CONTACTED (Delivered - Awaiting real reply)
                 if st == "SENT":
-                    if buyer_idx % 18 == 2:
-                        b.outreach_status = "INTERESTED"
-                    elif buyer_idx % 18 == 5:
-                        b.outreach_status = "SAMPLE_REQUESTED"
-                    elif buyer_idx % 18 == 9:
-                        b.outreach_status = "REPLIED"
-                    elif buyer_idx % 18 == 13:
-                        b.outreach_status = "FOB_REQUESTED"
-                    else:
-                        b.outreach_status = "CONTACTED"
+                    b.outreach_status = "CONTACTED"
                     b.last_contacted = log_time
 
         # Update campaign stats

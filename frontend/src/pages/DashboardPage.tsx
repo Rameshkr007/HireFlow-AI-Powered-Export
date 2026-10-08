@@ -141,6 +141,32 @@ export default function DashboardPage() {
     }
   };
 
+  const handleCopySingleDayGoogleSheets = async (day: any, e: React.MouseEvent) => {
+    e.stopPropagation();
+    try {
+      const res = await api.get(`/api/email-activity/google-sheets-rows?date=${day.date}`);
+      const rows = res.data?.rows || [];
+      if (rows.length === 0) {
+        showToast(`${day.display_date} ke liye koi records nahi mile`, 'error');
+        return;
+      }
+      const tsv = rows
+        .map((r: any) => `${r.date}\t${r.company_name}\t${r.email_id}\t${r.address}\t${r.status}\t${r.response}`)
+        .join('\n');
+
+      await navigator.clipboard.writeText(tsv);
+      showToast(`✅ ${day.display_date} (${rows.length} rows) copy ho gaye! Google Sheet me Ctrl + V karein.`, 'success');
+    } catch (err) {
+      showToast('Copy karne me samasya aayi', 'error');
+    }
+  };
+
+  const handleDownloadSingleDayCSV = (dateStr: string, e: React.MouseEvent) => {
+    e.stopPropagation();
+    window.open(`/api/email-activity/export-google-sheets?date=${dateStr}`, '_blank');
+    showToast('Downloading Day CSV...', 'success');
+  };
+
   const handleDownloadGoogleSheetsCSV = () => {
     window.open('/api/email-activity/export-google-sheets', '_blank');
     showToast('Downloading Google Sheet format CSV...', 'success');
@@ -707,7 +733,27 @@ export default function DashboardPage() {
                         </div>
                       </div>
 
-                      <div className="flex items-center gap-2.5 ml-auto md:ml-0">
+                      <div className="flex flex-wrap items-center gap-2 ml-auto md:ml-0" onClick={e => e.stopPropagation()}>
+                        <button
+                          type="button"
+                          onClick={(e) => handleCopySingleDayGoogleSheets(day, e)}
+                          className="px-2.5 py-1 rounded-md bg-emerald-600/90 hover:bg-emerald-500 text-white text-[11px] font-semibold flex items-center gap-1 shadow-sm transition-all"
+                          title={`Copy ${day.display_date} (${day.filtered_emails?.length || day.total_emails} rows) for Google Sheet`}
+                        >
+                          <Copy className="w-3 h-3" />
+                          <span>📋 Copy Day for Google Sheet ({day.filtered_emails?.length || day.total_emails})</span>
+                        </button>
+
+                        <button
+                          type="button"
+                          onClick={(e) => handleDownloadSingleDayCSV(day.date, e)}
+                          className="px-2 py-1 rounded-md bg-dark-800 hover:bg-dark-750 border border-dark-700 text-dark-200 text-[11px] font-medium flex items-center gap-1 transition-all"
+                          title={`Download ${day.display_date} Sheet CSV`}
+                        >
+                          <Download className="w-3 h-3 text-emerald-400" />
+                          <span>CSV</span>
+                        </button>
+
                         <div className="flex items-center gap-1.5 text-xs">
                           <span className="px-2.5 py-1 rounded-md bg-emerald-500/10 text-emerald-400 border border-emerald-500/20 font-medium">
                             ✓ {day.total_sent} Sent
@@ -726,6 +772,7 @@ export default function DashboardPage() {
 
                         <button
                           type="button"
+                          onClick={() => toggleDateAccordion(day.date)}
                           className="p-1.5 rounded-lg bg-dark-800 text-dark-300 hover:text-dark-100 hover:bg-dark-700 transition-colors"
                           aria-label="Toggle details"
                         >

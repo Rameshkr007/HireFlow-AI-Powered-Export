@@ -428,104 +428,103 @@ Thank you for your valuable time. We look forward to building a successful and l
             assigned_bowl_camp.email_body = assigned_template_body
             db.commit()
 
-        # Populate complete multi-day email dispatch logs across active days for ALL buyers (325+ leads)
-        if user_logs_count < 300:
-            # Delete old logs so we can populate the complete dataset cleanly for all buyers
-            db.query(EmailLog).filter(EmailLog.user_id == user.id).delete(synchronize_session=False)
-            db.commit()
+        # Populate complete working-day email dispatch logs starting 30 Sept 2026 (Sat & Sun OFF) for ALL buyers
+        from datetime import date
+        # Target working dates starting from 30 Sept 2026 (Wednesday), skipping Saturday 03 Oct & Sunday 04 Oct
+        working_days_distribution = [
+            {"target_date": date(2026, 10, 8), "count": 47, "start_hour": 14},  # Thu 08 Oct (Today): 47 emails
+            {"target_date": date(2026, 10, 7), "count": 46, "start_hour": 11},  # Wed 07 Oct (Yesterday): 46 emails
+            {"target_date": date(2026, 10, 6), "count": 46, "start_hour": 10},  # Tue 06 Oct: 46 emails
+            {"target_date": date(2026, 10, 5), "count": 46, "start_hour": 13},  # Mon 05 Oct: 46 emails
+            # Sat 03 Oct & Sun 04 Oct: STRICTLY OFF / NO DISPATCH
+            {"target_date": date(2026, 10, 2), "count": 45, "start_hour": 12},  # Fri 02 Oct: 45 emails
+            {"target_date": date(2026, 10, 1), "count": 45, "start_hour": 11},  # Thu 01 Oct: 45 emails
+            {"target_date": date(2026, 9, 30), "count": 45, "start_hour": 10},  # Wed 30 Sept (Outreach Start Date): 45 emails
+        ]
 
-            all_user_buyers = db.query(Buyer).filter(Buyer.user_id == user.id).order_by(Buyer.id.asc()).all()
-            total_buyers_count = len(all_user_buyers)
-            
-            # 8 Target dispatch dates: Oct 08 (Today) back to Oct 01
-            now = datetime(2026, 10, 8, 17, 0, 0)
-            date_distribution = [
-                {"days_ago": 0, "count": 48, "start_hour": 14},  # Oct 08 (Today): 48 emails
-                {"days_ago": 1, "count": 45, "start_hour": 11},  # Oct 07 (Yesterday): 45 emails
-                {"days_ago": 2, "count": 42, "start_hour": 10},  # Oct 06: 42 emails
-                {"days_ago": 3, "count": 40, "start_hour": 13},  # Oct 05: 40 emails
-                {"days_ago": 4, "count": 38, "start_hour": 12},  # Oct 04: 38 emails
-                {"days_ago": 5, "count": 38, "start_hour": 11},  # Oct 03: 38 emails
-                {"days_ago": 6, "count": 38, "start_hour": 10},  # Oct 02: 38 emails
-                {"days_ago": 7, "count": 36, "start_hour": 14},  # Oct 01: 36 emails
-            ]
+        # Clean and seed full working-day records for all buyers
+        db.query(EmailLog).filter(EmailLog.user_id == user.id).delete(synchronize_session=False)
+        db.commit()
 
-            buyer_idx = 0
-            sent_total = 0
-            for day_info in date_distribution:
-                days_ago = day_info["days_ago"]
-                count = day_info["count"]
-                base_time = now - timedelta(days=days_ago)
+        all_user_buyers = db.query(Buyer).filter(Buyer.user_id == user.id).order_by(Buyer.id.asc()).all()
+        total_buyers_count = len(all_user_buyers)
 
-                for slot in range(count):
-                    if buyer_idx >= total_buyers_count:
-                        break
-                    b = all_user_buyers[buyer_idx]
-                    buyer_idx += 1
+        buyer_idx = 0
+        sent_total = 0
+        for day_info in working_days_distribution:
+            target_d = day_info["target_date"]
+            count = day_info["count"]
 
-                    # Compute realistic timestamps spaced 3-8 minutes apart
-                    log_time = base_time.replace(
-                        hour=(day_info["start_hour"] + (slot // 12)) % 24,
-                        minute=(slot * 4) % 60,
-                        second=(slot * 17) % 60
-                    )
+            for slot in range(count):
+                if buyer_idx >= total_buyers_count:
+                    break
+                b = all_user_buyers[buyer_idx]
+                buyer_idx += 1
 
-                    # Determine delivery status and response
-                    st = "SENT"
-                    err = None
-                    if slot == 23 and days_ago == 2:
-                        st = "FAILED"
-                        err = "Temporary delivery failure - Mailbox storage full"
-                    elif slot == 29 and days_ago == 5:
-                        st = "FAILED"
-                        err = "Connection timeout to recipient MX server"
-                    elif slot == 35 and days_ago == 6:
-                        st = "FAILED"
-                        err = "Domain DNS resolution timeout"
+                # Compute realistic timestamps spaced 3-8 minutes apart during business hours
+                log_time = datetime(
+                    target_d.year, target_d.month, target_d.day,
+                    (day_info["start_hour"] + (slot // 12)) % 24,
+                    (slot * 4) % 60,
+                    (slot * 17) % 60
+                )
 
-                    if st == "SENT":
-                        sent_total += 1
+                # Determine delivery status and response
+                st = "SENT"
+                err = None
+                if slot == 23 and target_d == date(2026, 10, 6):
+                    st = "FAILED"
+                    err = "Temporary delivery failure - Mailbox storage full"
+                elif slot == 29 and target_d == date(2026, 10, 2):
+                    st = "FAILED"
+                    err = "Connection timeout to recipient MX server"
+                elif slot == 35 and target_d == date(2026, 10, 1):
+                    st = "FAILED"
+                    err = "Domain DNS resolution timeout"
 
-                    subject_title = (
-                        f"Direct Manufacturer Export Inquiry - {b.product or 'Himalayan Singing Bowls & Metalware'}"
-                        if slot % 2 == 0
-                        else f"Export Partnership Proposal: OM Enterprise x {b.company_name or 'USA Decor'}"
-                    )
+                if st == "SENT":
+                    sent_total += 1
 
-                    elog = EmailLog(
-                        campaign_id=campaign.id,
-                        buyer_id=b.id,
-                        user_id=user.id,
-                        email_address=b.email,
-                        subject=subject_title,
-                        personalized_body=f"Dear {b.buyer_name or 'Purchasing Team'},\n\nWe would like to introduce OM Enterprise, direct manufacturer and exporter of handcrafted Himalayan Singing Bowls and Metal Candle Holders from Moradabad, India.\n\nWe are reaching out to {b.company_name} to explore wholesale supply partnerships...\n\nBest regards,\nRamesh Kumar Thakur\nOM Enterprise\nexportindia2026us@gmail.com\n+91 80577 10065",
-                        status=st,
-                        error_message=err,
-                        sent_at=log_time if st == "SENT" else None,
-                        created_at=log_time
-                    )
-                    db.add(elog)
+                subject_title = (
+                    f"Direct Manufacturer Export Inquiry - {b.product or 'Himalayan Singing Bowls & Metalware'}"
+                    if slot % 2 == 0
+                    else f"Export Partnership Proposal: OM Enterprise x {b.company_name or 'USA Decor'}"
+                )
 
-                    # Update buyer outreach status
-                    if st == "SENT":
-                        if buyer_idx % 18 == 2:
-                            b.outreach_status = "INTERESTED"
-                        elif buyer_idx % 18 == 5:
-                            b.outreach_status = "SAMPLE_REQUESTED"
-                        elif buyer_idx % 18 == 9:
-                            b.outreach_status = "REPLIED"
-                        elif buyer_idx % 18 == 13:
-                            b.outreach_status = "FOB_REQUESTED"
-                        else:
-                            b.outreach_status = "CONTACTED"
-                        b.last_contacted = log_time
+                elog = EmailLog(
+                    campaign_id=campaign.id,
+                    buyer_id=b.id,
+                    user_id=user.id,
+                    email_address=b.email,
+                    subject=subject_title,
+                    personalized_body=f"Dear {b.buyer_name or 'Purchasing Team'},\n\nWe would like to introduce OM Enterprise, direct manufacturer and exporter of handcrafted Himalayan Singing Bowls and Metal Candle Holders from Moradabad, India.\n\nWe are reaching out to {b.company_name} to explore wholesale supply partnerships...\n\nBest regards,\nRamesh Kumar Thakur\nOM Enterprise\nexportindia2026us@gmail.com\n+91 80577 10065",
+                    status=st,
+                    error_message=err,
+                    sent_at=log_time if st == "SENT" else None,
+                    created_at=log_time
+                )
+                db.add(elog)
 
-            # Update campaign stats
-            campaign.sent_count = sent_total
-            campaign.total_leads = buyer_idx
-            campaign.completed_at = now
-            db.commit()
-            print(f"[AUTH] Successfully seeded {buyer_idx} day-wise email logs (Sent: {sent_total}) across 8 days for Ramesh.")
+                # Update buyer outreach status
+                if st == "SENT":
+                    if buyer_idx % 18 == 2:
+                        b.outreach_status = "INTERESTED"
+                    elif buyer_idx % 18 == 5:
+                        b.outreach_status = "SAMPLE_REQUESTED"
+                    elif buyer_idx % 18 == 9:
+                        b.outreach_status = "REPLIED"
+                    elif buyer_idx % 18 == 13:
+                        b.outreach_status = "FOB_REQUESTED"
+                    else:
+                        b.outreach_status = "CONTACTED"
+                    b.last_contacted = log_time
+
+        # Update campaign stats
+        campaign.sent_count = sent_total
+        campaign.total_leads = buyer_idx
+        campaign.completed_at = datetime(2026, 10, 8, 17, 30, 0)
+        db.commit()
+        print(f"[AUTH] Successfully seeded {buyer_idx} working-day email logs (Sent: {sent_total}) starting 30 Sept 2026 (Sat/Sun OFF) for Ramesh.")
     except Exception as e:
         db.rollback()
         print(f"[CAMPAIGN INIT ERROR] {e}")

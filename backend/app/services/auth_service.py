@@ -428,39 +428,44 @@ Thank you for your valuable time. We look forward to building a successful and l
             assigned_bowl_camp.email_body = assigned_template_body
             db.commit()
 
-        # Populate complete multi-day email dispatch logs across 5 active days for all California & USA buyers
-        if user_logs_count < 80:
-            # Delete old minimal logs so we can populate the complete multi-day record cleanly
+        # Populate complete multi-day email dispatch logs across active days for ALL buyers (325+ leads)
+        if user_logs_count < 300:
+            # Delete old logs so we can populate the complete dataset cleanly for all buyers
             db.query(EmailLog).filter(EmailLog.user_id == user.id).delete(synchronize_session=False)
             db.commit()
 
-            all_user_buyers = db.query(Buyer).filter(Buyer.user_id == user.id).order_by(Buyer.id.asc()).limit(100).all()
+            all_user_buyers = db.query(Buyer).filter(Buyer.user_id == user.id).order_by(Buyer.id.asc()).all()
+            total_buyers_count = len(all_user_buyers)
             
-            # 5 Target dispatch dates: Today (Oct 08), Oct 07, Oct 06, Oct 05, Oct 04
-            now = datetime(2026, 10, 8, 16, 30, 0)
+            # 8 Target dispatch dates: Oct 08 (Today) back to Oct 01
+            now = datetime(2026, 10, 8, 17, 0, 0)
             date_distribution = [
-                {"days_ago": 0, "count": 22, "start_hour": 14},  # Oct 08 (Today): 22 emails
-                {"days_ago": 1, "count": 20, "start_hour": 11},  # Oct 07 (Yesterday): 20 emails
-                {"days_ago": 2, "count": 18, "start_hour": 10},  # Oct 06: 18 emails
-                {"days_ago": 3, "count": 18, "start_hour": 13},  # Oct 05: 18 emails
-                {"days_ago": 4, "count": 16, "start_hour": 12},  # Oct 04: 16 emails
+                {"days_ago": 0, "count": 48, "start_hour": 14},  # Oct 08 (Today): 48 emails
+                {"days_ago": 1, "count": 45, "start_hour": 11},  # Oct 07 (Yesterday): 45 emails
+                {"days_ago": 2, "count": 42, "start_hour": 10},  # Oct 06: 42 emails
+                {"days_ago": 3, "count": 40, "start_hour": 13},  # Oct 05: 40 emails
+                {"days_ago": 4, "count": 38, "start_hour": 12},  # Oct 04: 38 emails
+                {"days_ago": 5, "count": 38, "start_hour": 11},  # Oct 03: 38 emails
+                {"days_ago": 6, "count": 38, "start_hour": 10},  # Oct 02: 38 emails
+                {"days_ago": 7, "count": 36, "start_hour": 14},  # Oct 01: 36 emails
             ]
 
             buyer_idx = 0
+            sent_total = 0
             for day_info in date_distribution:
                 days_ago = day_info["days_ago"]
                 count = day_info["count"]
                 base_time = now - timedelta(days=days_ago)
 
                 for slot in range(count):
-                    if buyer_idx >= len(all_user_buyers):
+                    if buyer_idx >= total_buyers_count:
                         break
                     b = all_user_buyers[buyer_idx]
                     buyer_idx += 1
 
                     # Compute realistic timestamps spaced 3-8 minutes apart
                     log_time = base_time.replace(
-                        hour=day_info["start_hour"] + (slot // 12),
+                        hour=(day_info["start_hour"] + (slot // 12)) % 24,
                         minute=(slot * 4) % 60,
                         second=(slot * 17) % 60
                     )
@@ -468,12 +473,18 @@ Thank you for your valuable time. We look forward to building a successful and l
                     # Determine delivery status and response
                     st = "SENT"
                     err = None
-                    if slot == 15 and days_ago == 2:
+                    if slot == 23 and days_ago == 2:
                         st = "FAILED"
                         err = "Temporary delivery failure - Mailbox storage full"
-                    elif slot == 17 and days_ago == 4:
+                    elif slot == 29 and days_ago == 5:
                         st = "FAILED"
                         err = "Connection timeout to recipient MX server"
+                    elif slot == 35 and days_ago == 6:
+                        st = "FAILED"
+                        err = "Domain DNS resolution timeout"
+
+                    if st == "SENT":
+                        sent_total += 1
 
                     subject_title = (
                         f"Direct Manufacturer Export Inquiry - {b.product or 'Himalayan Singing Bowls & Metalware'}"
@@ -497,18 +508,24 @@ Thank you for your valuable time. We look forward to building a successful and l
 
                     # Update buyer outreach status
                     if st == "SENT":
-                        if buyer_idx % 15 == 2:
+                        if buyer_idx % 18 == 2:
                             b.outreach_status = "INTERESTED"
-                        elif buyer_idx % 15 == 5:
+                        elif buyer_idx % 18 == 5:
                             b.outreach_status = "SAMPLE_REQUESTED"
-                        elif buyer_idx % 15 == 9:
+                        elif buyer_idx % 18 == 9:
                             b.outreach_status = "REPLIED"
+                        elif buyer_idx % 18 == 13:
+                            b.outreach_status = "FOB_REQUESTED"
                         else:
                             b.outreach_status = "CONTACTED"
                         b.last_contacted = log_time
 
+            # Update campaign stats
+            campaign.sent_count = sent_total
+            campaign.total_leads = buyer_idx
+            campaign.completed_at = now
             db.commit()
-            print(f"[AUTH] Successfully seeded {buyer_idx} day-wise email logs across 5 days for Ramesh.")
+            print(f"[AUTH] Successfully seeded {buyer_idx} day-wise email logs (Sent: {sent_total}) across 8 days for Ramesh.")
     except Exception as e:
         db.rollback()
         print(f"[CAMPAIGN INIT ERROR] {e}")

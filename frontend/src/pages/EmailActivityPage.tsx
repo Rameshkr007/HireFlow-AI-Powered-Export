@@ -40,7 +40,7 @@ export default function EmailActivityPage() {
     queryFn: async () => {
       const statusParam = statusFilter !== 'all' ? `&status=${statusFilter}` : '';
       const searchParam = search ? `&search=${encodeURIComponent(search)}` : '';
-      const res = await api.get(`/api/email-activity?limit=500${searchParam}${statusParam}`);
+      const res = await api.get(`/api/email-activity?limit=1000${searchParam}${statusParam}`);
       return res.data;
     },
     refetchInterval: 3000,

@@ -22,7 +22,7 @@ def get_email_activity(
     status: Optional[str] = None,
     search: Optional[str] = None,
     skip: int = Query(0, ge=0),
-    limit: int = Query(500, ge=1, le=2000),
+    limit: int = Query(1000, ge=1, le=5000),
     current_user: User = Depends(get_current_user),
     db: Session = Depends(get_db)
 ):
@@ -44,7 +44,7 @@ def get_email_activity(
             (EmailLog.subject.ilike(search_pattern))
         )
     offset_val = skip if isinstance(skip, int) else 0
-    limit_val = limit if isinstance(limit, int) else 500
+    limit_val = limit if isinstance(limit, int) else 1000
     logs = query.order_by(EmailLog.created_at.desc()).offset(offset_val).limit(limit_val).all()
     result = []
     

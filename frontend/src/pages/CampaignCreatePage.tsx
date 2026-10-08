@@ -25,34 +25,35 @@ Direct Manufacturer from Nepal • Wholesale • OEM • Private Label
 
 Dear {{name}},
 
-While researching businesses in {{country}}, we came across {{company}} and were impressed by your commitment to quality wellness products.
+While researching leading wellness businesses in {{country}}, we came across {{company}} and were very impressed by your product curation.
 
-We are a Nepal-based manufacturer and exporter of authentic handmade Himalayan Singing Bowls crafted by skilled artisans using traditional techniques.
+We are a Nepal-based manufacturer and direct exporter of authentic handmade Himalayan Singing Bowls, crafted by skilled generational artisans using traditional metal-forging techniques.
 
-Our Product Range
-Handmade Himalayan Singing Bowls
-Full Moon Singing Bowls
-Antique Finish Singing Bowls
-Chakra Singing Bowl Sets
-Meditation & Sound Healing Bowls
-Tingsha Cymbals & Meditation Accessories
-Custom Logo & Private Label Manufacturing
+Our Product Range:
+• Handmade Himalayan Singing Bowls & Full Moon Healing Sets
+• Antique & Matte Finish Singing Bowls
+• 7-Chakra Tuned Singing Bowl Sets
+• Meditation & Sound Bath Bowls
+• Handcrafted Tingsha Cymbals & Accessories
+• Custom Laser Logo & Private Label Manufacturing
 
-Why Partner With Us?
-✔ Direct Manufacturer from Nepal
-✔ Authentic Handmade Craftsmanship
-✔ OEM & Private Label Services
-✔ Worldwide Shipping
-✔ Dedicated Export Support
-Our latest catalogue is attached. Reply to this email for wholesale pricing, samples, shipping quotations, and customization options.
+Why International Importers Partner With Us:
+✔ 100% Direct Manufacturer from Nepal (Direct Factory FOB Pricing)
+✔ Traditional 7-Metal Alloy & Certified Acoustic Tuning (432Hz / 528Hz)
+✔ OEM, Custom Engraving & Private Label Packaging
+✔ Worldwide Door-to-Door (DHL/FedEx) & Ocean Freight Logistics
+✔ Dedicated Export Support & Sample Dispatch
+
+Our latest 2026 digital catalogue is attached for your review.
+
+Would you like us to send our wholesale price list or courier a sample piece to your office for quality evaluation?
 
 Kind Regards,
 
 {{sender_name}}
-Sales Executive
-{{company_name}}
+Sales Executive | {{company_name}}
 📧 {{email}}
-📱 {{phone}}
+📱 WhatsApp: {{phone}}
 
 Thank you for your valuable time. We look forward to building a successful and long-term partnership with {{company}}.`
 };

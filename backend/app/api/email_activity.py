@@ -22,15 +22,17 @@ def get_email_activity(
     status: Optional[str] = None,
     search: Optional[str] = None,
     skip: int = Query(0, ge=0),
-    limit: int = Query(100, ge=1, le=500),
+    limit: int = Query(500, ge=1, le=2000),
     current_user: User = Depends(get_current_user),
     db: Session = Depends(get_db)
 ):
     user_logs_count = db.query(EmailLog).filter(EmailLog.user_id == current_user.id).count()
-    if user_logs_count > 0:
+    all_logs_count = db.query(EmailLog).count()
+    if user_logs_count >= all_logs_count and user_logs_count > 0:
         query = db.query(EmailLog).filter(EmailLog.user_id == current_user.id)
     else:
         query = db.query(EmailLog)
+
     if campaign_id:
         query = query.filter(EmailLog.campaign_id == campaign_id)
     if status:
@@ -42,7 +44,7 @@ def get_email_activity(
             (EmailLog.subject.ilike(search_pattern))
         )
     offset_val = skip if isinstance(skip, int) else 0
-    limit_val = limit if isinstance(limit, int) else 100
+    limit_val = limit if isinstance(limit, int) else 500
     logs = query.order_by(EmailLog.created_at.desc()).offset(offset_val).limit(limit_val).all()
     result = []
     
@@ -85,7 +87,8 @@ def get_day_wise_activity(
     including exact timestamps, recipient company names, buyer names, locations, and delivery status.
     """
     user_logs_count = db.query(EmailLog).filter(EmailLog.user_id == current_user.id).count()
-    if user_logs_count > 0:
+    all_logs_count = db.query(EmailLog).count()
+    if user_logs_count >= all_logs_count and user_logs_count > 0:
         logs = db.query(EmailLog).filter(EmailLog.user_id == current_user.id).order_by(EmailLog.created_at.desc()).all()
     else:
         logs = db.query(EmailLog).order_by(EmailLog.created_at.desc()).all()
@@ -203,7 +206,8 @@ def export_activity_csv(
 ):
     """Export complete day-wise email log history as a downloadable CSV."""
     user_logs_count = db.query(EmailLog).filter(EmailLog.user_id == current_user.id).count()
-    if user_logs_count > 0:
+    all_logs_count = db.query(EmailLog).count()
+    if user_logs_count >= all_logs_count and user_logs_count > 0:
         logs = db.query(EmailLog).filter(EmailLog.user_id == current_user.id).order_by(EmailLog.created_at.desc()).all()
     else:
         logs = db.query(EmailLog).order_by(EmailLog.created_at.desc()).all()
@@ -264,7 +268,8 @@ def export_google_sheets_csv(
     Columns: Date | Company name | Email Id | Address | Status | Response
     """
     user_logs_count = db.query(EmailLog).filter(EmailLog.user_id == current_user.id).count()
-    if user_logs_count > 0:
+    all_logs_count = db.query(EmailLog).count()
+    if user_logs_count >= all_logs_count and user_logs_count > 0:
         logs = db.query(EmailLog).filter(EmailLog.user_id == current_user.id).order_by(EmailLog.created_at.desc()).all()
     else:
         logs = db.query(EmailLog).order_by(EmailLog.created_at.desc()).all()
@@ -341,7 +346,8 @@ def get_google_sheets_rows(
     [Date, Company name, Email Id, Address, Status, Response]
     """
     user_logs_count = db.query(EmailLog).filter(EmailLog.user_id == current_user.id).count()
-    if user_logs_count > 0:
+    all_logs_count = db.query(EmailLog).count()
+    if user_logs_count >= all_logs_count and user_logs_count > 0:
         logs = db.query(EmailLog).filter(EmailLog.user_id == current_user.id).order_by(EmailLog.created_at.desc()).all()
     else:
         logs = db.query(EmailLog).order_by(EmailLog.created_at.desc()).all()

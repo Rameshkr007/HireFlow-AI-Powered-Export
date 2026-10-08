@@ -19,6 +19,7 @@ export default function EmailActivityPage() {
   const [search, setSearch] = useState('');
   const [statusFilter, setStatusFilter] = useState<string>('all');
   const [expandedDates, setExpandedDates] = useState<Record<string, boolean>>({});
+  const [allExpanded, setAllExpanded] = useState(true);
   const [selectedLogModal, setSelectedLogModal] = useState<any | null>(null);
   const [copyingSheet, setCopyingSheet] = useState(false);
 
@@ -33,13 +34,13 @@ export default function EmailActivityPage() {
     staleTime: 1000
   });
 
-  // 2. Flat List Query
+  // 2. Flat List Query - load full history without artificial truncation
   const { data: flatData, isLoading: isFlatLoading, refetch: refetchFlat } = useQuery<EmailLog[]>({
-    queryKey: ['email-logs-flat', page, search, statusFilter],
+    queryKey: ['email-logs-flat', search, statusFilter],
     queryFn: async () => {
       const statusParam = statusFilter !== 'all' ? `&status=${statusFilter}` : '';
       const searchParam = search ? `&search=${encodeURIComponent(search)}` : '';
-      const res = await api.get(`/api/email-activity?skip=${(page - 1) * 20}&limit=20${searchParam}${statusParam}`);
+      const res = await api.get(`/api/email-activity?limit=500${searchParam}${statusParam}`);
       return res.data;
     },
     refetchInterval: 3000,
@@ -53,11 +54,21 @@ export default function EmailActivityPage() {
     }));
   };
 
+  const toggleAllDates = () => {
+    const nextState = !allExpanded;
+    setAllExpanded(nextState);
+    const newMap: Record<string, boolean> = {};
+    (dayWiseData?.days || []).forEach((d: any) => {
+      newMap[d.date] = nextState;
+    });
+    setExpandedDates(newMap);
+  };
+
   const isExpanded = (dateKey: string, idx: number) => {
     if (expandedDates[dateKey] !== undefined) {
       return expandedDates[dateKey];
     }
-    return idx === 0; // First day open by default
+    return true; // Expand all days by default so 100% of data is visible immediately
   };
 
   const handleExportCSV = () => {
@@ -235,29 +246,41 @@ export default function EmailActivityPage() {
             </div>
           </div>
 
-          {/* View Toggle */}
-          <div className="flex items-center gap-1 bg-dark-900 p-1 rounded-lg border border-dark-750 self-start md:self-auto">
-            <button
-              onClick={() => setViewMode('daywise')}
-              className={`px-3 py-1.5 rounded-md text-xs font-medium flex items-center gap-1.5 transition-all ${
-                viewMode === 'daywise'
-                  ? 'bg-cyan-500/20 text-cyan-300 border border-cyan-500/30'
-                  : 'text-dark-400 hover:text-dark-200'
-              }`}
-            >
-              <Calendar className="w-3.5 h-3.5" />
-              <span>Day-Wise Grouped</span>
-            </button>
-            <button
-              onClick={() => setViewMode('flat')}
-              className={`px-3 py-1.5 rounded-md text-xs font-medium flex items-center gap-1.5 transition-all ${
-                viewMode === 'flat'
-                  ? 'bg-primary-500/20 text-primary-300 border border-primary-500/30'
-                  : 'text-dark-400 hover:text-dark-200'
-              }`}
-            >
-              <span>Flat Table</span>
-            </button>
+          {/* View Toggle & Expand All */}
+          <div className="flex flex-wrap items-center gap-2 self-start md:self-auto">
+            {viewMode === 'daywise' && (
+              <button
+                type="button"
+                onClick={toggleAllDates}
+                className="px-3 py-1.5 rounded-lg bg-dark-800 hover:bg-dark-750 border border-dark-700 text-dark-200 text-xs font-medium transition-all"
+              >
+                {allExpanded ? 'Collapse All Days' : 'Expand All Days'}
+              </button>
+            )}
+
+            <div className="flex items-center gap-1 bg-dark-900 p-1 rounded-lg border border-dark-750">
+              <button
+                onClick={() => setViewMode('daywise')}
+                className={`px-3 py-1.5 rounded-md text-xs font-medium flex items-center gap-1.5 transition-all ${
+                  viewMode === 'daywise'
+                    ? 'bg-cyan-500/20 text-cyan-300 border border-cyan-500/30'
+                    : 'text-dark-400 hover:text-dark-200'
+                }`}
+              >
+                <Calendar className="w-3.5 h-3.5" />
+                <span>Day-Wise Grouped</span>
+              </button>
+              <button
+                onClick={() => setViewMode('flat')}
+                className={`px-3 py-1.5 rounded-md text-xs font-medium flex items-center gap-1.5 transition-all ${
+                  viewMode === 'flat'
+                    ? 'bg-primary-500/20 text-primary-300 border border-primary-500/30'
+                    : 'text-dark-400 hover:text-dark-200'
+                }`}
+              >
+                <span>Flat Table ({flatData?.length || 0})</span>
+              </button>
+            </div>
           </div>
         </div>
 

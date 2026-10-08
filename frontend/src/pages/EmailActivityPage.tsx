@@ -3,7 +3,8 @@ import { useQuery } from '@tanstack/react-query';
 import {
   Download, Filter, Search, Calendar, Building2,
   ChevronDown, ChevronUp, Mail, MapPin, Info,
-  RefreshCw, CheckCircle2, ArrowLeft, ArrowRight
+  RefreshCw, CheckCircle2, ArrowLeft, ArrowRight,
+  Copy, Table
 } from 'lucide-react';
 import api from '../lib/api';
 import { EmailLog } from '../lib/types';
@@ -19,6 +20,7 @@ export default function EmailActivityPage() {
   const [statusFilter, setStatusFilter] = useState<string>('all');
   const [expandedDates, setExpandedDates] = useState<Record<string, boolean>>({});
   const [selectedLogModal, setSelectedLogModal] = useState<any | null>(null);
+  const [copyingSheet, setCopyingSheet] = useState(false);
 
   // 1. Day-Wise Query
   const { data: dayWiseData, isLoading: isDayWiseLoading, refetch: refetchDayWise } = useQuery<any>({
@@ -63,6 +65,33 @@ export default function EmailActivityPage() {
     showToast('Exporting day-wise email history CSV...', 'success');
   };
 
+  const handleCopyGoogleSheets = async () => {
+    setCopyingSheet(true);
+    try {
+      const res = await api.get('/api/email-activity/google-sheets-rows');
+      const rows = res.data?.rows || [];
+      if (rows.length === 0) {
+        showToast('No email records found to copy', 'error');
+        return;
+      }
+      const tsv = rows
+        .map((r: any) => `${r.date}\t${r.company_name}\t${r.email_id}\t${r.address}\t${r.status}\t${r.response}`)
+        .join('\n');
+
+      await navigator.clipboard.writeText(tsv);
+      showToast(`✅ ${rows.length} rows copied! Google Sheet me Cell A2 select karke Ctrl + V dabayein.`, 'success');
+    } catch (err) {
+      showToast('Failed to copy to clipboard', 'error');
+    } finally {
+      setCopyingSheet(false);
+    }
+  };
+
+  const handleDownloadGoogleSheetsCSV = () => {
+    window.open('/api/email-activity/export-google-sheets', '_blank');
+    showToast('Downloading Google Sheet format CSV...', 'success');
+  };
+
   // Filter day-wise records
   const filteredDays = (dayWiseData?.days || []).map((day: any) => {
     const matched = day.emails.filter((e: any) => {
@@ -98,20 +127,40 @@ export default function EmailActivityPage() {
           </p>
         </div>
 
-        <div className="flex items-center gap-2.5">
+        <div className="flex flex-wrap items-center gap-2">
           <button
             onClick={() => { refetchDayWise(); refetchFlat(); }}
-            className="px-3.5 py-2 rounded-lg bg-dark-800 hover:bg-dark-700 border border-dark-700 text-dark-200 text-xs font-medium flex items-center gap-2 transition-all"
+            className="px-3 py-2 rounded-lg bg-dark-800 hover:bg-dark-700 border border-dark-700 text-dark-200 text-xs font-medium flex items-center gap-1.5 transition-all"
           >
             <RefreshCw className="w-3.5 h-3.5 text-dark-400" />
             <span>Sync</span>
           </button>
+
+          <button
+            onClick={handleCopyGoogleSheets}
+            disabled={copyingSheet}
+            className="btn-primary text-xs px-3.5 py-2 flex items-center gap-1.5 bg-emerald-600 hover:bg-emerald-500 text-white font-semibold shadow-md shadow-emerald-600/20"
+            title="Copy formatted rows for Google Sheet"
+          >
+            <Copy className="w-3.5 h-3.5" />
+            <span>{copyingSheet ? 'Copying...' : '📋 Copy for Google Sheet (Ctrl+V)'}</span>
+          </button>
+
+          <button
+            onClick={handleDownloadGoogleSheetsCSV}
+            className="px-3.5 py-2 rounded-lg bg-dark-800 hover:bg-dark-750 border border-dark-700 text-dark-200 text-xs font-medium flex items-center gap-1.5 transition-all"
+            title="Download CSV file matching your Google Sheet layout"
+          >
+            <Table className="w-3.5 h-3.5 text-emerald-400" />
+            <span>Sheet CSV</span>
+          </button>
+
           <button
             onClick={handleExportCSV}
-            className="btn-primary text-xs px-4 py-2 flex items-center gap-2 bg-emerald-600 hover:bg-emerald-500 text-white shadow-md shadow-emerald-500/10"
+            className="px-3.5 py-2 rounded-lg bg-dark-800 hover:bg-dark-750 border border-dark-700 text-dark-200 text-xs font-medium flex items-center gap-1.5 transition-all"
           >
-            <Download className="w-3.5 h-3.5" />
-            <span>Export Day-Wise CSV</span>
+            <Download className="w-3.5 h-3.5 text-cyan-400" />
+            <span>Full CSV</span>
           </button>
         </div>
       </div>

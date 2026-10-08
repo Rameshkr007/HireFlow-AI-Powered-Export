@@ -7,7 +7,7 @@ import {
   Send, Sparkles, DollarSign, Package, FileText, ArrowUpRight,
   ShieldCheck, Check, AlertCircle, ArrowRight, Calendar,
   Building2, ChevronDown, ChevronUp, Download, Search, Filter,
-  CheckCircle2, XCircle, Info
+  CheckCircle2, XCircle, Info, Copy, Table, ExternalLink
 } from 'lucide-react';
 import {
   BarChart, Bar, XAxis, YAxis, Tooltip, ResponsiveContainer,
@@ -48,6 +48,8 @@ export default function DashboardPage() {
   const [dayStatusFilter, setDayStatusFilter] = useState<string>('all');
   const [expandedDates, setExpandedDates] = useState<Record<string, boolean>>({});
   const [previewEmailModal, setPreviewEmailModal] = useState<any | null>(null);
+  const [showSheetInstructions, setShowSheetInstructions] = useState(false);
+  const [copyingSheet, setCopyingSheet] = useState(false);
 
   // ── 1. Real-time auto-polling queries (every 3 seconds) ───────────────────
   const { data: stats, isLoading: statsLoading, isFetching: statsFetching } = useQuery<DashboardStats>({
@@ -104,7 +106,7 @@ export default function DashboardPage() {
   const toggleDateAccordion = (dateKey: string) => {
     setExpandedDates(prev => ({
       ...prev,
-      [dateKey]: prev[dateKey] !== undefined ? !prev[dateKey] : false // default is true for first
+      [dateKey]: prev[dateKey] !== undefined ? !prev[dateKey] : false
     }));
   };
 
@@ -112,7 +114,36 @@ export default function DashboardPage() {
     if (expandedDates[dateKey] !== undefined) {
       return expandedDates[dateKey];
     }
-    return index === 0; // Expand first day by default
+    return index === 0;
+  };
+
+  // Google Sheets Direct Copy Function (Tab-Separated TSV for Instant Paste into Cell A2)
+  const handleCopyGoogleSheets = async () => {
+    setCopyingSheet(true);
+    try {
+      const res = await api.get('/api/email-activity/google-sheets-rows');
+      const rows = res.data?.rows || [];
+      if (rows.length === 0) {
+        showToast('No email records found to copy', 'error');
+        return;
+      }
+      // Build Tab-Separated string matching exact columns: Date | Company name | Email Id | Address | Status | Response
+      const tsv = rows
+        .map((r: any) => `${r.date}\t${r.company_name}\t${r.email_id}\t${r.address}\t${r.status}\t${r.response}`)
+        .join('\n');
+
+      await navigator.clipboard.writeText(tsv);
+      showToast(`✅ ${rows.length} rows copied! Google Sheet me Cell A2 select karke Ctrl + V dabayein.`, 'success');
+    } catch (err) {
+      showToast('Failed to copy to clipboard', 'error');
+    } finally {
+      setCopyingSheet(false);
+    }
+  };
+
+  const handleDownloadGoogleSheetsCSV = () => {
+    window.open('/api/email-activity/export-google-sheets', '_blank');
+    showToast('Downloading Google Sheet format CSV...', 'success');
   };
 
   // Manual Trigger Refresh All
@@ -522,6 +553,58 @@ export default function DashboardPage() {
               </div>
               <div className="text-2xl font-bold text-amber-300 mt-2">{dayWiseData?.summary?.avg_per_day || 0}</div>
               <div className="text-[11px] text-amber-400/80 mt-0.5">Emails / Active Day</div>
+            </div>
+          </div>
+
+          {/* ── Google Sheets 1-Click Export & Copy Card ── */}
+          <div className="card p-4 bg-gradient-to-r from-emerald-950/40 via-dark-850 to-cyan-950/40 border-emerald-500/30 flex flex-col md:flex-row md:items-center justify-between gap-4 shadow-lg">
+            <div className="flex items-start gap-3">
+              <div className="w-10 h-10 rounded-xl bg-emerald-500/20 border border-emerald-500/30 flex items-center justify-center shrink-0 text-emerald-400 font-bold">
+                <Table className="w-5 h-5" />
+              </div>
+              <div>
+                <div className="flex items-center gap-2">
+                  <h4 className="text-sm font-bold text-dark-50">Google Sheet Direct Export & Auto-Fill</h4>
+                  <span className="text-[10px] font-bold px-2 py-0.5 rounded-full bg-emerald-500/20 text-emerald-300 border border-emerald-500/30">
+                    Exact 6-Column Match
+                  </span>
+                </div>
+                <p className="text-xs text-dark-300 mt-0.5">
+                  Columns: <strong className="text-dark-100">Date</strong> &bull; <strong className="text-dark-100">Company name</strong> &bull; <strong className="text-dark-100">Email Id</strong> &bull; <strong className="text-dark-100">Address</strong> &bull; <strong className="text-dark-100">Status</strong> &bull; <strong className="text-dark-100">Response</strong>
+                </p>
+              </div>
+            </div>
+
+            <div className="flex flex-wrap items-center gap-2 shrink-0">
+              <button
+                type="button"
+                onClick={handleCopyGoogleSheets}
+                disabled={copyingSheet}
+                className="btn-primary text-xs px-3.5 py-2 flex items-center gap-1.5 bg-emerald-600 hover:bg-emerald-500 text-white font-semibold shadow-md shadow-emerald-600/20"
+                title="Copy all rows formatted for Google Sheet. Then click Cell A2 and press Ctrl+V."
+              >
+                <Copy className="w-3.5 h-3.5" />
+                <span>{copyingSheet ? 'Copying...' : '📋 Copy for Google Sheet (Ctrl+V)'}</span>
+              </button>
+
+              <button
+                type="button"
+                onClick={handleDownloadGoogleSheetsCSV}
+                className="px-3.5 py-2 rounded-lg bg-dark-800 hover:bg-dark-750 border border-dark-700 text-dark-200 text-xs font-medium flex items-center gap-1.5 transition-all"
+                title="Download CSV file matching your Google Sheet layout"
+              >
+                <Download className="w-3.5 h-3.5 text-emerald-400" />
+                <span>Download Sheet CSV</span>
+              </button>
+
+              <button
+                type="button"
+                onClick={() => setShowSheetInstructions(true)}
+                className="px-2.5 py-2 rounded-lg bg-dark-800 hover:bg-dark-750 border border-dark-700 text-dark-400 hover:text-dark-200 text-xs font-medium"
+                title="Help guide on how to paste into Google Sheet"
+              >
+                <Info className="w-3.5 h-3.5 text-cyan-400" />
+              </button>
             </div>
           </div>
 
@@ -1028,6 +1111,87 @@ export default function DashboardPage() {
             <div className="flex justify-end pt-2 border-t border-dark-800">
               <button
                 onClick={() => setPreviewEmailModal(null)}
+                className="btn-secondary text-xs px-4 py-2"
+              >
+                Close
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/* ── Google Sheet Step-by-Step Guide Modal ── */}
+      {showSheetInstructions && (
+        <div className="fixed inset-0 bg-black/75 backdrop-blur-sm z-50 flex items-center justify-center p-4">
+          <div className="bg-dark-850 border border-dark-700 rounded-2xl max-w-xl w-full p-6 space-y-4 shadow-2xl animate-in fade-in zoom-in-95">
+            <div className="flex items-center justify-between pb-3 border-b border-dark-700">
+              <div className="flex items-center gap-2.5">
+                <div className="w-8 h-8 rounded-lg bg-emerald-500/20 border border-emerald-500/30 flex items-center justify-center text-emerald-400">
+                  <Table className="w-4 h-4" />
+                </div>
+                <div>
+                  <h3 className="text-base font-bold text-dark-50">Google Sheet Me Data Save Karne Ka Tarika</h3>
+                  <p className="text-xs text-dark-400">Exact 6 Columns: Date, Company name, Email Id, Address, Status, Response</p>
+                </div>
+              </div>
+              <button
+                onClick={() => setShowSheetInstructions(false)}
+                className="text-dark-400 hover:text-dark-100 text-lg font-bold px-2 py-1"
+              >
+                ✕
+              </button>
+            </div>
+
+            <div className="space-y-4 text-xs">
+              {/* Method 1: Instant Copy & Paste */}
+              <div className="p-3.5 bg-dark-900 rounded-xl border border-emerald-500/30 space-y-2">
+                <div className="flex items-center justify-between">
+                  <span className="font-bold text-emerald-400 flex items-center gap-1.5">
+                    <span className="w-5 h-5 rounded-full bg-emerald-500/20 flex items-center justify-center text-[10px] text-emerald-300">1</span>
+                    Tarika 1: Direct Copy & Paste (2 Seconds)
+                  </span>
+                  <span className="text-[10px] bg-emerald-500/20 text-emerald-300 px-2 py-0.5 rounded font-semibold">
+                    RECOMMENDED
+                  </span>
+                </div>
+                <ol className="list-decimal list-inside space-y-1.5 text-dark-200 pl-1">
+                  <li>Yaha upar <strong>"📋 Copy for Google Sheet (Ctrl+V)"</strong> button par click karein.</li>
+                  <li>Apni Google Sheet kholein aur <strong>Cell A2</strong> (Row 2, Column A) par click karein.</li>
+                  <li>Apne keyboard par <kbd className="px-1.5 py-0.5 bg-dark-800 border border-dark-600 rounded text-amber-300 font-mono font-bold">Ctrl + V</kbd> dabayein.</li>
+                  <li>Sara data automatic <strong>Date, Company name, Email Id, Address, Status, Response</strong> columns me fit ho jayega!</li>
+                </ol>
+              </div>
+
+              {/* Method 2: Import CSV */}
+              <div className="p-3.5 bg-dark-900 rounded-xl border border-dark-750 space-y-2">
+                <span className="font-bold text-cyan-400 flex items-center gap-1.5">
+                  <span className="w-5 h-5 rounded-full bg-cyan-500/20 flex items-center justify-center text-[10px] text-cyan-300">2</span>
+                  Tarika 2: Download CSV & Import in Google Sheets
+                </span>
+                <ol className="list-decimal list-inside space-y-1.5 text-dark-200 pl-1">
+                  <li><strong>"Download Sheet CSV"</strong> button par click karke file download karein.</li>
+                  <li>Google Sheet me jakar upar menu me <strong>File → Import</strong> par click karein.</li>
+                  <li><strong>Upload</strong> tab select karke downloaded CSV file drag/upload karein.</li>
+                  <li><strong>"Replace data at selected cell"</strong> ya <strong>"Append to current sheet"</strong> choose karein.</li>
+                </ol>
+              </div>
+            </div>
+
+            <div className="flex items-center justify-between pt-2 border-t border-dark-800">
+              <button
+                type="button"
+                onClick={() => {
+                  handleCopyGoogleSheets();
+                  setShowSheetInstructions(false);
+                }}
+                className="btn-primary text-xs px-4 py-2 flex items-center gap-1.5 bg-emerald-600 hover:bg-emerald-500 text-white font-semibold"
+              >
+                <Copy className="w-3.5 h-3.5" />
+                <span>Copy Data Now</span>
+              </button>
+              <button
+                type="button"
+                onClick={() => setShowSheetInstructions(false)}
                 className="btn-secondary text-xs px-4 py-2"
               >
                 Close

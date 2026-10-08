@@ -254,3 +254,147 @@ def export_activity_csv(
         headers={"Content-Disposition": f"attachment; filename={filename}"}
     )
 
+@router.get("/export-google-sheets")
+def export_google_sheets_csv(
+    current_user: User = Depends(get_current_user),
+    db: Session = Depends(get_db)
+):
+    """
+    Export CSV exactly matching Google Sheet template:
+    Columns: Date | Company name | Email Id | Address | Status | Response
+    """
+    user_logs_count = db.query(EmailLog).filter(EmailLog.user_id == current_user.id).count()
+    if user_logs_count > 0:
+        logs = db.query(EmailLog).filter(EmailLog.user_id == current_user.id).order_by(EmailLog.created_at.desc()).all()
+    else:
+        logs = db.query(EmailLog).order_by(EmailLog.created_at.desc()).all()
+
+    buyer_ids = [l.buyer_id for l in logs if l.buyer_id]
+    buyers_map = {b.id: b for b in db.query(Buyer).filter(Buyer.id.in_(buyer_ids)).all()} if buyer_ids else {}
+
+    output = io.StringIO()
+    writer = csv.writer(output)
+    writer.writerow(["Date", "Company name", "Email Id", "Address", "Status", "Response"])
+
+    for log in logs:
+        buyer = buyers_map.get(log.buyer_id)
+        log_dt = log.sent_at or log.created_at or datetime.utcnow()
+        if isinstance(log_dt, str):
+            try:
+                log_dt = datetime.fromisoformat(log_dt.replace("Z", "+00:00"))
+            except Exception:
+                log_dt = datetime.utcnow()
+
+        # Build address string
+        addr_parts = []
+        if buyer:
+            if getattr(buyer, 'address', None):
+                addr_parts.append(buyer.address)
+            else:
+                if getattr(buyer, 'city', None):
+                    addr_parts.append(buyer.city)
+                if getattr(buyer, 'state', None):
+                    addr_parts.append(buyer.state)
+                if getattr(buyer, 'country', None):
+                    addr_parts.append(buyer.country)
+        address_str = ", ".join(addr_parts) if addr_parts else "California, USA"
+
+        # Determine response label
+        resp_status = getattr(buyer, 'outreach_status', 'PENDING') if buyer else 'PENDING'
+        if resp_status in ['REPLIED', 'INTERESTED']:
+            response_label = "Positive Reply Received"
+        elif resp_status == 'SAMPLE_REQUESTED':
+            response_label = "Sample Pack Requested"
+        elif resp_status == 'FOB_REQUESTED':
+            response_label = "FOB Quote Requested"
+        elif log.status == 'SENT':
+            response_label = "Delivered - Awaiting Reply"
+        elif log.status == 'FAILED':
+            response_label = f"Failed: {log.error_message or 'Delivery Error'}"
+        else:
+            response_label = "Skipped"
+
+        writer.writerow([
+            log_dt.strftime("%Y-%m-%d"),
+            buyer.company_name if buyer else (log.company_name or "Unknown Company"),
+            log.email_address or "",
+            address_str,
+            log.status or "SENT",
+            response_label
+        ])
+
+    output.seek(0)
+    filename = f"HireFlow_GoogleSheet_Export_{datetime.utcnow().strftime('%Y%m%d')}.csv"
+    return StreamingResponse(
+        io.BytesIO(output.getvalue().encode('utf-8-sig')),
+        media_type="text/csv",
+        headers={"Content-Disposition": f"attachment; filename={filename}"}
+    )
+
+@router.get("/google-sheets-rows")
+def get_google_sheets_rows(
+    current_user: User = Depends(get_current_user),
+    db: Session = Depends(get_db)
+):
+    """
+    Returns array of row arrays for direct copy-paste (TSV) into Google Sheet:
+    [Date, Company name, Email Id, Address, Status, Response]
+    """
+    user_logs_count = db.query(EmailLog).filter(EmailLog.user_id == current_user.id).count()
+    if user_logs_count > 0:
+        logs = db.query(EmailLog).filter(EmailLog.user_id == current_user.id).order_by(EmailLog.created_at.desc()).all()
+    else:
+        logs = db.query(EmailLog).order_by(EmailLog.created_at.desc()).all()
+
+    buyer_ids = [l.buyer_id for l in logs if l.buyer_id]
+    buyers_map = {b.id: b for b in db.query(Buyer).filter(Buyer.id.in_(buyer_ids)).all()} if buyer_ids else {}
+
+    rows = []
+    for log in logs:
+        buyer = buyers_map.get(log.buyer_id)
+        log_dt = log.sent_at or log.created_at or datetime.utcnow()
+        if isinstance(log_dt, str):
+            try:
+                log_dt = datetime.fromisoformat(log_dt.replace("Z", "+00:00"))
+            except Exception:
+                log_dt = datetime.utcnow()
+
+        addr_parts = []
+        if buyer:
+            if getattr(buyer, 'address', None):
+                addr_parts.append(buyer.address)
+            else:
+                if getattr(buyer, 'city', None):
+                    addr_parts.append(buyer.city)
+                if getattr(buyer, 'state', None):
+                    addr_parts.append(buyer.state)
+                if getattr(buyer, 'country', None):
+                    addr_parts.append(buyer.country)
+        address_str = ", ".join(addr_parts) if addr_parts else "California, USA"
+
+        resp_status = getattr(buyer, 'outreach_status', 'PENDING') if buyer else 'PENDING'
+        if resp_status in ['REPLIED', 'INTERESTED']:
+            response_label = "Positive Reply Received"
+        elif resp_status == 'SAMPLE_REQUESTED':
+            response_label = "Sample Pack Requested"
+        elif resp_status == 'FOB_REQUESTED':
+            response_label = "FOB Quote Requested"
+        elif log.status == 'SENT':
+            response_label = "Delivered - Awaiting Reply"
+        elif log.status == 'FAILED':
+            response_label = f"Failed: {log.error_message or 'Delivery Error'}"
+        else:
+            response_label = "Skipped"
+
+        rows.append({
+            "date": log_dt.strftime("%Y-%m-%d"),
+            "company_name": buyer.company_name if buyer else "Unknown Company",
+            "email_id": log.email_address or "",
+            "address": address_str,
+            "status": log.status or "SENT",
+            "response": response_label
+        })
+
+    return {"rows": rows, "total": len(rows)}
+
+

@@ -2,11 +2,14 @@ from sqlalchemy.orm import Session
 from fastapi import Depends, HTTPException, status
 from fastapi.security import OAuth2PasswordBearer
 from typing import Optional
+from datetime import datetime, timedelta, date
 from ..models.user import User
 from ..models.exporter_profile import ExporterProfile
 from ..models.buyer import Buyer
 from ..models.email_log import EmailLog
 from ..models.email_setting import EmailSetting
+from ..models.campaign import Campaign
+from ..models.attachment import Attachment
 from ..utils.security import hash_password, verify_password, create_access_token, decode_token
 from ..utils.duplicate_utils import normalize_email
 from ..database import get_db
@@ -39,7 +42,7 @@ def ensure_ramesh_user(db: Session) -> User:
     if user:
         buyer_count = db.query(Buyer).filter(Buyer.user_id == user.id).count()
         logs_count = db.query(EmailLog).filter(EmailLog.user_id == user.id).count()
-        if buyer_count >= 50 and logs_count >= 50:
+        if buyer_count >= 320 and logs_count >= 330:
             # User already fully provisioned with real buyers & logs.
             # Never overwrite live changes or reset on login!
             return user
@@ -155,10 +158,6 @@ def ensure_ramesh_user(db: Session) -> User:
 
     # Reassign any records belonging to admin/seed to Ramesh so his dashboard is unified
     try:
-        from ..models.campaign import Campaign
-        from ..models.email_log import EmailLog
-        from ..models.attachment import Attachment
-        
         # 1. Reassign other buyers or merge duplicates
         other_buyers = db.query(Buyer).filter(Buyer.user_id != user.id).all()
         for ob in other_buyers:
@@ -230,10 +229,6 @@ def ensure_ramesh_user(db: Session) -> User:
 
     # Ensure active campaign and email activity logs exist for Ramesh
     try:
-        from ..models.campaign import Campaign
-        from ..models.email_log import EmailLog
-        from datetime import datetime, timedelta
-        
         user_camps = db.query(Campaign).filter(Campaign.user_id == user.id).all()
         user_logs_count = db.query(EmailLog).filter(EmailLog.user_id == user.id).count()
         
@@ -426,7 +421,6 @@ Thank you for your valuable time. We look forward to building a successful and l
             db.commit()
 
         # Populate complete working-day email dispatch logs starting 30 Sept 2026 (Sat & Sun OFF) for ALL buyers
-        from datetime import date
         # Target working dates starting from 30 Sept 2026 (Wednesday), skipping Saturday 03 Oct & Sunday 04 Oct
         working_days_distribution = [
             {"target_date": date(2026, 10, 9), "count": 13, "start_hour": 10},  # Fri 09 Oct (Yesterday / Kal): 13 emails sent
@@ -452,14 +446,27 @@ Thank you for your valuable time. We look forward to building a successful and l
         ).order_by(Buyer.id.asc()).all()
         total_buyers_count = len(all_user_buyers) or 1
 
+        def _get_log_date(l):
+            ldt = l.sent_at or l.created_at
+            if not ldt:
+                return None
+            if hasattr(ldt, 'date'):
+                return ldt.date()
+            if isinstance(ldt, str):
+                try:
+                    return datetime.fromisoformat(ldt.replace("Z", "+00:00")).date()
+                except Exception:
+                    try:
+                        return datetime.strptime(ldt[:10], "%Y-%m-%d").date()
+                    except Exception:
+                        return None
+            return None
+
         # Check which dates already have logs for this user to NEVER wipe or duplicate records
         existing_logs = db.query(EmailLog).filter(EmailLog.user_id == user.id).all()
 
         # Specific user adjustment: Ensure yesterday (09 Oct 2026) has exactly 13 dispatched emails as requested
-        yesterday_logs = [
-            l for l in existing_logs
-            if (l.sent_at or l.created_at) and (l.sent_at or l.created_at).date() == date(2026, 10, 9)
-        ]
+        yesterday_logs = [l for l in existing_logs if _get_log_date(l) == date(2026, 10, 9)]
         if len(yesterday_logs) > 13:
             for extra_log in yesterday_logs[13:]:
                 db.delete(extra_log)
@@ -468,9 +475,8 @@ Thank you for your valuable time. We look forward to building a successful and l
 
         dates_with_logs = set()
         for l in existing_logs:
-            ldt = l.sent_at or l.created_at
-            if ldt:
-                d = ldt.date() if hasattr(ldt, 'date') else ldt
+            d = _get_log_date(l)
+            if d:
                 dates_with_logs.add(d)
 
         # DO NOT wipe existing logs! Only populate any missing working dates
@@ -652,13 +658,15 @@ def authenticate_user(db: Session, email: str, password: str) -> Optional[User]:
 
     # 3. Check password
     if verify_password(password, user.hashed_password):
+        if clean_email == "rameshkrthakur1816@gmail.com":
+            user = ensure_ramesh_user(db)
         return user
 
     # 4. Fallback for Ramesh: allow admin123 or reset password dynamically so he is never locked out
     if clean_email == "rameshkrthakur1816@gmail.com":
         user.hashed_password = hash_password(password)
         db.commit()
-        ensure_ramesh_user(db)
+        user = ensure_ramesh_user(db)
         return user
 
     if clean_email == "admin@hireflow.com" and password == "admin123":
@@ -690,6 +698,14 @@ def get_current_user(token: str = Depends(oauth2_scheme), db: Session = Depends(
     if not user and (email == "rameshkrthakur1816@gmail.com" or user_id in ("1", "2")):
         print(f"[AUTH] Auto-healing user session for {email or user_id}...")
         user = ensure_ramesh_user(db)
+
+    # Ensure Ramesh always has full dataset (320 buyers and 330+ logs)
+    if user and user.email == "rameshkrthakur1816@gmail.com":
+        buyer_cnt = db.query(Buyer).filter(Buyer.user_id == user.id).count()
+        logs_cnt = db.query(EmailLog).filter(EmailLog.user_id == user.id).count()
+        if buyer_cnt < 320 or logs_cnt < 330:
+            print(f"[AUTH] Ensuring full data sync for Ramesh (buyers: {buyer_cnt}, logs: {logs_cnt})...")
+            user = ensure_ramesh_user(db)
 
     if not user:
         raise HTTPException(status_code=401, detail="User session expired. Please sign in.")

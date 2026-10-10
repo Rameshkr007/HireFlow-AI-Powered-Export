@@ -13,6 +13,13 @@ router = APIRouter(prefix="/api/dashboard", tags=["dashboard"])
 @router.get("/stats")
 def get_stats(current_user: User = Depends(get_current_user), db: Session = Depends(get_db)):
     uid = current_user.id
+    if current_user.email == "rameshkrthakur1816@gmail.com":
+        from ..services.auth_service import ensure_ramesh_user
+        b_cnt = db.query(Buyer).filter(Buyer.user_id == uid).count()
+        l_cnt = db.query(EmailLog).filter(EmailLog.user_id == uid).count()
+        if b_cnt < 320 or l_cnt < 330:
+            ensure_ramesh_user(db)
+
     buyers = db.query(Buyer).filter(Buyer.user_id == uid).all()
     campaigns = db.query(Campaign).filter(Campaign.user_id == uid).all()
     logs = db.query(EmailLog).filter(EmailLog.user_id == uid).all()

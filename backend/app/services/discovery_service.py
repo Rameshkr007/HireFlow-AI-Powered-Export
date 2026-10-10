@@ -554,7 +554,10 @@ async def _search_google_places(product: str, country: str, buyer_type: str, lim
                     formatted_addr = p.get("formattedAddress", "")
                     phone = p.get("nationalPhoneNumber") or p.get("internationalPhoneNumber") or "+1 (555) 0100"
                     website = p.get("websiteUri") or ""
-                    domain = _clean_domain(website) if website else re.sub(r'[^a-zA-Z0-9]', '', comp_name).lower() + ".com"
+                    clean_name = re.sub(r'[^a-zA-Z0-9]', '', comp_name).lower()
+                    domain = _clean_domain(website) if website else f"{clean_name}.com"
+                    if not domain or any(skip in domain for skip in ["instagram.", "facebook.", "yelp.", "linkedin.", "twitter.", "tiktok.", "youtube.", "linktr.ee"]):
+                        domain = f"{clean_name}.com"
                     maps_url = p.get("googleMapsUri") or f"https://www.google.com/maps/search/?api=1&query={comp_name}"
                     rating = p.get("rating")
                     review_count = p.get("userRatingCount")
@@ -574,7 +577,7 @@ async def _search_google_places(product: str, country: str, buyer_type: str, lim
                             city = parts[-3]
 
                     email = f"contact@{domain}" if domain else f"info@{re.sub(r'[^a-zA-Z0-9]', '', comp_name).lower()}.com"
-                    rating_desc = f" (Google Rating: {rating}★, {review_count} reviews)" if rating else ""
+                    rating_desc = f" (Google Rating: {rating} stars, {review_count} reviews)" if rating else ""
                     desc = f"Verified commercial Google Business in {city}, {state}{rating_desc}. Active target for {product}."
 
                     buyers.append({
@@ -628,7 +631,7 @@ async def _search_google_places(product: str, country: str, buyer_type: str, lim
 
                     rating = r.get("rating")
                     user_ratings_total = r.get("user_ratings_total")
-                    rating_desc = f" (Rating: {rating}★ with {user_ratings_total} reviews)" if rating else ""
+                    rating_desc = f" (Rating: {rating} stars with {user_ratings_total} reviews)" if rating else ""
 
                     buyers.append({
                         "buyer_name": f"{comp_name} Store Manager",

@@ -431,7 +431,15 @@ Thank you for your valuable time. We look forward to building a successful and l
             {"target_date": date(2026, 9, 30), "count": 45, "start_hour": 10},  # Wed 30 Sept (Outreach Start Date): 45 emails
         ]
 
-        all_user_buyers = db.query(Buyer).filter(Buyer.user_id == user.id).order_by(Buyer.id.asc()).all()
+        all_user_buyers = db.query(Buyer).filter(
+            Buyer.user_id == user.id,
+            Buyer.email.isnot(None),
+            Buyer.email != '',
+            ~Buyer.email.contains('@linkedin'),
+            ~Buyer.email.contains('@facebook'),
+            ~Buyer.email.contains('@faire'),
+            ~Buyer.email.contains('@wholesalemanagers')
+        ).order_by(Buyer.id.asc()).all()
         total_buyers_count = len(all_user_buyers) or 1
 
         # Check which dates already have logs for this user to NEVER wipe or duplicate records

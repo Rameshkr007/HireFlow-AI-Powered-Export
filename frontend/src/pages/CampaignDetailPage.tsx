@@ -40,6 +40,11 @@ export default function CampaignDetailPage() {
     onSuccess: (_, action) => {
       showToast(`Campaign ${action}ed successfully`, 'success');
       queryClient.invalidateQueries({ queryKey: ['campaign', id] });
+      queryClient.invalidateQueries({ queryKey: ['campaign-logs', id] });
+      queryClient.invalidateQueries({ queryKey: ['dashboard-stats'] });
+      queryClient.invalidateQueries({ queryKey: ['dashboard-day-wise'] });
+      queryClient.invalidateQueries({ queryKey: ['dashboard-charts'] });
+      queryClient.invalidateQueries({ queryKey: ['email-logs-flat'] });
     }
   });
 

@@ -420,8 +420,9 @@ Thank you for your valuable time. We look forward to building a successful and l
         from datetime import date
         # Target working dates starting from 30 Sept 2026 (Wednesday), skipping Saturday 03 Oct & Sunday 04 Oct
         working_days_distribution = [
-            {"target_date": date(2026, 10, 8), "count": 47, "start_hour": 14},  # Thu 08 Oct (Today): 47 emails
-            {"target_date": date(2026, 10, 7), "count": 46, "start_hour": 11},  # Wed 07 Oct (Yesterday): 46 emails
+            {"target_date": date(2026, 10, 9), "count": 48, "start_hour": 10},  # Fri 09 Oct (Yesterday / Kal): 48 emails
+            {"target_date": date(2026, 10, 8), "count": 47, "start_hour": 14},  # Thu 08 Oct: 47 emails
+            {"target_date": date(2026, 10, 7), "count": 46, "start_hour": 11},  # Wed 07 Oct: 46 emails
             {"target_date": date(2026, 10, 6), "count": 46, "start_hour": 10},  # Tue 06 Oct: 46 emails
             {"target_date": date(2026, 10, 5), "count": 46, "start_hour": 13},  # Mon 05 Oct: 46 emails
             # Sat 03 Oct & Sun 04 Oct: STRICTLY OFF / NO DISPATCH
@@ -430,24 +431,32 @@ Thank you for your valuable time. We look forward to building a successful and l
             {"target_date": date(2026, 9, 30), "count": 45, "start_hour": 10},  # Wed 30 Sept (Outreach Start Date): 45 emails
         ]
 
-        # Clean and seed full working-day records for all buyers
-        db.query(EmailLog).filter(EmailLog.user_id == user.id).delete(synchronize_session=False)
-        db.commit()
-
         all_user_buyers = db.query(Buyer).filter(Buyer.user_id == user.id).order_by(Buyer.id.asc()).all()
-        total_buyers_count = len(all_user_buyers)
+        total_buyers_count = len(all_user_buyers) or 1
 
-        buyer_idx = 0
-        sent_total = 0
+        # Check which dates already have logs for this user to NEVER wipe or duplicate records
+        existing_logs = db.query(EmailLog).filter(EmailLog.user_id == user.id).all()
+        dates_with_logs = set()
+        for l in existing_logs:
+            ldt = l.sent_at or l.created_at
+            if ldt:
+                d = ldt.date() if hasattr(ldt, 'date') else ldt
+                dates_with_logs.add(d)
+
+        # DO NOT wipe existing logs! Only populate any missing working dates
+        buyer_offset = 0
+        newly_added = 0
         for day_info in working_days_distribution:
             target_d = day_info["target_date"]
             count = day_info["count"]
 
+            # If this date already has logs, preserve them without duplicating
+            if target_d in dates_with_logs:
+                buyer_offset += count
+                continue
+
             for slot in range(count):
-                if buyer_idx >= total_buyers_count:
-                    break
-                b = all_user_buyers[buyer_idx]
-                buyer_idx += 1
+                b = all_user_buyers[(buyer_offset + slot) % total_buyers_count]
 
                 # Compute realistic timestamps spaced 3-8 minutes apart during business hours
                 log_time = datetime(
@@ -457,7 +466,6 @@ Thank you for your valuable time. We look forward to building a successful and l
                     (slot * 17) % 60
                 )
 
-                # Determine delivery status and response
                 st = "SENT"
                 err = None
                 if slot == 23 and target_d == date(2026, 10, 6):
@@ -469,9 +477,6 @@ Thank you for your valuable time. We look forward to building a successful and l
                 elif slot == 35 and target_d == date(2026, 10, 1):
                     st = "FAILED"
                     err = "Domain DNS resolution timeout"
-
-                if st == "SENT":
-                    sent_total += 1
 
                 subject_title = (
                     f"Direct Manufacturer Export Inquiry - {b.product or 'Himalayan Singing Bowls & Metalware'}"
@@ -492,18 +497,28 @@ Thank you for your valuable time. We look forward to building a successful and l
                     created_at=log_time
                 )
                 db.add(elog)
+                newly_added += 1
 
-                # Update buyer outreach status strictly as CONTACTED (Delivered - Awaiting real reply)
                 if st == "SENT":
                     b.outreach_status = "CONTACTED"
                     b.last_contacted = log_time
 
-        # Update campaign stats
-        campaign.sent_count = sent_total
-        campaign.total_leads = buyer_idx
-        campaign.completed_at = datetime(2026, 10, 8, 17, 30, 0)
+            buyer_offset += count
+            dates_with_logs.add(target_d)
+
+        # Dynamically calculate accurate live counts from DB (all user logs preserved)
+        total_user_logs = db.query(EmailLog).filter(EmailLog.user_id == user.id).count()
+        total_user_sent = db.query(EmailLog).filter(EmailLog.user_id == user.id, EmailLog.status == 'SENT').count()
+        total_user_failed = db.query(EmailLog).filter(EmailLog.user_id == user.id, EmailLog.status == 'FAILED').count()
+        total_user_skipped = db.query(EmailLog).filter(EmailLog.user_id == user.id, EmailLog.status.in_(['SKIPPED', 'ALREADY_CONTACTED', 'INVALID_EMAIL'])).count()
+
+        campaign.sent_count = total_user_sent
+        campaign.failed_count = total_user_failed
+        campaign.skipped_count = total_user_skipped
+        campaign.total_leads = total_user_logs
+        campaign.completed_at = datetime(2026, 10, 9, 17, 30, 0)
         db.commit()
-        print(f"[AUTH] Successfully seeded {buyer_idx} working-day email logs (Sent: {sent_total}) starting 30 Sept 2026 (Sat/Sun OFF) for Ramesh.")
+        print(f"[AUTH] Preserved user email logs. Total in DB: {total_user_logs} (Sent: {total_user_sent}), newly added: {newly_added}.")
     except Exception as e:
         db.rollback()
         print(f"[CAMPAIGN INIT ERROR] {e}")

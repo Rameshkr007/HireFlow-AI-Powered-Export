@@ -26,16 +26,13 @@ def get_stats(current_user: User = Depends(get_current_user), db: Session = Depe
     logs = user_logs if len(user_logs) >= len(all_logs) else all_logs
 
     sent_from_logs = sum(1 for l in logs if l.status == 'SENT')
-    sent_from_camps = sum(c.sent_count for c in campaigns)
-    emails_sent = max(sent_from_logs, sent_from_camps)
+    emails_sent = sent_from_logs if len(logs) > 0 else sum(c.sent_count for c in campaigns)
 
     failed_from_logs = sum(1 for l in logs if l.status == 'FAILED')
-    failed_from_camps = sum(c.failed_count for c in campaigns)
-    emails_failed = max(failed_from_logs, failed_from_camps)
+    emails_failed = failed_from_logs if len(logs) > 0 else sum(c.failed_count for c in campaigns)
 
     skipped_from_logs = sum(1 for l in logs if l.status in ['SKIPPED', 'ALREADY_CONTACTED', 'INVALID_EMAIL'])
-    skipped_from_camps = sum(c.skipped_count for c in campaigns)
-    emails_skipped = max(skipped_from_logs, skipped_from_camps)
+    emails_skipped = skipped_from_logs if len(logs) > 0 else sum(c.skipped_count for c in campaigns)
 
     return {
         "total_buyers": len(buyers),

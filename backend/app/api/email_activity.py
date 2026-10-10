@@ -293,12 +293,14 @@ def export_activity_csv(
 @router.get("/export-google-sheets")
 def export_google_sheets_csv(
     date: Optional[str] = Query(None, description="Filter export by specific date YYYY-MM-DD"),
+    status: Optional[str] = Query("SENT", description="Filter export by status (default SENT: only successfully sent emails)"),
     current_user: User = Depends(get_current_user),
     db: Session = Depends(get_db)
 ):
     """
     Export CSV exactly matching Google Sheet template:
     Columns: Date | Company name | Email Id | Address | Status | Response
+    Filters strictly to SENT emails by default (excludes Failed and Skipped).
     """
     user_logs_count = db.query(EmailLog).filter(EmailLog.user_id == current_user.id).count()
     all_logs_count = db.query(EmailLog).count()
@@ -317,7 +319,13 @@ def export_google_sheets_csv(
     writer.writerow(["Date", "Company name", "Email Id", "Address", "Status", "Response"])
 
     date_filter = date if isinstance(date, str) and date.strip() else None
+    status_filter = status.upper().strip() if isinstance(status, str) and status.strip() and status.upper() != "ALL" else None
+
     for log in logs:
+        # Only include SENT emails (skip failed and skipped)
+        if status_filter and (log.status or '').upper() != status_filter:
+            continue
+
         buyer = buyers_map.get(log.buyer_id)
         log_dt = log.sent_at or log.created_at or datetime.utcnow()
         if isinstance(log_dt, str):
@@ -361,7 +369,7 @@ def export_google_sheets_csv(
 
         writer.writerow([
             log_date_str,
-            buyer.company_name if buyer else (log.company_name or "Unknown Company"),
+            buyer.company_name if buyer else (getattr(log, 'company_name', None) or "Unknown Company"),
             log.email_address or "",
             address_str,
             log.status or "SENT",
@@ -380,12 +388,14 @@ def export_google_sheets_csv(
 @router.get("/google-sheets-rows")
 def get_google_sheets_rows(
     date: Optional[str] = Query(None, description="Filter rows by specific date YYYY-MM-DD"),
+    status: Optional[str] = Query("SENT", description="Filter rows by status (default SENT: only successfully sent emails)"),
     current_user: User = Depends(get_current_user),
     db: Session = Depends(get_db)
 ):
     """
     Returns array of row objects for direct copy-paste (TSV) into Google Sheet:
     [Date, Company name, Email Id, Address, Status, Response]
+    Filters strictly to SENT emails by default (excludes Failed and Skipped).
     """
     user_logs_count = db.query(EmailLog).filter(EmailLog.user_id == current_user.id).count()
     all_logs_count = db.query(EmailLog).count()
@@ -401,7 +411,12 @@ def get_google_sheets_rows(
 
     rows = []
     date_filter = date if isinstance(date, str) and date.strip() else None
+    status_filter = status.upper().strip() if isinstance(status, str) and status.strip() and status.upper() != "ALL" else None
+
     for log in logs:
+        # Only include SENT emails (skip failed and skipped)
+        if status_filter and (log.status or '').upper() != status_filter:
+            continue
         buyer = buyers_map.get(log.buyer_id)
         log_dt = log.sent_at or log.created_at or datetime.utcnow()
         if isinstance(log_dt, str):

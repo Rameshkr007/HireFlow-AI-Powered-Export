@@ -121,10 +121,12 @@ export default function DashboardPage() {
   const handleCopyGoogleSheets = async () => {
     setCopyingSheet(true);
     try {
-      const res = await api.get('/api/email-activity/google-sheets-rows');
-      const rows = res.data?.rows || [];
+      const res = await api.get('/api/email-activity/google-sheets-rows?status=SENT');
+      let rows = res.data?.rows || [];
+      // Strictly ensure only SENT emails are copied (filter out any FAILED or SKIPPED)
+      rows = rows.filter((r: any) => (r.status || '').toUpperCase() === 'SENT');
       if (rows.length === 0) {
-        showToast('No email records found to copy', 'error');
+        showToast('No sent email records found to copy', 'error');
         return;
       }
       // Build Tab-Separated string matching exact columns: Date | Company name | Email Id | Address | Status | Response
@@ -133,7 +135,7 @@ export default function DashboardPage() {
         .join('\n');
 
       await navigator.clipboard.writeText(tsv);
-      showToast(`✅ ${rows.length} rows copied! Google Sheet me Cell A2 select karke Ctrl + V dabayein.`, 'success');
+      showToast(`✅ ${rows.length} Sent emails copied! Google Sheet me Cell A2 select karke Ctrl + V dabayein.`, 'success');
     } catch (err) {
       showToast('Failed to copy to clipboard', 'error');
     } finally {
@@ -144,10 +146,12 @@ export default function DashboardPage() {
   const handleCopySingleDayGoogleSheets = async (day: any, e: React.MouseEvent) => {
     e.stopPropagation();
     try {
-      const res = await api.get(`/api/email-activity/google-sheets-rows?date=${day.date}`);
-      const rows = res.data?.rows || [];
+      const res = await api.get(`/api/email-activity/google-sheets-rows?date=${day.date}&status=SENT`);
+      let rows = res.data?.rows || [];
+      // Strictly ensure only SENT emails are copied (filter out any FAILED or SKIPPED)
+      rows = rows.filter((r: any) => (r.status || '').toUpperCase() === 'SENT');
       if (rows.length === 0) {
-        showToast(`${day.display_date} ke liye koi records nahi mile`, 'error');
+        showToast(`${day.display_date} ke liye koi sent email records nahi mile`, 'error');
         return;
       }
       const tsv = rows
@@ -155,7 +159,7 @@ export default function DashboardPage() {
         .join('\n');
 
       await navigator.clipboard.writeText(tsv);
-      showToast(`✅ ${day.display_date} (${rows.length} rows) copy ho gaye! Google Sheet me Ctrl + V karein.`, 'success');
+      showToast(`✅ ${day.display_date} (${rows.length} Sent emails) copy ho gaye! Google Sheet me Ctrl + V karein.`, 'success');
     } catch (err) {
       showToast('Copy karne me samasya aayi', 'error');
     }
@@ -738,10 +742,10 @@ export default function DashboardPage() {
                           type="button"
                           onClick={(e) => handleCopySingleDayGoogleSheets(day, e)}
                           className="px-2.5 py-1 rounded-md bg-emerald-600/90 hover:bg-emerald-500 text-white text-[11px] font-semibold flex items-center gap-1 shadow-sm transition-all"
-                          title={`Copy ${day.display_date} (${day.filtered_emails?.length || day.total_emails} rows) for Google Sheet`}
+                          title={`Copy ${day.display_date} (${day.total_sent} sent rows) for Google Sheet (excludes failed/skipped)`}
                         >
                           <Copy className="w-3 h-3" />
-                          <span>📋 Copy Day for Google Sheet ({day.filtered_emails?.length || day.total_emails})</span>
+                          <span>📋 Copy Day for Google Sheet ({day.total_sent} Sent)</span>
                         </button>
 
                         <button

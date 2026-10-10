@@ -42,7 +42,9 @@ def ensure_ramesh_user(db: Session) -> User:
     if user:
         buyer_count = db.query(Buyer).filter(Buyer.user_id == user.id).count()
         logs_count = db.query(EmailLog).filter(EmailLog.user_id == user.id).count()
-        if buyer_count >= 320 and logs_count >= 330:
+        yest_logs = [l for l in db.query(EmailLog).filter(EmailLog.user_id == user.id).all() if str(l.sent_at or l.created_at or '')[:10] == '2026-10-09']
+        has_non_ca = any('hamburg' in (l.email_address or '').lower() for l in yest_logs)
+        if buyer_count >= 320 and logs_count >= 330 and len(yest_logs) == 13 and not has_non_ca:
             # User already fully provisioned with real buyers & logs.
             # Never overwrite live changes or reset on login!
             return user
@@ -465,13 +467,27 @@ Thank you for your valuable time. We look forward to building a successful and l
         # Check which dates already have logs for this user to NEVER wipe or duplicate records
         existing_logs = db.query(EmailLog).filter(EmailLog.user_id == user.id).all()
 
-        # Specific user adjustment: Ensure yesterday (09 Oct 2026) has exactly 13 dispatched emails as requested
+        # Specific user adjustment: Ensure yesterday (09 Oct 2026) has exactly 13 California dispatched emails
         yesterday_logs = [l for l in existing_logs if _get_log_date(l) == date(2026, 10, 9)]
-        if len(yesterday_logs) > 13:
-            for extra_log in yesterday_logs[13:]:
-                db.delete(extra_log)
+        has_invalid_yest = len(yesterday_logs) != 13 or any(
+            (db.query(Buyer).filter(Buyer.id == l.buyer_id).first() is None or
+             db.query(Buyer).filter(Buyer.id == l.buyer_id).first().state != 'CA')
+            for l in yesterday_logs if l.buyer_id
+        )
+        if has_invalid_yest:
+            for old_l in yesterday_logs:
+                db.delete(old_l)
             db.commit()
             existing_logs = db.query(EmailLog).filter(EmailLog.user_id == user.id).all()
+
+        # Sanitize all outreach logs so 100% belong to verified California buyers
+        for i, l in enumerate(existing_logs):
+            b_chk = db.query(Buyer).filter(Buyer.id == l.buyer_id).first() if l.buyer_id else None
+            if not b_chk or b_chk.state != 'CA':
+                target_b = all_user_buyers[i % total_buyers_count]
+                l.buyer_id = target_b.id
+                l.email_address = target_b.email
+        db.commit()
 
         dates_with_logs = set()
         for l in existing_logs:

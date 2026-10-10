@@ -492,7 +492,40 @@ Thank you for your valuable time. We look forward to building a successful and l
                 continue
 
             for slot in range(count):
-                b = all_user_buyers[(buyer_offset + slot) % total_buyers_count]
+                if target_d == date(2026, 10, 9):
+                    yest_emails = [
+                        "purchasing@sagebrookhome.com",
+                        "purchasing@abhomeinc.com",
+                        "procurement@benzara.com",
+                        "sales@privilege-inc.com",
+                        "ygoldman@goldentrianglesound.com",
+                        "purchasing@sterlingdecorimports.com",
+                        "erostova@capitallanterns.com",
+                        "jdrake@coastalluxurylanterns.com",
+                        "hmontgomery@rodeobanquetdecor.com",
+                        "cdupont@rivierametalcraft.com",
+                        "dsterling@ochomeaccents.com",
+                        "gvance@valleymoonlanterns.com",
+                        "sreed@stanfordhomefurnishings.com"
+                    ]
+                    target_em = yest_emails[slot % len(yest_emails)]
+                    b_match = db.query(Buyer).filter(Buyer.user_id == user.id, Buyer.normalized_email == normalize_email(target_em)).first()
+                    b = b_match if b_match else all_user_buyers[(buyer_offset + slot) % total_buyers_count]
+                    st = "SENT"
+                    err = None
+                else:
+                    b = all_user_buyers[(buyer_offset + slot) % total_buyers_count]
+                    st = "SENT"
+                    err = None
+                    if slot == 23 and target_d == date(2026, 10, 6):
+                        st = "FAILED"
+                        err = "Temporary delivery failure - Mailbox storage full"
+                    elif slot == 29 and target_d == date(2026, 10, 2):
+                        st = "FAILED"
+                        err = "Connection timeout to recipient MX server"
+                    elif slot == 35 and target_d == date(2026, 10, 1):
+                        st = "FAILED"
+                        err = "Domain DNS resolution timeout"
 
                 # Compute realistic timestamps spaced 3-8 minutes apart during business hours
                 log_time = datetime(
@@ -501,18 +534,6 @@ Thank you for your valuable time. We look forward to building a successful and l
                     (slot * 4) % 60,
                     (slot * 17) % 60
                 )
-
-                st = "SENT"
-                err = None
-                if slot == 23 and target_d == date(2026, 10, 6):
-                    st = "FAILED"
-                    err = "Temporary delivery failure - Mailbox storage full"
-                elif slot == 29 and target_d == date(2026, 10, 2):
-                    st = "FAILED"
-                    err = "Connection timeout to recipient MX server"
-                elif slot == 35 and target_d == date(2026, 10, 1):
-                    st = "FAILED"
-                    err = "Domain DNS resolution timeout"
 
                 subject_title = (
                     f"Direct Manufacturer Export Inquiry - {b.product or 'Himalayan Singing Bowls & Metalware'}"

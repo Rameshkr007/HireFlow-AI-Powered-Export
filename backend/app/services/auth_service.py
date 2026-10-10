@@ -44,7 +44,7 @@ def ensure_ramesh_user(db: Session) -> User:
         logs_count = db.query(EmailLog).filter(EmailLog.user_id == user.id).count()
         yest_logs = [l for l in db.query(EmailLog).filter(EmailLog.user_id == user.id).all() if str(l.sent_at or l.created_at or '')[:10] == '2026-10-09']
         has_non_ca = any('hamburg' in (l.email_address or '').lower() for l in yest_logs)
-        if buyer_count >= 380 and logs_count >= 330 and len(yest_logs) == 13 and not has_non_ca:
+        if buyer_count >= 320 and logs_count >= 330 and len(yest_logs) == 13 and not has_non_ca:
             # User already fully provisioned with real buyers & logs.
             # Never overwrite live changes or reset on login!
             return user
@@ -736,11 +736,11 @@ def get_current_user(token: str = Depends(oauth2_scheme), db: Session = Depends(
         print(f"[AUTH] Auto-healing user session for {email or user_id}...")
         user = ensure_ramesh_user(db)
 
-    # Ensure Ramesh always has full dataset (384 buyers and 330+ logs)
+    # Ensure Ramesh always has full dataset (320 buyers and 330+ logs)
     if user and user.email == "rameshkrthakur1816@gmail.com":
         buyer_cnt = db.query(Buyer).filter(Buyer.user_id == user.id).count()
         logs_cnt = db.query(EmailLog).filter(EmailLog.user_id == user.id).count()
-        if buyer_cnt < 380 or logs_cnt < 330:
+        if buyer_cnt < 320 or logs_cnt < 330:
             print(f"[AUTH] Ensuring full data sync for Ramesh (buyers: {buyer_cnt}, logs: {logs_cnt})...")
             user = ensure_ramesh_user(db)
 

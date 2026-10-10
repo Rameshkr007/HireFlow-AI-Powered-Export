@@ -433,6 +433,7 @@ Thank you for your valuable time. We look forward to building a successful and l
 
         all_user_buyers = db.query(Buyer).filter(
             Buyer.user_id == user.id,
+            Buyer.state == 'CA',
             Buyer.email.isnot(None),
             Buyer.email != '',
             ~Buyer.email.contains('@linkedin'),

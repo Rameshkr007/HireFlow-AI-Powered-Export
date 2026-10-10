@@ -137,11 +137,11 @@ export default function EmailActivityPage() {
   const filteredDays = (dayWiseData?.days || []).map((day: any) => {
     const matched = day.emails.filter((e: any) => {
       const matchSearch = search === '' ||
-        e.company_name.toLowerCase().includes(search.toLowerCase()) ||
-        e.buyer_name.toLowerCase().includes(search.toLowerCase()) ||
-        e.email_address.toLowerCase().includes(search.toLowerCase()) ||
-        e.city.toLowerCase().includes(search.toLowerCase()) ||
-        e.subject.toLowerCase().includes(search.toLowerCase());
+        (e.company_name || '').toLowerCase().includes(search.toLowerCase()) ||
+        (e.buyer_name || '').toLowerCase().includes(search.toLowerCase()) ||
+        (e.email_address || '').toLowerCase().includes(search.toLowerCase()) ||
+        (e.city || '').toLowerCase().includes(search.toLowerCase()) ||
+        (e.subject || '').toLowerCase().includes(search.toLowerCase());
 
       const matchStatus = statusFilter === 'all' || e.status === statusFilter;
       return matchSearch && matchStatus;

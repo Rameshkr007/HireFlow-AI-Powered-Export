@@ -102,6 +102,8 @@ export default function DashboardPage() {
     staleTime: 1000
   });
 
+  const [allExpanded, setAllExpanded] = useState(true);
+
   // Toggle accordion for a specific date
   const toggleDateAccordion = (dateKey: string) => {
     setExpandedDates(prev => ({
@@ -110,11 +112,21 @@ export default function DashboardPage() {
     }));
   };
 
+  const toggleAllDates = () => {
+    const nextState = !allExpanded;
+    setAllExpanded(nextState);
+    const newMap: Record<string, boolean> = {};
+    (dayWiseData?.days || []).forEach((d: any) => {
+      newMap[d.date] = nextState;
+    });
+    setExpandedDates(newMap);
+  };
+
   const isDateExpanded = (dateKey: string, index: number) => {
     if (expandedDates[dateKey] !== undefined) {
       return expandedDates[dateKey];
     }
-    return index === 0;
+    return true; // Expand all days by default so all dispatched emails are visible immediately
   };
 
   // Google Sheets Direct Copy Function (Tab-Separated TSV for Instant Paste into Cell A2)
@@ -232,11 +244,11 @@ export default function DashboardPage() {
   const filteredDays = (dayWiseData?.days || []).map((day: any) => {
     const matchedEmails = day.emails.filter((e: any) => {
       const matchSearch = daySearch === '' ||
-        e.company_name.toLowerCase().includes(daySearch.toLowerCase()) ||
-        e.buyer_name.toLowerCase().includes(daySearch.toLowerCase()) ||
-        e.email_address.toLowerCase().includes(daySearch.toLowerCase()) ||
-        e.city.toLowerCase().includes(daySearch.toLowerCase()) ||
-        e.subject.toLowerCase().includes(daySearch.toLowerCase());
+        (e.company_name || '').toLowerCase().includes(daySearch.toLowerCase()) ||
+        (e.buyer_name || '').toLowerCase().includes(daySearch.toLowerCase()) ||
+        (e.email_address || '').toLowerCase().includes(daySearch.toLowerCase()) ||
+        (e.city || '').toLowerCase().includes(daySearch.toLowerCase()) ||
+        (e.subject || '').toLowerCase().includes(daySearch.toLowerCase());
 
       const matchStatus = dayStatusFilter === 'all' || e.status === dayStatusFilter;
       return matchSearch && matchStatus;
@@ -353,7 +365,7 @@ export default function DashboardPage() {
               <div onClick={() => navigate('/ai-classification')} className="cursor-pointer hover:scale-[1.02] transition-transform">
                 <KPICard title="High Priority" value={stats?.high_priority || 0} icon={Brain} color="amber" />
               </div>
-              <div onClick={() => setActiveTab('responses')} className="cursor-pointer hover:scale-[1.02] transition-transform">
+              <div onClick={() => setActiveTab('daywise')} className="cursor-pointer hover:scale-[1.02] transition-transform">
                 <KPICard title="Emails Sent" value={stats?.emails_sent || 0} icon={Mail} color="green" />
               </div>
               <div onClick={() => navigate('/campaigns')} className="cursor-pointer hover:scale-[1.02] transition-transform">
@@ -667,14 +679,23 @@ export default function DashboardPage() {
               </div>
             </div>
 
-            <button
-              onClick={handleDownloadDayWiseCSV}
-              className="px-4 py-2 rounded-lg bg-dark-800 hover:bg-dark-750 border border-dark-700 text-dark-100 text-xs font-medium flex items-center justify-center gap-2 transition-all shadow-sm"
-              title="Download full day-wise logs as CSV"
-            >
-              <Download className="w-3.5 h-3.5 text-cyan-400" />
-              <span>Export Day-Wise CSV</span>
-            </button>
+            <div className="flex flex-wrap items-center gap-2">
+              <button
+                type="button"
+                onClick={toggleAllDates}
+                className="px-3.5 py-2 rounded-lg bg-dark-800 hover:bg-dark-750 border border-dark-700 text-dark-200 text-xs font-medium transition-all"
+              >
+                {allExpanded ? 'Collapse All Days' : 'Expand All Days'}
+              </button>
+              <button
+                onClick={handleDownloadDayWiseCSV}
+                className="px-4 py-2 rounded-lg bg-dark-800 hover:bg-dark-750 border border-dark-700 text-dark-100 text-xs font-medium flex items-center justify-center gap-2 transition-all shadow-sm"
+                title="Download full day-wise logs as CSV"
+              >
+                <Download className="w-3.5 h-3.5 text-cyan-400" />
+                <span>Export Day-Wise CSV</span>
+              </button>
+            </div>
           </div>
 
           {/* Day-by-Day Accordion Section */}

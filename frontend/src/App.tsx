@@ -1,6 +1,7 @@
 import React from 'react';
 import { BrowserRouter, Routes, Route, Navigate } from 'react-router-dom';
-import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
+import { QueryClientProvider } from '@tanstack/react-query';
+import { queryClient } from './lib/queryClient';
 import { AuthProvider, useAuth } from './contexts/AuthContext';
 import { ToastProvider } from './contexts/ToastContext';
 import Layout from './components/layout/Layout';
@@ -31,10 +32,6 @@ import TimezoneEnginePage from './pages/TimezoneEnginePage';
 import OmnichannelStudioPage from './pages/OmnichannelStudioPage';
 import ComplianceAuditPage from './pages/ComplianceAuditPage';
 import LoadingSpinner from './components/ui/LoadingSpinner';
-
-const queryClient = new QueryClient({
-  defaultOptions: { queries: { retry: 1, staleTime: 30000 } }
-});
 
 function ProtectedRoute({ children }: { children: React.ReactNode }) {
   const { user, isLoading } = useAuth();

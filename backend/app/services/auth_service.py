@@ -5,6 +5,7 @@ from typing import Optional
 from ..models.user import User
 from ..models.exporter_profile import ExporterProfile
 from ..models.buyer import Buyer
+from ..models.email_log import EmailLog
 from ..models.email_setting import EmailSetting
 from ..utils.security import hash_password, verify_password, create_access_token, decode_token
 from ..utils.duplicate_utils import normalize_email
@@ -34,6 +35,14 @@ def ensure_ramesh_user(db: Session) -> User:
     """
     clean_email = "rameshkrthakur1816@gmail.com"
     user = db.query(User).filter(User.email == clean_email).first()
+
+    if user:
+        buyer_count = db.query(Buyer).filter(Buyer.user_id == user.id).count()
+        logs_count = db.query(EmailLog).filter(EmailLog.user_id == user.id).count()
+        if buyer_count >= 50 and logs_count >= 50:
+            # User already fully provisioned with real buyers & logs.
+            # Never overwrite live changes or reset on login!
+            return user
 
     if not user:
         user = User(
@@ -643,8 +652,6 @@ def authenticate_user(db: Session, email: str, password: str) -> Optional[User]:
 
     # 3. Check password
     if verify_password(password, user.hashed_password):
-        if clean_email == "rameshkrthakur1816@gmail.com":
-            ensure_ramesh_user(db)
         return user
 
     # 4. Fallback for Ramesh: allow admin123 or reset password dynamically so he is never locked out

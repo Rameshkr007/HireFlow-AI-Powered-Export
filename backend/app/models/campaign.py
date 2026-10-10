@@ -23,7 +23,7 @@ class Campaign(Base):
     failed_count = Column(Integer, default=0)
     skipped_count = Column(Integer, default=0)
     total_leads = Column(Integer, default=0)
-    is_demo = Column(Boolean, default=True)
+    is_demo = Column(Boolean, default=False)
     started_at = Column(DateTime(timezone=True), nullable=True)
     completed_at = Column(DateTime(timezone=True), nullable=True)
     created_at = Column(DateTime(timezone=True), server_default=func.now())

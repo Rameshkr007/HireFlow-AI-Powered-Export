@@ -1,6 +1,7 @@
 import React, { createContext, useContext, useState, useEffect, ReactNode } from 'react';
 import api from '../lib/api';
 import { User } from '../lib/types';
+import { queryClient } from '../lib/queryClient';
 
 interface AuthContextType {
   user: User | null;
@@ -29,6 +30,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
             localStorage.removeItem('hireflow_token');
             setToken(null);
             setUser(null);
+            queryClient.clear();
           }
         })
         .finally(() => setIsLoading(false));
@@ -42,8 +44,10 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     const { access_token } = res.data;
     localStorage.setItem('hireflow_token', access_token);
     setToken(access_token);
+    queryClient.clear();
     const me = await api.get('/api/auth/me');
     setUser(me.data);
+    await queryClient.invalidateQueries();
   };
 
   const register = async (email: string, password: string, exporter_name?: string, company_name?: string) => {
@@ -55,6 +59,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     localStorage.removeItem('hireflow_token');
     setToken(null);
     setUser(null);
+    queryClient.clear();
   };
 
   return (

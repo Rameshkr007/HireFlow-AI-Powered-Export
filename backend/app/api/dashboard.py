@@ -13,26 +13,13 @@ router = APIRouter(prefix="/api/dashboard", tags=["dashboard"])
 @router.get("/stats")
 def get_stats(current_user: User = Depends(get_current_user), db: Session = Depends(get_db)):
     uid = current_user.id
-    user_buyers = db.query(Buyer).filter(Buyer.user_id == uid).all()
-    all_buyers = db.query(Buyer).all()
-    buyers = user_buyers if len(user_buyers) >= len(all_buyers) else all_buyers
+    buyers = db.query(Buyer).filter(Buyer.user_id == uid).all()
+    campaigns = db.query(Campaign).filter(Campaign.user_id == uid).all()
+    logs = db.query(EmailLog).filter(EmailLog.user_id == uid).all()
 
-    user_campaigns = db.query(Campaign).filter(Campaign.user_id == uid).all()
-    all_campaigns = db.query(Campaign).all()
-    campaigns = user_campaigns if len(user_campaigns) >= len(all_campaigns) else all_campaigns
-
-    user_logs = db.query(EmailLog).filter(EmailLog.user_id == uid).all()
-    all_logs = db.query(EmailLog).all()
-    logs = user_logs if len(user_logs) >= len(all_logs) else all_logs
-
-    sent_from_logs = sum(1 for l in logs if l.status == 'SENT')
-    emails_sent = sent_from_logs if len(logs) > 0 else sum(c.sent_count for c in campaigns)
-
-    failed_from_logs = sum(1 for l in logs if l.status == 'FAILED')
-    emails_failed = failed_from_logs if len(logs) > 0 else sum(c.failed_count for c in campaigns)
-
-    skipped_from_logs = sum(1 for l in logs if l.status in ['SKIPPED', 'ALREADY_CONTACTED', 'INVALID_EMAIL'])
-    emails_skipped = skipped_from_logs if len(logs) > 0 else sum(c.skipped_count for c in campaigns)
+    emails_sent = sum(1 for l in logs if l.status == 'SENT')
+    emails_failed = sum(1 for l in logs if l.status == 'FAILED')
+    emails_skipped = sum(1 for l in logs if l.status in ['SKIPPED', 'ALREADY_CONTACTED', 'INVALID_EMAIL'])
 
     return {
         "total_buyers": len(buyers),
@@ -52,13 +39,8 @@ def get_stats(current_user: User = Depends(get_current_user), db: Session = Depe
 @router.get("/charts")
 def get_charts(current_user: User = Depends(get_current_user), db: Session = Depends(get_db)):
     uid = current_user.id
-    user_buyers = db.query(Buyer).filter(Buyer.user_id == uid).all()
-    all_buyers = db.query(Buyer).all()
-    buyers = user_buyers if len(user_buyers) >= len(all_buyers) else all_buyers
-
-    user_campaigns = db.query(Campaign).filter(Campaign.user_id == uid).all()
-    all_campaigns = db.query(Campaign).all()
-    campaigns = user_campaigns if len(user_campaigns) >= len(all_campaigns) else all_campaigns
+    buyers = db.query(Buyer).filter(Buyer.user_id == uid).all()
+    campaigns = db.query(Campaign).filter(Campaign.user_id == uid).all()
 
     by_country = dict(Counter(b.country for b in buyers if b.country))
     by_type = dict(Counter(b.business_type for b in buyers if b.business_type))

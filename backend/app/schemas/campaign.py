@@ -14,7 +14,7 @@ class CampaignCreate(BaseModel):
     delay_seconds: int = 60
     attachment_id: Optional[int] = None
     attachment_ids: Optional[List[int]] = []
-    is_demo: bool = True
+    is_demo: bool = False
 
 class CampaignUpdate(BaseModel):
     name: Optional[str] = None

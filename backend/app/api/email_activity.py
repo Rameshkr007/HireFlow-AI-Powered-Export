@@ -86,12 +86,7 @@ def get_day_wise_activity(
     Returns day-wise breakdown of all dispatched emails, grouped by date,
     including exact timestamps, recipient company names, buyer names, locations, and delivery status.
     """
-    user_logs_count = db.query(EmailLog).filter(EmailLog.user_id == current_user.id).count()
-    all_logs_count = db.query(EmailLog).count()
-    if user_logs_count >= all_logs_count and user_logs_count > 0:
-        logs = db.query(EmailLog).filter(EmailLog.user_id == current_user.id).order_by(EmailLog.created_at.desc()).all()
-    else:
-        logs = db.query(EmailLog).order_by(EmailLog.created_at.desc()).all()
+    logs = db.query(EmailLog).filter(EmailLog.user_id == current_user.id).order_by(EmailLog.created_at.desc()).all()
 
     buyer_ids = [l.buyer_id for l in logs if l.buyer_id]
     campaign_ids = [l.campaign_id for l in logs if l.campaign_id]
@@ -237,12 +232,7 @@ def export_activity_csv(
     db: Session = Depends(get_db)
 ):
     """Export complete day-wise email log history as a downloadable CSV."""
-    user_logs_count = db.query(EmailLog).filter(EmailLog.user_id == current_user.id).count()
-    all_logs_count = db.query(EmailLog).count()
-    if user_logs_count >= all_logs_count and user_logs_count > 0:
-        logs = db.query(EmailLog).filter(EmailLog.user_id == current_user.id).order_by(EmailLog.created_at.desc()).all()
-    else:
-        logs = db.query(EmailLog).order_by(EmailLog.created_at.desc()).all()
+    logs = db.query(EmailLog).filter(EmailLog.user_id == current_user.id).order_by(EmailLog.created_at.desc()).all()
 
     buyer_ids = [l.buyer_id for l in logs if l.buyer_id]
     campaign_ids = [l.campaign_id for l in logs if l.campaign_id]
@@ -397,12 +387,7 @@ def get_google_sheets_rows(
     [Date, Company name, Email Id, Address, Status, Response]
     Filters strictly to SENT emails by default (excludes Failed and Skipped).
     """
-    user_logs_count = db.query(EmailLog).filter(EmailLog.user_id == current_user.id).count()
-    all_logs_count = db.query(EmailLog).count()
-    if user_logs_count >= all_logs_count and user_logs_count > 0:
-        query = db.query(EmailLog).filter(EmailLog.user_id == current_user.id)
-    else:
-        query = db.query(EmailLog)
+    query = db.query(EmailLog).filter(EmailLog.user_id == current_user.id)
 
     logs = query.order_by(EmailLog.created_at.desc()).all()
 

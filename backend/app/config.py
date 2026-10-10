@@ -45,6 +45,9 @@ class Settings(BaseSettings):
     TRADEWIND_API_KEY: Optional[str] = None
     TRADEWIND_API_URL: str = "https://app.trade-wind.co"
 
+    # Google Places & Maps API (Live California Retailers, Sound Healing Studios & Decor Stores)
+    GOOGLE_PLACES_API_KEY: Optional[str] = None
+
     class Config:
         env_file = ".env"
         extra = "allow"

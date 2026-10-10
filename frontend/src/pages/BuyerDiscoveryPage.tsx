@@ -229,13 +229,24 @@ export default function BuyerDiscoveryPage() {
 
         {/* Engine Status Indicators */}
         {(() => {
+          const googlePlacesSrc = engineSources.find(s => s.name?.toLowerCase().includes('google places'));
           const tradewindSrc = engineSources.find(s => s.name?.toLowerCase().includes('tradewind'));
           const serpSrc = engineSources.find(s => s.name?.toLowerCase().includes('serp'));
+          const isGooglePlacesActive = googlePlacesSrc?.configured;
           const isTradewindActive = tradewindSrc?.configured;
           const isSerpActive = serpSrc?.configured;
 
           return (
-            <div className="grid grid-cols-2 md:grid-cols-5 gap-3 mt-6 pt-5 border-t border-dark-700/60">
+            <div className="grid grid-cols-2 md:grid-cols-6 gap-3 mt-6 pt-5 border-t border-dark-700/60">
+              <div className="flex items-center gap-2.5 text-xs text-dark-300">
+                <div className={`w-2.5 h-2.5 rounded-full ${isGooglePlacesActive ? 'bg-emerald-400 animate-pulse' : 'bg-amber-400'}`}></div>
+                <span>
+                  <strong className="text-dark-100">Google Places:</strong>{' '}
+                  <span className={isGooglePlacesActive ? 'text-emerald-300 font-semibold' : 'text-amber-300'}>
+                    {isGooglePlacesActive ? 'Live & Connected' : 'Ready for Key'}
+                  </span>
+                </span>
+              </div>
               <div className="flex items-center gap-2.5 text-xs text-dark-300">
                 <div className={`w-2.5 h-2.5 rounded-full ${isTradewindActive ? 'bg-cyan-400 animate-pulse' : 'bg-emerald-400'}`}></div>
                 <span>

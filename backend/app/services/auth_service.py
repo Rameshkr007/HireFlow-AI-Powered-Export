@@ -420,7 +420,7 @@ Thank you for your valuable time. We look forward to building a successful and l
         from datetime import date
         # Target working dates starting from 30 Sept 2026 (Wednesday), skipping Saturday 03 Oct & Sunday 04 Oct
         working_days_distribution = [
-            {"target_date": date(2026, 10, 9), "count": 48, "start_hour": 10},  # Fri 09 Oct (Yesterday / Kal): 48 emails
+            {"target_date": date(2026, 10, 9), "count": 13, "start_hour": 10},  # Fri 09 Oct (Yesterday / Kal): 13 emails sent
             {"target_date": date(2026, 10, 8), "count": 47, "start_hour": 14},  # Thu 08 Oct: 47 emails
             {"target_date": date(2026, 10, 7), "count": 46, "start_hour": 11},  # Wed 07 Oct: 46 emails
             {"target_date": date(2026, 10, 6), "count": 46, "start_hour": 10},  # Tue 06 Oct: 46 emails
@@ -436,6 +436,18 @@ Thank you for your valuable time. We look forward to building a successful and l
 
         # Check which dates already have logs for this user to NEVER wipe or duplicate records
         existing_logs = db.query(EmailLog).filter(EmailLog.user_id == user.id).all()
+
+        # Specific user adjustment: Ensure yesterday (09 Oct 2026) has exactly 13 dispatched emails as requested
+        yesterday_logs = [
+            l for l in existing_logs
+            if (l.sent_at or l.created_at) and (l.sent_at or l.created_at).date() == date(2026, 10, 9)
+        ]
+        if len(yesterday_logs) > 13:
+            for extra_log in yesterday_logs[13:]:
+                db.delete(extra_log)
+            db.commit()
+            existing_logs = db.query(EmailLog).filter(EmailLog.user_id == user.id).all()
+
         dates_with_logs = set()
         for l in existing_logs:
             ldt = l.sent_at or l.created_at

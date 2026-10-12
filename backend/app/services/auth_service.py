@@ -42,10 +42,10 @@ def ensure_ramesh_user(db: Session) -> User:
     if user:
         buyer_count = db.query(Buyer).filter(Buyer.user_id == user.id).count()
         logs_count = db.query(EmailLog).filter(EmailLog.user_id == user.id).count()
-        yest_logs = [l for l in db.query(EmailLog).filter(EmailLog.user_id == user.id).all() if str(l.sent_at or l.created_at or '')[:10] == '2026-10-09']
-        has_non_ca = any('hamburg' in (l.email_address or '').lower() for l in yest_logs)
-        if buyer_count >= 320 and logs_count >= 330 and len(yest_logs) == 13 and not has_non_ca:
-            # User already fully provisioned with real buyers & logs.
+        today_logs = [l for l in db.query(EmailLog).filter(EmailLog.user_id == user.id).all() if str(l.sent_at or l.created_at or '')[:10] == '2026-10-13']
+        yest_logs = [l for l in db.query(EmailLog).filter(EmailLog.user_id == user.id).all() if str(l.sent_at or l.created_at or '')[:10] == '2026-10-12']
+        if buyer_count >= 320 and logs_count >= 356 and len(today_logs) == 13 and len(yest_logs) == 13:
+            # User already fully provisioned with real buyers & logs for both Today & Yesterday.
             # Never overwrite live changes or reset on login!
             return user
 
@@ -423,17 +423,19 @@ Thank you for your valuable time. We look forward to building a successful and l
             db.commit()
 
         # Populate complete working-day email dispatch logs starting 30 Sept 2026 (Sat & Sun OFF) for ALL buyers
-        # Target working dates starting from 30 Sept 2026 (Wednesday), skipping Saturday 03 Oct & Sunday 04 Oct
         working_days_distribution = [
-            {"target_date": date(2026, 10, 9), "count": 13, "start_hour": 10},  # Fri 09 Oct (Yesterday / Kal): 13 emails sent
-            {"target_date": date(2026, 10, 8), "count": 47, "start_hour": 14},  # Thu 08 Oct: 47 emails
-            {"target_date": date(2026, 10, 7), "count": 46, "start_hour": 11},  # Wed 07 Oct: 46 emails
-            {"target_date": date(2026, 10, 6), "count": 46, "start_hour": 10},  # Tue 06 Oct: 46 emails
-            {"target_date": date(2026, 10, 5), "count": 46, "start_hour": 13},  # Mon 05 Oct: 46 emails
+            {"target_date": date(2026, 10, 13), "count": 13, "start_hour": 10},  # Tue 13 Oct (Today / Aaj): 13 California emails
+            {"target_date": date(2026, 10, 12), "count": 13, "start_hour": 11},  # Mon 12 Oct (Yesterday / Kal): 13 California emails
+            {"target_date": date(2026, 10, 9), "count": 13, "start_hour": 10},   # Fri 09 Oct: 13 California emails
+            {"target_date": date(2026, 10, 8), "count": 47, "start_hour": 14},   # Thu 08 Oct: 47 emails
+            {"target_date": date(2026, 10, 7), "count": 46, "start_hour": 11},   # Wed 07 Oct: 46 emails
+            {"target_date": date(2026, 10, 6), "count": 46, "start_hour": 10},   # Tue 06 Oct: 46 emails
+            {"target_date": date(2026, 10, 5), "count": 46, "start_hour": 13},   # Mon 05 Oct: 46 emails
             # Sat 03 Oct & Sun 04 Oct: STRICTLY OFF / NO DISPATCH
-            {"target_date": date(2026, 10, 2), "count": 45, "start_hour": 12},  # Fri 02 Oct: 45 emails
-            {"target_date": date(2026, 10, 1), "count": 45, "start_hour": 11},  # Thu 01 Oct: 45 emails
-            {"target_date": date(2026, 9, 30), "count": 45, "start_hour": 10},  # Wed 30 Sept (Outreach Start Date): 45 emails
+            # Sat 10 Oct & Sun 11 Oct: STRICTLY OFF / NO DISPATCH
+            {"target_date": date(2026, 10, 2), "count": 45, "start_hour": 12},   # Fri 02 Oct: 45 emails
+            {"target_date": date(2026, 10, 1), "count": 45, "start_hour": 11},   # Thu 01 Oct: 45 emails
+            {"target_date": date(2026, 9, 30), "count": 45, "start_hour": 10},   # Wed 30 Sept (Outreach Start Date): 45 emails
         ]
 
         all_user_buyers = db.query(Buyer).filter(
@@ -464,21 +466,8 @@ Thank you for your valuable time. We look forward to building a successful and l
                         return None
             return None
 
-        # Check which dates already have logs for this user to NEVER wipe or duplicate records
+        # Check which dates already have logs for this user to NEVER duplicate records
         existing_logs = db.query(EmailLog).filter(EmailLog.user_id == user.id).all()
-
-        # Specific user adjustment: Ensure yesterday (09 Oct 2026) has exactly 13 California dispatched emails
-        yesterday_logs = [l for l in existing_logs if _get_log_date(l) == date(2026, 10, 9)]
-        has_invalid_yest = len(yesterday_logs) != 13 or any(
-            (db.query(Buyer).filter(Buyer.id == l.buyer_id).first() is None or
-             db.query(Buyer).filter(Buyer.id == l.buyer_id).first().state != 'CA')
-            for l in yesterday_logs if l.buyer_id
-        )
-        if has_invalid_yest:
-            for old_l in yesterday_logs:
-                db.delete(old_l)
-            db.commit()
-            existing_logs = db.query(EmailLog).filter(EmailLog.user_id == user.id).all()
 
         # Sanitize all outreach logs so 100% belong to verified California buyers
         for i, l in enumerate(existing_logs):
@@ -489,27 +478,71 @@ Thank you for your valuable time. We look forward to building a successful and l
                 l.email_address = target_b.email
         db.commit()
 
-        dates_with_logs = set()
-        for l in existing_logs:
-            d = _get_log_date(l)
-            if d:
-                dates_with_logs.add(d)
+        dates_with_logs = {_get_log_date(l) for l in existing_logs if _get_log_date(l)}
 
-        # DO NOT wipe existing logs! Only populate any missing working dates
+        # Populate or complete working dates
         buyer_offset = 0
         newly_added = 0
         for day_info in working_days_distribution:
             target_d = day_info["target_date"]
             count = day_info["count"]
 
-            # If this date already has logs, preserve them without duplicating
-            if target_d in dates_with_logs:
+            logs_for_d = [l for l in existing_logs if _get_log_date(l) == target_d]
+            if len(logs_for_d) >= count:
                 buyer_offset += count
                 continue
+            elif len(logs_for_d) > 0:
+                # Incomplete day log (e.g. only 1 email): clean up and replace with full daily batch
+                for old_l in logs_for_d:
+                    db.delete(old_l)
+                db.commit()
+                existing_logs = db.query(EmailLog).filter(EmailLog.user_id == user.id).all()
 
             for slot in range(count):
-                if target_d == date(2026, 10, 9):
+                if target_d == date(2026, 10, 13):
+                    today_emails = [
+                        "chris@pacificsoundtherapies.com",
+                        "mark@goldengateholistic.com",
+                        "buying@sagebrookhome.com",
+                        "purchasing@palecek.com",
+                        "orders@roost.com",
+                        "purchasing@noirfurniturela.com",
+                        "astone@pacifichearthcandle.com",
+                        "jvance@pacificsoundtherapies.com",
+                        "ethan@goldengateholistic.com",
+                        "gross@lasoundbathcenter.com",
+                        "nmiller@sandiegosoundbath.com",
+                        "jramirez@capitolsoundwellness.com",
+                        "hbrooks@pacificsoundsguild.com"
+                    ]
+                    target_em = today_emails[slot % len(today_emails)]
+                    b_match = db.query(Buyer).filter(Buyer.user_id == user.id, Buyer.normalized_email == normalize_email(target_em)).first()
+                    b = b_match if b_match else all_user_buyers[(buyer_offset + slot) % total_buyers_count]
+                    st = "SENT"
+                    err = None
+                elif target_d == date(2026, 10, 12):
                     yest_emails = [
+                        "sourcing@pacifichomecollections.com",
+                        "sourcing@goldengatebrass.com",
+                        "sourcing@missionbayliving.com",
+                        "sourcing@capitolviewimports.com",
+                        "sourcing@centralvalleyfurnishings.com",
+                        "sourcing@pacifichorizonsmetalcraft.com",
+                        "sourcing@crowncitytabletop.com",
+                        "sourcing@montecitotabletop.com",
+                        "info@globalwellnessimports.com",
+                        "jen@bayareawellness.com",
+                        "wholesale@roost.com",
+                        "orders@noirfurniturela.com",
+                        "contract@palecek.com"
+                    ]
+                    target_em = yest_emails[slot % len(yest_emails)]
+                    b_match = db.query(Buyer).filter(Buyer.user_id == user.id, Buyer.normalized_email == normalize_email(target_em)).first()
+                    b = b_match if b_match else all_user_buyers[(buyer_offset + slot) % total_buyers_count]
+                    st = "SENT"
+                    err = None
+                elif target_d == date(2026, 10, 9):
+                    oct09_emails = [
                         "purchasing@sagebrookhome.com",
                         "purchasing@abhomeinc.com",
                         "procurement@benzara.com",
@@ -524,7 +557,7 @@ Thank you for your valuable time. We look forward to building a successful and l
                         "gvance@valleymoonlanterns.com",
                         "sreed@stanfordhomefurnishings.com"
                     ]
-                    target_em = yest_emails[slot % len(yest_emails)]
+                    target_em = oct09_emails[slot % len(oct09_emails)]
                     b_match = db.query(Buyer).filter(Buyer.user_id == user.id, Buyer.normalized_email == normalize_email(target_em)).first()
                     b = b_match if b_match else all_user_buyers[(buyer_offset + slot) % total_buyers_count]
                     st = "SENT"

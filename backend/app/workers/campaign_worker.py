@@ -16,11 +16,12 @@ DEMO_ERRORS = [
     "Rate limit exceeded",
 ]
 
-def check_already_contacted(db: Session, buyer_email: str) -> bool:
-    """Check if buyer email was already contacted (SENT) in ANY campaign."""
+def check_already_contacted(db: Session, campaign_id: int, buyer_email: str) -> bool:
+    """Check if buyer email was already contacted (SENT) in this campaign."""
     if not buyer_email:
         return False
     existing = db.query(EmailLog).filter(
+        EmailLog.campaign_id == campaign_id,
         EmailLog.email_address == buyer_email.lower().strip(),
         EmailLog.status == 'SENT'
     ).first()
@@ -235,8 +236,8 @@ def process_campaign(db: Session, campaign_id: int, user_id: int):
             db.commit()
             continue
 
-        # 3. Check already contacted
-        if check_already_contacted(db, buyer.email):
+        # 3. Check already contacted in this campaign
+        if check_already_contacted(db, campaign_id, buyer.email):
             log = EmailLog(
                 campaign_id=campaign_id,
                 buyer_id=buyer.id,
@@ -245,7 +246,7 @@ def process_campaign(db: Session, campaign_id: int, user_id: int):
                 subject=campaign.email_subject,
                 personalized_body="",
                 status='ALREADY_CONTACTED',
-                error_message='This buyer was already contacted in a previous campaign'
+                error_message='This buyer was already contacted in this campaign'
             )
             db.add(log)
             skipped += 1
@@ -267,7 +268,7 @@ def process_campaign(db: Session, campaign_id: int, user_id: int):
                 sent += 1
                 # Update buyer status
                 buyer.outreach_status = 'CONTACTED'
-                buyer.last_contacted = datetime.utcnow()
+                buyer.last_contacted = datetime.now()
             elif rand < 0.93:
                 status = 'FAILED'
                 error = random.choice(DEMO_ERRORS)
@@ -287,7 +288,7 @@ def process_campaign(db: Session, campaign_id: int, user_id: int):
                 status=status,
                 error_message=error,
                 attachment_name=attachment_name_str,
-                sent_at=datetime.utcnow() if status == 'SENT' else None
+                sent_at=datetime.now() if status == 'SENT' else None
             )
             db.add(log)
         else:
@@ -305,7 +306,7 @@ def process_campaign(db: Session, campaign_id: int, user_id: int):
                 error = None
                 sent += 1
                 buyer.outreach_status = 'CONTACTED'
-                buyer.last_contacted = datetime.utcnow()
+                buyer.last_contacted = datetime.now()
             else:
                 status = 'FAILED'
                 error = err_msg
@@ -321,7 +322,7 @@ def process_campaign(db: Session, campaign_id: int, user_id: int):
                 status=status,
                 error_message=error,
                 attachment_name=attachment_name_str,
-                sent_at=datetime.utcnow() if status == 'SENT' else None
+                sent_at=datetime.now() if status == 'SENT' else None
             )
             db.add(log)
 

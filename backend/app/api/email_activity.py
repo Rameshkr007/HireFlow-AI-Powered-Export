@@ -89,9 +89,9 @@ def get_day_wise_activity(
     if current_user.email == "rameshkrthakur1816@gmail.com":
         from ..services.auth_service import ensure_ramesh_user
         log_cnt = db.query(EmailLog).filter(EmailLog.user_id == current_user.id).count()
-        yest_logs = [l for l in db.query(EmailLog).filter(EmailLog.user_id == current_user.id).all() if str(l.sent_at or l.created_at or "")[:10] == "2026-10-09"]
-        has_non_ca = any("hamburg" in (l.email_address or "").lower() for l in yest_logs)
-        if log_cnt < 330 or len(yest_logs) != 13 or has_non_ca:
+        today_logs = [l for l in db.query(EmailLog).filter(EmailLog.user_id == current_user.id).all() if str(l.sent_at or l.created_at or "")[:10] == "2026-10-13"]
+        yest_logs = [l for l in db.query(EmailLog).filter(EmailLog.user_id == current_user.id).all() if str(l.sent_at or l.created_at or "")[:10] == "2026-10-12"]
+        if log_cnt < 356 or len(today_logs) != 13 or len(yest_logs) != 13:
             ensure_ramesh_user(db)
 
     logs = db.query(EmailLog).filter(EmailLog.user_id == current_user.id).order_by(EmailLog.created_at.desc()).all()
@@ -101,7 +101,7 @@ def get_day_wise_activity(
     buyers_map = {b.id: b for b in db.query(Buyer).filter(Buyer.id.in_(buyer_ids)).all()} if buyer_ids else {}
     camps_map = {c.id: c for c in db.query(Campaign).filter(Campaign.id.in_(campaign_ids)).all()} if campaign_ids else {}
 
-    today = datetime.utcnow().date()
+    today = datetime.now().date()
     yesterday = today - timedelta(days=1)
 
     # Group by date

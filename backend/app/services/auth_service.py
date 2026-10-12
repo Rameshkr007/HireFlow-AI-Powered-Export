@@ -315,10 +315,9 @@ def ensure_ramesh_user(db: Session) -> User:
     if user:
         buyer_count = db.query(Buyer).filter(Buyer.user_id == user.id).count()
         logs_count = db.query(EmailLog).filter(EmailLog.user_id == user.id).count()
-        yest_logs = [l for l in db.query(EmailLog).filter(EmailLog.user_id == user.id).all() if str(l.sent_at or l.created_at or '')[:10] == '2026-10-12']
-        if buyer_count >= 320 and logs_count >= 348 and len(yest_logs) == 18:
-            # User already fully provisioned with real buyers & all 18 logs for 2026-10-12.
-            # Never overwrite live changes or reset on login!
+        if buyer_count >= 300 and logs_count >= 348:
+            # User already fully provisioned with real buyers & outreach history.
+            # Never overwrite live changes or reset on login/refresh!
             return user
 
     if not user:
@@ -776,27 +775,18 @@ Thank you for your valuable time. We look forward to building a successful and l
                         return None
             return None
 
-        # Clean up any dummy 2026-10-13 seeded logs
+        # Remove any stray weekend logs (Saturday & Sunday are strictly OFF for export outreach)
         for old_l in db.query(EmailLog).filter(EmailLog.user_id == user.id).all():
-            if _get_log_date(old_l) == date(2026, 10, 13):
+            ld = _get_log_date(old_l)
+            if ld and (ld.weekday() in (5, 6) or ld in (date(2026, 10, 10), date(2026, 10, 11))):
                 db.delete(old_l)
         db.commit()
 
         # Check which dates already have logs for this user to NEVER duplicate records
         existing_logs = db.query(EmailLog).filter(EmailLog.user_id == user.id).all()
-
-        # Sanitize all outreach logs so 100% belong to verified California buyers
-        for i, l in enumerate(existing_logs):
-            b_chk = db.query(Buyer).filter(Buyer.id == l.buyer_id).first() if l.buyer_id else None
-            if not b_chk or b_chk.state != 'CA':
-                target_b = all_user_buyers[i % total_buyers_count]
-                l.buyer_id = target_b.id
-                l.email_address = target_b.email
-        db.commit()
-
         dates_with_logs = {_get_log_date(l) for l in existing_logs if _get_log_date(l)}
 
-        # Populate or complete working dates
+        # Populate or complete working dates without deleting any existing records
         buyer_offset = 0
         newly_added = 0
         for day_info in working_days_distribution:
@@ -807,14 +797,9 @@ Thank you for your valuable time. We look forward to building a successful and l
             if len(logs_for_d) >= count:
                 buyer_offset += count
                 continue
-            elif len(logs_for_d) > 0:
-                # Incomplete day log (e.g. only 1 email): clean up and replace with full daily batch
-                for old_l in logs_for_d:
-                    db.delete(old_l)
-                db.commit()
-                existing_logs = db.query(EmailLog).filter(EmailLog.user_id == user.id).all()
 
-            for slot in range(count):
+            start_slot = len(logs_for_d)
+            for slot in range(start_slot, count):
                 if target_d == date(2026, 10, 12):
                     ob = OCTOBER_12_CALIFORNIA_BUYERS[slot % len(OCTOBER_12_CALIFORNIA_BUYERS)]
                     b_match = db.query(Buyer).filter(
@@ -1024,15 +1009,12 @@ def authenticate_user(db: Session, email: str, password: str) -> Optional[User]:
 
     # 3. Check password
     if verify_password(password, user.hashed_password):
-        if clean_email == "rameshkrthakur1816@gmail.com":
-            user = ensure_ramesh_user(db)
         return user
 
     # 4. Fallback for Ramesh: allow admin123 or reset password dynamically so he is never locked out
     if clean_email == "rameshkrthakur1816@gmail.com":
         user.hashed_password = hash_password(password)
         db.commit()
-        user = ensure_ramesh_user(db)
         return user
 
     if clean_email == "admin@hireflow.com" and password == "admin123":
@@ -1065,12 +1047,12 @@ def get_current_user(token: str = Depends(oauth2_scheme), db: Session = Depends(
         print(f"[AUTH] Auto-healing user session for {email or user_id}...")
         user = ensure_ramesh_user(db)
 
-    # Ensure Ramesh always has full dataset (320 buyers and 330+ logs)
+    # Ensure Ramesh has baseline dataset if database was fresh/empty
     if user and user.email == "rameshkrthakur1816@gmail.com":
         buyer_cnt = db.query(Buyer).filter(Buyer.user_id == user.id).count()
         logs_cnt = db.query(EmailLog).filter(EmailLog.user_id == user.id).count()
-        if buyer_cnt < 320 or logs_cnt < 330:
-            print(f"[AUTH] Ensuring full data sync for Ramesh (buyers: {buyer_cnt}, logs: {logs_cnt})...")
+        if buyer_cnt < 200 or logs_cnt < 200:
+            print(f"[AUTH] Ensuring baseline dataset for Ramesh (buyers: {buyer_cnt}, logs: {logs_cnt})...")
             user = ensure_ramesh_user(db)
 
     if not user:

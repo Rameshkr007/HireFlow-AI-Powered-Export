@@ -14,11 +14,10 @@ router = APIRouter(prefix="/api/dashboard", tags=["dashboard"])
 def get_stats(current_user: User = Depends(get_current_user), db: Session = Depends(get_db)):
     uid = current_user.id
     if current_user.email == "rameshkrthakur1816@gmail.com":
-        from ..services.auth_service import ensure_ramesh_user
         b_cnt = db.query(Buyer).filter(Buyer.user_id == uid).count()
         l_cnt = db.query(EmailLog).filter(EmailLog.user_id == uid).count()
-        yest_logs = [l for l in db.query(EmailLog).filter(EmailLog.user_id == uid).all() if str(l.sent_at or l.created_at or "")[:10] == "2026-10-12"]
-        if b_cnt < 320 or l_cnt < 348 or len(yest_logs) != 18:
+        if b_cnt < 200 or l_cnt < 200:
+            from ..services.auth_service import ensure_ramesh_user
             ensure_ramesh_user(db)
 
     buyers = db.query(Buyer).filter(Buyer.user_id == uid).all()

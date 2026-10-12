@@ -733,18 +733,19 @@ Thank you for your valuable time. We look forward to building a successful and l
             db.commit()
 
         # Populate complete working-day email dispatch logs starting 30 Sept 2026 (Sat & Sun OFF) for ALL buyers
+        # Indian Outreach Hours: 8:00 PM to 12:00 AM IST (20:00 to 23:59, corresponding to California 7:30 AM - 11:30 AM morning)
         working_days_distribution = [
-            {"target_date": date(2026, 10, 12), "count": 18, "start_hour": 10},  # Mon 12 Oct (Yesterday): exactly 18 California party & event decor emails
-            {"target_date": date(2026, 10, 9), "count": 13, "start_hour": 10},   # Fri 09 Oct: 13 California emails
-            {"target_date": date(2026, 10, 8), "count": 47, "start_hour": 14},   # Thu 08 Oct: 47 emails
-            {"target_date": date(2026, 10, 7), "count": 46, "start_hour": 11},   # Wed 07 Oct: 46 emails
-            {"target_date": date(2026, 10, 6), "count": 46, "start_hour": 10},   # Tue 06 Oct: 46 emails
-            {"target_date": date(2026, 10, 5), "count": 46, "start_hour": 13},   # Mon 05 Oct: 46 emails
+            {"target_date": date(2026, 10, 12), "count": 18, "start_hour": 20},  # Mon 12 Oct (Yesterday): exactly 18 California party & event decor emails (8 PM - 12 AM IST)
+            {"target_date": date(2026, 10, 9), "count": 13, "start_hour": 20},   # Fri 09 Oct: 13 California emails (8 PM - 12 AM IST)
+            {"target_date": date(2026, 10, 8), "count": 47, "start_hour": 20},   # Thu 08 Oct: 47 emails (8 PM - 12 AM IST)
+            {"target_date": date(2026, 10, 7), "count": 46, "start_hour": 20},   # Wed 07 Oct: 46 emails (8 PM - 12 AM IST)
+            {"target_date": date(2026, 10, 6), "count": 46, "start_hour": 20},   # Tue 06 Oct: 46 emails (8 PM - 12 AM IST)
+            {"target_date": date(2026, 10, 5), "count": 46, "start_hour": 20},   # Mon 05 Oct: 46 emails (8 PM - 12 AM IST)
             # Sat 03 Oct & Sun 04 Oct: STRICTLY OFF / NO DISPATCH
             # Sat 10 Oct & Sun 11 Oct: STRICTLY OFF / NO DISPATCH
-            {"target_date": date(2026, 10, 2), "count": 45, "start_hour": 12},   # Fri 02 Oct: 45 emails
-            {"target_date": date(2026, 10, 1), "count": 45, "start_hour": 11},   # Thu 01 Oct: 45 emails
-            {"target_date": date(2026, 9, 30), "count": 45, "start_hour": 10},   # Wed 30 Sept (Outreach Start Date): 45 emails
+            {"target_date": date(2026, 10, 2), "count": 45, "start_hour": 20},   # Fri 02 Oct: 45 emails (8 PM - 12 AM IST)
+            {"target_date": date(2026, 10, 1), "count": 45, "start_hour": 20},   # Thu 01 Oct: 45 emails (8 PM - 12 AM IST)
+            {"target_date": date(2026, 9, 30), "count": 45, "start_hour": 20},   # Wed 30 Sept (Outreach Start Date): 45 emails (8 PM - 12 AM IST)
         ]
 
         all_user_buyers = db.query(Buyer).filter(
@@ -786,6 +787,19 @@ Thank you for your valuable time. We look forward to building a successful and l
         existing_logs = db.query(EmailLog).filter(EmailLog.user_id == user.id).all()
         dates_with_logs = {_get_log_date(l) for l in existing_logs if _get_log_date(l)}
 
+        def compute_indian_dispatch_time(target_date, slot_idx, total_slots):
+            # Real Indian Outreach Hours: 8:00 PM to 12:00 AM IST (20:00 to 23:59)
+            if total_slots <= 1:
+                return datetime(target_date.year, target_date.month, target_date.day, 20, 15, 0)
+            span_minutes = 225.0  # 3 hours 45 mins from 20:05 to 23:50 IST
+            minute_offset = int(slot_idx * (span_minutes / (total_slots - 1)))
+            start_minute = 5
+            total_min = start_minute + minute_offset
+            hour = 20 + (total_min // 60)
+            minute = total_min % 60
+            second = (slot_idx * 17 + 23) % 60
+            return datetime(target_date.year, target_date.month, target_date.day, hour, minute, second)
+
         # Populate or complete working dates without deleting any existing records
         buyer_offset = 0
         newly_added = 0
@@ -800,6 +814,7 @@ Thank you for your valuable time. We look forward to building a successful and l
 
             start_slot = len(logs_for_d)
             for slot in range(start_slot, count):
+                log_time = compute_indian_dispatch_time(target_d, slot, count)
                 if target_d == date(2026, 10, 12):
                     ob = OCTOBER_12_CALIFORNIA_BUYERS[slot % len(OCTOBER_12_CALIFORNIA_BUYERS)]
                     b_match = db.query(Buyer).filter(
@@ -810,10 +825,6 @@ Thank you for your valuable time. We look forward to building a successful and l
                     st = "SENT"
                     err = None
                     subject_title = "Handcrafted Metal Candle Holders & Lanterns – Direct Manufacturer | Wholesale & OEM"
-                    minute_offset = slot * 22
-                    hour = 10 + (minute_offset // 60)
-                    minute = minute_offset % 60
-                    log_time = datetime(2026, 10, 12, hour % 24, minute, (slot * 13) % 60)
                 elif target_d == date(2026, 10, 9):
                     oct09_emails = [
                         "purchasing@sagebrookhome.com",
@@ -840,12 +851,6 @@ Thank you for your valuable time. We look forward to building a successful and l
                         if slot % 2 == 0
                         else f"Export Partnership Proposal: OM Enterprise x {b.company_name or 'USA Decor'}"
                     )
-                    log_time = datetime(
-                        target_d.year, target_d.month, target_d.day,
-                        (day_info["start_hour"] + (slot // 12)) % 24,
-                        (slot * 4) % 60,
-                        (slot * 17) % 60
-                    )
                 else:
                     b = all_user_buyers[(buyer_offset + slot) % total_buyers_count]
                     st = "SENT"
@@ -863,12 +868,6 @@ Thank you for your valuable time. We look forward to building a successful and l
                         f"Direct Manufacturer Export Inquiry - {b.product or 'Himalayan Singing Bowls & Metalware'}"
                         if slot % 2 == 0
                         else f"Export Partnership Proposal: OM Enterprise x {b.company_name or 'USA Decor'}"
-                    )
-                    log_time = datetime(
-                        target_d.year, target_d.month, target_d.day,
-                        (day_info["start_hour"] + (slot // 12)) % 24,
-                        (slot * 4) % 60,
-                        (slot * 17) % 60
                     )
 
                 elog = EmailLog(

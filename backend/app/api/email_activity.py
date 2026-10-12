@@ -105,12 +105,12 @@ def get_day_wise_activity(
     # Group by date
     days_dict = defaultdict(list)
     for log in logs:
-        log_dt = log.sent_at or log.created_at or datetime.utcnow()
+        log_dt = log.sent_at or log.created_at or datetime.now()
         if isinstance(log_dt, str):
             try:
                 log_dt = datetime.fromisoformat(log_dt.replace("Z", "+00:00"))
             except Exception:
-                log_dt = datetime.utcnow()
+                log_dt = datetime.now()
         log_date = log_dt.date()
         days_dict[log_date].append((log, log_dt))
 
@@ -255,12 +255,12 @@ def export_activity_csv(
     for log in logs:
         buyer = buyers_map.get(log.buyer_id)
         camp = camps_map.get(log.campaign_id)
-        log_dt = log.sent_at or log.created_at or datetime.utcnow()
+        log_dt = log.sent_at or log.created_at or datetime.now()
         if isinstance(log_dt, str):
             try:
                 log_dt = datetime.fromisoformat(log_dt.replace("Z", "+00:00"))
             except Exception:
-                log_dt = datetime.utcnow()
+                log_dt = datetime.now()
 
         writer.writerow([
             log_dt.strftime("%Y-%m-%d"),
@@ -279,7 +279,7 @@ def export_activity_csv(
         ])
 
     output.seek(0)
-    filename = f"hireflow_day_wise_email_dispatch_{datetime.utcnow().strftime('%Y%m%d')}.csv"
+    filename = f"hireflow_day_wise_email_dispatch_{datetime.now().strftime('%Y%m%d')}.csv"
     return StreamingResponse(
         io.BytesIO(output.getvalue().encode('utf-8-sig')),
         media_type="text/csv",
@@ -323,12 +323,12 @@ def export_google_sheets_csv(
             continue
 
         buyer = buyers_map.get(log.buyer_id)
-        log_dt = log.sent_at or log.created_at or datetime.utcnow()
+        log_dt = log.sent_at or log.created_at or datetime.now()
         if isinstance(log_dt, str):
             try:
                 log_dt = datetime.fromisoformat(log_dt.replace("Z", "+00:00"))
             except Exception:
-                log_dt = datetime.utcnow()
+                log_dt = datetime.now()
 
         log_date_str = log_dt.strftime("%Y-%m-%d")
         if date_filter and log_date_str != date_filter:
@@ -373,7 +373,7 @@ def export_google_sheets_csv(
         ])
 
     output.seek(0)
-    suffix = f"_{date}" if date else f"_{datetime.utcnow().strftime('%Y%m%d')}"
+    suffix = f"_{date}" if date else f"_{datetime.now().strftime('%Y%m%d')}"
     filename = f"HireFlow_GoogleSheet_Export{suffix}.csv"
     return StreamingResponse(
         io.BytesIO(output.getvalue().encode('utf-8-sig')),
@@ -409,12 +409,12 @@ def get_google_sheets_rows(
         if status_filter and (log.status or '').upper() != status_filter:
             continue
         buyer = buyers_map.get(log.buyer_id)
-        log_dt = log.sent_at or log.created_at or datetime.utcnow()
+        log_dt = log.sent_at or log.created_at or datetime.now()
         if isinstance(log_dt, str):
             try:
                 log_dt = datetime.fromisoformat(log_dt.replace("Z", "+00:00"))
             except Exception:
-                log_dt = datetime.utcnow()
+                log_dt = datetime.now()
 
         log_date_str = log_dt.strftime("%Y-%m-%d")
         if date_filter and log_date_str != date_filter:

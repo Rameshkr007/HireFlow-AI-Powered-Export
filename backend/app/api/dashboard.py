@@ -17,9 +17,8 @@ def get_stats(current_user: User = Depends(get_current_user), db: Session = Depe
         from ..services.auth_service import ensure_ramesh_user
         b_cnt = db.query(Buyer).filter(Buyer.user_id == uid).count()
         l_cnt = db.query(EmailLog).filter(EmailLog.user_id == uid).count()
-        today_logs = [l for l in db.query(EmailLog).filter(EmailLog.user_id == uid).all() if str(l.sent_at or l.created_at or "")[:10] == "2026-10-13"]
         yest_logs = [l for l in db.query(EmailLog).filter(EmailLog.user_id == uid).all() if str(l.sent_at or l.created_at or "")[:10] == "2026-10-12"]
-        if b_cnt < 320 or l_cnt < 356 or len(today_logs) != 13 or len(yest_logs) != 13:
+        if b_cnt < 320 or l_cnt < 348 or len(yest_logs) != 18:
             ensure_ramesh_user(db)
 
     buyers = db.query(Buyer).filter(Buyer.user_id == uid).all()

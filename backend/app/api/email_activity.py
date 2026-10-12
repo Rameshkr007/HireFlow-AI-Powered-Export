@@ -89,9 +89,8 @@ def get_day_wise_activity(
     if current_user.email == "rameshkrthakur1816@gmail.com":
         from ..services.auth_service import ensure_ramesh_user
         log_cnt = db.query(EmailLog).filter(EmailLog.user_id == current_user.id).count()
-        today_logs = [l for l in db.query(EmailLog).filter(EmailLog.user_id == current_user.id).all() if str(l.sent_at or l.created_at or "")[:10] == "2026-10-13"]
         yest_logs = [l for l in db.query(EmailLog).filter(EmailLog.user_id == current_user.id).all() if str(l.sent_at or l.created_at or "")[:10] == "2026-10-12"]
-        if log_cnt < 356 or len(today_logs) != 13 or len(yest_logs) != 13:
+        if log_cnt < 348 or len(yest_logs) != 18:
             ensure_ramesh_user(db)
 
     logs = db.query(EmailLog).filter(EmailLog.user_id == current_user.id).order_by(EmailLog.created_at.desc()).all()

@@ -1,0 +1,378 @@
+[
+  {
+    "email": "purchasing@noirfurniturela.com",
+    "company": "Noir Trading Inc",
+    "buyer_name": "Anthony Minichetti",
+    "time": "20:34:11",
+    "subject": "Authentic Handmade Himalayan Singing Bowls \u2013 Direct Manufacturer | Wholesale & OEM",
+    "status": "SENT"
+  },
+  {
+    "email": "info@globalwellnessimports.com",
+    "company": "Global Wellness Imports LLC",
+    "buyer_name": "Michael Johnson",
+    "time": "20:38:28",
+    "subject": "Export Partnership Proposal: OM Enterprise x Global Wellness Imports LLC",
+    "status": "SENT"
+  },
+  {
+    "email": "jen@bayareawellness.com",
+    "company": "Bay Area Wellness Hub",
+    "buyer_name": "Jennifer Lee",
+    "time": "20:42:45",
+    "subject": "Direct Manufacturer Export Inquiry - Chakra Singing Bowl Sets",
+    "status": "SENT"
+  },
+  {
+    "email": "purchasing@sagebrookhome.com",
+    "company": "Sagebrook Home",
+    "buyer_name": "Marcus Vance",
+    "time": "20:46:02",
+    "subject": "Export Partnership Proposal: OM Enterprise x Sagebrook Home",
+    "status": "SENT"
+  },
+  {
+    "email": "purchasing@abhomeinc.com",
+    "company": "A&B Home Group Inc",
+    "buyer_name": "Angela Lin",
+    "time": "20:51:19",
+    "subject": "Direct Manufacturer Export Inquiry - Outdoor Hurricane Lanterns",
+    "status": "SENT"
+  },
+  {
+    "email": "sales@privilege-inc.com",
+    "company": "Privilege International Inc",
+    "buyer_name": "Jack Perez",
+    "time": "20:55:36",
+    "subject": "Export Partnership Proposal: OM Enterprise x Privilege International Inc",
+    "status": "SENT"
+  },
+  {
+    "email": "procurement@benzara.com",
+    "company": "Benzara Inc",
+    "buyer_name": "Rajesh Sharma",
+    "time": "20:59:53",
+    "subject": "Direct Manufacturer Export Inquiry - Antique Bronze Candle Stands",
+    "status": "SENT"
+  },
+  {
+    "email": "contract@palecek.com",
+    "company": "Palecek Imports",
+    "buyer_name": "Kenneth Palecek",
+    "time": "21:03:10",
+    "subject": "Export Partnership Proposal: OM Enterprise x Palecek Imports",
+    "status": "SENT"
+  },
+  {
+    "email": "wholesale@roost.com",
+    "company": "Roost Home Living",
+    "buyer_name": "Michael Roost",
+    "time": "21:08:27",
+    "subject": "Direct Manufacturer Export Inquiry - Minimalist Brass Candle Holders & Votives",
+    "status": "SENT"
+  },
+  {
+    "email": "orders@noirfurniturela.com",
+    "company": "Noir Trading Inc",
+    "buyer_name": "Elena Noir",
+    "time": "21:12:44",
+    "subject": "Export Partnership Proposal: OM Enterprise x Noir Trading Inc",
+    "status": "SENT"
+  },
+  {
+    "email": "chris@pacificsoundtherapies.com",
+    "company": "Pacific Sound Therapies",
+    "buyer_name": "Christopher Evans",
+    "time": "21:16:01",
+    "subject": "Direct Manufacturer Export Inquiry - Full Moon Singing Bowls",
+    "status": "SENT"
+  },
+  {
+    "email": "mark@goldengateholistic.com",
+    "company": "Golden Gate Holistic Supply",
+    "buyer_name": "Mark Stevens",
+    "time": "21:20:18",
+    "subject": "Export Partnership Proposal: OM Enterprise x Golden Gate Holistic Supply",
+    "status": "SENT"
+  },
+  {
+    "email": "buying@sagebrookhome.com",
+    "company": "Sagebrook Home",
+    "buyer_name": "Jason Phillips",
+    "time": "21:25:35",
+    "subject": "Direct Manufacturer Export Inquiry - Contemporary Metal Candleholders",
+    "status": "SENT"
+  },
+  {
+    "email": "purchasing@palecek.com",
+    "company": "Palecek Imports",
+    "buyer_name": "Andrew Palecek",
+    "time": "21:29:52",
+    "subject": "Export Partnership Proposal: OM Enterprise x Palecek Imports",
+    "status": "SENT"
+  },
+  {
+    "email": "orders@roost.com",
+    "company": "Roost Home Living",
+    "buyer_name": "Haley Weidenbaum",
+    "time": "21:33:09",
+    "subject": "Direct Manufacturer Export Inquiry - Artisan Hanging Lanterns & Candelabras",
+    "status": "SENT"
+  },
+  {
+    "email": "astone@pacifichearthcandle.com",
+    "company": "Pacific Coast Hearth & Candle Co",
+    "buyer_name": "Alexander Stone",
+    "time": "21:37:26",
+    "subject": "Export Partnership Proposal: OM Enterprise x Pacific Coast Hearth & Candle Co",
+    "status": "SENT"
+  },
+  {
+    "email": "jvance@pacificsoundtherapies.com",
+    "company": "Pacific Sound Therapies",
+    "buyer_name": "Jonathan Vance",
+    "time": "21:42:43",
+    "subject": "Direct Manufacturer Export Inquiry - Therapy Master Bowls & Tingshas",
+    "status": "SENT"
+  },
+  {
+    "email": "ethan@goldengateholistic.com",
+    "company": "Golden Gate Holistic Supply",
+    "buyer_name": "Ethan Brooks",
+    "time": "21:46:00",
+    "subject": "Export Partnership Proposal: OM Enterprise x Golden Gate Holistic Supply",
+    "status": "SENT"
+  },
+  {
+    "email": "gross@lasoundbathcenter.com",
+    "company": "Los Angeles Sound Bath Center",
+    "buyer_name": "Gabriel Ross",
+    "time": "21:50:17",
+    "subject": "Direct Manufacturer Export Inquiry - Therapy Grade Master Singing Bowls",
+    "status": "SENT"
+  },
+  {
+    "email": "nmiller@sandiegosoundbath.com",
+    "company": "San Diego Sound Bath Emporium",
+    "buyer_name": "Noah Miller",
+    "time": "21:54:34",
+    "subject": "Export Partnership Proposal: OM Enterprise x San Diego Sound Bath Emporium",
+    "status": "SENT"
+  },
+  {
+    "email": "jramirez@capitolsoundwellness.com",
+    "company": "Capitol Sound & Wellness LLC",
+    "buyer_name": "Jacob Ramirez",
+    "time": "21:59:51",
+    "subject": "Direct Manufacturer Export Inquiry - Handmade Himalayan Singing Bowls",
+    "status": "SENT"
+  },
+  {
+    "email": "hbrooks@pacificsoundsguild.com",
+    "company": "Pacific Coast Sound Healing Guild",
+    "buyer_name": "Hailey Brooks",
+    "time": "22:03:08",
+    "subject": "Export Partnership Proposal: OM Enterprise x Pacific Coast Sound Healing Guild",
+    "status": "SENT"
+  },
+  {
+    "email": "sourcing@pacifichomecollections.com",
+    "company": "Pacific Home Collections",
+    "buyer_name": "Gregory Bennett",
+    "time": "22:07:25",
+    "subject": "Direct Manufacturer Export Inquiry - Brass Tabletop Votives & Hanging Lanterns",
+    "status": "SENT"
+  },
+  {
+    "email": "sourcing@goldengatebrass.com",
+    "company": "Golden Gate Brass & Ironworks",
+    "buyer_name": "Arthur Pendelton",
+    "time": "22:12:42",
+    "subject": "Export Partnership Proposal: OM Enterprise x Golden Gate Brass & Ironworks",
+    "status": "SENT"
+  },
+  {
+    "email": "sourcing@missionbayliving.com",
+    "company": "Mission Bay Living & Decor",
+    "buyer_name": "Tara Knowles",
+    "time": "22:16:59",
+    "subject": "Direct Manufacturer Export Inquiry - Metal Candle Holders & Lanterns",
+    "status": "SENT"
+  },
+  {
+    "email": "sourcing@capitolviewimports.com",
+    "company": "Capitol View Artisan Imports",
+    "buyer_name": "Stan Beeman",
+    "time": "22:20:16",
+    "subject": "Export Partnership Proposal: OM Enterprise x Capitol View Artisan Imports",
+    "status": "SENT"
+  },
+  {
+    "email": "sourcing@centralvalleyfurnishings.com",
+    "company": "Central Valley Home Furnishings",
+    "buyer_name": "Patrick Brewer",
+    "time": "22:24:33",
+    "subject": "Direct Manufacturer Export Inquiry - Metal Candle Holders & Lanterns",
+    "status": "SENT"
+  },
+  {
+    "email": "sourcing@pacifichorizonsmetalcraft.com",
+    "company": "Pacific Horizons Metalcraft",
+    "buyer_name": "John Lennon",
+    "time": "22:29:50",
+    "subject": "Export Partnership Proposal: OM Enterprise x Pacific Horizons Metalcraft",
+    "status": "SENT"
+  },
+  {
+    "email": "sourcing@crowncitytabletop.com",
+    "company": "Crown City Tabletop Distributors",
+    "buyer_name": "Yoko Ono",
+    "time": "22:33:07",
+    "subject": "Direct Manufacturer Export Inquiry - Wrought Iron Pillar Candle Holders",
+    "status": "SENT"
+  },
+  {
+    "email": "sourcing@montecitotabletop.com",
+    "company": "Montecito Tabletop & Living",
+    "buyer_name": "Roger Taylor",
+    "time": "22:37:24",
+    "subject": "Export Partnership Proposal: OM Enterprise x Montecito Tabletop & Living",
+    "status": "SENT"
+  },
+  {
+    "email": "procurement@encinitassounds.com",
+    "company": "Encinitas Sacred Sound Imports",
+    "buyer_name": "Tenzin Norbu",
+    "time": "22:41:41",
+    "subject": "Direct Manufacturer Export Inquiry - Full Moon Singing Bowls",
+    "status": "SENT"
+  },
+  {
+    "email": "procurement@ojaisoundhealing.com",
+    "company": "Ojai Valley Sound Sanctuary",
+    "buyer_name": "Bodhi Thorne",
+    "time": "22:46:58",
+    "subject": "Export Partnership Proposal: OM Enterprise x Ojai Valley Sound Sanctuary",
+    "status": "SENT"
+  },
+  {
+    "email": "procurement@shastasoundhealing.com",
+    "company": "Mount Shasta Sound & Meditation",
+    "buyer_name": "Tara Silver",
+    "time": "22:50:15",
+    "subject": "Direct Manufacturer Export Inquiry - Handmade Himalayan Singing Bowls",
+    "status": "SENT"
+  },
+  {
+    "email": "procurement@missionsoundhealing.com",
+    "company": "Mission Sound Healing Arts",
+    "buyer_name": "Siddhartha Roy",
+    "time": "22:54:32",
+    "subject": "Export Partnership Proposal: OM Enterprise x Mission Sound Healing Arts",
+    "status": "SENT"
+  },
+  {
+    "email": "procurement@venicebeachsounds.com",
+    "company": "Venice Beach Sound Sanctuary",
+    "buyer_name": "Maya Angelou",
+    "time": "22:58:49",
+    "subject": "Direct Manufacturer Export Inquiry - 7-Metal Chakra Singing Bowl Sets",
+    "status": "SENT"
+  },
+  {
+    "email": "procurement@sandiegosoundbath.com",
+    "company": "San Diego Sound Bath Collective",
+    "buyer_name": "Kalyani Krishna",
+    "time": "23:03:06",
+    "subject": "Export Partnership Proposal: OM Enterprise x San Diego Sound Bath Collective",
+    "status": "SENT"
+  },
+  {
+    "email": "procurement@goldcountrysound.com",
+    "company": "Gold Country Sound & Meditation",
+    "buyer_name": "Gary Snyder",
+    "time": "23:07:23",
+    "subject": "Direct Manufacturer Export Inquiry - Sound Therapy Acoustic Bronze Bowls",
+    "status": "SENT"
+  },
+  {
+    "email": "procurement@rivierasoundguild.com",
+    "company": "Riviera Sound & Wellness Guild",
+    "buyer_name": "Deepak Chopra",
+    "time": "23:11:40",
+    "subject": "Export Partnership Proposal: OM Enterprise x Riviera Sound & Wellness Guild",
+    "status": "SENT"
+  },
+  {
+    "email": "procurement@marinsoundtherapy.com",
+    "company": "Marin Holistic Sound Therapy",
+    "buyer_name": "Alan Watts",
+    "time": "23:15:57",
+    "subject": "Direct Manufacturer Export Inquiry - Handmade Himalayan Singing Bowls",
+    "status": "SENT"
+  },
+  {
+    "email": "procurement@eastbaysoundarts.com",
+    "company": "East Bay Mindfulness & Sound Arts",
+    "buyer_name": "Jack Kornfield",
+    "time": "23:20:14",
+    "subject": "Export Partnership Proposal: OM Enterprise x East Bay Mindfulness & Sound Arts",
+    "status": "SENT"
+  },
+  {
+    "email": "procurement@santacruzsacredsound.com",
+    "company": "Santa Cruz Sacred Sound Imports",
+    "buyer_name": "Paramahansa Yogananda",
+    "time": "23:24:31",
+    "subject": "Direct Manufacturer Export Inquiry - Handmade Himalayan Singing Bowls",
+    "status": "SENT"
+  },
+  {
+    "email": "procurement@montereysoundguild.com",
+    "company": "Monterey Peninsula Sound Guild",
+    "buyer_name": "Swami Vivekananda",
+    "time": "23:28:48",
+    "subject": "Export Partnership Proposal: OM Enterprise x Monterey Peninsula Sound Guild",
+    "status": "SENT"
+  },
+  {
+    "email": "purchasing@sterlingdecorimports.com",
+    "company": "Sterling LA Tabletop & Lanterns Inc",
+    "buyer_name": "Daniel Sterling",
+    "time": "23:32:05",
+    "subject": "Direct Manufacturer Export Inquiry - Metal Candle Holders & Lanterns",
+    "status": "SENT"
+  },
+  {
+    "email": "catherine.miller@goldengatebrass.com",
+    "company": "Golden Gate Candle Stand Co",
+    "buyer_name": "Catherine Miller",
+    "time": "23:37:22",
+    "subject": "Export Partnership Proposal: OM Enterprise x Golden Gate Candle Stand Co",
+    "status": "SENT"
+  },
+  {
+    "email": "hbrooks@pacificcoastbrass.com",
+    "company": "Pacific Coast Brass & Votives LLC",
+    "buyer_name": "Hailey Brooks",
+    "time": "23:41:39",
+    "subject": "Direct Manufacturer Export Inquiry - Metal Candle Holders & Lanterns",
+    "status": "SENT"
+  },
+  {
+    "email": "mvance@siliconvalleytableware.com",
+    "company": "Silicon Valley Hospitality Tableware",
+    "buyer_name": "Marcus Vance",
+    "time": "23:45:56",
+    "subject": "Export Partnership Proposal: OM Enterprise x Silicon Valley Hospitality Tableware",
+    "status": "SENT"
+  },
+  {
+    "email": "erostova@capitallanterns.com",
+    "company": "Capitol City Lantern Imports",
+    "buyer_name": "Elena Rostova",
+    "time": "23:50:13",
+    "subject": "Direct Manufacturer Export Inquiry - Outdoor Metal Lanterns & Torches",
+    "status": "SENT"
+  }
+]

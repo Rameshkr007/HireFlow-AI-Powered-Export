@@ -326,6 +326,28 @@ def process_campaign(db: Session, campaign_id: int, user_id: int):
             )
             db.add(log)
 
+        # Permanently record log to disk so it survives restarts, logouts and refreshes
+        try:
+            from ..services.email_log_store import append_persistent_email_log
+            append_persistent_email_log({
+                "email_address": buyer.email,
+                "buyer_email": buyer.email,
+                "company_name": buyer.company_name or "",
+                "buyer_name": buyer.buyer_name or "",
+                "city": getattr(buyer, "city", "") or "",
+                "state": getattr(buyer, "state", "CA") or "CA",
+                "country": getattr(buyer, "country", "USA") or "USA",
+                "product": getattr(buyer, "product", "") or "",
+                "subject": personalized_subject,
+                "personalized_body": personalized_body,
+                "status": status,
+                "error_message": error,
+                "sent_at": datetime.now().isoformat() if status == 'SENT' else None,
+                "created_at": datetime.now().isoformat()
+            })
+        except Exception as e:
+            print(f"[CAMPAIGN_WORKER] Warning: failed to save persistent email log: {e}")
+
         # Update campaign counts
         campaign.sent_count = sent
         campaign.failed_count = failed

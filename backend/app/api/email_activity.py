@@ -235,6 +235,8 @@ def get_day_wise_activity(
             "avg_per_day": round(total_emails_sent_all / len(days_result), 1) if days_result else 0
         },
         "days": days_result
+    }
+
 @router.post("/sync")
 def sync_browser_activity(
     payload: Dict[str, Any],

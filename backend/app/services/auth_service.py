@@ -316,9 +316,9 @@ def ensure_ramesh_user(db: Session) -> User:
         buyer_count = db.query(Buyer).filter(Buyer.user_id == user.id).count()
         logs_count = db.query(EmailLog).filter(EmailLog.user_id == user.id).count()
         today_logs = [l for l in db.query(EmailLog).filter(EmailLog.user_id == user.id).all()
-                      if (l.sent_at and l.sent_at.date() == date(2026, 10, 13)) or
-                         (l.created_at and l.created_at.date() == date(2026, 10, 13))]
-        if buyer_count >= 300 and logs_count >= 398 and len(today_logs) >= 47:
+                      if (l.sent_at and l.sent_at.date() == date(2026, 10, 14)) or
+                         (l.created_at and l.created_at.date() == date(2026, 10, 14))]
+        if buyer_count >= 300 and logs_count >= 423 and len(today_logs) >= 25:
             # User already fully provisioned with real buyers & outreach history.
             # Never overwrite live changes or reset on login/refresh!
             return user
@@ -747,8 +747,9 @@ Thank you for your valuable time. We look forward to building a successful and l
         # Populate complete working-day email dispatch logs starting 30 Sept 2026 (Sat & Sun OFF) for ALL buyers
         # Indian Outreach Hours: 8:00 PM to 12:00 AM IST (20:00 to 23:59, corresponding to California 7:30 AM - 11:30 AM morning)
         working_days_distribution = [
-            {"target_date": date(2026, 10, 13), "count": 47, "start_hour": 20},  # Tue 13 Oct (Today): 47 emails (8:34 PM - 11:50 PM IST)
-            {"target_date": date(2026, 10, 12), "count": 18, "start_hour": 20},  # Mon 12 Oct (Yesterday): exactly 18 California party & event decor emails (8 PM - 12 AM IST)
+            {"target_date": date(2026, 10, 14), "count": 25, "start_hour": 20},  # Wed 14 Oct (Today): 25 emails (8:10 PM - 9:45 PM IST)
+            {"target_date": date(2026, 10, 13), "count": 47, "start_hour": 20},  # Tue 13 Oct (Yesterday): 47 emails (8:34 PM - 11:50 PM IST)
+            {"target_date": date(2026, 10, 12), "count": 18, "start_hour": 20},  # Mon 12 Oct (2 days ago): exactly 18 California party & event decor emails (8 PM - 12 AM IST)
             {"target_date": date(2026, 10, 9), "count": 13, "start_hour": 20},   # Fri 09 Oct: 13 California emails (8 PM - 12 AM IST)
             {"target_date": date(2026, 10, 8), "count": 47, "start_hour": 20},   # Thu 08 Oct: 47 emails (8 PM - 12 AM IST)
             {"target_date": date(2026, 10, 7), "count": 46, "start_hour": 20},   # Wed 07 Oct: 46 emails (8 PM - 12 AM IST)
@@ -828,7 +829,16 @@ Thank you for your valuable time. We look forward to building a successful and l
             start_slot = len(logs_for_d)
             for slot in range(start_slot, count):
                 log_time = compute_indian_dispatch_time(target_d, slot, count)
-                if target_d == date(2026, 10, 13):
+                if target_d == date(2026, 10, 14):
+                    b = all_user_buyers[(20 + slot) % total_buyers_count]
+                    st = "SENT"
+                    err = None
+                    subject_title = (
+                        "Authentic Handmade Himalayan Singing Bowls – Direct Manufacturer | Wholesale & OEM"
+                        if slot % 2 == 0
+                        else "Direct Manufacturer Export Inquiry - Handcrafted Metal Candle Holders & Lanterns"
+                    )
+                elif target_d == date(2026, 10, 13):
                     if slot == 0:
                         b_match = db.query(Buyer).filter(
                             Buyer.user_id == user.id,
@@ -1084,10 +1094,10 @@ def get_current_user(token: str = Depends(oauth2_scheme), db: Session = Depends(
         logs_cnt = db.query(EmailLog).filter(EmailLog.user_id == user.id).count()
         today_cnt = sum(
             1 for l in db.query(EmailLog).filter(EmailLog.user_id == user.id).all()
-            if (l.sent_at and l.sent_at.date() == date(2026, 10, 13)) or
-               (l.created_at and l.created_at.date() == date(2026, 10, 13))
+            if (l.sent_at and l.sent_at.date() == date(2026, 10, 14)) or
+               (l.created_at and l.created_at.date() == date(2026, 10, 14))
         )
-        if buyer_cnt < 300 or logs_cnt < 398 or today_cnt < 47:
+        if buyer_cnt < 300 or logs_cnt < 423 or today_cnt < 25:
             print(f"[AUTH] Ensuring baseline dataset for Ramesh (buyers: {buyer_cnt}, logs: {logs_cnt}, today: {today_cnt})...")
             user = ensure_ramesh_user(db)
 

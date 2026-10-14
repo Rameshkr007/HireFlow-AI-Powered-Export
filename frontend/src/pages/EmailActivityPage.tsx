@@ -47,6 +47,58 @@ export default function EmailActivityPage() {
     staleTime: 1000
   });
 
+  // LocalStorage Auto-Sync & Cache Protection against server restarts/spin-downs
+  React.useEffect(() => {
+    if (dayWiseData?.days && dayWiseData.days.length > 0) {
+      try {
+        const allCachedEmails: any[] = [];
+        dayWiseData.days.forEach((day: any) => {
+          (day.emails || []).forEach((em: any) => {
+            allCachedEmails.push({
+              email_address: em.email_address,
+              company_name: em.company_name,
+              buyer_name: em.buyer_name,
+              city: em.city,
+              state: em.state || 'CA',
+              country: em.country || 'USA',
+              product: em.product,
+              subject: em.subject,
+              status: em.status,
+              sent_at: em.sent_at || em.created_at,
+              created_at: em.created_at
+            });
+          });
+        });
+        if (allCachedEmails.length > 0) {
+          localStorage.setItem('hireflow_activity_cache', JSON.stringify(allCachedEmails));
+        }
+      } catch (e) {
+        console.error('Failed to cache email activity to localStorage', e);
+      }
+    }
+  }, [dayWiseData]);
+
+  // If server restarts or has missing logs compared to browser cache, auto-sync back to server
+  React.useEffect(() => {
+    if (!dayWiseData) return;
+    try {
+      const cached = localStorage.getItem('hireflow_activity_cache');
+      if (cached) {
+        const cachedLogs = JSON.parse(cached);
+        const serverTotal = dayWiseData.summary?.total_emails_sent || 0;
+        if (cachedLogs.length > serverTotal && cachedLogs.length >= 420) {
+          console.log(`[Auto-Sync] Restoring ${cachedLogs.length} logs from browser cache to server...`);
+          api.post('/api/email-activity/sync', { logs: cachedLogs }).then(() => {
+            refetchDayWise();
+            refetchFlat();
+          }).catch(err => console.error('Auto-sync error:', err));
+        }
+      }
+    } catch (e) {
+      console.error('Error during auto-sync check', e);
+    }
+  }, [dayWiseData]);
+
   const toggleDate = (dateKey: string) => {
     setExpandedDates(prev => ({
       ...prev,

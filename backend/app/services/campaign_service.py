@@ -133,7 +133,12 @@ def get_campaign_eligible_buyers(db: Session, campaign: Campaign):
             
     # Smart audience matching
     if campaign.target_audience and campaign.target_audience.lower() not in ["all", "any", "all commercial prospects"]:
-        query = query.filter(Buyer.business_type.ilike(f"%{campaign.target_audience}%"))
+        import re
+        parts = [p.strip() for p in re.split(r'[,&/|]|\band\b', campaign.target_audience, flags=re.IGNORECASE) if p.strip()]
+        if len(parts) > 1:
+            query = query.filter(or_(*[Buyer.business_type.ilike(f"%{p}%") for p in parts]))
+        elif parts:
+            query = query.filter(Buyer.business_type.ilike(f"%{parts[0]}%"))
         
     buyers = query.filter(Buyer.email_status != 'INVALID').limit(campaign.sending_limit).all()
     return buyers

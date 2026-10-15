@@ -346,15 +346,16 @@ def ensure_ramesh_user(db: Session) -> User:
             company_email="exportindia2026us@gmail.com",
             phone="+91 80577 10065",
             website="",
-            country="India",
-            address="Moradabad, Uttar Pradesh, India",
+            country="Nepal",
+            address="Kathmandu, Nepal",
             product_categories=[
                 "Handmade Himalayan Singing Bowls",
-                "Metal Candle Holders & Lanterns",
-                "Candelabras & Centerpieces",
-                "Handicrafts & Decor"
+                "Full Moon Healing Singing Bowls",
+                "7-Chakra Tuned Singing Bowl Sets",
+                "Tibetan Tingsha Cymbals & Gongs",
+                "Metal Candle Holders & Lanterns"
             ],
-            company_description="Direct manufacturer and exporter of authentic handmade Himalayan Singing Bowls, Full Moon Singing Bowls, and handcrafted metal candle holders, candelabras, and lanterns.",
+            company_description="Direct manufacturer and exporter based in Nepal of authentic handmade Himalayan Singing Bowls, Full Moon Healing Sets, 7-Chakra tuned sets, and handcrafted Tibetan sound healing instruments.",
             sender_name="Ramesh Kumar Thakur"
         )
         db.add(profile)
@@ -364,7 +365,9 @@ def ensure_ramesh_user(db: Session) -> User:
         profile.company_name = "OM Enterprise"
         profile.company_email = "exportindia2026us@gmail.com"
         profile.phone = "+91 80577 10065"
-        profile.website = ""
+        profile.country = "Nepal"
+        profile.address = "Kathmandu, Nepal"
+        profile.company_description = "Direct manufacturer and exporter based in Nepal of authentic handmade Himalayan Singing Bowls, Full Moon Healing Sets, 7-Chakra tuned sets, and handcrafted Tibetan sound healing instruments."
         profile.sender_name = "Ramesh Kumar Thakur"
         db.commit()
 
@@ -735,6 +738,88 @@ Thank you for your valuable time. We look forward to building a successful and l
         else:
             assigned_bowl_camp.email_subject = "Authentic Handmade Himalayan Singing Bowls – Direct Manufacturer | Wholesale & OEM"
             assigned_bowl_camp.email_body = assigned_template_body
+            db.commit()
+
+        # Ensure Direct Nepal Manufacturer Sample Outreach Campaign is created
+        nepal_sample_camp = db.query(Campaign).filter(
+            Campaign.user_id == user.id,
+            Campaign.name == "Direct Nepal Manufacturer – Free Sample Outreach 2026"
+        ).first()
+        nepal_sample_body = """Hi {{name}},
+
+While researching leading sound healing & wellness brands in the US, I came across {{company}} and was very impressed by your product curation.
+
+We are a direct manufacturer and exporter based in Nepal, handcrafting authentic Himalayan Singing Bowls (432Hz & 528Hz tuned sets) using traditional 7-metal alloy forging techniques.
+
+Because you are dealing directly with our Nepal workshop, we offer direct factory FOB pricing, custom laser branding, and worldwide door-to-door (DHL/FedEx) logistics.
+
+May I courier a complimentary sample bowl to your office this week for acoustic and quality evaluation?
+
+Warm regards,
+
+Ramesh Kumar Thakur
+Sales Executive | OM Enterprise (Nepal)
+📧 exportindia2026us@gmail.com
+📱 WhatsApp: +91 80577 10065"""
+
+        if not nepal_sample_camp:
+            nepal_sample_camp = Campaign(
+                user_id=user.id,
+                name="Direct Nepal Manufacturer – Free Sample Outreach 2026",
+                product="Authentic Handmade Himalayan Singing Bowls (Direct from Nepal)",
+                target_country="USA - California",
+                target_audience="Importer & Wholesaler",
+                email_subject="Direct Nepal sourcing for {{company}} - Singing Bowls",
+                email_body=nepal_sample_body,
+                sending_limit=50,
+                delay_seconds=5,
+                status="READY",
+                sent_count=0,
+                failed_count=0,
+                skipped_count=0,
+                total_leads=50,
+                is_demo=False
+            )
+            db.add(nepal_sample_camp)
+            db.commit()
+
+        # Ensure Direct Nepal Follow-up Campaign is created
+        nepal_followup_camp = db.query(Campaign).filter(
+            Campaign.user_id == user.id,
+            Campaign.name == "Direct Nepal Follow-up – Free Sample Dispatch"
+        ).first()
+        nepal_followup_body = """Hi {{name}},
+
+Following up on my previous note regarding your product curation at {{company}}.
+
+Would you like me to courier a complimentary sample piece of our authentic Nepal 432Hz Himalayan Singing Bowl to your office for quality evaluation?
+
+Best regards,
+
+Ramesh Kumar Thakur
+Sales Executive | OM Enterprise (Nepal)
+📧 exportindia2026us@gmail.com
+📱 WhatsApp: +91 80577 10065"""
+
+        if not nepal_followup_camp:
+            nepal_followup_camp = Campaign(
+                user_id=user.id,
+                name="Direct Nepal Follow-up – Free Sample Dispatch",
+                product="Authentic Handmade Himalayan Singing Bowls (Direct from Nepal)",
+                target_country="USA - California",
+                target_audience="Importer & Wholesaler",
+                email_subject="Quick follow up regarding complimentary sample for {{company}}",
+                email_body=nepal_followup_body,
+                sending_limit=50,
+                delay_seconds=5,
+                status="READY",
+                sent_count=0,
+                failed_count=0,
+                skipped_count=0,
+                total_leads=50,
+                is_demo=False
+            )
+            db.add(nepal_followup_camp)
             db.commit()
 
         # 1. Restore persistent email logs from disk fallback store (guarantees 100% permanence across Render restarts)

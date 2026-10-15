@@ -18,6 +18,42 @@ interface SequenceStep {
   email_body: string;
 }
 
+export const NEPAL_MANUFACTURER_SAMPLE_TEMPLATE = {
+  subject: "Direct Nepal sourcing for {company_name} - Singing Bowls",
+  body: `Hi {buyer_name},
+
+While researching leading sound healing & wellness brands in the US, I came across {company_name} and was very impressed by your product curation.
+
+We are a direct manufacturer and exporter based in Nepal, handcrafting authentic Himalayan Singing Bowls (432Hz & 528Hz tuned sets) using traditional 7-metal alloy forging techniques.
+
+Because you are dealing directly with our Nepal workshop, we offer direct factory FOB pricing, custom laser branding, and worldwide door-to-door (DHL/FedEx) logistics.
+
+May I courier a complimentary sample bowl to your office this week for acoustic and quality evaluation?
+
+Warm regards,
+
+Ramesh Kumar Thakur
+Sales Executive | OM Enterprise (Nepal)
+📧 exportindia2026us@gmail.com
+📱 WhatsApp: +91 80577 10065`
+};
+
+export const NEPAL_FOLLOWUP_TEMPLATE = {
+  subject: "Quick follow up regarding complimentary sample for {company_name}",
+  body: `Hi {buyer_name},
+
+Following up on my previous note regarding your product curation at {company_name}.
+
+Would you like me to courier a complimentary sample piece of our authentic Nepal 432Hz Himalayan Singing Bowl to your office for quality evaluation?
+
+Best regards,
+
+Ramesh Kumar Thakur
+Sales Executive | OM Enterprise (Nepal)
+📧 exportindia2026us@gmail.com
+📱 WhatsApp: +91 80577 10065`
+};
+
 export const ASSIGNED_SINGING_BOWLS_TEMPLATE = {
   subject: "Authentic Handmade Himalayan Singing Bowls – Direct Manufacturer | Wholesale & OEM",
   body: `Authentic Handmade Himalayan Singing Bowls
@@ -674,6 +710,34 @@ export default function CampaignCreatePage() {
                   type="button"
                   onClick={() => {
                     updateCurrentStep({
+                      email_subject: NEPAL_MANUFACTURER_SAMPLE_TEMPLATE.subject,
+                      email_body: NEPAL_MANUFACTURER_SAMPLE_TEMPLATE.body,
+                    });
+                    showToast('Loaded: Direct Nepal Manufacturer (Free Sample Offer) Template', 'success');
+                  }}
+                  className="text-xs px-2.5 py-1.5 rounded-lg bg-emerald-500/20 text-emerald-300 border border-emerald-500/40 hover:bg-emerald-500/30 font-bold text-left transition-all flex items-center justify-between shadow-sm"
+                >
+                  <span>🇳🇵 Direct Nepal Manufacturer (Free Sample)</span>
+                  <span className="text-[10px] bg-emerald-400 text-dark-950 px-1.5 py-0.5 rounded font-extrabold">HIGH RESPONSE</span>
+                </button>
+                <button
+                  type="button"
+                  onClick={() => {
+                    updateCurrentStep({
+                      email_subject: NEPAL_FOLLOWUP_TEMPLATE.subject,
+                      email_body: NEPAL_FOLLOWUP_TEMPLATE.body,
+                    });
+                    showToast('Loaded: Nepal Quick Follow-up Template', 'success');
+                  }}
+                  className="text-xs px-2.5 py-1.5 rounded-lg bg-sky-500/20 text-sky-300 border border-sky-500/40 hover:bg-sky-500/30 font-bold text-left transition-all flex items-center justify-between shadow-sm"
+                >
+                  <span>🔄 Nepal Quick Follow-up (Reply for Sample)</span>
+                  <span className="text-[10px] bg-sky-400 text-dark-950 px-1.5 py-0.5 rounded font-extrabold">FOLLOW-UP</span>
+                </button>
+                <button
+                  type="button"
+                  onClick={() => {
+                    updateCurrentStep({
                       email_subject: ASSIGNED_SINGING_BOWLS_TEMPLATE.subject,
                       email_body: ASSIGNED_SINGING_BOWLS_TEMPLATE.body,
                     });
@@ -880,6 +944,32 @@ export default function CampaignCreatePage() {
                   <span className="text-[10px] text-dark-400">Click to fill subject & body</span>
                 </div>
                 <div className="flex flex-wrap gap-2">
+                  <button
+                    type="button"
+                    onClick={() => {
+                      updateCurrentStep({
+                        email_subject: NEPAL_MANUFACTURER_SAMPLE_TEMPLATE.subject,
+                        email_body: NEPAL_MANUFACTURER_SAMPLE_TEMPLATE.body,
+                      });
+                      showToast('Loaded Direct Nepal Manufacturer Template!', 'success');
+                    }}
+                    className="btn-secondary text-xs py-1.5 px-3 flex items-center gap-1.5 text-emerald-300 hover:text-emerald-200 border-emerald-500/40 bg-emerald-500/10 font-bold"
+                  >
+                    🇳🇵 Nepal Direct Manufacturer
+                  </button>
+                  <button
+                    type="button"
+                    onClick={() => {
+                      updateCurrentStep({
+                        email_subject: NEPAL_FOLLOWUP_TEMPLATE.subject,
+                        email_body: NEPAL_FOLLOWUP_TEMPLATE.body,
+                      });
+                      showToast('Loaded Nepal Follow-up Template!', 'success');
+                    }}
+                    className="btn-secondary text-xs py-1.5 px-3 flex items-center gap-1.5 text-sky-300 hover:text-sky-200 border-sky-500/40 bg-sky-500/10 font-bold"
+                  >
+                    🔄 Nepal Quick Follow-up
+                  </button>
                   <button
                     type="button"
                     onClick={() => {

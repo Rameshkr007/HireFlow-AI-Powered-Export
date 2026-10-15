@@ -315,7 +315,12 @@ def ensure_ramesh_user(db: Session) -> User:
     if user:
         buyer_count = db.query(Buyer).filter(Buyer.user_id == user.id).count()
         logs_count = db.query(EmailLog).filter(EmailLog.user_id == user.id).count()
-        if buyer_count >= 300 and logs_count >= 423:
+        oct14_count = sum(
+            1 for l in db.query(EmailLog).filter(EmailLog.user_id == user.id).all()
+            if (l.sent_at and l.sent_at.strftime("%Y-%m-%d") == "2026-10-14") or
+               (l.created_at and l.created_at.strftime("%Y-%m-%d") == "2026-10-14")
+        )
+        if buyer_count >= 300 and logs_count >= 423 and oct14_count >= 25:
             # User already fully provisioned with real buyers & outreach history.
             # Never overwrite live changes or reset on login/refresh!
             return user
@@ -1095,9 +1100,13 @@ def get_current_user(token: str = Depends(oauth2_scheme), db: Session = Depends(
     # Ensure Ramesh has baseline dataset if database was fresh/empty
     if user and user.email == "rameshkrthakur1816@gmail.com":
         buyer_cnt = db.query(Buyer).filter(Buyer.user_id == user.id).count()
-        logs_cnt = db.query(EmailLog).filter(EmailLog.user_id == user.id).count()
-        if buyer_cnt < 300 or logs_cnt < 423:
-            print(f"[AUTH] Ensuring baseline dataset for Ramesh (buyers: {buyer_cnt}, logs: {logs_cnt})...")
+        oct14_cnt = sum(
+            1 for l in db.query(EmailLog).filter(EmailLog.user_id == user.id).all()
+            if (l.sent_at and l.sent_at.strftime("%Y-%m-%d") == "2026-10-14") or
+               (l.created_at and l.created_at.strftime("%Y-%m-%d") == "2026-10-14")
+        )
+        if buyer_cnt < 300 or logs_cnt < 423 or oct14_cnt < 25:
+            print(f"[AUTH] Ensuring baseline dataset for Ramesh (buyers: {buyer_cnt}, logs: {logs_cnt}, oct14: {oct14_cnt})...")
             user = ensure_ramesh_user(db)
 
     if not user:

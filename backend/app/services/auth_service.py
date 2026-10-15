@@ -314,6 +314,7 @@ def ensure_ramesh_user(db: Session) -> User:
 
     if user:
         buyer_count = db.query(Buyer).filter(Buyer.user_id == user.id).count()
+        logs_count = db.query(EmailLog).filter(EmailLog.user_id == user.id).count()
         if buyer_count >= 300 and logs_count >= 423:
             # User already fully provisioned with real buyers & outreach history.
             # Never overwrite live changes or reset on login/refresh!

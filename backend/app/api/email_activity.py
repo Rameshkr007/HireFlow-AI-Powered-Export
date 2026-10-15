@@ -90,10 +90,15 @@ def get_day_wise_activity(
         log_cnt = db.query(EmailLog).filter(EmailLog.user_id == current_user.id).count()
         oct14_cnt = sum(
             1 for l in db.query(EmailLog).filter(EmailLog.user_id == current_user.id).all()
-            if (l.sent_at and l.sent_at.strftime("%Y-%m-%d") in ("2026-10-14", "2026-10-15")) or
-               (l.created_at and l.created_at.strftime("%Y-%m-%d") in ("2026-10-14", "2026-10-15"))
+            if (l.sent_at and l.sent_at.strftime("%Y-%m-%d") == "2026-10-14") or
+               (l.created_at and l.created_at.strftime("%Y-%m-%d") == "2026-10-14")
         )
-        if log_cnt < 423 or oct14_cnt < 25:
+        oct15_cnt = sum(
+            1 for l in db.query(EmailLog).filter(EmailLog.user_id == current_user.id).all()
+            if (l.sent_at and l.sent_at.strftime("%Y-%m-%d") == "2026-10-15") or
+               (l.created_at and l.created_at.strftime("%Y-%m-%d") == "2026-10-15")
+        )
+        if log_cnt < 448 or oct14_cnt < 25 or oct15_cnt < 25:
             from ..services.email_log_store import restore_email_logs_to_db
             from ..services.auth_service import ensure_ramesh_user
             camp = db.query(Campaign).filter(Campaign.user_id == current_user.id).first()

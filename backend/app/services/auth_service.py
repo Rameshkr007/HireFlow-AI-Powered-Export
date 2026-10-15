@@ -320,7 +320,12 @@ def ensure_ramesh_user(db: Session) -> User:
             if (l.sent_at and l.sent_at.strftime("%Y-%m-%d") == "2026-10-14") or
                (l.created_at and l.created_at.strftime("%Y-%m-%d") == "2026-10-14")
         )
-        if buyer_count >= 300 and logs_count >= 423 and oct14_count >= 25:
+        oct15_count = sum(
+            1 for l in db.query(EmailLog).filter(EmailLog.user_id == user.id).all()
+            if (l.sent_at and l.sent_at.strftime("%Y-%m-%d") == "2026-10-15") or
+               (l.created_at and l.created_at.strftime("%Y-%m-%d") == "2026-10-15")
+        )
+        if buyer_count >= 300 and logs_count >= 448 and oct14_count >= 25 and oct15_count >= 25:
             # User already fully provisioned with real buyers & outreach history.
             # Never overwrite live changes or reset on login/refresh!
             return user
@@ -834,8 +839,9 @@ Sales Executive | OM Enterprise (Nepal)
         # Populate complete working-day email dispatch logs starting 30 Sept 2026 (Sat & Sun OFF) for ALL buyers
         # Indian Outreach Hours: 8:00 PM to 12:00 AM IST (20:00 to 23:59, corresponding to California 7:30 AM - 11:30 AM morning)
         working_days_distribution = [
-            {"target_date": date(2026, 10, 14), "count": 25, "start_hour": 20},  # Wed 14 Oct (Today): 25 emails (8:10 PM - 9:45 PM IST)
-            {"target_date": date(2026, 10, 13), "count": 47, "start_hour": 20},  # Tue 13 Oct (Yesterday): 47 emails (8:34 PM - 11:50 PM IST)
+            {"target_date": date(2026, 10, 15), "count": 25, "start_hour": 20},  # Thu 15 Oct (Yesterday): 25 emails (8:05 PM - 9:55 PM IST)
+            {"target_date": date(2026, 10, 14), "count": 25, "start_hour": 20},  # Wed 14 Oct (2 days ago): 25 emails (8:10 PM - 9:45 PM IST)
+            {"target_date": date(2026, 10, 13), "count": 47, "start_hour": 20},  # Tue 13 Oct (3 days ago): 47 emails (8:34 PM - 11:50 PM IST)
             {"target_date": date(2026, 10, 12), "count": 18, "start_hour": 20},  # Mon 12 Oct (2 days ago): exactly 18 California party & event decor emails (8 PM - 12 AM IST)
             {"target_date": date(2026, 10, 9), "count": 13, "start_hour": 20},   # Fri 09 Oct: 13 California emails (8 PM - 12 AM IST)
             {"target_date": date(2026, 10, 8), "count": 47, "start_hour": 20},   # Thu 08 Oct: 47 emails (8 PM - 12 AM IST)
@@ -916,7 +922,23 @@ Sales Executive | OM Enterprise (Nepal)
             start_slot = len(logs_for_d)
             for slot in range(start_slot, count):
                 log_time = compute_indian_dispatch_time(target_d, slot, count)
-                if target_d == date(2026, 10, 14):
+                if target_d == date(2026, 10, 15):
+                    from .ramesh_oct15_emails import EXACT_OCT15_EMAILS
+                    item = EXACT_OCT15_EMAILS[slot % len(EXACT_OCT15_EMAILS)]
+                    em = item["email_address"]
+                    b_match = db.query(Buyer).filter(
+                        Buyer.user_id == user.id,
+                        Buyer.normalized_email == normalize_email(em)
+                    ).first()
+                    b = b_match if b_match else all_user_buyers[(20 + slot) % total_buyers_count]
+                    st = "SENT"
+                    err = None
+                    subject_title = item["subject"]
+                    try:
+                        log_time = datetime.fromisoformat(item["sent_at"])
+                    except Exception:
+                        pass
+                elif target_d == date(2026, 10, 14):
                     from .ramesh_oct14_emails import EXACT_OCT14_EMAILS
                     item = EXACT_OCT14_EMAILS[slot % len(EXACT_OCT14_EMAILS)]
                     em = item["email_address"]

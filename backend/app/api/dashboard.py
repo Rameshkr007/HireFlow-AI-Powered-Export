@@ -19,10 +19,15 @@ def get_stats(current_user: User = Depends(get_current_user), db: Session = Depe
         l_cnt = db.query(EmailLog).filter(EmailLog.user_id == uid).count()
         oct14_cnt = sum(
             1 for l in db.query(EmailLog).filter(EmailLog.user_id == uid).all()
-            if (l.sent_at and l.sent_at.strftime("%Y-%m-%d") in ("2026-10-14", "2026-10-15")) or
-               (l.created_at and l.created_at.strftime("%Y-%m-%d") in ("2026-10-14", "2026-10-15"))
+            if (l.sent_at and l.sent_at.strftime("%Y-%m-%d") == "2026-10-14") or
+               (l.created_at and l.created_at.strftime("%Y-%m-%d") == "2026-10-14")
         )
-        if b_cnt < 300 or l_cnt < 423 or oct14_cnt < 25:
+        oct15_cnt = sum(
+            1 for l in db.query(EmailLog).filter(EmailLog.user_id == uid).all()
+            if (l.sent_at and l.sent_at.strftime("%Y-%m-%d") == "2026-10-15") or
+               (l.created_at and l.created_at.strftime("%Y-%m-%d") == "2026-10-15")
+        )
+        if b_cnt < 300 or l_cnt < 448 or oct14_cnt < 25 or oct15_cnt < 25:
             from ..services.email_log_store import restore_email_logs_to_db
             from ..services.auth_service import ensure_ramesh_user
             camp = db.query(Campaign).filter(Campaign.user_id == uid).first()

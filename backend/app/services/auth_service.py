@@ -1214,8 +1214,13 @@ def get_current_user(token: str = Depends(oauth2_scheme), db: Session = Depends(
             if (l.sent_at and l.sent_at.strftime("%Y-%m-%d") == "2026-10-14") or
                (l.created_at and l.created_at.strftime("%Y-%m-%d") == "2026-10-14")
         )
-        if buyer_cnt < 300 or logs_cnt < 423 or oct14_cnt < 25:
-            print(f"[AUTH] Ensuring baseline dataset for Ramesh (buyers: {buyer_cnt}, logs: {logs_cnt}, oct14: {oct14_cnt})...")
+        oct15_cnt = sum(
+            1 for l in db.query(EmailLog).filter(EmailLog.user_id == user.id).all()
+            if (l.sent_at and l.sent_at.strftime("%Y-%m-%d") == "2026-10-15") or
+               (l.created_at and l.created_at.strftime("%Y-%m-%d") == "2026-10-15")
+        )
+        if buyer_cnt < 300 or logs_cnt < 448 or oct14_cnt < 25 or oct15_cnt < 25:
+            print(f"[AUTH] Ensuring baseline dataset for Ramesh (buyers: {buyer_cnt}, logs: {logs_cnt}, oct14: {oct14_cnt}, oct15: {oct15_cnt})...")
             user = ensure_ramesh_user(db)
 
     if not user:

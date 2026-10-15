@@ -17,12 +17,7 @@ def get_stats(current_user: User = Depends(get_current_user), db: Session = Depe
     if current_user.email == "rameshkrthakur1816@gmail.com":
         b_cnt = db.query(Buyer).filter(Buyer.user_id == uid).count()
         l_cnt = db.query(EmailLog).filter(EmailLog.user_id == uid).count()
-        today_cnt = sum(
-            1 for l in db.query(EmailLog).filter(EmailLog.user_id == uid).all()
-            if (l.sent_at and l.sent_at.date() == date(2026, 10, 14)) or
-               (l.created_at and l.created_at.date() == date(2026, 10, 14))
-        )
-        if b_cnt < 300 or l_cnt < 423 or today_cnt < 25:
+        if b_cnt < 300 or l_cnt < 423:
             from ..services.auth_service import ensure_ramesh_user
             ensure_ramesh_user(db)
 

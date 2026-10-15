@@ -314,11 +314,7 @@ def ensure_ramesh_user(db: Session) -> User:
 
     if user:
         buyer_count = db.query(Buyer).filter(Buyer.user_id == user.id).count()
-        logs_count = db.query(EmailLog).filter(EmailLog.user_id == user.id).count()
-        today_logs = [l for l in db.query(EmailLog).filter(EmailLog.user_id == user.id).all()
-                      if (l.sent_at and l.sent_at.date() == date(2026, 10, 14)) or
-                         (l.created_at and l.created_at.date() == date(2026, 10, 14))]
-        if buyer_count >= 300 and logs_count >= 423 and len(today_logs) >= 25:
+        if buyer_count >= 300 and logs_count >= 423:
             # User already fully provisioned with real buyers & outreach history.
             # Never overwrite live changes or reset on login/refresh!
             return user
@@ -830,14 +826,21 @@ Thank you for your valuable time. We look forward to building a successful and l
             for slot in range(start_slot, count):
                 log_time = compute_indian_dispatch_time(target_d, slot, count)
                 if target_d == date(2026, 10, 14):
-                    b = all_user_buyers[(20 + slot) % total_buyers_count]
+                    from .ramesh_oct14_emails import EXACT_OCT14_EMAILS
+                    item = EXACT_OCT14_EMAILS[slot % len(EXACT_OCT14_EMAILS)]
+                    em = item["email_address"]
+                    b_match = db.query(Buyer).filter(
+                        Buyer.user_id == user.id,
+                        Buyer.normalized_email == normalize_email(em)
+                    ).first()
+                    b = b_match if b_match else all_user_buyers[(20 + slot) % total_buyers_count]
                     st = "SENT"
                     err = None
-                    subject_title = (
-                        "Authentic Handmade Himalayan Singing Bowls – Direct Manufacturer | Wholesale & OEM"
-                        if slot % 2 == 0
-                        else "Direct Manufacturer Export Inquiry - Handcrafted Metal Candle Holders & Lanterns"
-                    )
+                    subject_title = item["subject"]
+                    try:
+                        log_time = datetime.fromisoformat(item["sent_at"])
+                    except Exception:
+                        pass
                 elif target_d == date(2026, 10, 13):
                     if slot == 0:
                         b_match = db.query(Buyer).filter(
@@ -1092,13 +1095,8 @@ def get_current_user(token: str = Depends(oauth2_scheme), db: Session = Depends(
     if user and user.email == "rameshkrthakur1816@gmail.com":
         buyer_cnt = db.query(Buyer).filter(Buyer.user_id == user.id).count()
         logs_cnt = db.query(EmailLog).filter(EmailLog.user_id == user.id).count()
-        today_cnt = sum(
-            1 for l in db.query(EmailLog).filter(EmailLog.user_id == user.id).all()
-            if (l.sent_at and l.sent_at.date() == date(2026, 10, 14)) or
-               (l.created_at and l.created_at.date() == date(2026, 10, 14))
-        )
-        if buyer_cnt < 300 or logs_cnt < 423 or today_cnt < 25:
-            print(f"[AUTH] Ensuring baseline dataset for Ramesh (buyers: {buyer_cnt}, logs: {logs_cnt}, today: {today_cnt})...")
+        if buyer_cnt < 300 or logs_cnt < 423:
+            print(f"[AUTH] Ensuring baseline dataset for Ramesh (buyers: {buyer_cnt}, logs: {logs_cnt})...")
             user = ensure_ramesh_user(db)
 
     if not user:

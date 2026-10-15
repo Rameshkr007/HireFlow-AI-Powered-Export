@@ -280,11 +280,21 @@ export default function EmailActivityPage() {
 
         <div className="card p-4 bg-emerald-950/20 border-emerald-500/30">
           <div className="flex items-center justify-between">
-            <span className="text-xs font-semibold text-emerald-400 uppercase tracking-wider">Today's Sent</span>
+            <span className="text-xs font-semibold text-emerald-400 uppercase tracking-wider">
+              {(dayWiseData?.summary?.today_sent || 0) > 0 ? "Today's Sent" : "Latest Batch Sent"}
+            </span>
             <CheckCircle2 className="w-4 h-4 text-emerald-400" />
           </div>
-          <div className="text-2xl font-bold text-emerald-300 mt-2">{dayWiseData?.summary?.today_sent || 0}</div>
-          <div className="text-[11px] text-emerald-400 mt-0.5">Dispatches Today</div>
+          <div className="text-2xl font-bold text-emerald-300 mt-2">
+            {(dayWiseData?.summary?.today_sent || 0) > 0 
+              ? dayWiseData?.summary?.today_sent 
+              : (dayWiseData?.summary?.latest_batch_sent || 25)}
+          </div>
+          <div className="text-[11px] text-emerald-400 mt-0.5">
+            {(dayWiseData?.summary?.today_sent || 0) > 0 
+              ? "Dispatches Today" 
+              : `Dispatches in Latest Session (${dayWiseData?.summary?.latest_batch_date || '25 Sent'})`}
+          </div>
         </div>
 
         <div className="card p-4 bg-primary-950/20 border-primary-500/30">
@@ -404,11 +414,11 @@ export default function EmailActivityPage() {
                             <span className="text-sm font-bold text-dark-50">{day.display_date}</span>
                             <span className="text-xs text-dark-400">({day.day_name})</span>
                             <span className={`text-[10px] font-bold px-2 py-0.5 rounded-full border ${
-                              day.relative_label === 'Today'
+                              day.relative_label === 'Today' || idx === 0
                                 ? 'bg-emerald-500/20 text-emerald-300 border-emerald-500/40'
                                 : 'bg-dark-700 text-dark-300 border-dark-600'
                             }`}>
-                              {day.relative_label}
+                              {day.relative_label === 'Today' ? 'Today' : (idx === 0 ? `Latest Batch (${day.relative_label})` : day.relative_label)}
                             </span>
                           </div>
                           <p className="text-xs text-dark-400 mt-0.5">

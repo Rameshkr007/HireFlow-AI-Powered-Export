@@ -68,6 +68,7 @@ def restore_email_logs_to_db(db: Session, user_id: int, campaign_id: int) -> int
         dt = el.sent_at or el.created_at
         dt_str = dt.strftime("%Y-%m-%d") if dt else ""
         norm_em = normalize_email(el.email_address or "")
+        existing_keys.add((norm_em, dt_str))
     # Remove any stray demo emails on 2026-10-14 (such as w.bauer@hamburgimport.de)
     for el in existing_logs:
         dt = el.sent_at or el.created_at

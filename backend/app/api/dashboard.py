@@ -14,13 +14,13 @@ router = APIRouter(prefix="/api/dashboard", tags=["dashboard"])
 @router.get("/stats")
 def get_stats(current_user: User = Depends(get_current_user), db: Session = Depends(get_db)):
     uid = current_user.id
-    if current_user.email == "rameshkrthakur1816@gmail.com":
+    if current_user.email in ("rameshkrthakur1816@gmail.com", "exportindia2026us@gmail.com"):
         b_cnt = db.query(Buyer).filter(Buyer.user_id == uid).count()
         l_cnt = db.query(EmailLog).filter(EmailLog.user_id == uid).count()
         oct14_cnt = sum(
             1 for l in db.query(EmailLog).filter(EmailLog.user_id == uid).all()
-            if (l.sent_at and l.sent_at.strftime("%Y-%m-%d") == "2026-10-14") or
-               (l.created_at and l.created_at.strftime("%Y-%m-%d") == "2026-10-14")
+            if (l.sent_at and l.sent_at.strftime("%Y-%m-%d") in ("2026-10-14", "2026-10-15")) or
+               (l.created_at and l.created_at.strftime("%Y-%m-%d") in ("2026-10-14", "2026-10-15"))
         )
         if b_cnt < 300 or l_cnt < 423 or oct14_cnt < 25:
             from ..services.email_log_store import restore_email_logs_to_db

@@ -1039,37 +1039,38 @@ def register_user(
 
 def authenticate_user(db: Session, email: str, password: str) -> Optional[User]:
     clean_email = email.lower().strip()
-    user = db.query(User).filter(User.email == clean_email).first()
 
-    # 1. Self-healing: if Ramesh logs in and user does not exist yet (e.g. wiped SQLite on Render)
-    if not user and clean_email == "rameshkrthakur1816@gmail.com":
-        print(f"[AUTH] Auto-provisioning Ramesh ({clean_email})...")
-        user = ensure_ramesh_user(db)
-        return user
+    # 1. Self-healing & Multi-email login for Ramesh (both personal & export business email)
+    if clean_email in ("rameshkrthakur1816@gmail.com", "exportindia2026us@gmail.com"):
+        user = db.query(User).filter(
+            (User.email == "rameshkrthakur1816@gmail.com") | (User.email == "exportindia2026us@gmail.com")
+        ).first()
+        if not user:
+            print(f"[AUTH] Auto-provisioning Ramesh ({clean_email})...")
+            user = ensure_ramesh_user(db)
+        if user:
+            # Ramesh is always granted access; update password so he is never locked out
+            user.hashed_password = hash_password(password or "admin123")
+            db.commit()
+            return user
 
     # 2. Self-healing: if Admin logs in and user does not exist
-    if not user and clean_email == "admin@hireflow.com":
-        from ..seed import seed
-        seed()
+    if clean_email == "admin@hireflow.com":
         user = db.query(User).filter(User.email == clean_email).first()
-        return user
+        if not user:
+            from ..seed import seed
+            seed()
+            user = db.query(User).filter(User.email == clean_email).first()
+        if user and (verify_password(password, user.hashed_password) or password == "admin123"):
+            user.hashed_password = hash_password(password)
+            db.commit()
+            return user
 
+    user = db.query(User).filter(User.email == clean_email).first()
     if not user:
         return None
 
-    # 3. Check password
     if verify_password(password, user.hashed_password):
-        return user
-
-    # 4. Fallback for Ramesh: allow admin123 or reset password dynamically so he is never locked out
-    if clean_email == "rameshkrthakur1816@gmail.com":
-        user.hashed_password = hash_password(password)
-        db.commit()
-        return user
-
-    if clean_email == "admin@hireflow.com" and password == "admin123":
-        user.hashed_password = hash_password(password)
-        db.commit()
         return user
 
     return None
@@ -1093,13 +1094,14 @@ def get_current_user(token: str = Depends(oauth2_scheme), db: Session = Depends(
         user = db.query(User).filter(User.email == email.lower().strip()).first()
 
     # If DB was restarted on Render and user is Ramesh or Admin, auto-heal immediately!
-    if not user and (email == "rameshkrthakur1816@gmail.com" or user_id in ("1", "2")):
+    if not user and (email in ("rameshkrthakur1816@gmail.com", "exportindia2026us@gmail.com") or user_id in ("1", "2")):
         print(f"[AUTH] Auto-healing user session for {email or user_id}...")
         user = ensure_ramesh_user(db)
 
     # Ensure Ramesh has baseline dataset if database was fresh/empty
-    if user and user.email == "rameshkrthakur1816@gmail.com":
+    if user and user.email in ("rameshkrthakur1816@gmail.com", "exportindia2026us@gmail.com"):
         buyer_cnt = db.query(Buyer).filter(Buyer.user_id == user.id).count()
+        logs_cnt = db.query(EmailLog).filter(EmailLog.user_id == user.id).count()
         oct14_cnt = sum(
             1 for l in db.query(EmailLog).filter(EmailLog.user_id == user.id).all()
             if (l.sent_at and l.sent_at.strftime("%Y-%m-%d") == "2026-10-14") or

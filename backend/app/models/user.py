@@ -19,3 +19,4 @@ class User(Base):
     gmail_connection = relationship("GmailConnection", back_populates="user", uselist=False)
     email_setting = relationship("EmailSetting", back_populates="user", uselist=False)
     attachments = relationship("Attachment", back_populates="user")
+    email_send_logs = relationship("EmailSendLog", back_populates="user")

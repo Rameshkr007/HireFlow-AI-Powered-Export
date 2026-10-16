@@ -47,6 +47,35 @@ def run_schema_migrations(eng):
         "ALTER TABLE email_settings ADD COLUMN IF NOT EXISTS provider VARCHAR;",
         "ALTER TABLE email_settings ADD COLUMN IF NOT EXISTS from_email VARCHAR;",
         "ALTER TABLE attachments ADD COLUMN IF NOT EXISTS file_path VARCHAR;",
+        """CREATE TABLE IF NOT EXISTS email_send_logs (
+            id SERIAL PRIMARY KEY,
+            operation_id VARCHAR(64) UNIQUE NOT NULL,
+            user_id INTEGER NOT NULL,
+            buyer_id INTEGER,
+            campaign_id INTEGER,
+            recipient_email VARCHAR(255) NOT NULL,
+            recipient_name VARCHAR(255),
+            company_name VARCHAR(255),
+            product VARCHAR(255),
+            campaign_name VARCHAR(255),
+            subject TEXT NOT NULL,
+            body_text TEXT,
+            body_html TEXT,
+            attachment_name VARCHAR(255),
+            status VARCHAR(32) NOT NULL DEFAULT 'PENDING',
+            sent_at TIMESTAMP WITH TIME ZONE,
+            gmail_message_id VARCHAR(255),
+            gmail_thread_id VARCHAR(255),
+            sender_account_id VARCHAR(255),
+            sender_email VARCHAR(255),
+            error_message TEXT,
+            retry_count INTEGER DEFAULT 0,
+            is_verified BOOLEAN DEFAULT TRUE,
+            created_at TIMESTAMP WITH TIME ZONE DEFAULT CURRENT_TIMESTAMP NOT NULL,
+            updated_at TIMESTAMP WITH TIME ZONE
+        );""",
+        "CREATE INDEX IF NOT EXISTS idx_send_logs_user_status_date ON email_send_logs (user_id, status, created_at);",
+        "CREATE INDEX IF NOT EXISTS idx_send_logs_user_recipient ON email_send_logs (user_id, recipient_email);"
     ]
     with eng.connect() as conn:
         for stmt in statements:

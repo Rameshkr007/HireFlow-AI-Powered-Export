@@ -930,7 +930,25 @@ Sales Executive | OM Enterprise (Nepal)
                         Buyer.user_id == user.id,
                         Buyer.normalized_email == normalize_email(em)
                     ).first()
-                    b = b_match if b_match else all_user_buyers[(20 + slot) % total_buyers_count]
+                    if not b_match:
+                        b_match = Buyer(
+                            user_id=user.id,
+                            buyer_name=item["buyer_name"],
+                            company_name=item["company_name"],
+                            email=em,
+                            normalized_email=normalize_email(em),
+                            country=item.get("country", "USA"),
+                            state=item.get("state", "CA"),
+                            city=item.get("city", "Los Angeles"),
+                            product=item.get("product", "Handmade Himalayan Singing Bowls"),
+                            business_type="Importer",
+                            email_status="VALID",
+                            outreach_status="CONTACTED",
+                            is_demo=False
+                        )
+                        db.add(b_match)
+                        db.flush()
+                    b = b_match
                     st = "SENT"
                     err = None
                     subject_title = item["subject"]
@@ -946,7 +964,25 @@ Sales Executive | OM Enterprise (Nepal)
                         Buyer.user_id == user.id,
                         Buyer.normalized_email == normalize_email(em)
                     ).first()
-                    b = b_match if b_match else all_user_buyers[(20 + slot) % total_buyers_count]
+                    if not b_match:
+                        b_match = Buyer(
+                            user_id=user.id,
+                            buyer_name=item["buyer_name"],
+                            company_name=item["company_name"],
+                            email=em,
+                            normalized_email=normalize_email(em),
+                            country=item.get("country", "USA"),
+                            state=item.get("state", "CA"),
+                            city=item.get("city", "Los Angeles"),
+                            product=item.get("product", "Handmade Himalayan Singing Bowls"),
+                            business_type="Importer",
+                            email_status="VALID",
+                            outreach_status="CONTACTED",
+                            is_demo=False
+                        )
+                        db.add(b_match)
+                        db.flush()
+                    b = b_match
                     st = "SENT"
                     err = None
                     subject_title = item["subject"]

@@ -78,26 +78,7 @@ export default function EmailActivityPage() {
     }
   }, [dayWiseData]);
 
-  // If server restarts or has missing logs compared to browser cache, auto-sync back to server
-  React.useEffect(() => {
-    if (!dayWiseData) return;
-    try {
-      const cached = localStorage.getItem('hireflow_activity_cache');
-      if (cached) {
-        const cachedLogs = JSON.parse(cached);
-        const serverTotal = dayWiseData.summary?.total_emails_sent || 0;
-        if (cachedLogs.length > serverTotal && cachedLogs.length >= 420) {
-          console.log(`[Auto-Sync] Restoring ${cachedLogs.length} logs from browser cache to server...`);
-          api.post('/api/email-activity/sync', { logs: cachedLogs }).then(() => {
-            refetchDayWise();
-            refetchFlat();
-          }).catch(err => console.error('Auto-sync error:', err));
-        }
-      }
-    } catch (e) {
-      console.error('Error during auto-sync check', e);
-    }
-  }, [dayWiseData]);
+  // Database is the canonical single source of truth - no stale cache auto-syncing
 
   const toggleDate = (dateKey: string) => {
     setExpandedDates(prev => ({

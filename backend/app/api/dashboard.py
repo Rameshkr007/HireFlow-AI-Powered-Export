@@ -11,21 +11,25 @@ from ..models.email_log import EmailLog
 
 router = APIRouter(prefix="/api/dashboard", tags=["dashboard"])
 
+from datetime import datetime, timezone
+from zoneinfo import ZoneInfo
+from ..models.email_send_log import EmailSendLog
+
+INDIA_TZ = ZoneInfo("Asia/Kolkata")
+
 @router.get("/stats")
 def get_stats(current_user: User = Depends(get_current_user), db: Session = Depends(get_db)):
     ramesh = db.query(User).filter(User.email == "rameshkrthakur1816@gmail.com").first()
     uid = ramesh.id if ramesh else current_user.id
 
-    from ..services.email_log_store import fix_october_logs_in_db, restore_email_logs_to_db
-    from ..services.auth_service import ensure_ramesh_user
-
-    fix_october_logs_in_db(db, uid)
-    if current_user.id != uid:
-        fix_october_logs_in_db(db, current_user.id)
-
     b_cnt = db.query(Buyer).filter(Buyer.user_id == uid).count()
+    sl_cnt = db.query(EmailSendLog).filter(EmailSendLog.user_id == uid).count()
     l_cnt = db.query(EmailLog).filter(EmailLog.user_id == uid).count()
-    if b_cnt < 300 or l_cnt < 448:
+
+    # Only restore baseline if completely empty database
+    if b_cnt == 0 and sl_cnt == 0 and l_cnt == 0:
+        from ..services.email_log_store import restore_email_logs_to_db
+        from ..services.auth_service import ensure_ramesh_user
         camp = db.query(Campaign).filter(Campaign.user_id == uid).first()
         camp_id = camp.id if camp else 1
         restore_email_logs_to_db(db, uid, camp_id)
@@ -33,11 +37,38 @@ def get_stats(current_user: User = Depends(get_current_user), db: Session = Depe
 
     buyers = db.query(Buyer).filter(Buyer.user_id == uid).all()
     campaigns = db.query(Campaign).filter(Campaign.user_id == uid).all()
-    logs = db.query(EmailLog).filter(EmailLog.user_id == uid).all()
 
-    emails_sent = sum(1 for l in logs if l.status == 'SENT')
-    emails_failed = sum(1 for l in logs if l.status == 'FAILED')
-    emails_skipped = sum(1 for l in logs if l.status in ['SKIPPED', 'ALREADY_CONTACTED', 'INVALID_EMAIL'])
+    # Source of truth: EmailSendLog primary, fallback to EmailLog
+    send_logs = db.query(EmailSendLog).filter(EmailSendLog.user_id == uid).all()
+    legacy_logs = db.query(EmailLog).filter(EmailLog.user_id == uid).all()
+    active_logs = send_logs if len(send_logs) >= len(legacy_logs) and len(send_logs) > 0 else legacy_logs
+
+    emails_sent = sum(1 for l in active_logs if l.status == 'SENT')
+    emails_failed = sum(1 for l in active_logs if l.status == 'FAILED')
+    emails_skipped = sum(1 for l in active_logs if l.status in ['SKIPPED', 'ALREADY_CONTACTED', 'INVALID_EMAIL', 'UNKNOWN'])
+
+    # Timezone-aware today's sent count in Asia/Kolkata
+    today_date = datetime.now(INDIA_TZ).date()
+    today_sent = 0
+    today_unique_recipients = set()
+    today_unique_companies = set()
+
+    for l in active_logs:
+        if l.status == 'SENT':
+            dt = l.sent_at or l.created_at
+            if dt:
+                if dt.tzinfo is None:
+                    dt_local = dt.replace(tzinfo=timezone.utc).astimezone(INDIA_TZ)
+                else:
+                    dt_local = dt.astimezone(INDIA_TZ)
+                if dt_local.date() == today_date:
+                    today_sent += 1
+                    em = getattr(l, 'recipient_email', None) or getattr(l, 'email_address', None)
+                    if em:
+                        today_unique_recipients.add(em.lower())
+                    comp = getattr(l, 'company_name', None)
+                    if comp:
+                        today_unique_companies.add(comp)
 
     return {
         "total_buyers": len(buyers),
@@ -49,6 +80,9 @@ def get_stats(current_user: User = Depends(get_current_user), db: Session = Depe
         "emails_sent": emails_sent,
         "emails_failed": emails_failed,
         "emails_skipped": emails_skipped,
+        "today_sent": today_sent,
+        "today_unique_recipients": len(today_unique_recipients),
+        "today_unique_companies": len(today_unique_companies),
         "total_campaigns": len(campaigns),
         "active_campaigns": sum(1 for c in campaigns if c.status == 'RUNNING'),
         "completed_campaigns": sum(1 for c in campaigns if c.status == 'COMPLETED'),

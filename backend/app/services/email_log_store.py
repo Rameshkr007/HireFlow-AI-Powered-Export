@@ -185,25 +185,22 @@ def fix_october_logs_in_db(db: Session, user_id: int) -> bool:
         curr_14 = {normalize_email(l.email_address) for l in logs_14}
         curr_15 = {normalize_email(l.email_address) for l in logs_15}
 
-        if curr_14 == expected_14 and curr_15 == expected_15 and len(logs_14) == 25 and len(logs_15) == 25:
-            return False  # Already in perfect sync!
+        if expected_14.issubset(curr_14) and expected_15.issubset(curr_15):
+            return False  # Already contains all baseline records, never delete anything!
 
-        print(f"[EMAIL_LOG_STORE] Fixing October 14/15 logs for user {user_id}...")
+        print(f"[EMAIL_LOG_STORE] Checking October 14/15 logs for user {user_id}...")
         camp = db.query(Campaign).filter(Campaign.user_id == user_id).first()
         camp_id = camp.id if camp else 1
-
-        # Delete existing 14 and 15 logs
-        for l in logs_14 + logs_15:
-            db.delete(l)
-        db.flush()
 
         # Cache buyers
         user_buyers = db.query(Buyer).filter(Buyer.user_id == user_id).all()
         buyers_by_email = {b.normalized_email: b for b in user_buyers if b.normalized_email}
 
-        # Insert 14 Oct
+        # Insert 14 Oct only if missing
         for item in EXACT_OCT14_EMAILS:
             norm_em = normalize_email(item["email_address"])
+            if norm_em in curr_14:
+                continue
             buyer = buyers_by_email.get(norm_em)
             if not buyer:
                 buyer = Buyer(
@@ -246,9 +243,11 @@ def fix_october_logs_in_db(db: Session, user_id: int) -> bool:
             )
             db.add(log)
 
-        # Insert 15 Oct
+        # Insert 15 Oct only if missing
         for item in EXACT_OCT15_EMAILS:
             norm_em = normalize_email(item["email_address"])
+            if norm_em in curr_15:
+                continue
             buyer = buyers_by_email.get(norm_em)
             if not buyer:
                 buyer = Buyer(

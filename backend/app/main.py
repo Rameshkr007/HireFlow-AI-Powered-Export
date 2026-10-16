@@ -4,7 +4,7 @@ from sqlalchemy.orm import Session
 import os
 
 from .database import engine, Base, SessionLocal, get_db
-from .models import User, ExporterProfile, Buyer, Campaign, EmailLog, Attachment, GmailConnection
+from .models import User, ExporterProfile, Buyer, Campaign, EmailLog, EmailSendLog, Attachment, GmailConnection
 from .api import auth, profile, buyers, discovery, campaigns, email_activity, reports, gmail, attachments, dashboard, email_settings
 from .config import settings
 
@@ -134,16 +134,23 @@ def db_diagnostics(db: Session = Depends(get_db)):
     users = db.query(User).all()
     campaigns = db.query(Campaign).all()
     logs = db.query(EmailLog).all()
+    send_logs = db.query(EmailSendLog).all()
     buyers_count = db.query(Buyer).count()
     return {
         "users": [{"id": u.id, "email": u.email} for u in users],
         "campaigns": [{"id": c.id, "user_id": c.user_id, "name": c.name, "sent": c.sent_count, "total": c.total_leads, "status": c.status} for c in campaigns],
         "email_logs_count": len(logs),
+        "email_send_logs_count": len(send_logs),
         "email_logs_summary": {
             "sent": sum(1 for l in logs if l.status == 'SENT'),
             "failed": sum(1 for l in logs if l.status == 'FAILED'),
             "skipped": sum(1 for l in logs if l.status in ['SKIPPED', 'ALREADY_CONTACTED', 'INVALID_EMAIL']),
             "by_user": {str(uid): sum(1 for l in logs if l.user_id == uid) for uid in set(l.user_id for l in logs)}
+        },
+        "email_send_logs_summary": {
+            "sent": sum(1 for sl in send_logs if sl.status == 'SENT'),
+            "failed": sum(1 for sl in send_logs if sl.status == 'FAILED'),
+            "pending": sum(1 for sl in send_logs if sl.status == 'PENDING')
         },
         "total_buyers": buyers_count
     }

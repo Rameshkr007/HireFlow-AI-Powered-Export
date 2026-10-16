@@ -32,3 +32,4 @@ class Campaign(Base):
     user = relationship("User", back_populates="campaigns")
     attachment = relationship("Attachment", foreign_keys=[attachment_id])
     email_logs = relationship("EmailLog", back_populates="campaign")
+    email_send_logs = relationship("EmailSendLog", back_populates="campaign")

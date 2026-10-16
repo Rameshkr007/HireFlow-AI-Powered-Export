@@ -1,13 +1,17 @@
 import time
 import random
 import re
+import os
+import uuid
 from datetime import datetime
 from sqlalchemy.orm import Session
 from ..models.campaign import Campaign
 from ..models.buyer import Buyer
 from ..models.email_log import EmailLog
+from ..models.email_send_log import EmailSendLog
 from ..services.email_validation_service import validate_email_address
 from ..services.email_service import send_real_email_for_campaign
+from ..services.email_ledger_service import record_and_dispatch_email
 
 DEMO_ERRORS = [
     "Temporary delivery failure",
@@ -20,9 +24,17 @@ def check_already_contacted(db: Session, campaign_id: int, buyer_email: str) -> 
     """Check if buyer email was already contacted (SENT) in this campaign."""
     if not buyer_email:
         return False
+    clean_em = buyer_email.lower().strip()
+    sl = db.query(EmailSendLog).filter(
+        EmailSendLog.campaign_id == campaign_id,
+        EmailSendLog.recipient_email == clean_em,
+        EmailSendLog.status == 'SENT'
+    ).first()
+    if sl:
+        return True
     existing = db.query(EmailLog).filter(
         EmailLog.campaign_id == campaign_id,
-        EmailLog.email_address == buyer_email.lower().strip(),
+        EmailLog.email_address == clean_em,
         EmailLog.status == 'SENT'
     ).first()
     return existing is not None
@@ -177,7 +189,8 @@ def process_campaign(db: Session, campaign_id: int, user_id: int):
     # Get eligible buyers with smart US matching and quota fallback
     buyers = get_campaign_eligible_buyers(db, campaign)
 
-    # Resolve attachment names for logging
+    # Resolve attachment files & names for dispatching & logging
+    attachment_list = []
     att_names = []
     target_ids = []
     if getattr(campaign, "attachment_ids", None):
@@ -186,8 +199,16 @@ def process_campaign(db: Session, campaign_id: int, user_id: int):
         target_ids.append(campaign.attachment_id)
     if target_ids:
         atts = db.query(Attachment).filter(Attachment.id.in_(target_ids)).all()
+        for att in atts:
+            if att.file_path and os.path.exists(att.file_path):
+                attachment_list.append({
+                    "path": att.file_path,
+                    "name": att.original_name or os.path.basename(att.file_path)
+                })
         att_names = [a.original_name for a in atts if a.original_name]
     attachment_name_str = ", ".join(att_names) if att_names else None
+    first_path = attachment_list[0]["path"] if attachment_list else None
+    first_name = attachment_list[0]["name"] if attachment_list else attachment_name_str
 
     sent = 0
     failed = 0
@@ -258,95 +279,27 @@ def process_campaign(db: Session, campaign_id: int, user_id: int):
         personalized_subject = personalize_email_simple(campaign.email_subject or "Export Partnership Opportunity", buyer, campaign.product or "", profile=profile, user_email=user_email_str)
         personalized_body = personalize_email_simple(campaign.email_body or "", buyer, campaign.product or "", profile=profile, user_email=user_email_str)
 
-        # 5. Send (demo or real)
-        if campaign.is_demo:
-            # Demo mode: simulate realistic results
-            rand = random.random()
-            if rand < 0.82:
-                status = 'SENT'
-                error = None
-                sent += 1
-                # Update buyer status
-                buyer.outreach_status = 'CONTACTED'
-                buyer.last_contacted = datetime.now()
-            elif rand < 0.93:
-                status = 'FAILED'
-                error = random.choice(DEMO_ERRORS)
-                failed += 1
-            else:
-                status = 'SKIPPED'
-                error = 'Skipped by campaign filter rules'
-                skipped += 1
+        # 5. Canonical Database Ledger Send & Dispatch
+        op_id = f"op_camp_{campaign_id}_{buyer.id}_{uuid.uuid4().hex[:12]}"
+        send_log, send_success, send_err = record_and_dispatch_email(
+            db=db,
+            user_id=user_id,
+            recipient_email=buyer.email,
+            subject=personalized_subject,
+            body_text=personalized_body,
+            buyer_id=buyer.id,
+            campaign_id=campaign_id,
+            operation_id=op_id,
+            attachment_name=first_name,
+            attachment_path=first_path,
+            attachment_list=attachment_list,
+            is_demo=campaign.is_demo
+        )
 
-            log = EmailLog(
-                campaign_id=campaign_id,
-                buyer_id=buyer.id,
-                user_id=user_id,
-                email_address=buyer.email,
-                subject=personalized_subject,
-                personalized_body=personalized_body,
-                status=status,
-                error_message=error,
-                attachment_name=attachment_name_str,
-                sent_at=datetime.now() if status == 'SENT' else None
-            )
-            db.add(log)
+        if send_success:
+            sent += 1
         else:
-            # Real mode: Dispatch email via SMTP / Gmail App Password
-            success, err_msg = send_real_email_for_campaign(
-                campaign=campaign,
-                buyer=buyer,
-                user_id=user_id,
-                personalized_body=personalized_body,
-                db=db,
-                personalized_subject=personalized_subject
-            )
-            if success:
-                status = 'SENT'
-                error = None
-                sent += 1
-                buyer.outreach_status = 'CONTACTED'
-                buyer.last_contacted = datetime.now()
-            else:
-                status = 'FAILED'
-                error = err_msg
-                failed += 1
-
-            log = EmailLog(
-                campaign_id=campaign_id,
-                buyer_id=buyer.id,
-                user_id=user_id,
-                email_address=buyer.email,
-                subject=personalized_subject,
-                personalized_body=personalized_body,
-                status=status,
-                error_message=error,
-                attachment_name=attachment_name_str,
-                sent_at=datetime.now() if status == 'SENT' else None
-            )
-            db.add(log)
-
-        # Permanently record log to disk so it survives restarts, logouts and refreshes
-        try:
-            from ..services.email_log_store import append_persistent_email_log
-            append_persistent_email_log({
-                "email_address": buyer.email,
-                "buyer_email": buyer.email,
-                "company_name": buyer.company_name or "",
-                "buyer_name": buyer.buyer_name or "",
-                "city": getattr(buyer, "city", "") or "",
-                "state": getattr(buyer, "state", "CA") or "CA",
-                "country": getattr(buyer, "country", "USA") or "USA",
-                "product": getattr(buyer, "product", "") or "",
-                "subject": personalized_subject,
-                "personalized_body": personalized_body,
-                "status": status,
-                "error_message": error,
-                "sent_at": datetime.now().isoformat() if status == 'SENT' else None,
-                "created_at": datetime.now().isoformat()
-            })
-        except Exception as e:
-            print(f"[CAMPAIGN_WORKER] Warning: failed to save persistent email log: {e}")
+            failed += 1
 
         # Update campaign counts
         campaign.sent_count = sent

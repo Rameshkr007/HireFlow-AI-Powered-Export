@@ -44,3 +44,4 @@ class Buyer(Base):
     
     user = relationship("User", back_populates="buyers")
     email_logs = relationship("EmailLog", back_populates="buyer")
+    email_send_logs = relationship("EmailSendLog", back_populates="buyer")

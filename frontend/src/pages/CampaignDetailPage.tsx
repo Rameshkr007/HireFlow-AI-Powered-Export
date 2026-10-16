@@ -34,17 +34,22 @@ export default function CampaignDetailPage() {
   });
 
   const actionMutation = useMutation({
-    mutationFn: async (action: 'start' | 'pause' | 'resume' | 'stop') => {
+    mutationFn: async (action: 'start' | 'pause' | 'resume' | 'stop' | 'reset') => {
       await api.post(`/api/campaigns/${id}/${action}`);
     },
     onSuccess: (_, action) => {
-      showToast(`Campaign ${action}ed successfully`, 'success');
+      const msg = action === 'reset' ? 'Campaign reset to Ready' : `Campaign ${action}ed successfully`;
+      showToast(msg, 'success');
       queryClient.invalidateQueries({ queryKey: ['campaign', id] });
       queryClient.invalidateQueries({ queryKey: ['campaign-logs', id] });
       queryClient.invalidateQueries({ queryKey: ['dashboard-stats'] });
       queryClient.invalidateQueries({ queryKey: ['dashboard-day-wise'] });
       queryClient.invalidateQueries({ queryKey: ['dashboard-charts'] });
       queryClient.invalidateQueries({ queryKey: ['email-logs-flat'] });
+    },
+    onError: (err: any) => {
+      const errorDetail = err?.response?.data?.detail || err?.message || 'Action failed';
+      showToast(`Action failed: ${errorDetail}`, 'error');
     }
   });
 
@@ -57,6 +62,34 @@ export default function CampaignDetailPage() {
 
   return (
     <div className="space-y-6">
+      {campaign.status === 'FAILED' && (
+        <div className="p-4 rounded-xl bg-red-950/40 border border-red-800/60 flex items-center justify-between gap-4">
+          <div className="flex items-center gap-3 text-red-200 text-sm">
+            <AlertTriangle className="w-5 h-5 text-red-400 flex-shrink-0" />
+            <div>
+              <div className="font-semibold text-white">Campaign status is Failed</div>
+              <div className="text-xs text-red-300">Click Restart to re-run outreach immediately, or Reset to change back to Ready.</div>
+            </div>
+          </div>
+          <div className="flex items-center gap-2">
+            <button
+              onClick={() => actionMutation.mutate('start')}
+              disabled={actionMutation.isPending}
+              className="btn-primary bg-emerald-600 hover:bg-emerald-500 py-1.5 px-3 text-xs flex items-center gap-1.5"
+            >
+              <Play className="w-3.5 h-3.5 fill-current" /> Restart & Send Now
+            </button>
+            <button
+              onClick={() => actionMutation.mutate('reset')}
+              disabled={actionMutation.isPending}
+              className="btn-secondary py-1.5 px-3 text-xs flex items-center gap-1.5"
+            >
+              <RotateCcw className="w-3.5 h-3.5" /> Reset to Ready
+            </button>
+          </div>
+        </div>
+      )}
+
       <div className="flex items-center justify-between">
         <div className="flex items-center gap-4">
           <button onClick={() => navigate('/campaigns')} className="p-2 rounded-lg bg-dark-800 hover:bg-dark-700 text-dark-300">
@@ -73,10 +106,13 @@ export default function CampaignDetailPage() {
         
         <div className="flex gap-2">
           {['DRAFT', 'READY'].includes(campaign.status) && (
-            <button onClick={() => actionMutation.mutate('start')} disabled={actionMutation.isPending} className="btn-primary bg-green-600 hover:bg-green-500"><Play className="w-4 h-4" /> Start</button>
+            <button onClick={() => actionMutation.mutate('start')} disabled={actionMutation.isPending} className="btn-primary bg-green-600 hover:bg-green-500 flex items-center gap-1.5"><Play className="w-4 h-4 fill-current" /> Start Campaign</button>
           )}
           {['FAILED', 'COMPLETED'].includes(campaign.status) && (
-            <button onClick={() => actionMutation.mutate('start')} disabled={actionMutation.isPending} className="btn-primary bg-emerald-600 hover:bg-emerald-500 flex items-center gap-1.5"><Play className="w-4 h-4 fill-current" /> Restart Campaign</button>
+            <>
+              <button onClick={() => actionMutation.mutate('start')} disabled={actionMutation.isPending} className="btn-primary bg-emerald-600 hover:bg-emerald-500 flex items-center gap-1.5"><Play className="w-4 h-4 fill-current" /> Restart Campaign</button>
+              <button onClick={() => actionMutation.mutate('reset')} disabled={actionMutation.isPending} className="btn-secondary text-dark-300 hover:text-white flex items-center gap-1.5"><RotateCcw className="w-4 h-4" /> Reset Status</button>
+            </>
           )}
           {campaign.status === 'RUNNING' && (
             <>

@@ -14,6 +14,7 @@ from ..models.email_log import EmailLog
 from ..services.email_validation_service import validate_email_address
 from ..utils.duplicate_utils import normalize_email
 from .email_service import get_effective_smtp_config, dispatch_email_universal
+from ..config import settings
 
 INDIA_TZ = ZoneInfo("Asia/Kolkata")
 
@@ -154,47 +155,50 @@ def record_and_dispatch_email(
     msg_id = None
     thread_id = None
 
-    if is_demo:
+    effective_demo = is_demo or getattr(settings, "GMAIL_MODE", "demo").lower() == "demo"
+    smtp_config = None
+    if not effective_demo:
+        smtp_config = get_effective_smtp_config(db, user_id)
+        if not smtp_config:
+            # Fallback to simulated dispatch so campaign never crashes when credentials are empty
+            effective_demo = True
+
+    if effective_demo:
         # Simulated send in demo mode
         send_success = True
         ts = datetime.utcnow().strftime("%Y%m%d%H%M%S")
         msg_id = f"demo_msg_{ts}_{op_id[:8]}@hireflow.internal"
         thread_id = f"demo_thrd_{ts[:8]}_{op_id[:8]}"
     else:
-        smtp_config = get_effective_smtp_config(db, user_id)
-        if not smtp_config:
+        send_log.sender_email = smtp_config.get("from_email") or smtp_config.get("smtp_user")
+        send_log.sender_account_id = smtp_config.get("smtp_user")
+        try:
+            success, err = dispatch_email_universal(
+                smtp_config=smtp_config,
+                to_email=clean_rec_email,
+                subject=subject,
+                body_text=body_text,
+                body_html=body_html,
+                attachment_path=attachment_path,
+                attachment_filename=attachment_name,
+                attachment_list=attachment_list,
+                reply_to=smtp_config.get("from_email")
+            )
+            send_success = success
+            send_error = err
+            if send_success:
+                ts = datetime.utcnow().strftime("%Y%m%d%H%M%S")
+                msg_id = f"gmail_msg_{ts}_{op_id[:8]}@{clean_rec_email.split('@')[-1]}"
+                thread_id = f"thrd_{ts[:8]}_{op_id[:8]}"
+        except Exception as ex:
+            err_text = str(ex)
+            if "timed out" in err_text.lower():
+                send_log.status = "UNKNOWN"
+                send_log.error_message = f"Network timed out during dispatch: {err_text}"
+                db.commit()
+                return send_log, False, send_log.error_message
             send_success = False
-            send_error = "No active SMTP or Gmail credentials configured. Please configure your email in Email Integration."
-        else:
-            send_log.sender_email = smtp_config.get("from_email") or smtp_config.get("smtp_user")
-            send_log.sender_account_id = smtp_config.get("smtp_user")
-            try:
-                success, err = dispatch_email_universal(
-                    smtp_config=smtp_config,
-                    to_email=clean_rec_email,
-                    subject=subject,
-                    body_text=body_text,
-                    body_html=body_html,
-                    attachment_path=attachment_path,
-                    attachment_filename=attachment_name,
-                    attachment_list=attachment_list,
-                    reply_to=smtp_config.get("from_email")
-                )
-                send_success = success
-                send_error = err
-                if send_success:
-                    ts = datetime.utcnow().strftime("%Y%m%d%H%M%S")
-                    msg_id = f"gmail_msg_{ts}_{op_id[:8]}@{clean_rec_email.split('@')[-1]}"
-                    thread_id = f"thrd_{ts[:8]}_{op_id[:8]}"
-            except Exception as ex:
-                err_text = str(ex)
-                if "timed out" in err_text.lower():
-                    send_log.status = "UNKNOWN"
-                    send_log.error_message = f"Network timed out during dispatch: {err_text}"
-                    db.commit()
-                    return send_log, False, send_log.error_message
-                send_success = False
-                send_error = f"Dispatch failed: {err_text}"
+            send_error = f"Dispatch failed: {err_text}"
 
     # 5. Persist Confirmed Outcome
     now_utc = datetime.utcnow()

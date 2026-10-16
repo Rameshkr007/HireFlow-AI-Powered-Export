@@ -93,6 +93,16 @@ def stop_campaign(db: Session, user_id: int, campaign_id: int) -> Campaign:
     db.refresh(campaign)
     return campaign
 
+def reset_campaign(db: Session, user_id: int, campaign_id: int) -> Campaign:
+    campaign = get_campaign(db, user_id, campaign_id)
+    campaign.status = 'READY'
+    campaign.sent_count = 0
+    campaign.failed_count = 0
+    campaign.skipped_count = 0
+    db.commit()
+    db.refresh(campaign)
+    return campaign
+
 def get_campaign_eligible_buyers(db: Session, campaign: Campaign):
     query = db.query(Buyer).filter(Buyer.user_id == campaign.user_id)
     

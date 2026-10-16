@@ -48,6 +48,10 @@ def resume_campaign(campaign_id: int, background_tasks: BackgroundTasks, current
 def stop_campaign(campaign_id: int, current_user: User = Depends(get_current_user), db: Session = Depends(get_db)):
     return campaign_service.stop_campaign(db, current_user.id, campaign_id)
 
+@router.post("/{campaign_id}/reset", response_model=CampaignResponse)
+def reset_campaign(campaign_id: int, current_user: User = Depends(get_current_user), db: Session = Depends(get_db)):
+    return campaign_service.reset_campaign(db, current_user.id, campaign_id)
+
 @router.get("/{campaign_id}/logs")
 def get_campaign_logs(campaign_id: int, current_user: User = Depends(get_current_user), db: Session = Depends(get_db)):
     campaign_service.get_campaign(db, current_user.id, campaign_id)  # auth check

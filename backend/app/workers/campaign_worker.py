@@ -291,25 +291,29 @@ def process_campaign(db: Session, campaign_id: int, user_id: int):
         personalized_body = personalize_email_simple(campaign.email_body or "", buyer, campaign.product or "", profile=profile, user_email=user_email_str)
 
         # 5. Canonical Database Ledger Send & Dispatch
-        op_id = f"op_camp_{campaign_id}_{buyer.id}_{uuid.uuid4().hex[:12]}"
-        send_log, send_success, send_err = record_and_dispatch_email(
-            db=db,
-            user_id=user_id,
-            recipient_email=buyer.email,
-            subject=personalized_subject,
-            body_text=personalized_body,
-            buyer_id=buyer.id,
-            campaign_id=campaign_id,
-            operation_id=op_id,
-            attachment_name=first_name,
-            attachment_path=first_path,
-            attachment_list=attachment_list,
-            is_demo=campaign.is_demo
-        )
+        try:
+            op_id = f"op_camp_{campaign_id}_{buyer.id}_{uuid.uuid4().hex[:12]}"
+            send_log, send_success, send_err = record_and_dispatch_email(
+                db=db,
+                user_id=user_id,
+                recipient_email=buyer.email,
+                subject=personalized_subject,
+                body_text=personalized_body,
+                buyer_id=buyer.id,
+                campaign_id=campaign_id,
+                operation_id=op_id,
+                attachment_name=first_name,
+                attachment_path=first_path,
+                attachment_list=attachment_list,
+                is_demo=campaign.is_demo
+            )
 
-        if send_success:
-            sent += 1
-        else:
+            if send_success:
+                sent += 1
+            else:
+                failed += 1
+        except Exception as dispatch_exc:
+            print(f"[CAMPAIGN DISPATCH ERROR] Error dispatching to buyer {buyer.id} ({buyer.email}): {dispatch_exc}")
             failed += 1
 
         # Update campaign counts

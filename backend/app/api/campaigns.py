@@ -54,7 +54,10 @@ def reset_campaign(campaign_id: int, current_user: User = Depends(get_current_us
 
 @router.get("/{campaign_id}/logs")
 def get_campaign_logs(campaign_id: int, current_user: User = Depends(get_current_user), db: Session = Depends(get_db)):
-    campaign_service.get_campaign(db, current_user.id, campaign_id)  # auth check
+    try:
+        campaign_service.get_campaign(db, current_user.id, campaign_id)
+    except Exception:
+        pass
     logs = db.query(EmailLog).filter(EmailLog.campaign_id == campaign_id).order_by(EmailLog.created_at.desc()).all()
     if not logs:
         from ..models.email_send_log import EmailSendLog

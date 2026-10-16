@@ -21,7 +21,7 @@ export default function CampaignDetailPage() {
       const res = await api.get(`/api/campaigns/${id}`);
       return res.data;
     },
-    refetchInterval: (query) => query.state.data?.status === 'RUNNING' ? 3000 : false
+    refetchInterval: (query: any) => query.state.data?.status === 'RUNNING' ? 2000 : false
   });
 
   const { data: logs, isLoading: logsLoading } = useQuery<EmailLog[]>({
@@ -30,7 +30,7 @@ export default function CampaignDetailPage() {
       const res = await api.get(`/api/campaigns/${id}/logs`);
       return res.data;
     },
-    refetchInterval: () => campaign?.status === 'RUNNING' ? 3000 : false
+    refetchInterval: () => campaign?.status === 'RUNNING' ? 2000 : false
   });
 
   const actionMutation = useMutation({

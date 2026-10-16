@@ -404,12 +404,12 @@ def send_smtp_email(
             with force_ipv4():
                 if is_ssl or port == 465:
                     context = ssl.create_default_context()
-                    server = smtplib.SMTP_SSL(host, port, context=context, timeout=15)
+                    server = smtplib.SMTP_SSL(host, port, context=context, timeout=5)
                     server.login(smtp_user, smtp_pass)
                     server.sendmail(from_email, [to_email], msg.as_string())
                     server.quit()
                 else:
-                    server = smtplib.SMTP(host, port, timeout=15)
+                    server = smtplib.SMTP(host, port, timeout=5)
                     server.ehlo()
                     if is_tls:
                         context = ssl.create_default_context()

@@ -47,15 +47,15 @@ def delete_campaign(db: Session, user_id: int, campaign_id: int):
 
 def start_campaign(db: Session, user_id: int, campaign_id: int, background_tasks: BackgroundTasks) -> Campaign:
     campaign = get_campaign(db, user_id, campaign_id)
-    if campaign.status not in ['DRAFT', 'READY', 'PAUSED', 'FAILED', 'COMPLETED']:
+    if campaign.status not in ['DRAFT', 'READY', 'PAUSED', 'FAILED', 'COMPLETED', 'RUNNING']:
         raise HTTPException(status_code=400, detail=f"Cannot start campaign in status: {campaign.status}")
     
     # Get eligible buyers
     buyers = get_campaign_eligible_buyers(db, campaign)
     campaign.total_leads = len(buyers)
+    campaign.failed_count = 0
     if campaign.status in ['FAILED', 'COMPLETED']:
         campaign.sent_count = 0
-        campaign.failed_count = 0
         campaign.skipped_count = 0
     campaign.status = 'RUNNING'
     campaign.started_at = datetime.utcnow()

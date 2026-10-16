@@ -113,6 +113,7 @@ def get_effective_smtp_config(db: Session, user_id: int) -> Optional[Dict[str, A
             "api_key": db_setting.api_key.strip() if db_setting.api_key else None,
             "from_name": db_setting.from_name or "Ramesh Kumar Thakur | OM Enterprise",
             "from_email": db_setting.from_email or (db_setting.smtp_user.strip() if db_setting.smtp_user else "rameshkrthakur1816@gmail.com"),
+            "reply_to": "exportindia2026us@gmail.com",
             "use_tls": db_setting.use_tls if db_setting.use_tls is not None else True,
             "use_ssl": db_setting.use_ssl if db_setting.use_ssl is not None else False,
             "source": "db"
@@ -129,6 +130,7 @@ def get_effective_smtp_config(db: Session, user_id: int) -> Optional[Dict[str, A
             "api_key": None,
             "from_name": settings.SMTP_FROM_NAME or "Ramesh Kumar Thakur | OM Enterprise",
             "from_email": settings.SMTP_FROM_EMAIL or settings.SMTP_USER.strip(),
+            "reply_to": "exportindia2026us@gmail.com",
             "use_tls": settings.SMTP_USE_TLS,
             "use_ssl": settings.SMTP_USE_SSL,
             "source": "env"
@@ -206,21 +208,25 @@ def send_via_brevo_http(
         "accept": "application/json"
     }
     
-    html_body = body_html or format_html_email(body_text, from_name)
     payload: Dict[str, Any] = {
-        "sender": {"name": from_name or "OM Enterprise", "email": from_email},
+        "sender": {"name": from_name or "Ramesh Kumar Thakur | OM Enterprise", "email": from_email or "rameshkrthakur1816@gmail.com"},
         "to": [{"email": to_email}],
         "subject": subject,
         "htmlContent": html_body,
         "textContent": body_text
     }
-    if reply_to:
-        payload["replyTo"] = {"email": reply_to}
+    target_reply_to = (reply_to or "exportindia2026us@gmail.com").strip()
+    payload["replyTo"] = {"email": target_reply_to, "name": "OM Enterprise"}
 
-    # Auto-BCC sender so sent copy is immediately visible in their Gmail inbox
-    bcc_addr = (reply_to or from_email or "").strip()
-    if bcc_addr and "@" in bcc_addr and bcc_addr.lower() != to_email.lower():
-        payload["bcc"] = [{"email": bcc_addr}]
+    # Auto-BCC both sender personal account and company account
+    bcc_list = []
+    for cand in [from_email, target_reply_to, "exportindia2026us@gmail.com", "rameshkrthakur1816@gmail.com"]:
+        if cand and "@" in cand:
+            clean_c = cand.strip().lower()
+            if clean_c != to_email.lower() and clean_c not in [x["email"].lower() for x in bcc_list]:
+                bcc_list.append({"email": clean_c})
+    if bcc_list:
+        payload["bcc"] = bcc_list
 
     # Process multiple attachments
     items = list(attachment_list or [])
@@ -276,21 +282,26 @@ def send_via_resend_http(
         "Content-Type": "application/json"
     }
     
-    sender_str = f"{from_name} <{from_email}>" if from_name else from_email
+    sender_str = f"{from_name} <{from_email or 'rameshkrthakur1816@gmail.com'}>" if from_name else (from_email or 'rameshkrthakur1816@gmail.com')
+    target_reply_to = (reply_to or "exportindia2026us@gmail.com").strip()
     payload: Dict[str, Any] = {
         "from": sender_str,
         "to": [to_email],
         "subject": subject,
         "html": body_html or format_html_email(body_text, from_name),
-        "text": body_text
+        "text": body_text,
+        "reply_to": target_reply_to
     }
-    if reply_to:
-        payload["reply_to"] = reply_to
 
-    # Auto-BCC sender so sent copy is immediately visible in their Gmail inbox
-    bcc_addr = (reply_to or from_email or "").strip()
-    if bcc_addr and "@" in bcc_addr and bcc_addr.lower() != to_email.lower():
-        payload["bcc"] = [bcc_addr]
+    # Auto-BCC both sender personal account and company account
+    bcc_list = []
+    for cand in [from_email, target_reply_to, "exportindia2026us@gmail.com", "rameshkrthakur1816@gmail.com"]:
+        if cand and "@" in cand:
+            clean_c = cand.strip().lower()
+            if clean_c != to_email.lower() and clean_c not in bcc_list:
+                bcc_list.append(clean_c)
+    if bcc_list:
+        payload["bcc"] = bcc_list
 
     # Process multiple attachments
     items = list(attachment_list or [])
@@ -334,21 +345,23 @@ def send_smtp_email(
     body_html: Optional[str] = None,
     attachment_path: Optional[str] = None,
     attachment_filename: Optional[str] = None,
-    attachment_list: Optional[list] = None
+    attachment_list: Optional[list] = None,
+    reply_to: Optional[str] = None
 ) -> Tuple[bool, Optional[str]]:
     """
     Sends an email using standard Python smtplib with TLS/SSL.
     Supports multiple attachments, custom display names, and auto-generated HTML.
     """
     try:
-        from_email = smtp_config["from_email"]
-        from_name = smtp_config.get("from_name", "").strip()
+        from_email = smtp_config.get("from_email") or "rameshkrthakur1816@gmail.com"
+        from_name = smtp_config.get("from_name", "").strip() or "Ramesh Kumar Thakur | OM Enterprise"
         smtp_host = smtp_config["smtp_host"]
         smtp_port = int(smtp_config["smtp_port"])
-        smtp_user = smtp_config["smtp_user"]
+        smtp_user = smtp_config.get("smtp_user") or from_email
         smtp_pass = smtp_config["smtp_password"]
         use_tls = smtp_config.get("use_tls", True)
         use_ssl = smtp_config.get("use_ssl", False)
+        target_reply_to = (reply_to or smtp_config.get("reply_to") or "exportindia2026us@gmail.com").strip()
 
         # Build email message
         msg = MIMEMultipart("mixed")
@@ -359,8 +372,8 @@ def send_smtp_email(
         msg["To"] = to_email
         msg["Subject"] = subject
         msg["Date"] = formatdate(localtime=True)
-        msg["Message-ID"] = make_msgid(domain=from_email.split("@")[-1] if "@" in from_email else "hireflow.com")
-        msg["Reply-To"] = from_email
+        msg["Message-ID"] = make_msgid(domain=from_email.split("@")[-1] if "@" in from_email else "gmail.com")
+        msg["Reply-To"] = f'"OM Enterprise" <{target_reply_to}>'
         msg["X-Priority"] = "3"
         msg["X-MSMail-Priority"] = "Normal"
         msg["Importance"] = "Normal"
@@ -400,13 +413,21 @@ def send_smtp_email(
                 except Exception as att_err:
                     print(f"[HireFlow Email] Warning: Could not attach file {p}: {att_err}")
 
+        # Envelope recipients including dual BCC (for personal & company tracking)
+        envelope_recipients = [to_email]
+        for bcc_addr in [from_email, target_reply_to, "exportindia2026us@gmail.com", "rameshkrthakur1816@gmail.com"]:
+            if bcc_addr and "@" in bcc_addr:
+                clean_b = bcc_addr.strip().lower()
+                if clean_b != to_email.lower() and clean_b not in [r.lower() for r in envelope_recipients]:
+                    envelope_recipients.append(clean_b)
+
         def _dispatch_attempt(host: str, port: int, is_ssl: bool, is_tls: bool):
             with force_ipv4():
                 if is_ssl or port == 465:
                     context = ssl.create_default_context()
                     server = smtplib.SMTP_SSL(host, port, context=context, timeout=5)
                     server.login(smtp_user, smtp_pass)
-                    server.sendmail(from_email, [to_email], msg.as_string())
+                    server.sendmail(from_email, envelope_recipients, msg.as_string())
                     server.quit()
                 else:
                     server = smtplib.SMTP(host, port, timeout=5)
@@ -416,7 +437,7 @@ def send_smtp_email(
                         server.starttls(context=context)
                         server.ehlo()
                     server.login(smtp_user, smtp_pass)
-                    server.sendmail(from_email, [to_email], msg.as_string())
+                    server.sendmail(from_email, envelope_recipients, msg.as_string())
                     server.quit()
 
         # Try primary configured port with IPv4 forced (avoids [Errno 101] Network is unreachable on Render)
@@ -523,7 +544,8 @@ def dispatch_email_universal(
         body_html=body_html,
         attachment_path=attachment_path,
         attachment_filename=attachment_filename,
-        attachment_list=attachment_list
+        attachment_list=attachment_list,
+        reply_to=reply_to or "exportindia2026us@gmail.com"
     )
 
 def parse_attachment_ids(raw_ids: Any) -> list:

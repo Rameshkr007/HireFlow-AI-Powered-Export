@@ -105,7 +105,8 @@ export default function GmailIntegrationPage() {
       const res = await api.get('/api/email-settings');
       const data: EmailSettings = res.data;
       
-      const defaultPersonal = user?.email || 'rameshkrthakur1816@gmail.com';
+      const defaultPersonal = 'rameshkrthakur1816@gmail.com';
+      const defaultCompany = 'exportindia2026us@gmail.com';
       const hasWorkingCreds = Boolean(data.has_password || data.has_api_key);
 
       setProvider(data.provider || 'brevo');
@@ -113,14 +114,14 @@ export default function GmailIntegrationPage() {
       setSmtpPort(data.smtp_port || 587);
       setSmtpUser(data.smtp_user || defaultPersonal);
       setFromName(data.from_name || 'Ramesh Kumar Thakur | OM Enterprise');
-      setFromEmail(data.from_email || data.smtp_user || defaultPersonal);
+      setFromEmail(data.from_email || defaultCompany);
       setUseTls(data.use_tls ?? true);
       setUseSsl(data.use_ssl ?? false);
       setIsVerified(Boolean(hasWorkingCreds && data.is_verified));
       setHasPassword(Boolean(data.has_password));
       setHasApiKey(Boolean(data.has_api_key));
       setMaskedPassword(hasWorkingCreds ? (data.masked_password || null) : null);
-      setTestEmail(data.from_email || data.smtp_user || defaultPersonal);
+      setTestEmail(data.smtp_user || defaultPersonal);
 
       // Cache locally in browser ONLY if genuine credentials exist
       if (hasWorkingCreds) {
@@ -130,7 +131,7 @@ export default function GmailIntegrationPage() {
           smtp_port: data.smtp_port || 587,
           smtp_user: data.smtp_user || defaultPersonal,
           from_name: data.from_name || 'Ramesh Kumar Thakur | OM Enterprise',
-          from_email: data.from_email || defaultPersonal,
+          from_email: data.from_email || defaultCompany,
           has_password: Boolean(data.has_password),
           has_api_key: Boolean(data.has_api_key),
           is_verified: Boolean(data.is_verified),
@@ -485,17 +486,14 @@ export default function GmailIntegrationPage() {
             </label>
             <input
               type="email"
-              placeholder="e.g. rameshkrthakur1816@gmail.com"
+              placeholder="rameshkrthakur1816@gmail.com"
               value={smtpUser}
-              onChange={(e) => {
-                setSmtpUser(e.target.value);
-                if (!fromEmail) setFromEmail(e.target.value);
-              }}
+              onChange={(e) => setSmtpUser(e.target.value)}
               required
-              className="input-field"
+              className="input-field font-mono"
             />
             <p className="text-[11px] text-dark-400 mt-1">
-              🏢 Official Company Email (<strong className="text-dark-200">exportindia2026us@gmail.com</strong>) sirf email body / signature / description me use hoga.
+              ✉️ Mail dispatch aur BCC confirmation aapke is personal Gmail par deliver hoga.
             </p>
           </div>
         </div>
@@ -537,15 +535,18 @@ export default function GmailIntegrationPage() {
 
           <div>
             <label className="text-xs font-semibold text-dark-300 block mb-1.5">
-              Reply-To Email Address <span className="text-dark-500 font-normal">(where buyer responses arrive)</span>
+              Company Reply-To Email <span className="text-dark-500 font-normal">(Buyer ke replies is company email par aayenge)</span>
             </label>
             <input
               type="email"
-              placeholder={smtpUser || "e.g. exports@himalayanexports.com"}
+              placeholder="exportindia2026us@gmail.com"
               value={fromEmail}
               onChange={(e) => setFromEmail(e.target.value)}
-              className="input-field"
+              className="input-field font-mono"
             />
+            <p className="text-[11px] text-dark-400 mt-1">
+              🏢 OM Enterprise Official Company Email (<strong className="text-dark-200">exportindia2026us@gmail.com</strong>)
+            </p>
           </div>
         </div>
 

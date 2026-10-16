@@ -54,11 +54,11 @@ def personalize_email_simple(template: str, buyer, fallback_product: str = "", p
     city_display = f"{city}, {state}" if city and state else (city or country)
     website = (buyer.website or '').strip()
 
-    # Company & Sender details (Sender uses exportindia2026us@gmail.com as requested by user)
+    # Company & Sender details
     p_sender_name = (getattr(profile, 'sender_name', None) or getattr(profile, 'exporter_name', None) or "Ramesh Kumar Thakur").strip()
     p_company_name = (getattr(profile, 'company_name', None) or "OM Enterprise").strip()
     p_company_email = "exportindia2026us@gmail.com"
-    p_personal_email = "exportindia2026us@gmail.com"
+    p_personal_email = "rameshkrthakur1816@gmail.com"
     p_phone = (getattr(profile, 'phone', None) or "+91 80577 10065").strip()
     p_website = ""  # No company website per user instruction
 
@@ -91,8 +91,9 @@ def personalize_email_simple(template: str, buyer, fallback_product: str = "", p
         ('{{exporter_name}}', p_sender_name),
         ('{{company_name}}', p_company_name),
         ('{{exporter_company}}', p_company_name),
-        ('{{email}}', p_personal_email),
+        ('{{email}}', p_company_email),
         ('{{sender_email}}', p_personal_email),
+        ('{{personal_email}}', p_personal_email),
         ('{{company_email}}', p_company_email),
         ('{{phone}}', p_phone),
         ('{{website}}', p_website),
@@ -129,7 +130,8 @@ def personalize_email_simple(template: str, buyer, fallback_product: str = "", p
         '{exporter_name}': p_sender_name,
         '{exporter_company}': p_company_name,
         '{sender_email}': p_personal_email,
-        '{email}': p_personal_email,
+        '{personal_email}': p_personal_email,
+        '{email}': p_company_email,
         '{company_email}': p_company_email,
         '{phone}': p_phone,
         # Brackets []

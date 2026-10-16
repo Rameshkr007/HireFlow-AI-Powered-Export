@@ -196,7 +196,7 @@ def record_and_dispatch_email(
                 attachment_path=attachment_path,
                 attachment_filename=attachment_name,
                 attachment_list=attachment_list,
-                reply_to=smtp_config.get("from_email")
+                reply_to=smtp_config.get("reply_to") or "exportindia2026us@gmail.com"
             )
             if success:
                 send_success = True

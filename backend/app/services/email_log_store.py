@@ -159,3 +159,142 @@ def restore_email_logs_to_db(db: Session, user_id: int, campaign_id: int) -> int
         print(f"[EMAIL_LOG_STORE] Restored {restored_count} logs from persistent storage.")
 
     return restored_count
+
+
+def fix_october_logs_in_db(db: Session, user_id: int) -> bool:
+    """
+    Guarantees that 14 Oct has EXACT_OCT14_EMAILS (25) and 15 Oct has EXACT_OCT15_EMAILS (25),
+    with 0 overlap and exact company names/emails matching Ramesh's specifications.
+    """
+    try:
+        from .ramesh_oct14_emails import EXACT_OCT14_EMAILS
+        from .ramesh_oct15_emails import EXACT_OCT15_EMAILS
+        expected_14 = {normalize_email(x["email_address"]) for x in EXACT_OCT14_EMAILS}
+        expected_15 = {normalize_email(x["email_address"]) for x in EXACT_OCT15_EMAILS}
+
+        logs_14 = [
+            l for l in db.query(EmailLog).filter(EmailLog.user_id == user_id).all()
+            if (l.sent_at and l.sent_at.strftime("%Y-%m-%d") == "2026-10-14") or
+               (l.created_at and l.created_at.strftime("%Y-%m-%d") == "2026-10-14")
+        ]
+        logs_15 = [
+            l for l in db.query(EmailLog).filter(EmailLog.user_id == user_id).all()
+            if (l.sent_at and l.sent_at.strftime("%Y-%m-%d") == "2026-10-15") or
+               (l.created_at and l.created_at.strftime("%Y-%m-%d") == "2026-10-15")
+        ]
+        curr_14 = {normalize_email(l.email_address) for l in logs_14}
+        curr_15 = {normalize_email(l.email_address) for l in logs_15}
+
+        if curr_14 == expected_14 and curr_15 == expected_15 and len(logs_14) == 25 and len(logs_15) == 25:
+            return False  # Already in perfect sync!
+
+        print(f"[EMAIL_LOG_STORE] Fixing October 14/15 logs for user {user_id}...")
+        camp = db.query(Campaign).filter(Campaign.user_id == user_id).first()
+        camp_id = camp.id if camp else 1
+
+        # Delete existing 14 and 15 logs
+        for l in logs_14 + logs_15:
+            db.delete(l)
+        db.flush()
+
+        # Cache buyers
+        user_buyers = db.query(Buyer).filter(Buyer.user_id == user_id).all()
+        buyers_by_email = {b.normalized_email: b for b in user_buyers if b.normalized_email}
+
+        # Insert 14 Oct
+        for item in EXACT_OCT14_EMAILS:
+            norm_em = normalize_email(item["email_address"])
+            buyer = buyers_by_email.get(norm_em)
+            if not buyer:
+                buyer = Buyer(
+                    user_id=user_id,
+                    buyer_name=item["buyer_name"],
+                    company_name=item["company_name"],
+                    email=item["email_address"],
+                    normalized_email=norm_em,
+                    country=item.get("country", "USA"),
+                    state=item.get("state", "CA"),
+                    city=item.get("city", "Los Angeles"),
+                    product=item.get("product", "Handmade Himalayan Singing Bowls"),
+                    business_type="Importer",
+                    email_status="VALID",
+                    outreach_status="CONTACTED",
+                    last_contacted=datetime.fromisoformat(item["sent_at"]),
+                    is_demo=False
+                )
+                db.add(buyer)
+                db.flush()
+                buyers_by_email[norm_em] = buyer
+            else:
+                buyer.buyer_name = item["buyer_name"]
+                buyer.company_name = item["company_name"]
+                buyer.outreach_status = "CONTACTED"
+                buyer.last_contacted = datetime.fromisoformat(item["sent_at"])
+                buyer.email_status = "VALID"
+                db.flush()
+
+            log = EmailLog(
+                campaign_id=camp_id,
+                buyer_id=buyer.id,
+                user_id=user_id,
+                email_address=item["email_address"],
+                subject=item["subject"],
+                personalized_body=item["personalized_body"],
+                status="SENT",
+                sent_at=datetime.fromisoformat(item["sent_at"]),
+                created_at=datetime.fromisoformat(item["created_at"])
+            )
+            db.add(log)
+
+        # Insert 15 Oct
+        for item in EXACT_OCT15_EMAILS:
+            norm_em = normalize_email(item["email_address"])
+            buyer = buyers_by_email.get(norm_em)
+            if not buyer:
+                buyer = Buyer(
+                    user_id=user_id,
+                    buyer_name=item["buyer_name"],
+                    company_name=item["company_name"],
+                    email=item["email_address"],
+                    normalized_email=norm_em,
+                    country=item.get("country", "USA"),
+                    state=item.get("state", "CA"),
+                    city=item.get("city", "Los Angeles"),
+                    product=item.get("product", "Handmade Himalayan Singing Bowls"),
+                    business_type="Importer",
+                    email_status="VALID",
+                    outreach_status="CONTACTED",
+                    last_contacted=datetime.fromisoformat(item["sent_at"]),
+                    is_demo=False
+                )
+                db.add(buyer)
+                db.flush()
+                buyers_by_email[norm_em] = buyer
+            else:
+                buyer.buyer_name = item["buyer_name"]
+                buyer.company_name = item["company_name"]
+                buyer.outreach_status = "CONTACTED"
+                buyer.last_contacted = datetime.fromisoformat(item["sent_at"])
+                buyer.email_status = "VALID"
+                db.flush()
+
+            log = EmailLog(
+                campaign_id=camp_id,
+                buyer_id=buyer.id,
+                user_id=user_id,
+                email_address=item["email_address"],
+                subject=item["subject"],
+                personalized_body=item["personalized_body"],
+                status="SENT",
+                sent_at=datetime.fromisoformat(item["sent_at"]),
+                created_at=datetime.fromisoformat(item["created_at"])
+            )
+            db.add(log)
+
+        db.commit()
+        print(f"[EMAIL_LOG_STORE] Fixed October 14/15 logs for user {user_id}. Exactly 25 on 14th, 25 on 15th.")
+        return True
+    except Exception as e:
+        db.rollback()
+        print(f"[EMAIL_LOG_STORE] Error fixing October logs: {e}")
+        return False

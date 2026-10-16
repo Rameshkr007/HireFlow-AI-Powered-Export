@@ -1,0 +1,4052 @@
+[
+  {
+    "index": 1,
+    "date": "2026-09-30",
+    "company_name": "San Diego Sound Bath Emporium",
+    "email": "nmiller@sandiegosoundbath.com",
+    "address": "600 B St, San Diego, CA 92101, USA",
+    "status": "SENT",
+    "response": ""
+  },
+  {
+    "index": 2,
+    "date": "2026-09-30",
+    "company_name": "Phoenix Sound & Yoga Collective",
+    "email": "jpatel@phoenixsoundyoga.com",
+    "address": "100 W Washington St, Phoenix, AZ 85003, USA",
+    "status": "SENT",
+    "response": ""
+  },
+  {
+    "index": 3,
+    "date": "2026-09-30",
+    "company_name": "Boston Sound Sanctuary Supplies",
+    "email": "acooper@bostonsoundsanctuary.com",
+    "address": "800 Boylston St, Boston, MA 02199, USA",
+    "status": "SENT",
+    "response": ""
+  },
+  {
+    "index": 4,
+    "date": "2026-09-30",
+    "company_name": "Dallas Mindfulness & Sound LLC",
+    "email": "zhenderson@dallasmindfulness.com",
+    "address": "2100 Ross Ave, Dallas, TX 75201, USA",
+    "status": "SENT",
+    "response": ""
+  },
+  {
+    "index": 5,
+    "date": "2026-09-30",
+    "company_name": "Los Angeles Sound Bath Center",
+    "email": "gross@lasoundbathcenter.com",
+    "address": "1901 Ave of the Stars, Los Angeles, CA 90067, USA",
+    "status": "SENT",
+    "response": ""
+  },
+  {
+    "index": 6,
+    "date": "2026-09-30",
+    "company_name": "Portland Artisan Home Goods",
+    "email": "hprice@portlandartisangoods.com",
+    "address": "1120 NW Couch St, Portland, OR 97209, USA",
+    "status": "SENT",
+    "response": ""
+  },
+  {
+    "index": 7,
+    "date": "2026-09-30",
+    "company_name": "Denver Mountain Living Accents",
+    "email": "jclark@denvermountaindecor.com",
+    "address": "1700 Lincoln St, Denver, CO 80203, USA",
+    "status": "SENT",
+    "response": ""
+  },
+  {
+    "index": 8,
+    "date": "2026-09-30",
+    "company_name": "Minneapolis Heritage Home Supply",
+    "email": "rzimmerman@minneapolisheritage.com",
+    "address": "800 Nicollet Mall, Minneapolis, MN 55402, USA",
+    "status": "SENT",
+    "response": ""
+  },
+  {
+    "index": 9,
+    "date": "2026-09-30",
+    "company_name": "New York Holistic Sound Institute",
+    "email": "rkeller@nyholisticsound.com",
+    "address": "150 5th Ave #600, New York, NY 10011, USA",
+    "status": "SENT",
+    "response": ""
+  },
+  {
+    "index": 10,
+    "date": "2026-09-30",
+    "company_name": "Sedona Sacred Sounds & Crystals",
+    "email": "claire@sedonasacredsounds.com",
+    "address": "250 Jordan Rd, Sedona, AZ 86336, USA",
+    "status": "SENT",
+    "response": ""
+  },
+  {
+    "index": 11,
+    "date": "2026-09-30",
+    "company_name": "Golden Gate Holistic Supply",
+    "email": "ethan@goldengateholistic.com",
+    "address": "100 Pine St #1200, San Francisco, CA 94111, USA",
+    "status": "SENT",
+    "response": ""
+  },
+  {
+    "index": 12,
+    "date": "2026-09-30",
+    "company_name": "Austin Artisan Collective",
+    "email": "maya@austinartisancollective.com",
+    "address": "1100 S Lamar Blvd, Austin, TX 78704, USA",
+    "status": "SENT",
+    "response": ""
+  },
+  {
+    "index": 13,
+    "date": "2026-09-30",
+    "company_name": "Phoenix Desert Living Accents",
+    "email": "scruz@phoenixdesertdecor.com",
+    "address": "2400 E Camelback Rd, Phoenix, AZ 85016, USA",
+    "status": "SENT",
+    "response": ""
+  },
+  {
+    "index": 14,
+    "date": "2026-09-30",
+    "company_name": "French Quarter Antiques & Lighting",
+    "email": "jmoreau@fqantiquesdecor.com",
+    "address": "520 Royal St, New Orleans, LA 70130, USA",
+    "status": "SENT",
+    "response": ""
+  },
+  {
+    "index": 15,
+    "date": "2026-09-30",
+    "company_name": "Nashville Lighting & Candleworks",
+    "email": "bhayes@nashvillecandleworks.com",
+    "address": "1200 Broadway, Nashville, TN 37203, USA",
+    "status": "SENT",
+    "response": ""
+  },
+  {
+    "index": 16,
+    "date": "2026-09-30",
+    "company_name": "St. Louis Gateway Home Furnishings",
+    "email": "mdavis@stlouisgatewayhome.com",
+    "address": "1 N Brentwood Blvd, St. Louis, MO 63105, USA",
+    "status": "SENT",
+    "response": ""
+  },
+  {
+    "index": 17,
+    "date": "2026-09-30",
+    "company_name": "Philadelphia Colonial Decor LLC",
+    "email": "cnolan@philadelphiadecor.com",
+    "address": "1650 Market St, Philadelphia, PA 19103, USA",
+    "status": "SENT",
+    "response": ""
+  },
+  {
+    "index": 18,
+    "date": "2026-09-30",
+    "company_name": "Pacific Coast Hearth & Candle Co",
+    "email": "astone@pacifichearthcandle.com",
+    "address": "700 W Harbor Dr, San Diego, CA 92101, USA",
+    "status": "SENT",
+    "response": ""
+  },
+  {
+    "index": 19,
+    "date": "2026-09-30",
+    "company_name": "Global Views LLC",
+    "email": "info@globalviews.com",
+    "address": "7301 Ambassador Row, Dallas, TX 75247, USA",
+    "status": "SENT",
+    "response": ""
+  },
+  {
+    "index": 20,
+    "date": "2026-09-30",
+    "company_name": "IMAX Worldwide Home",
+    "email": "sourcing@imaxcorp.com",
+    "address": "4000 S Lakewood Ave, Tulsa, OK 74135, USA",
+    "status": "SENT",
+    "response": ""
+  },
+  {
+    "index": 21,
+    "date": "2026-09-30",
+    "company_name": "Park Hill Collection",
+    "email": "purchasing@parkhillcollection.com",
+    "address": "7421 Scott Hamilton Dr, Little Rock, AR 72209, USA",
+    "status": "SENT",
+    "response": ""
+  },
+  {
+    "index": 22,
+    "date": "2026-09-30",
+    "company_name": "The Uttermost Company",
+    "email": "procurement@uttermost.com",
+    "address": "3325 Grassy Hill Rd, Rocky Mount, VA 24151, USA",
+    "status": "SENT",
+    "response": ""
+  },
+  {
+    "index": 23,
+    "date": "2026-09-30",
+    "company_name": "Creative Co-Op Inc",
+    "email": "imports@creativecoop.com",
+    "address": "6000 S Mendenhall Rd, Memphis, TN 38115, USA",
+    "status": "SENT",
+    "response": ""
+  },
+  {
+    "index": 24,
+    "date": "2026-09-30",
+    "company_name": "Two's Company Inc",
+    "email": "sourcing@twoscompany.com",
+    "address": "500 Saw Mill River Rd, Elmsford, NY 10523, USA",
+    "status": "SENT",
+    "response": ""
+  },
+  {
+    "index": 25,
+    "date": "2026-09-30",
+    "company_name": "Global Wellness Imports LLC",
+    "email": "info@globalwellnessimports.com",
+    "address": "11100 Santa Monica Blvd #800, Los Angeles, CA 90025, USA",
+    "status": "SENT",
+    "response": ""
+  },
+  {
+    "index": 26,
+    "date": "2026-09-30",
+    "company_name": "Luminary Home Goods Inc",
+    "email": "lisa@luminaryhome.com",
+    "address": "150 NW 24th St, Miami, FL 33127, USA",
+    "status": "SENT",
+    "response": ""
+  },
+  {
+    "index": 27,
+    "date": "2026-09-30",
+    "company_name": "Bay Area Wellness Hub",
+    "email": "jen@bayareawellness.com",
+    "address": "555 California St #300, San Francisco, CA 94104, USA",
+    "status": "SENT",
+    "response": ""
+  },
+  {
+    "index": 28,
+    "date": "2026-09-30",
+    "company_name": "White Mountain Imports LLC",
+    "email": "thomas@whitemountainimports.com",
+    "address": "2040 Broadway, Boulder, CO 80302, USA",
+    "status": "SENT",
+    "response": ""
+  },
+  {
+    "index": 29,
+    "date": "2026-09-30",
+    "company_name": "Cascade Pacific Trading",
+    "email": "rkim@cascadepacific.com",
+    "address": "2201 1st Ave S, Seattle, WA 98134, USA",
+    "status": "SENT",
+    "response": ""
+  },
+  {
+    "index": 30,
+    "date": "2026-09-30",
+    "company_name": "Sunbelt Imports & Design",
+    "email": "orders@sunbeltimports.com",
+    "address": "8120 Westpark Dr, Houston, TX 77063, USA",
+    "status": "SENT",
+    "response": ""
+  },
+  {
+    "index": 31,
+    "date": "2026-09-30",
+    "company_name": "Noir Trading Inc",
+    "email": "purchasing@noirfurniturela.com",
+    "address": "14500 S Broadway, Gardena, CA 90248, USA",
+    "status": "SENT",
+    "response": ""
+  },
+  {
+    "index": 32,
+    "date": "2026-09-30",
+    "company_name": "Roost Home Living",
+    "email": "orders@roost.com",
+    "address": "1001 Bridgeway #700, Sausalito, CA 94965, USA",
+    "status": "SENT",
+    "response": ""
+  },
+  {
+    "index": 33,
+    "date": "2026-09-30",
+    "company_name": "Phillips Collection",
+    "email": "sourcing@phillipscollection.com",
+    "address": "1353 Finch Ave, High Point, NC 27263, USA",
+    "status": "SENT",
+    "response": ""
+  },
+  {
+    "index": 34,
+    "date": "2026-09-30",
+    "company_name": "Palecek Imports",
+    "email": "purchasing@palecek.com",
+    "address": "601 Parr Blvd, Richmond, CA 94801, USA",
+    "status": "SENT",
+    "response": ""
+  },
+  {
+    "index": 35,
+    "date": "2026-09-30",
+    "company_name": "Regina Andrew Design",
+    "email": "contact@reginaandrew.com",
+    "address": "1301 Superior Ave, Wyandotte, MI 48192, USA",
+    "status": "SENT",
+    "response": ""
+  },
+  {
+    "index": 36,
+    "date": "2026-09-30",
+    "company_name": "Currey & Company",
+    "email": "inquiry@curreyco.com",
+    "address": "5030 Highlands Pkwy SE, Smyrna, GA 30082, USA",
+    "status": "SENT",
+    "response": ""
+  },
+  {
+    "index": 37,
+    "date": "2026-09-30",
+    "company_name": "Arteriors Home",
+    "email": "procurement@arteriorshome.com",
+    "address": "1745 Kelly Ave, Carrollton, TX 75006, USA",
+    "status": "SENT",
+    "response": ""
+  },
+  {
+    "index": 38,
+    "date": "2026-09-30",
+    "company_name": "Cyan Design",
+    "email": "sales@cyandesign.biz",
+    "address": "201 Railhead Rd, Fort Worth, TX 76106, USA",
+    "status": "SENT",
+    "response": ""
+  },
+  {
+    "index": 39,
+    "date": "2026-09-30",
+    "company_name": "Manhattan Gift & Living Corp",
+    "email": "lsterling@manhattangiftcorp.com",
+    "address": "230 5th Ave #1200, New York, NY 10001, USA",
+    "status": "SENT",
+    "response": ""
+  },
+  {
+    "index": 40,
+    "date": "2026-09-30",
+    "company_name": "Chicago Architectural Lanterns",
+    "email": "edward@chicagolanterns.com",
+    "address": "1200 W Randolph St, Chicago, IL 60607, USA",
+    "status": "SENT",
+    "response": ""
+  },
+  {
+    "index": 41,
+    "date": "2026-09-30",
+    "company_name": "Sagebrook Home",
+    "email": "buying@sagebrookhome.com",
+    "address": "3880 S Alameda St, Los Angeles, CA 90058, USA",
+    "status": "SENT",
+    "response": ""
+  },
+  {
+    "index": 42,
+    "date": "2026-09-30",
+    "company_name": "Surya Inc",
+    "email": "procurement@surya.com",
+    "address": "1580 S Lee Hwy, Cleveland, TN 37311, USA",
+    "status": "SENT",
+    "response": ""
+  },
+  {
+    "index": 43,
+    "date": "2026-09-30",
+    "company_name": "Kalalou Inc",
+    "email": "procurement@kalalou.com",
+    "address": "1010 Highway 49 N, Jackson, MS 39201, USA",
+    "status": "SENT",
+    "response": ""
+  },
+  {
+    "index": 44,
+    "date": "2026-09-30",
+    "company_name": "Accent Decor Inc",
+    "email": "importing@accentdecor.com",
+    "address": "1000 Marietta St NW, Atlanta, GA 30318, USA",
+    "status": "SENT",
+    "response": ""
+  },
+  {
+    "index": 45,
+    "date": "2026-09-30",
+    "company_name": "Pomeroy Collection LLC",
+    "email": "wholesale@pomeroycollection.com",
+    "address": "2050 Stemmons Fwy #100, Dallas, TX 75207, USA",
+    "status": "SENT",
+    "response": ""
+  },
+  {
+    "index": 46,
+    "date": "2026-09-30",
+    "company_name": "Carmel Valley Hearth & Decor",
+    "email": "hbonham@carmelvalleydecor.com",
+    "address": "Ocean Ave & Lincoln St, Carmel-by-the-Sea, CA 93921, USA",
+    "status": "SENT",
+    "response": ""
+  },
+  {
+    "index": 47,
+    "date": "2026-09-30",
+    "company_name": "French Quarter Sound Meditation",
+    "email": "procurement@frenchquartersoundmeditation.com",
+    "address": "700 Royal St, New Orleans, LA 70116, USA",
+    "status": "SENT",
+    "response": ""
+  },
+  {
+    "index": 48,
+    "date": "2026-09-30",
+    "company_name": "Falls City Sound Healing Co",
+    "email": "procurement@fallscitysoundhealing.com",
+    "address": "1000 Bardstown Rd, Louisville, KY 40204, USA",
+    "status": "SENT",
+    "response": ""
+  },
+  {
+    "index": 49,
+    "date": "2026-09-30",
+    "company_name": "White River Sound Sanctuary LLC",
+    "email": "procurement@whiteriversoundsanctuary.com",
+    "address": "800 Broad Ripple Ave, Indianapolis, IN 46220, USA",
+    "status": "SENT",
+    "response": ""
+  },
+  {
+    "index": 50,
+    "date": "2026-09-30",
+    "company_name": "Scioto Mile Sound Healing Guild",
+    "email": "procurement@sciotomilesoundguild.com",
+    "address": "3000 N High St, Columbus, OH 43214, USA",
+    "status": "SENT",
+    "response": ""
+  },
+  {
+    "index": 51,
+    "date": "2026-09-30",
+    "company_name": "Queen City Sound Therapy Supply",
+    "email": "procurement@queencitysoundtherapy.com",
+    "address": "1200 Vine St, Cincinnati, OH 45202, USA",
+    "status": "SENT",
+    "response": ""
+  },
+  {
+    "index": 52,
+    "date": "2026-09-30",
+    "company_name": "Cuyahoga Sound & Healing Arts",
+    "email": "procurement@cuyahogasoundhealing.com",
+    "address": "1900 W 25th St, Cleveland, OH 44113, USA",
+    "status": "SENT",
+    "response": ""
+  },
+  {
+    "index": 53,
+    "date": "2026-09-30",
+    "company_name": "Three Rivers Sound Sanctuary",
+    "email": "procurement@threeriverssoundsanctuary.com",
+    "address": "4300 Butler St, Pittsburgh, PA 15201, USA",
+    "status": "SENT",
+    "response": ""
+  },
+  {
+    "index": 54,
+    "date": "2026-09-30",
+    "company_name": "Liberty Bell Sound Bath Guild",
+    "email": "procurement@libertybellsoundbath.com",
+    "address": "600 South St, Philadelphia, PA 19147, USA",
+    "status": "SENT",
+    "response": ""
+  },
+  {
+    "index": 55,
+    "date": "2026-09-30",
+    "company_name": "Tybee Island Sound & Meditation",
+    "email": "procurement@tybeeislandsound.com",
+    "address": "100 W Broughton St, Savannah, GA 31401, USA",
+    "status": "SENT",
+    "response": ""
+  },
+  {
+    "index": 56,
+    "date": "2026-09-30",
+    "company_name": "Conch Republic Sound Sanctuary",
+    "email": "procurement@conchrepublicsound.com",
+    "address": "500 Duval St, Key West, FL 33040, USA",
+    "status": "SENT",
+    "response": ""
+  },
+  {
+    "index": 57,
+    "date": "2026-09-30",
+    "company_name": "Bell Rock Sound Healing Collective",
+    "email": "procurement@bellrocksoundcollective.com",
+    "address": "6580 State Rte 179, Sedona Village, AZ 86351, USA",
+    "status": "SENT",
+    "response": ""
+  },
+  {
+    "index": 58,
+    "date": "2026-09-30",
+    "company_name": "Box Canyon Sound & Yoga Imports",
+    "email": "procurement@boxcanyonsoundimports.com",
+    "address": "135 W Colorado Ave, Telluride, CO 81435, USA",
+    "status": "SENT",
+    "response": ""
+  },
+  {
+    "index": 59,
+    "date": "2026-09-30",
+    "company_name": "Animas River Sound Sanctuary",
+    "email": "procurement@animasriversound.com",
+    "address": "800 Main Ave, Durango, CO 81301, USA",
+    "status": "SENT",
+    "response": ""
+  },
+  {
+    "index": 60,
+    "date": "2026-09-30",
+    "company_name": "Wood River Sound Healing Supply",
+    "email": "procurement@woodriversoundsupply.com",
+    "address": "200 Sun Valley Rd, Sun Valley, ID 83353, USA",
+    "status": "SENT",
+    "response": ""
+  },
+  {
+    "index": 61,
+    "date": "2026-09-30",
+    "company_name": "Teton Range Sound & Meditation",
+    "email": "procurement@tetonsoundmeditation.com",
+    "address": "40 W Broadway Ave, Jackson, WY 83001, USA",
+    "status": "SENT",
+    "response": ""
+  },
+  {
+    "index": 62,
+    "date": "2026-09-30",
+    "company_name": "Wasatch Back Sound Healing Guild",
+    "email": "procurement@wasatchbacksoundguild.com",
+    "address": "500 Main St, Park City, UT 84060, USA",
+    "status": "SENT",
+    "response": ""
+  },
+  {
+    "index": 63,
+    "date": "2026-09-30",
+    "company_name": "Pikes Peak Sound & Yoga Sanctuary",
+    "email": "procurement@pikespeaksoundsanctuary.com",
+    "address": "20 N Tejon St, Colorado Springs, CO 80903, USA",
+    "status": "SENT",
+    "response": ""
+  },
+  {
+    "index": 64,
+    "date": "2026-09-30",
+    "company_name": "Choice City Sound Bath Supply",
+    "email": "procurement@choicecitysoundbath.com",
+    "address": "140 S College Ave, Fort Collins, CO 80524, USA",
+    "status": "SENT",
+    "response": ""
+  },
+  {
+    "index": 65,
+    "date": "2026-09-30",
+    "company_name": "Clark Fork Sound Healing Guild",
+    "email": "procurement@clarkforksoundguild.com",
+    "address": "120 N Higgins Ave, Missoula, MT 59802, USA",
+    "status": "SENT",
+    "response": ""
+  },
+  {
+    "index": 66,
+    "date": "2026-09-30",
+    "company_name": "Boise River Sound & Meditation Hub",
+    "email": "procurement@boiseriversoundhub.com",
+    "address": "100 N 8th St, Boise, ID 83702, USA",
+    "status": "SENT",
+    "response": ""
+  },
+  {
+    "index": 67,
+    "date": "2026-09-30",
+    "company_name": "Charm City Sound & Mindfulness",
+    "email": "procurement@charmcitysoundmindfulness.com",
+    "address": "1000 W 36th St, Baltimore, MD 21211, USA",
+    "status": "SENT",
+    "response": ""
+  },
+  {
+    "index": 68,
+    "date": "2026-09-30",
+    "company_name": "James River Sound Healing Co",
+    "email": "procurement@jamesriversoundco.com",
+    "address": "3100 W Cary St, Richmond, VA 23220, USA",
+    "status": "SENT",
+    "response": ""
+  },
+  {
+    "index": 69,
+    "date": "2026-09-30",
+    "company_name": "Holy City Sound Therapy Supplies",
+    "email": "procurement@holycitysoundtherapy.com",
+    "address": "250 King St, Charleston, SC 29401, USA",
+    "status": "SENT",
+    "response": ""
+  },
+  {
+    "index": 70,
+    "date": "2026-09-30",
+    "company_name": "Rio Grande Sound Therapy Guild",
+    "email": "procurement@riograndesoundguild.com",
+    "address": "300 Romero St NW, Albuquerque, NM 87104, USA",
+    "status": "SENT",
+    "response": ""
+  },
+  {
+    "index": 71,
+    "date": "2026-09-30",
+    "company_name": "Willamette Valley Sound Sanctuary",
+    "email": "procurement@willamettesound.com",
+    "address": "760 Willamette St, Eugene, OR 97401, USA",
+    "status": "SENT",
+    "response": ""
+  },
+  {
+    "index": 72,
+    "date": "2026-10-01",
+    "company_name": "East Bay Mindfulness & Sound Arts",
+    "email": "procurement@eastbaysoundarts.com",
+    "address": "2430 Telegraph Ave, Berkeley, CA 94704, USA",
+    "status": "SENT",
+    "response": ""
+  },
+  {
+    "index": 73,
+    "date": "2026-10-01",
+    "company_name": "Marin Holistic Sound Therapy",
+    "email": "procurement@marinsoundtherapy.com",
+    "address": "142 Throckmorton Ave, Mill Valley, CA 94941, USA",
+    "status": "SENT",
+    "response": ""
+  },
+  {
+    "index": 74,
+    "date": "2026-10-01",
+    "company_name": "Riviera Sound & Wellness Guild",
+    "email": "procurement@rivierasoundguild.com",
+    "address": "800 State St, Santa Barbara, CA 93101, USA",
+    "status": "SENT",
+    "response": ""
+  },
+  {
+    "index": 75,
+    "date": "2026-10-01",
+    "company_name": "Gold Country Sound & Meditation",
+    "email": "procurement@goldcountrysound.com",
+    "address": "210 Broad St, Nevada City, CA 95959, USA",
+    "status": "SENT",
+    "response": ""
+  },
+  {
+    "index": 76,
+    "date": "2026-10-01",
+    "company_name": "Crestone Stupa Sound Supplies",
+    "email": "procurement@crestonesoundsupplies.com",
+    "address": "120 Silver Ave, Crestone, CO 81131, USA",
+    "status": "SENT",
+    "response": ""
+  },
+  {
+    "index": 77,
+    "date": "2026-10-01",
+    "company_name": "Green Mountain Meditation Imports",
+    "email": "procurement@greenmountainmeditation.com",
+    "address": "85 Church St, Burlington, VT 05401, USA",
+    "status": "SENT",
+    "response": ""
+  },
+  {
+    "index": 78,
+    "date": "2026-10-01",
+    "company_name": "Woodstock Sound Healing Sanctuary",
+    "email": "procurement@woodstocksoundsanctuary.com",
+    "address": "24 Tinker St, Woodstock, NY 12498, USA",
+    "status": "SENT",
+    "response": ""
+  },
+  {
+    "index": 79,
+    "date": "2026-10-01",
+    "company_name": "Wasatch Sound & Meditation Guild",
+    "email": "procurement@wasatchsoundguild.com",
+    "address": "2060 E 900 S, Salt Lake City, UT 84105, USA",
+    "status": "SENT",
+    "response": ""
+  },
+  {
+    "index": 80,
+    "date": "2026-10-01",
+    "company_name": "Upcountry Maui Sound Sanctuary",
+    "email": "procurement@mauisoundsanctuary.com",
+    "address": "3620 Baldwin Ave, Maui, HI 96768, USA",
+    "status": "SENT",
+    "response": ""
+  },
+  {
+    "index": 81,
+    "date": "2026-10-01",
+    "company_name": "Waikiki Wellness & Sound Importers",
+    "email": "procurement@waikikiwellnesssound.com",
+    "address": "2255 Kalakaua Ave, Honolulu, HI 96815, USA",
+    "status": "SENT",
+    "response": ""
+  },
+  {
+    "index": 82,
+    "date": "2026-10-01",
+    "company_name": "Mile High Himalayan Singing Bowls",
+    "email": "procurement@milehighhimalayanbowls.com",
+    "address": "2700 Larimer St, Denver, CO 80205, USA",
+    "status": "SENT",
+    "response": ""
+  },
+  {
+    "index": 83,
+    "date": "2026-10-01",
+    "company_name": "San Diego Sound Bath Collective",
+    "email": "procurement@sandiegosoundbath.com",
+    "address": "1420 University Ave, San Diego, CA 92103, USA",
+    "status": "SENT",
+    "response": ""
+  },
+  {
+    "index": 84,
+    "date": "2026-10-01",
+    "company_name": "Venice Beach Sound Sanctuary",
+    "email": "procurement@venicebeachsounds.com",
+    "address": "1301 Abbot Kinney Blvd, Los Angeles, CA 90291, USA",
+    "status": "SENT",
+    "response": ""
+  },
+  {
+    "index": 85,
+    "date": "2026-10-01",
+    "company_name": "Mission Sound Healing Arts",
+    "email": "procurement@missionsoundhealing.com",
+    "address": "984 Valencia St, San Francisco, CA 94110, USA",
+    "status": "SENT",
+    "response": ""
+  },
+  {
+    "index": 86,
+    "date": "2026-10-01",
+    "company_name": "Pacifica Sound Healing Wholesale",
+    "email": "procurement@pacificasoundwholesale.com",
+    "address": "1807 N 45th St, Seattle, WA 98103, USA",
+    "status": "SENT",
+    "response": ""
+  },
+  {
+    "index": 87,
+    "date": "2026-10-01",
+    "company_name": "Zenith Sound & Light Distribution",
+    "email": "procurement@zenithsoundlight.com",
+    "address": "3562 SE Hawthorne Blvd, Portland, OR 97214, USA",
+    "status": "SENT",
+    "response": ""
+  },
+  {
+    "index": 88,
+    "date": "2026-10-01",
+    "company_name": "Aloha Sound Meditation Supply",
+    "email": "procurement@alohasoundmeditation.com",
+    "address": "1601 S Congress Ave, Austin, TX 78704, USA",
+    "status": "SENT",
+    "response": ""
+  },
+  {
+    "index": 89,
+    "date": "2026-10-01",
+    "company_name": "Appalachian Sound & Mind Supply",
+    "email": "procurement@appalachiansoundmind.org",
+    "address": "80 N Lexington Ave, Asheville, NC 28801, USA",
+    "status": "SENT",
+    "response": ""
+  },
+  {
+    "index": 90,
+    "date": "2026-10-01",
+    "company_name": "Mount Shasta Sound & Meditation",
+    "email": "procurement@shastasoundhealing.com",
+    "address": "412 N Mt Shasta Blvd, Mount Shasta, CA 96067, USA",
+    "status": "SENT",
+    "response": ""
+  },
+  {
+    "index": 91,
+    "date": "2026-10-01",
+    "company_name": "Inland Empire Sound Therapy Co",
+    "email": "procurement@inlandempiresound.com",
+    "address": "600 W Main Ave, Spokane, WA 99201, USA",
+    "status": "SENT",
+    "response": ""
+  },
+  {
+    "index": 92,
+    "date": "2026-10-01",
+    "company_name": "Garden Isle Sound & Meditation",
+    "email": "procurement@gardenislesound.com",
+    "address": "4-1380 Kuhio Hwy, Kauai, HI 96746, USA",
+    "status": "SENT",
+    "response": ""
+  },
+  {
+    "index": 93,
+    "date": "2026-10-01",
+    "company_name": "Red Rock Sound Sanctuary West",
+    "email": "procurement@redrocksoundsanctuary.com",
+    "address": "160 Dry Creek Rd, Sedona West, AZ 86336, USA",
+    "status": "SENT",
+    "response": ""
+  },
+  {
+    "index": 94,
+    "date": "2026-10-01",
+    "company_name": "Monterey Peninsula Sound Guild",
+    "email": "procurement@montereysoundguild.com",
+    "address": "Ocean Ave & Lincoln St, Carmel-by-the-Sea, CA 93921, USA",
+    "status": "SENT",
+    "response": ""
+  },
+  {
+    "index": 95,
+    "date": "2026-10-01",
+    "company_name": "Santa Cruz Sacred Sound Imports",
+    "email": "procurement@santacruzsacredsound.com",
+    "address": "1115 Pacific Ave, Santa Cruz, CA 95060, USA",
+    "status": "SENT",
+    "response": ""
+  },
+  {
+    "index": 96,
+    "date": "2026-10-01",
+    "company_name": "Gallatin Valley Sound Therapy",
+    "email": "procurement@gallatinsoundtherapy.com",
+    "address": "14 E Main St, Bozeman, MT 59715, USA",
+    "status": "SENT",
+    "response": ""
+  },
+  {
+    "index": 97,
+    "date": "2026-10-01",
+    "company_name": "Four Lakes Sound Healing Supply",
+    "email": "procurement@fourlakessoundsupply.com",
+    "address": "230 State St, Madison, WI 53703, USA",
+    "status": "SENT",
+    "response": ""
+  },
+  {
+    "index": 98,
+    "date": "2026-10-01",
+    "company_name": "Cumberland Sound Sanctuary LLC",
+    "email": "procurement@cumberlandsoundsanctuary.com",
+    "address": "900 Woodland St, Nashville, TN 37206, USA",
+    "status": "SENT",
+    "response": ""
+  },
+  {
+    "index": 99,
+    "date": "2026-10-01",
+    "company_name": "Sweetwater Sound & Mindful Living",
+    "email": "procurement@sweetwatersoundliving.com",
+    "address": "1100 Euclid Ave NE, Atlanta, GA 30307, USA",
+    "status": "SENT",
+    "response": ""
+  },
+  {
+    "index": 100,
+    "date": "2026-10-01",
+    "company_name": "Hudson Valley Singing Bowl Guild",
+    "email": "procurement@hudsonvalleysingingbowls.com",
+    "address": "60 Main St, New Paltz, NY 12561, USA",
+    "status": "FAILED",
+    "response": ""
+  },
+  {
+    "index": 101,
+    "date": "2026-10-01",
+    "company_name": "Berkshire Sound & Yoga Supply",
+    "email": "procurement@berkshiresoundsupply.com",
+    "address": "284 Main St, Great Barrington, MA 01230, USA",
+    "status": "SENT",
+    "response": ""
+  },
+  {
+    "index": 102,
+    "date": "2026-10-01",
+    "company_name": "Finger Lakes Sound Healing Arts",
+    "email": "procurement@fingerlakessound.com",
+    "address": "171 E State St, Ithaca, NY 14850, USA",
+    "status": "SENT",
+    "response": ""
+  },
+  {
+    "index": 103,
+    "date": "2026-10-01",
+    "company_name": "Arbor Sound & Mindfulness Imports",
+    "email": "procurement@arborsoundimports.com",
+    "address": "530 S University Ave, Ann Arbor, MI 48104, USA",
+    "status": "SENT",
+    "response": ""
+  },
+  {
+    "index": 104,
+    "date": "2026-10-01",
+    "company_name": "Twin Cities Sound Bath Supply",
+    "email": "procurement@twincitiessoundbath.com",
+    "address": "2600 Hennepin Ave, Minneapolis, MN 55408, USA",
+    "status": "SENT",
+    "response": ""
+  },
+  {
+    "index": 105,
+    "date": "2026-10-01",
+    "company_name": "Bellingham Sound & Meditation Hub",
+    "email": "procurement@bellinghamsoundhub.com",
+    "address": "1100 Harris Ave, Bellingham, WA 98225, USA",
+    "status": "SENT",
+    "response": ""
+  },
+  {
+    "index": 106,
+    "date": "2026-10-01",
+    "company_name": "Gulf Coast Sound & Yoga Supplies",
+    "email": "procurement@gulfcoastsoundyoga.com",
+    "address": "1400 Main St, Sarasota, FL 34236, USA",
+    "status": "SENT",
+    "response": ""
+  },
+  {
+    "index": 107,
+    "date": "2026-10-01",
+    "company_name": "Sunshine Sound & Meditation Guild",
+    "email": "procurement@sunshinesoundguild.com",
+    "address": "685 Central Ave, St. Petersburg, FL 33701, USA",
+    "status": "SENT",
+    "response": ""
+  },
+  {
+    "index": 108,
+    "date": "2026-10-01",
+    "company_name": "South Beach Sound Healing Imports",
+    "email": "procurement@southbeachsoundhealing.com",
+    "address": "600 Lincoln Rd, Miami, FL 33139, USA",
+    "status": "SENT",
+    "response": ""
+  },
+  {
+    "index": 109,
+    "date": "2026-10-01",
+    "company_name": "Williamsburg Sound Therapy Co",
+    "email": "procurement@williamsburgsoundtherapy.com",
+    "address": "240 Bedford Ave, Brooklyn, NY 11211, USA",
+    "status": "SENT",
+    "response": ""
+  },
+  {
+    "index": 110,
+    "date": "2026-10-01",
+    "company_name": "Manhattan Sound Bath Collective",
+    "email": "procurement@manhattansoundbath.com",
+    "address": "99 Prince St, New York, NY 10012, USA",
+    "status": "SENT",
+    "response": ""
+  },
+  {
+    "index": 111,
+    "date": "2026-10-01",
+    "company_name": "Wicker Park Sound Sanctuary",
+    "email": "procurement@wickerparksound.com",
+    "address": "1400 N Damen Ave, Chicago, IL 60622, USA",
+    "status": "SENT",
+    "response": ""
+  },
+  {
+    "index": 112,
+    "date": "2026-10-01",
+    "company_name": "Taos Sacred Arts & Bronze Bowls",
+    "email": "procurement@taossacredarts.com",
+    "address": "110 Paseo Del Pueblo Norte, Taos, NM 87571, USA",
+    "status": "SENT",
+    "response": ""
+  },
+  {
+    "index": 113,
+    "date": "2026-10-01",
+    "company_name": "Scottsdale Sound & Yoga Supply",
+    "email": "procurement@scottsdalesoundyoga.com",
+    "address": "7034 E 5th Ave, Scottsdale, AZ 85251, USA",
+    "status": "SENT",
+    "response": ""
+  },
+  {
+    "index": 114,
+    "date": "2026-10-01",
+    "company_name": "Sonoran Desert Sound Therapy",
+    "email": "procurement@sonoransoundtherapy.com",
+    "address": "414 N 4th Ave, Tucson, AZ 85705, USA",
+    "status": "SENT",
+    "response": ""
+  },
+  {
+    "index": 115,
+    "date": "2026-10-01",
+    "company_name": "Rogue River Sound Healing Co",
+    "email": "procurement@rogueriversound.com",
+    "address": "35 N Main St, Ashland, OR 97520, USA",
+    "status": "SENT",
+    "response": ""
+  },
+  {
+    "index": 116,
+    "date": "2026-10-01",
+    "company_name": "Willamette Valley Sound Sanctuary",
+    "email": "procurement@willamettesound.com",
+    "address": "760 Willamette St, Eugene, OR 97401, USA",
+    "status": "SENT",
+    "response": ""
+  },
+  {
+    "index": 117,
+    "date": "2026-10-01",
+    "company_name": "East Bay Mindfulness & Sound Arts",
+    "email": "procurement@eastbaysoundarts.com",
+    "address": "2430 Telegraph Ave, Berkeley, CA 94704, USA",
+    "status": "SENT",
+    "response": ""
+  },
+  {
+    "index": 118,
+    "date": "2026-10-01",
+    "company_name": "Marin Holistic Sound Therapy",
+    "email": "procurement@marinsoundtherapy.com",
+    "address": "142 Throckmorton Ave, Mill Valley, CA 94941, USA",
+    "status": "SENT",
+    "response": ""
+  },
+  {
+    "index": 119,
+    "date": "2026-10-01",
+    "company_name": "Riviera Sound & Wellness Guild",
+    "email": "procurement@rivierasoundguild.com",
+    "address": "800 State St, Santa Barbara, CA 93101, USA",
+    "status": "SENT",
+    "response": ""
+  },
+  {
+    "index": 120,
+    "date": "2026-10-01",
+    "company_name": "Gold Country Sound & Meditation",
+    "email": "procurement@goldcountrysound.com",
+    "address": "210 Broad St, Nevada City, CA 95959, USA",
+    "status": "SENT",
+    "response": ""
+  },
+  {
+    "index": 121,
+    "date": "2026-10-01",
+    "company_name": "Crestone Stupa Sound Supplies",
+    "email": "procurement@crestonesoundsupplies.com",
+    "address": "120 Silver Ave, Crestone, CO 81131, USA",
+    "status": "SENT",
+    "response": ""
+  },
+  {
+    "index": 122,
+    "date": "2026-10-01",
+    "company_name": "Green Mountain Meditation Imports",
+    "email": "procurement@greenmountainmeditation.com",
+    "address": "85 Church St, Burlington, VT 05401, USA",
+    "status": "SENT",
+    "response": ""
+  },
+  {
+    "index": 123,
+    "date": "2026-10-01",
+    "company_name": "Woodstock Sound Healing Sanctuary",
+    "email": "procurement@woodstocksoundsanctuary.com",
+    "address": "24 Tinker St, Woodstock, NY 12498, USA",
+    "status": "SENT",
+    "response": ""
+  },
+  {
+    "index": 124,
+    "date": "2026-10-01",
+    "company_name": "Wasatch Sound & Meditation Guild",
+    "email": "procurement@wasatchsoundguild.com",
+    "address": "2060 E 900 S, Salt Lake City, UT 84105, USA",
+    "status": "SENT",
+    "response": ""
+  },
+  {
+    "index": 125,
+    "date": "2026-10-02",
+    "company_name": "Upcountry Maui Sound Sanctuary",
+    "email": "procurement@mauisoundsanctuary.com",
+    "address": "3620 Baldwin Ave, Maui, HI 96768, USA",
+    "status": "SENT",
+    "response": ""
+  },
+  {
+    "index": 126,
+    "date": "2026-10-02",
+    "company_name": "Waikiki Wellness & Sound Importers",
+    "email": "procurement@waikikiwellnesssound.com",
+    "address": "2255 Kalakaua Ave, Honolulu, HI 96815, USA",
+    "status": "SENT",
+    "response": ""
+  },
+  {
+    "index": 127,
+    "date": "2026-10-02",
+    "company_name": "Mile High Himalayan Singing Bowls",
+    "email": "procurement@milehighhimalayanbowls.com",
+    "address": "2700 Larimer St, Denver, CO 80205, USA",
+    "status": "SENT",
+    "response": ""
+  },
+  {
+    "index": 128,
+    "date": "2026-10-02",
+    "company_name": "San Diego Sound Bath Collective",
+    "email": "procurement@sandiegosoundbath.com",
+    "address": "1420 University Ave, San Diego, CA 92103, USA",
+    "status": "SENT",
+    "response": ""
+  },
+  {
+    "index": 129,
+    "date": "2026-10-02",
+    "company_name": "Venice Beach Sound Sanctuary",
+    "email": "procurement@venicebeachsounds.com",
+    "address": "1301 Abbot Kinney Blvd, Los Angeles, CA 90291, USA",
+    "status": "SENT",
+    "response": ""
+  },
+  {
+    "index": 130,
+    "date": "2026-10-02",
+    "company_name": "Mission Sound Healing Arts",
+    "email": "procurement@missionsoundhealing.com",
+    "address": "984 Valencia St, San Francisco, CA 94110, USA",
+    "status": "SENT",
+    "response": ""
+  },
+  {
+    "index": 131,
+    "date": "2026-10-02",
+    "company_name": "Pacifica Sound Healing Wholesale",
+    "email": "procurement@pacificasoundwholesale.com",
+    "address": "1807 N 45th St, Seattle, WA 98103, USA",
+    "status": "SENT",
+    "response": ""
+  },
+  {
+    "index": 132,
+    "date": "2026-10-02",
+    "company_name": "Zenith Sound & Light Distribution",
+    "email": "procurement@zenithsoundlight.com",
+    "address": "3562 SE Hawthorne Blvd, Portland, OR 97214, USA",
+    "status": "SENT",
+    "response": ""
+  },
+  {
+    "index": 133,
+    "date": "2026-10-02",
+    "company_name": "Aloha Sound Meditation Supply",
+    "email": "procurement@alohasoundmeditation.com",
+    "address": "1601 S Congress Ave, Austin, TX 78704, USA",
+    "status": "SENT",
+    "response": ""
+  },
+  {
+    "index": 134,
+    "date": "2026-10-02",
+    "company_name": "Appalachian Sound & Mind Supply",
+    "email": "procurement@appalachiansoundmind.org",
+    "address": "80 N Lexington Ave, Asheville, NC 28801, USA",
+    "status": "SENT",
+    "response": ""
+  },
+  {
+    "index": 135,
+    "date": "2026-10-02",
+    "company_name": "Mount Shasta Sound & Meditation",
+    "email": "procurement@shastasoundhealing.com",
+    "address": "412 N Mt Shasta Blvd, Mount Shasta, CA 96067, USA",
+    "status": "SENT",
+    "response": ""
+  },
+  {
+    "index": 136,
+    "date": "2026-10-02",
+    "company_name": "Inland Empire Sound Therapy Co",
+    "email": "procurement@inlandempiresound.com",
+    "address": "600 W Main Ave, Spokane, WA 99201, USA",
+    "status": "SENT",
+    "response": ""
+  },
+  {
+    "index": 137,
+    "date": "2026-10-02",
+    "company_name": "Garden Isle Sound & Meditation",
+    "email": "procurement@gardenislesound.com",
+    "address": "4-1380 Kuhio Hwy, Kauai, HI 96746, USA",
+    "status": "SENT",
+    "response": ""
+  },
+  {
+    "index": 138,
+    "date": "2026-10-02",
+    "company_name": "Red Rock Sound Sanctuary West",
+    "email": "procurement@redrocksoundsanctuary.com",
+    "address": "160 Dry Creek Rd, Sedona West, AZ 86336, USA",
+    "status": "SENT",
+    "response": ""
+  },
+  {
+    "index": 139,
+    "date": "2026-10-02",
+    "company_name": "Monterey Peninsula Sound Guild",
+    "email": "procurement@montereysoundguild.com",
+    "address": "Ocean Ave & Lincoln St, Carmel-by-the-Sea, CA 93921, USA",
+    "status": "SENT",
+    "response": ""
+  },
+  {
+    "index": 140,
+    "date": "2026-10-02",
+    "company_name": "Santa Cruz Sacred Sound Imports",
+    "email": "procurement@santacruzsacredsound.com",
+    "address": "1115 Pacific Ave, Santa Cruz, CA 95060, USA",
+    "status": "SENT",
+    "response": ""
+  },
+  {
+    "index": 141,
+    "date": "2026-10-02",
+    "company_name": "Gallatin Valley Sound Therapy",
+    "email": "procurement@gallatinsoundtherapy.com",
+    "address": "14 E Main St, Bozeman, MT 59715, USA",
+    "status": "SENT",
+    "response": ""
+  },
+  {
+    "index": 142,
+    "date": "2026-10-02",
+    "company_name": "Four Lakes Sound Healing Supply",
+    "email": "procurement@fourlakessoundsupply.com",
+    "address": "230 State St, Madison, WI 53703, USA",
+    "status": "SENT",
+    "response": ""
+  },
+  {
+    "index": 143,
+    "date": "2026-10-02",
+    "company_name": "Cumberland Sound Sanctuary LLC",
+    "email": "procurement@cumberlandsoundsanctuary.com",
+    "address": "900 Woodland St, Nashville, TN 37206, USA",
+    "status": "SENT",
+    "response": ""
+  },
+  {
+    "index": 144,
+    "date": "2026-10-02",
+    "company_name": "Sweetwater Sound & Mindful Living",
+    "email": "procurement@sweetwatersoundliving.com",
+    "address": "1100 Euclid Ave NE, Atlanta, GA 30307, USA",
+    "status": "SENT",
+    "response": ""
+  },
+  {
+    "index": 145,
+    "date": "2026-10-02",
+    "company_name": "Hudson Valley Singing Bowl Guild",
+    "email": "procurement@hudsonvalleysingingbowls.com",
+    "address": "60 Main St, New Paltz, NY 12561, USA",
+    "status": "FAILED",
+    "response": ""
+  },
+  {
+    "index": 146,
+    "date": "2026-10-02",
+    "company_name": "Berkshire Sound & Yoga Supply",
+    "email": "procurement@berkshiresoundsupply.com",
+    "address": "284 Main St, Great Barrington, MA 01230, USA",
+    "status": "SENT",
+    "response": ""
+  },
+  {
+    "index": 147,
+    "date": "2026-10-02",
+    "company_name": "Finger Lakes Sound Healing Arts",
+    "email": "procurement@fingerlakessound.com",
+    "address": "171 E State St, Ithaca, NY 14850, USA",
+    "status": "SENT",
+    "response": ""
+  },
+  {
+    "index": 148,
+    "date": "2026-10-02",
+    "company_name": "Arbor Sound & Mindfulness Imports",
+    "email": "procurement@arborsoundimports.com",
+    "address": "530 S University Ave, Ann Arbor, MI 48104, USA",
+    "status": "SENT",
+    "response": ""
+  },
+  {
+    "index": 149,
+    "date": "2026-10-02",
+    "company_name": "Twin Cities Sound Bath Supply",
+    "email": "procurement@twincitiessoundbath.com",
+    "address": "2600 Hennepin Ave, Minneapolis, MN 55408, USA",
+    "status": "SENT",
+    "response": ""
+  },
+  {
+    "index": 150,
+    "date": "2026-10-02",
+    "company_name": "Bellingham Sound & Meditation Hub",
+    "email": "procurement@bellinghamsoundhub.com",
+    "address": "1100 Harris Ave, Bellingham, WA 98225, USA",
+    "status": "SENT",
+    "response": ""
+  },
+  {
+    "index": 151,
+    "date": "2026-10-02",
+    "company_name": "Ojai Valley Sound Sanctuary",
+    "email": "procurement@ojaisoundhealing.com",
+    "address": "302 E Ojai Ave, Ojai, CA 93023, USA",
+    "status": "SENT",
+    "response": ""
+  },
+  {
+    "index": 152,
+    "date": "2026-10-02",
+    "company_name": "Natural State Decor Wholesale",
+    "email": "sourcing@naturalstatedecor.com",
+    "address": "400 W Capitol Ave, Little Rock, AR 72201, USA",
+    "status": "SENT",
+    "response": ""
+  },
+  {
+    "index": 153,
+    "date": "2026-10-02",
+    "company_name": "Badger State Tabletop Imports",
+    "email": "sourcing@badgerstateimports.com",
+    "address": "10 E Doty St, Madison, WI 53703, USA",
+    "status": "SENT",
+    "response": ""
+  },
+  {
+    "index": 154,
+    "date": "2026-10-02",
+    "company_name": "Upstate Heritage Lanterns LLC",
+    "email": "sourcing@upstateheritagelanterns.com",
+    "address": "300 E McBee Ave, Greenville, SC 29601, USA",
+    "status": "SENT",
+    "response": ""
+  },
+  {
+    "index": 155,
+    "date": "2026-10-02",
+    "company_name": "Smoky Mountain Candle Stand Co",
+    "email": "sourcing@smokymountaincandlestands.com",
+    "address": "800 S Gay St, Knoxville, TN 37902, USA",
+    "status": "SENT",
+    "response": ""
+  },
+  {
+    "index": 156,
+    "date": "2026-10-02",
+    "company_name": "Furniture City Metalcraft Goods",
+    "email": "sourcing@furniturecitymetalcraft.com",
+    "address": "250 Monroe Ave NW, Grand Rapids, MI 49503, USA",
+    "status": "SENT",
+    "response": ""
+  },
+  {
+    "index": 157,
+    "date": "2026-10-02",
+    "company_name": "Inland Northwest Decor Supply",
+    "email": "sourcing@inlandnorthwestdecor.com",
+    "address": "717 W Sprague Ave, Spokane, WA 99201, USA",
+    "status": "SENT",
+    "response": ""
+  },
+  {
+    "index": 158,
+    "date": "2026-10-02",
+    "company_name": "Crown City Tabletop Distributors",
+    "email": "sourcing@crowncitytabletop.com",
+    "address": "300 N Lake Ave, Pasadena, CA 91101, USA",
+    "status": "SENT",
+    "response": ""
+  },
+  {
+    "index": 159,
+    "date": "2026-10-02",
+    "company_name": "Pacific Horizons Metalcraft",
+    "email": "sourcing@pacifichorizonsmetalcraft.com",
+    "address": "520 Newport Center Dr, Newport Beach, CA 92660, USA",
+    "status": "SENT",
+    "response": ""
+  },
+  {
+    "index": 160,
+    "date": "2026-10-02",
+    "company_name": "Desert Bloom Tableware Supply",
+    "email": "sourcing@desertbloomtableware.com",
+    "address": "7135 E Camelback Rd, Scottsdale, AZ 85251, USA",
+    "status": "SENT",
+    "response": ""
+  },
+  {
+    "index": 161,
+    "date": "2026-10-02",
+    "company_name": "Gold Coast Candelabras & Lighting",
+    "email": "sourcing@goldcoastcandelabras.com",
+    "address": "200 E Las Olas Blvd, Fort Lauderdale, FL 33301, USA",
+    "status": "SENT",
+    "response": ""
+  },
+  {
+    "index": 162,
+    "date": "2026-10-02",
+    "company_name": "Suncoast Tabletop & Event Decor",
+    "email": "sourcing@suncoasttabletop.com",
+    "address": "1800 2nd St, Sarasota, FL 34236, USA",
+    "status": "SENT",
+    "response": ""
+  },
+  {
+    "index": 163,
+    "date": "2026-10-02",
+    "company_name": "Sierra Vista Metalcraft & Lanterns",
+    "email": "sourcing@sierravistametalcraft.com",
+    "address": "100 W Liberty St, Reno, NV 89501, USA",
+    "status": "SENT",
+    "response": ""
+  },
+  {
+    "index": 164,
+    "date": "2026-10-02",
+    "company_name": "Island Breeze Tabletop Goods",
+    "email": "sourcing@islandbreezedecor.com",
+    "address": "733 Bishop St, Honolulu, HI 96813, USA",
+    "status": "SENT",
+    "response": ""
+  },
+  {
+    "index": 165,
+    "date": "2026-10-02",
+    "company_name": "Green Country Tabletop Imports",
+    "email": "sourcing@greencountryimports.com",
+    "address": "100 W 5th St, Tulsa, OK 74103, USA",
+    "status": "SENT",
+    "response": ""
+  },
+  {
+    "index": 166,
+    "date": "2026-10-02",
+    "company_name": "Prairie View Wholesale Lanterns",
+    "email": "sourcing@prairieviewlanterns.com",
+    "address": "1620 Dodge St, Omaha, NE 68102, USA",
+    "status": "SENT",
+    "response": ""
+  },
+  {
+    "index": 167,
+    "date": "2026-10-02",
+    "company_name": "Flower City Tabletop Imports",
+    "email": "sourcing@flowercitytabletop.com",
+    "address": "100 S Clinton Ave, Rochester, NY 14604, USA",
+    "status": "SENT",
+    "response": ""
+  },
+  {
+    "index": 168,
+    "date": "2026-10-02",
+    "company_name": "Magic City Lanterns & Decor LLC",
+    "email": "sourcing@magiccitylanterns.com",
+    "address": "1901 6th Ave N, Birmingham, AL 35203, USA",
+    "status": "SENT",
+    "response": ""
+  },
+  {
+    "index": 169,
+    "date": "2026-10-02",
+    "company_name": "Coastal Georgia Decor Distributors",
+    "email": "sourcing@coastalgeorgiadecor.com",
+    "address": "2 E Bryan St, Savannah, GA 31401, USA",
+    "status": "SENT",
+    "response": ""
+  },
+  {
+    "index": 170,
+    "date": "2026-10-02",
+    "company_name": "Lowcountry Iron & Lantern Works",
+    "email": "sourcing@lowcountryironworks.com",
+    "address": "170 Meeting St, Charleston, SC 29401, USA",
+    "status": "SENT",
+    "response": ""
+  },
+  {
+    "index": 171,
+    "date": "2026-10-02",
+    "company_name": "Ocean State Tableware Imports",
+    "email": "sourcing@oceanstateimports.com",
+    "address": "1 Financial Plaza, Providence, RI 02903, USA",
+    "status": "SENT",
+    "response": ""
+  },
+  {
+    "index": 172,
+    "date": "2026-10-02",
+    "company_name": "Oak City Home Decor Wholesale",
+    "email": "sourcing@oakcityhomedecor.com",
+    "address": "421 Fayetteville St, Raleigh, NC 27601, USA",
+    "status": "SENT",
+    "response": ""
+  },
+  {
+    "index": 173,
+    "date": "2026-10-02",
+    "company_name": "Crescent City Banquet & Brass",
+    "email": "sourcing@crescentcitybrass.com",
+    "address": "909 Poydras St, New Orleans, LA 70130, USA",
+    "status": "SENT",
+    "response": ""
+  },
+  {
+    "index": 174,
+    "date": "2026-10-02",
+    "company_name": "Old Dominion Lantern Supply Co",
+    "email": "sourcing@olddominionlanterns.com",
+    "address": "901 E Byrd St, Richmond, VA 23219, USA",
+    "status": "SENT",
+    "response": ""
+  },
+  {
+    "index": 175,
+    "date": "2026-10-02",
+    "company_name": "Cowtown Metalcraft & Candlestands",
+    "email": "sourcing@cowtownmetalcraft.com",
+    "address": "777 Main St, Fort Worth, TX 76102, USA",
+    "status": "SENT",
+    "response": ""
+  },
+  {
+    "index": 176,
+    "date": "2026-10-02",
+    "company_name": "Central Valley Home Furnishings",
+    "email": "sourcing@centralvalleyfurnishings.com",
+    "address": "2014 Tulare St, Fresno, CA 93721, USA",
+    "status": "SENT",
+    "response": ""
+  },
+  {
+    "index": 177,
+    "date": "2026-10-02",
+    "company_name": "Old Pueblo Lantern & Ironworks",
+    "email": "sourcing@oldpueblolanterns.com",
+    "address": "1 S Church Ave, Tucson, AZ 85701, USA",
+    "status": "SENT",
+    "response": ""
+  },
+  {
+    "index": 178,
+    "date": "2026-10-02",
+    "company_name": "Turquoise Trail Metal Decor",
+    "email": "sourcing@turquoisetraildecor.com",
+    "address": "500 4th St NW, Albuquerque, NM 87102, USA",
+    "status": "SENT",
+    "response": ""
+  },
+  {
+    "index": 179,
+    "date": "2026-10-02",
+    "company_name": "Sooner State Home Collections",
+    "email": "sourcing@soonerstatedecor.com",
+    "address": "211 N Robinson Ave, Oklahoma City, OK 73102, USA",
+    "status": "SENT",
+    "response": ""
+  },
+  {
+    "index": 180,
+    "date": "2026-10-02",
+    "company_name": "Bluff City Hospitality Furnishings",
+    "email": "sourcing@bluffcityhospitality.com",
+    "address": "100 N Front St, Memphis, TN 38103, USA",
+    "status": "SENT",
+    "response": ""
+  },
+  {
+    "index": 181,
+    "date": "2026-10-02",
+    "company_name": "Bluegrass Brass & Candle Stands",
+    "email": "sourcing@bluegrassbrass.com",
+    "address": "400 W Market St, Louisville, KY 40202, USA",
+    "status": "SENT",
+    "response": ""
+  },
+  {
+    "index": 182,
+    "date": "2026-10-02",
+    "company_name": "Encinitas Sacred Sound Imports",
+    "email": "procurement@encinitassounds.com",
+    "address": "687 S Coast Hwy 101, Encinitas, CA 92024, USA",
+    "status": "SENT",
+    "response": ""
+  },
+  {
+    "index": 183,
+    "date": "2026-10-02",
+    "company_name": "Boulder Himalayan Singing Bowl Co",
+    "email": "procurement@boulderbowls.com",
+    "address": "1421 Pearl St, Boulder, CO 80302, USA",
+    "status": "SENT",
+    "response": ""
+  },
+  {
+    "index": 184,
+    "date": "2026-10-02",
+    "company_name": "Sedona Sound Temple LLC",
+    "email": "procurement@sedonasoundtemple.com",
+    "address": "2855 W State Rte 89A, Sedona, AZ 86336, USA",
+    "status": "SENT",
+    "response": ""
+  },
+  {
+    "index": 185,
+    "date": "2026-10-02",
+    "company_name": "Santa Fe Metal & Lantern Guild",
+    "email": "sourcing@santafemetalguild.com",
+    "address": "125 E Palace Ave, Santa Fe, NM 87501, USA",
+    "status": "SENT",
+    "response": ""
+  },
+  {
+    "index": 186,
+    "date": "2026-10-02",
+    "company_name": "Montecito Tabletop & Living",
+    "email": "sourcing@montecitotabletop.com",
+    "address": "1020 State St, Santa Barbara, CA 93101, USA",
+    "status": "SENT",
+    "response": ""
+  },
+  {
+    "index": 187,
+    "date": "2026-10-02",
+    "company_name": "Gulf Coast Hearth & Candlestands",
+    "email": "sourcing@gulfcoastcandlestands.com",
+    "address": "800 N Shoreline Blvd, Corpus Christi, TX 78401, USA",
+    "status": "SENT",
+    "response": ""
+  },
+  {
+    "index": 188,
+    "date": "2026-10-05",
+    "company_name": "Thoroughbred Tabletop Imports",
+    "email": "sourcing@thoroughbredtabletop.com",
+    "address": "250 W Main St, Lexington, KY 40507, USA",
+    "status": "SENT",
+    "response": ""
+  },
+  {
+    "index": 189,
+    "date": "2026-10-05",
+    "company_name": "Wolverine Home & Lantern Co",
+    "email": "sourcing@wolverinehomelantern.com",
+    "address": "301 E Liberty St, Ann Arbor, MI 48104, USA",
+    "status": "SENT",
+    "response": ""
+  },
+  {
+    "index": 190,
+    "date": "2026-10-05",
+    "company_name": "Buckeye State Tabletop Supply",
+    "email": "sourcing@buckeyetabletop.com",
+    "address": "100 S High St, Columbus, OH 43215, USA",
+    "status": "SENT",
+    "response": ""
+  },
+  {
+    "index": 191,
+    "date": "2026-10-05",
+    "company_name": "Capitol View Artisan Imports",
+    "email": "sourcing@capitolviewimports.com",
+    "address": "980 9th St, Sacramento, CA 95814, USA",
+    "status": "SENT",
+    "response": ""
+  },
+  {
+    "index": 192,
+    "date": "2026-10-05",
+    "company_name": "Queen City Candle & Lantern Co",
+    "email": "sourcing@queencitylanterns.com",
+    "address": "200 S Tryon St, Charlotte, NC 28202, USA",
+    "status": "SENT",
+    "response": ""
+  },
+  {
+    "index": 193,
+    "date": "2026-10-05",
+    "company_name": "Music City Hospitality Goods",
+    "email": "sourcing@musiccityhospitality.com",
+    "address": "1201 8th Ave S, Nashville, TN 37203, USA",
+    "status": "SENT",
+    "response": ""
+  },
+  {
+    "index": 194,
+    "date": "2026-10-05",
+    "company_name": "Motor City Home Accents LLC",
+    "email": "sourcing@motorcityaccents.com",
+    "address": "1001 Woodward Ave, Detroit, MI 48226, USA",
+    "status": "SENT",
+    "response": ""
+  },
+  {
+    "index": 195,
+    "date": "2026-10-05",
+    "company_name": "North Star Tabletop Imports",
+    "email": "sourcing@northstarimports.com",
+    "address": "275 Market St, Minneapolis, MN 55405, USA",
+    "status": "SENT",
+    "response": ""
+  },
+  {
+    "index": 196,
+    "date": "2026-10-05",
+    "company_name": "Sonoran Desert Decor Wholesale",
+    "email": "sourcing@sonorandecor.com",
+    "address": "2400 E Camelback Rd, Phoenix, AZ 85016, USA",
+    "status": "SENT",
+    "response": ""
+  },
+  {
+    "index": 197,
+    "date": "2026-10-05",
+    "company_name": "Independence Home & Tableware",
+    "email": "sourcing@independencehomegoods.com",
+    "address": "401 Chestnut St, Philadelphia, PA 19106, USA",
+    "status": "SENT",
+    "response": ""
+  },
+  {
+    "index": 198,
+    "date": "2026-10-05",
+    "company_name": "Circle City Home Furnishings",
+    "email": "sourcing@circlecityfurnishings.com",
+    "address": "1 N Meridian St, Indianapolis, IN 46204, USA",
+    "status": "SENT",
+    "response": ""
+  },
+  {
+    "index": 199,
+    "date": "2026-10-05",
+    "company_name": "Lake Erie Ironworks & Lanterns",
+    "email": "sourcing@lakeerieironworks.com",
+    "address": "1300 Euclid Ave, Cleveland, OH 44115, USA",
+    "status": "SENT",
+    "response": ""
+  },
+  {
+    "index": 200,
+    "date": "2026-10-05",
+    "company_name": "Citrus Blossom Home Collections",
+    "email": "sourcing@citrusblossomdecor.com",
+    "address": "111 N Orange Ave, Orlando, FL 32801, USA",
+    "status": "SENT",
+    "response": ""
+  },
+  {
+    "index": 201,
+    "date": "2026-10-05",
+    "company_name": "Silver State Event Decor Imports",
+    "email": "sourcing@silverstatedecor.com",
+    "address": "495 S Grand Central Pkwy, Las Vegas, NV 89106, USA",
+    "status": "SENT",
+    "response": ""
+  },
+  {
+    "index": 202,
+    "date": "2026-10-05",
+    "company_name": "Rose City Tabletop Distributors",
+    "email": "sourcing@rosecitytabletop.com",
+    "address": "1022 NW 11th Ave, Portland, OR 97209, USA",
+    "status": "SENT",
+    "response": ""
+  },
+  {
+    "index": 203,
+    "date": "2026-10-05",
+    "company_name": "Lone Star Artisan Decor Inc",
+    "email": "sourcing@lonestarartisandecor.com",
+    "address": "500 Congress Ave, Austin, TX 78701, USA",
+    "status": "SENT",
+    "response": ""
+  },
+  {
+    "index": 204,
+    "date": "2026-10-05",
+    "company_name": "Pacific Home Collections",
+    "email": "sourcing@pacifichomecollections.com",
+    "address": "1933 S Broadway, Los Angeles, CA 90007, USA",
+    "status": "SENT",
+    "response": ""
+  },
+  {
+    "index": 205,
+    "date": "2026-10-05",
+    "company_name": "High Point Tabletop & Decor LLC",
+    "email": "sourcing@highpointtabletop.com",
+    "address": "209 S Main St, High Point, NC 27260, USA",
+    "status": "SENT",
+    "response": ""
+  },
+  {
+    "index": 206,
+    "date": "2026-10-05",
+    "company_name": "Sterling Decor Imports Inc",
+    "email": "sourcing@sterlingdecorimports.com",
+    "address": "240 Peachtree St NW #1400, Atlanta, GA 30303, USA",
+    "status": "SENT",
+    "response": ""
+  },
+  {
+    "index": 207,
+    "date": "2026-10-05",
+    "company_name": "Rocky Mountain Lantern Supply",
+    "email": "sourcing@rockymountainlanterns.com",
+    "address": "595 S Broadway, Denver, CO 80204, USA",
+    "status": "FAILED",
+    "response": ""
+  },
+  {
+    "index": 208,
+    "date": "2026-10-05",
+    "company_name": "Golden Gate Brass & Ironworks",
+    "email": "sourcing@goldengatebrass.com",
+    "address": "101 Henry Adams St, San Francisco, CA 94103, USA",
+    "status": "SENT",
+    "response": ""
+  },
+  {
+    "index": 209,
+    "date": "2026-10-05",
+    "company_name": "Manhattan Decor & Tabletop Group",
+    "email": "sourcing@manhattandecorgroup.com",
+    "address": "200 Lexington Ave #400, New York, NY 10016, USA",
+    "status": "SENT",
+    "response": ""
+  },
+  {
+    "index": 210,
+    "date": "2026-10-05",
+    "company_name": "Cascadia Living Imports",
+    "email": "sourcing@cascadialivingimports.com",
+    "address": "5701 6th Ave S, Seattle, WA 98108, USA",
+    "status": "SENT",
+    "response": ""
+  },
+  {
+    "index": 211,
+    "date": "2026-10-05",
+    "company_name": "Sunbelt Hospitality Supply LLC",
+    "email": "sourcing@sunbelthospitalitysupply.com",
+    "address": "5120 Woodway Dr, Houston, TX 77056, USA",
+    "status": "SENT",
+    "response": ""
+  },
+  {
+    "index": 212,
+    "date": "2026-10-05",
+    "company_name": "Gallagher & Sons Hardware & Home",
+    "email": "sourcing@gallagherhomegoods.com",
+    "address": "1 Design Center Pl #600, Boston, MA 02210, USA",
+    "status": "SENT",
+    "response": ""
+  },
+  {
+    "index": 213,
+    "date": "2026-10-05",
+    "company_name": "Bespoke Event Furnishings Inc",
+    "email": "sourcing@bespokeeventfurnishings.com",
+    "address": "3841 NE 2nd Ave, Miami, FL 33137, USA",
+    "status": "SENT",
+    "response": ""
+  },
+  {
+    "index": 214,
+    "date": "2026-10-05",
+    "company_name": "Windsor Tableware Imports",
+    "email": "sourcing@windsortableware.com",
+    "address": "222 W Merchandise Mart Plaza, Chicago, IL 60654, USA",
+    "status": "SENT",
+    "response": ""
+  },
+  {
+    "index": 215,
+    "date": "2026-10-05",
+    "company_name": "Magnolia Home & Garden Wholesale",
+    "email": "sourcing@magnoliawholesalegarden.com",
+    "address": "2100 Stemmons Fwy #3900, Dallas, TX 75207, USA",
+    "status": "SENT",
+    "response": ""
+  },
+  {
+    "index": 216,
+    "date": "2026-10-05",
+    "company_name": "Pacific Coast Sound Healing Guild",
+    "email": "hbrooks@pacificsoundsguild.com",
+    "address": "800 State St, Santa Barbara, CA 93101, USA",
+    "status": "SENT",
+    "response": ""
+  },
+  {
+    "index": 217,
+    "date": "2026-10-05",
+    "company_name": "Rocky Mountain Singing Bowls LLC",
+    "email": "zcole@rockymtnsingingbowls.com",
+    "address": "1050 Walnut St, Boulder, CO 80302, USA",
+    "status": "SENT",
+    "response": ""
+  },
+  {
+    "index": 218,
+    "date": "2026-10-05",
+    "company_name": "Sierra Sound Sanctuary LLC",
+    "email": "cbennett@sierrasoundsanctuary.com",
+    "address": "100 W Liberty St, Reno, NV 89501, USA",
+    "status": "SENT",
+    "response": ""
+  },
+  {
+    "index": 219,
+    "date": "2026-10-05",
+    "company_name": "Capitol Sound & Wellness LLC",
+    "email": "jramirez@capitolsoundwellness.com",
+    "address": "400 Capitol Mall, Sacramento, CA 95814, USA",
+    "status": "SENT",
+    "response": ""
+  },
+  {
+    "index": 220,
+    "date": "2026-10-05",
+    "company_name": "Central Florida Sound Therapy Co",
+    "email": "vscott@cflsoundtherapy.com",
+    "address": "200 S Orange Ave, Orlando, FL 32801, USA",
+    "status": "SENT",
+    "response": ""
+  },
+  {
+    "index": 221,
+    "date": "2026-10-05",
+    "company_name": "Heartland Meditation & Sound Supply",
+    "email": "mkelly@heartlandsound.com",
+    "address": "1200 Main St, Kansas City, MO 64105, USA",
+    "status": "SENT",
+    "response": ""
+  },
+  {
+    "index": 222,
+    "date": "2026-10-05",
+    "company_name": "Crossroads Sound Collective",
+    "email": "cross@crossroadssound.com",
+    "address": "101 W Washington St, Indianapolis, IN 46204, USA",
+    "status": "SENT",
+    "response": ""
+  },
+  {
+    "index": 223,
+    "date": "2026-10-05",
+    "company_name": "Lowcountry Sound Sanctuary LLC",
+    "email": "mgreen@lowcountrysoundsanctuary.com",
+    "address": "200 Meeting St, Charleston, SC 29401, USA",
+    "status": "SENT",
+    "response": ""
+  },
+  {
+    "index": 224,
+    "date": "2026-10-05",
+    "company_name": "Virginia Sound & Yoga Wholesale",
+    "email": "dwhite@virginiasoundyoga.com",
+    "address": "901 E Byrd St, Richmond, VA 23219, USA",
+    "status": "SENT",
+    "response": ""
+  },
+  {
+    "index": 225,
+    "date": "2026-10-05",
+    "company_name": "Liberty Sound Therapy Supplies",
+    "email": "jpierce@libertysoundtherapy.com",
+    "address": "1735 Market St, Philadelphia, PA 19103, USA",
+    "status": "SENT",
+    "response": ""
+  },
+  {
+    "index": 226,
+    "date": "2026-10-05",
+    "company_name": "Great Lakes Sound Sanctuary",
+    "email": "nbrooks@greatlakessound.com",
+    "address": "301 E Liberty St, Ann Arbor, MI 48104, USA",
+    "status": "SENT",
+    "response": ""
+  },
+  {
+    "index": 227,
+    "date": "2026-10-05",
+    "company_name": "Steel City Tabletop & Hearth",
+    "email": "sourcing@steelcitytabletop.com",
+    "address": "600 Grant St, Pittsburgh, PA 15222, USA",
+    "status": "SENT",
+    "response": ""
+  },
+  {
+    "index": 228,
+    "date": "2026-10-05",
+    "company_name": "Wasatch Range Metalcraft & Decor",
+    "email": "sourcing@wasatchmetalcraft.com",
+    "address": "222 S Main St, Salt Lake City, UT 84101, USA",
+    "status": "SENT",
+    "response": ""
+  },
+  {
+    "index": 229,
+    "date": "2026-10-06",
+    "company_name": "Cream City Wholesale Tableware",
+    "email": "sourcing@creamcitytableware.com",
+    "address": "777 E Wisconsin Ave, Milwaukee, WI 53202, USA",
+    "status": "SENT",
+    "response": ""
+  },
+  {
+    "index": 230,
+    "date": "2026-10-06",
+    "company_name": "Chesapeake Bay Lanterns & Brass",
+    "email": "sourcing@chesapeakebaylanterns.com",
+    "address": "100 E Pratt St, Baltimore, MD 21202, USA",
+    "status": "SENT",
+    "response": ""
+  },
+  {
+    "index": 231,
+    "date": "2026-10-06",
+    "company_name": "Gateway Arch Decor Distributors",
+    "email": "sourcing@gatewayarchdecor.com",
+    "address": "1501 Washington Ave, St. Louis, MO 63103, USA",
+    "status": "SENT",
+    "response": ""
+  },
+  {
+    "index": 232,
+    "date": "2026-10-06",
+    "company_name": "Midwest Heritage Candle Stands",
+    "email": "sourcing@midwestheritagecandles.com",
+    "address": "2405 Grand Blvd, Kansas City, MO 64108, USA",
+    "status": "SENT",
+    "response": ""
+  },
+  {
+    "index": 233,
+    "date": "2026-10-06",
+    "company_name": "Sunshine Coast Tabletop Imports",
+    "email": "sourcing@sunshinecoastimports.com",
+    "address": "100 N Tampa St, Tampa, FL 33602, USA",
+    "status": "SENT",
+    "response": ""
+  },
+  {
+    "index": 234,
+    "date": "2026-10-06",
+    "company_name": "Mission Bay Living & Decor",
+    "email": "sourcing@missionbayliving.com",
+    "address": "600 B St, San Diego, CA 92101, USA",
+    "status": "SENT",
+    "response": ""
+  },
+  {
+    "index": 235,
+    "date": "2026-10-06",
+    "company_name": "Savannah Southern Living Decor",
+    "email": "orders@savannahdecor.com",
+    "address": "300 W River St, Savannah, GA 31401, USA",
+    "status": "SENT",
+    "response": ""
+  },
+  {
+    "index": 236,
+    "date": "2026-10-06",
+    "company_name": "Boston Tabletop & Decor LLC",
+    "email": "procurement@bostontabletop.com",
+    "address": "100 Northern Ave, Boston, MA 02210, USA",
+    "status": "SENT",
+    "response": ""
+  },
+  {
+    "index": 237,
+    "date": "2026-10-06",
+    "company_name": "Boulevard Home Accents",
+    "email": "purchasing@boulevardhome.com",
+    "address": "390 N Mall Dr, St. George, UT 84790, USA",
+    "status": "SENT",
+    "response": ""
+  },
+  {
+    "index": 238,
+    "date": "2026-10-06",
+    "company_name": "The Zrike Company Inc",
+    "email": "imports@zrike.com",
+    "address": "840 Franklin Ave, Oakland, NJ 07436, USA",
+    "status": "SENT",
+    "response": ""
+  },
+  {
+    "index": 239,
+    "date": "2026-10-06",
+    "company_name": "Vance Kitira International LLC",
+    "email": "wholesale@vancekitira.com",
+    "address": "255 Kitira Lane, Timberlake, NC 27583, USA",
+    "status": "SENT",
+    "response": ""
+  },
+  {
+    "index": 240,
+    "date": "2026-10-06",
+    "company_name": "Hudson Valley Home & Hearth",
+    "email": "ghudson@hvhearth.com",
+    "address": "44 S Broadway, White Plains, NY 10601, USA",
+    "status": "SENT",
+    "response": ""
+  },
+  {
+    "index": 241,
+    "date": "2026-10-06",
+    "company_name": "North Star Sound Healing Co",
+    "email": "kpalmer@northstarsound.com",
+    "address": "50 S 10th St, Minneapolis, MN 55403, USA",
+    "status": "SENT",
+    "response": ""
+  },
+  {
+    "index": 242,
+    "date": "2026-10-06",
+    "company_name": "Blue Ridge Sound Temple LLC",
+    "email": "lavery@blueridgesoundtemple.com",
+    "address": "1 Pack Square, Asheville, NC 28801, USA",
+    "status": "SENT",
+    "response": ""
+  },
+  {
+    "index": 243,
+    "date": "2026-10-06",
+    "company_name": "High Desert Sacred Sound Co",
+    "email": "emontoya@highdesertsound.com",
+    "address": "201 3rd St NW #1150, Albuquerque, NM 87102, USA",
+    "status": "SENT",
+    "response": ""
+  },
+  {
+    "index": 244,
+    "date": "2026-10-06",
+    "company_name": "Music City Sound & Meditation",
+    "email": "tjenkins@musiccitysoundmeditation.com",
+    "address": "150 4th Ave N #1200, Nashville, TN 37219, USA",
+    "status": "SENT",
+    "response": ""
+  },
+  {
+    "index": 245,
+    "date": "2026-10-06",
+    "company_name": "Queen City Sound Bath LLC",
+    "email": "bvance@queencitysound.com",
+    "address": "100 N Tryon St #2800, Charlotte, NC 28202, USA",
+    "status": "SENT",
+    "response": ""
+  },
+  {
+    "index": 246,
+    "date": "2026-10-06",
+    "company_name": "Wasatch Sound Therapy Supplies",
+    "email": "gharrison@wasatchsound.com",
+    "address": "222 S Main St #500, Salt Lake City, UT 84101, USA",
+    "status": "SENT",
+    "response": ""
+  },
+  {
+    "index": 247,
+    "date": "2026-10-06",
+    "company_name": "Charlotte Home Collection LLC",
+    "email": "vsterling@charlottehomecoll.com",
+    "address": "200 S Tryon St, Charlotte, NC 28202, USA",
+    "status": "SENT",
+    "response": ""
+  },
+  {
+    "index": 248,
+    "date": "2026-10-06",
+    "company_name": "Austin Ironworks & Home Accents",
+    "email": "nward@austinironaccents.com",
+    "address": "1600 S Congress Ave, Austin, TX 78704, USA",
+    "status": "SENT",
+    "response": ""
+  },
+  {
+    "index": 249,
+    "date": "2026-10-06",
+    "company_name": "Hawaii Sacred Sound & Yoga",
+    "email": "ofoster@hawaiisoundsacred.com",
+    "address": "1003 Bishop St, Honolulu, HI 96813, USA",
+    "status": "SENT",
+    "response": ""
+  },
+  {
+    "index": 250,
+    "date": "2026-10-06",
+    "company_name": "Lake Mendota Mindfulness Goods",
+    "email": "dscott@lakemendotamindfulness.com",
+    "address": "10 E Doty St, Madison, WI 53703, USA",
+    "status": "SENT",
+    "response": ""
+  },
+  {
+    "index": 251,
+    "date": "2026-10-06",
+    "company_name": "Atlanta Holistic Sound Supply",
+    "email": "btaylor@atlantaholisticsound.com",
+    "address": "3344 Peachtree Rd NE, Atlanta, GA 30326, USA",
+    "status": "SENT",
+    "response": ""
+  },
+  {
+    "index": 252,
+    "date": "2026-10-06",
+    "company_name": "Seattle Sound & Zen Co",
+    "email": "ewatson@seattlesoundzen.com",
+    "address": "600 University St, Seattle, WA 98101, USA",
+    "status": "SENT",
+    "response": ""
+  },
+  {
+    "index": 253,
+    "date": "2026-10-06",
+    "company_name": "Miami Sound Therapy & Yoga Wholesale",
+    "email": "cmorales@miamisoundtherapy.com",
+    "address": "1111 Brickell Ave #1100, Miami, FL 33131, USA",
+    "status": "SENT",
+    "response": ""
+  },
+  {
+    "index": 254,
+    "date": "2026-10-06",
+    "company_name": "Denver Sound Temple Supply",
+    "email": "hnelson@denversoundtemple.com",
+    "address": "1515 Arapahoe St, Denver, CO 80202, USA",
+    "status": "SENT",
+    "response": ""
+  },
+  {
+    "index": 255,
+    "date": "2026-10-06",
+    "company_name": "Portland Mindfulness & Singing Bowls",
+    "email": "dkim@portlandmindfulness.org",
+    "address": "1020 SW Taylor St, Portland, OR 97205, USA",
+    "status": "SENT",
+    "response": ""
+  },
+  {
+    "index": 256,
+    "date": "2026-10-06",
+    "company_name": "Chicago Sound Healing Collective",
+    "email": "swright@chicagosoundcollective.com",
+    "address": "333 N Michigan Ave, Chicago, IL 60601, USA",
+    "status": "SENT",
+    "response": ""
+  },
+  {
+    "index": 257,
+    "date": "2026-10-07",
+    "company_name": "Twin Cities Sound Healing Supply",
+    "email": "lmurphy@twincitiessound.com",
+    "address": "222 S 9th St, Minneapolis, MN 55402, USA",
+    "status": "SENT",
+    "response": ""
+  },
+  {
+    "index": 258,
+    "date": "2026-10-07",
+    "company_name": "Pacific Wave Candle Holders",
+    "email": "mthorne@pacificwavecandleholders.com",
+    "address": "1115 Pacific Ave, Santa Cruz, CA 95060, USA",
+    "status": "SENT",
+    "response": ""
+  },
+  {
+    "index": 259,
+    "date": "2026-10-07",
+    "company_name": "Telegraph Ave Tabletop & Brass",
+    "email": "schen@telegraphtabletop.com",
+    "address": "2430 Telegraph Ave, Berkeley, CA 94704, USA",
+    "status": "SENT",
+    "response": ""
+  },
+  {
+    "index": 260,
+    "date": "2026-10-07",
+    "company_name": "Harbor Living Lantern Co",
+    "email": "bvance@harborlivinglanterns.com",
+    "address": "100 W Broadway #600, Long Beach, CA 90802, USA",
+    "status": "SENT",
+    "response": ""
+  },
+  {
+    "index": 261,
+    "date": "2026-10-07",
+    "company_name": "Orange County Home Accents LLC",
+    "email": "dsterling@ochomeaccents.com",
+    "address": "100 Spectrum Center Dr #900, Irvine, CA 92618, USA",
+    "status": "SENT",
+    "response": ""
+  },
+  {
+    "index": 262,
+    "date": "2026-10-07",
+    "company_name": "East Bay Tabletop Distributors",
+    "email": "tknowles@eastbaytabletop.com",
+    "address": "1999 Harrison St #1800, Oakland, CA 94612, USA",
+    "status": "SENT",
+    "response": ""
+  },
+  {
+    "index": 263,
+    "date": "2026-10-07",
+    "company_name": "Central Valley Metal Decor Wholesale",
+    "email": "arossi@centralvalleymetaldecor.com",
+    "address": "2014 Tulare St, Fresno, CA 93721, USA",
+    "status": "SENT",
+    "response": ""
+  },
+  {
+    "index": 264,
+    "date": "2026-10-07",
+    "company_name": "Desert Oasis Tabletop & Lanterns",
+    "email": "rsterling@desertoasislanterns.com",
+    "address": "777 N Palm Canyon Dr, Palm Springs, CA 92262, USA",
+    "status": "SENT",
+    "response": ""
+  },
+  {
+    "index": 265,
+    "date": "2026-10-07",
+    "company_name": "Riviera Metalcraft & Lanterns",
+    "email": "cdupont@rivierametalcraft.com",
+    "address": "384 Forest Ave, Laguna Beach, CA 92651, USA",
+    "status": "SENT",
+    "response": ""
+  },
+  {
+    "index": 266,
+    "date": "2026-10-07",
+    "company_name": "Capitol City Lantern Imports",
+    "email": "erostova@capitallanterns.com",
+    "address": "980 9th St #1400, Sacramento, CA 95814, USA",
+    "status": "SENT",
+    "response": ""
+  },
+  {
+    "index": 267,
+    "date": "2026-10-07",
+    "company_name": "Silicon Valley Hospitality Tableware",
+    "email": "mvance@siliconvalleytableware.com",
+    "address": "333 W San Carlos St, San Jose, CA 95110, USA",
+    "status": "SENT",
+    "response": ""
+  },
+  {
+    "index": 268,
+    "date": "2026-10-07",
+    "company_name": "Pacific Coast Brass & Votives LLC",
+    "email": "hbrooks@pacificcoastbrass.com",
+    "address": "600 B St #1200, San Diego, CA 92101, USA",
+    "status": "SENT",
+    "response": ""
+  },
+  {
+    "index": 269,
+    "date": "2026-10-07",
+    "company_name": "Golden Gate Candle Stand Co",
+    "email": "catherine.miller@goldengatebrass.com",
+    "address": "101 Henry Adams St #400, San Francisco, CA 94103, USA",
+    "status": "SENT",
+    "response": ""
+  },
+  {
+    "index": 270,
+    "date": "2026-10-07",
+    "company_name": "Sterling LA Tabletop & Lanterns Inc",
+    "email": "purchasing@sterlingdecorimports.com",
+    "address": "1933 S Broadway #800, Los Angeles, CA 90007, USA",
+    "status": "SENT",
+    "response": ""
+  },
+  {
+    "index": 271,
+    "date": "2026-10-07",
+    "company_name": "Oak Creek Canyon Sound Temple",
+    "email": "procurement@oakcreeksoundtemple.com",
+    "address": "300 N State Rte 89A, Sedona Uptown, AZ 86336, USA",
+    "status": "SENT",
+    "response": ""
+  },
+  {
+    "index": 272,
+    "date": "2026-10-07",
+    "company_name": "Wine Country Banquet Candelabras",
+    "email": "wsterling@winecountrycandelabras.com",
+    "address": "1200 First St #200, Napa, CA 94559, USA",
+    "status": "SENT",
+    "response": ""
+  },
+  {
+    "index": 273,
+    "date": "2026-10-07",
+    "company_name": "Ocean Breeze Votives & Lanterns LLC",
+    "email": "csullivan@oceanbreezevotives.com",
+    "address": "100 Wilshire Blvd #1500, Santa Monica, CA 90401, USA",
+    "status": "SENT",
+    "response": ""
+  },
+  {
+    "index": 274,
+    "date": "2026-10-07",
+    "company_name": "Rodeo Decor & Banquet Candelabras",
+    "email": "hmontgomery@rodeobanquetdecor.com",
+    "address": "9454 Wilshire Blvd, Beverly Hills, CA 90212, USA",
+    "status": "SENT",
+    "response": ""
+  },
+  {
+    "index": 275,
+    "date": "2026-10-07",
+    "company_name": "Coastal Luxury Lantern Supply",
+    "email": "jdrake@coastalluxurylanterns.com",
+    "address": "520 Newport Center Dr #600, Newport Beach, CA 92660, USA",
+    "status": "SENT",
+    "response": ""
+  },
+  {
+    "index": 276,
+    "date": "2026-10-07",
+    "company_name": "Crown City Artisan Candelabras",
+    "email": "yoko@crowncitytabletop.com",
+    "address": "300 N Lake Ave #700, Pasadena, CA 91101, USA",
+    "status": "SENT",
+    "response": ""
+  },
+  {
+    "index": 277,
+    "date": "2026-10-07",
+    "company_name": "Montecito Living & Candle Stands",
+    "email": "scroft@montecitolivingdecor.com",
+    "address": "1020 State St, Santa Barbara, CA 93101, USA",
+    "status": "SENT",
+    "response": ""
+  },
+  {
+    "index": 278,
+    "date": "2026-10-07",
+    "company_name": "Global Wellness Imports LLC",
+    "email": "info@globalwellnessimports.com",
+    "address": "11100 Santa Monica Blvd #800, Los Angeles, CA 90025, USA",
+    "status": "SENT",
+    "response": ""
+  },
+  {
+    "index": 279,
+    "date": "2026-10-07",
+    "company_name": "San Joaquin Sound Sanctuary",
+    "email": "ssharma@sanjoaquinsound.com",
+    "address": "5250 N Palm Ave #100, Fresno, CA 93704, USA",
+    "status": "SENT",
+    "response": ""
+  },
+  {
+    "index": 280,
+    "date": "2026-10-07",
+    "company_name": "Balboa Sound Meditation Arts",
+    "email": "rdas@balboasoundarts.com",
+    "address": "2100 W Oceanfront, Newport Beach, CA 92663, USA",
+    "status": "SENT",
+    "response": ""
+  },
+  {
+    "index": 281,
+    "date": "2026-10-07",
+    "company_name": "Batiquitos Sound Bath Supply",
+    "email": "jlee@batiquitossound.com",
+    "address": "7100 Aviara Resort Dr, Carlsbad, CA 92011, USA",
+    "status": "SENT",
+    "response": ""
+  },
+  {
+    "index": 282,
+    "date": "2026-10-07",
+    "company_name": "Sonoma Valley Sound & Mindfulness",
+    "email": "tstone@sonomasoundmindfulness.com",
+    "address": "200 W Napa St, Sonoma, CA 95476, USA",
+    "status": "SENT",
+    "response": ""
+  },
+  {
+    "index": 283,
+    "date": "2026-10-07",
+    "company_name": "Napa Valley Sound Meditation Retreat",
+    "email": "jmenon@napasoundretreat.com",
+    "address": "1000 Main St #150, Napa, CA 94559, USA",
+    "status": "SENT",
+    "response": ""
+  },
+  {
+    "index": 284,
+    "date": "2026-10-07",
+    "company_name": "Grand Lake Sound Healing Collective",
+    "email": "kvance@grandlakesound.com",
+    "address": "3200 Grand Ave, Oakland, CA 94610, USA",
+    "status": "SENT",
+    "response": ""
+  },
+  {
+    "index": 285,
+    "date": "2026-10-07",
+    "company_name": "Hidden Hills Sacred Sound Supply",
+    "email": "mwright@hiddenhillssound.com",
+    "address": "23500 Calabasas Rd #200, Calabasas, CA 91302, USA",
+    "status": "SENT",
+    "response": ""
+  },
+  {
+    "index": 286,
+    "date": "2026-10-07",
+    "company_name": "Topanga Canyon Sound Healing Temple",
+    "email": "syoung@topangasoundtemple.com",
+    "address": "199 S Topanga Canyon Blvd, Topanga, CA 90290, USA",
+    "status": "SENT",
+    "response": ""
+  },
+  {
+    "index": 287,
+    "date": "2026-10-07",
+    "company_name": "Central Coast Sound Bath Collective",
+    "email": "gshah@centralcoastsoundbath.com",
+    "address": "845 Higuera St, San Luis Obispo, CA 93401, USA",
+    "status": "SENT",
+    "response": ""
+  },
+  {
+    "index": 288,
+    "date": "2026-10-07",
+    "company_name": "Desert Zen Sound Healing Arts",
+    "email": "kwhite@desertzensound.com",
+    "address": "170 E Palm Canyon Dr, Palm Springs, CA 92264, USA",
+    "status": "SENT",
+    "response": ""
+  },
+  {
+    "index": 289,
+    "date": "2026-10-07",
+    "company_name": "Coastal Redwoods Sound Healing",
+    "email": "pjones@mendocinosoundhealing.com",
+    "address": "10480 Lansing St, Mendocino, CA 95460, USA",
+    "status": "SENT",
+    "response": ""
+  },
+  {
+    "index": 290,
+    "date": "2026-10-07",
+    "company_name": "Monterey Peninsula Sound Sanctuary",
+    "email": "sbrown@montereysoundguild.com",
+    "address": "Ocean Ave & Dolores St, Carmel-by-the-Sea, CA 93921, USA",
+    "status": "SENT",
+    "response": ""
+  },
+  {
+    "index": 291,
+    "date": "2026-10-07",
+    "company_name": "Bay View Sound & Yoga Arts",
+    "email": "rmiller@bayviewsoundyoga.com",
+    "address": "1001 Bridgeway, Sausalito, CA 94965, USA",
+    "status": "SENT",
+    "response": ""
+  },
+  {
+    "index": 292,
+    "date": "2026-10-07",
+    "company_name": "Marin County Sacred Sound Guild",
+    "email": "ataylor@marinsoundtherapy.com",
+    "address": "142 Throckmorton Ave, Mill Valley, CA 94941, USA",
+    "status": "SENT",
+    "response": ""
+  },
+  {
+    "index": 293,
+    "date": "2026-10-08",
+    "company_name": "Sierra Foothills Sound Temple",
+    "email": "gcole@goldcountrysound.com",
+    "address": "210 Broad St, Nevada City, CA 95959, USA",
+    "status": "SENT",
+    "response": ""
+  },
+  {
+    "index": 294,
+    "date": "2026-10-08",
+    "company_name": "Capitol Sound Healing & Yoga Sanctuary",
+    "email": "mking@capitolsoundhealing.com",
+    "address": "1200 K St #100, Sacramento, CA 95814, USA",
+    "status": "SENT",
+    "response": ""
+  },
+  {
+    "index": 295,
+    "date": "2026-10-08",
+    "company_name": "Silicon Valley Sound Mindfulness",
+    "email": "apatel@svsoundmindfulness.com",
+    "address": "150 S 1st St #200, San Jose, CA 95113, USA",
+    "status": "SENT",
+    "response": ""
+  },
+  {
+    "index": 296,
+    "date": "2026-10-08",
+    "company_name": "Ocean Sound Bath Collective",
+    "email": "edavis@oceansoundbath.com",
+    "address": "1333 2nd St #300, Santa Monica, CA 90401, USA",
+    "status": "SENT",
+    "response": ""
+  },
+  {
+    "index": 297,
+    "date": "2026-10-08",
+    "company_name": "Crystal Cove Sound Meditation Supply",
+    "email": "ashah@crystalcovesound.com",
+    "address": "380 Ocean Ave, Laguna Beach, CA 92651, USA",
+    "status": "SENT",
+    "response": ""
+  },
+  {
+    "index": 298,
+    "date": "2026-10-08",
+    "company_name": "Zuma Beach Sound Healing Sanctuary",
+    "email": "sbell@zumabeachsounds.com",
+    "address": "29500 Pacific Coast Hwy, Malibu, CA 90265, USA",
+    "status": "SENT",
+    "response": ""
+  },
+  {
+    "index": 299,
+    "date": "2026-10-08",
+    "company_name": "San Gabriel Valley Sound Meditation",
+    "email": "tchen@sgvsoundmeditation.com",
+    "address": "300 N Lake Ave #400, Pasadena, CA 91101, USA",
+    "status": "SENT",
+    "response": ""
+  },
+  {
+    "index": 300,
+    "date": "2026-10-08",
+    "company_name": "Topanga Canyon Rustic Hearth & Lanterns",
+    "email": "wrhoades@topangacanyonhearth.com",
+    "address": "120 S Topanga Canyon Blvd, Topanga, CA 90290, USA",
+    "status": "SENT",
+    "response": ""
+  },
+  {
+    "index": 301,
+    "date": "2026-10-08",
+    "company_name": "South Bay Coastal Lantern Guild",
+    "email": "jteller@southbaylanternguild.com",
+    "address": "1815 Hawthorne Blvd #300, Redondo Beach, CA 90278, USA",
+    "status": "SENT",
+    "response": ""
+  },
+  {
+    "index": 302,
+    "date": "2026-10-08",
+    "company_name": "Media City Metalcraft Imports",
+    "email": "lbloom@mediacitymetalcraft.com",
+    "address": "303 N Glenoaks Blvd #200, Burbank, CA 91502, USA",
+    "status": "SENT",
+    "response": ""
+  },
+  {
+    "index": 303,
+    "date": "2026-10-08",
+    "company_name": "Redwoods Sound Bath Supply",
+    "email": "pthorne@santacruzsacredsound.com",
+    "address": "1115 Pacific Ave, Santa Cruz, CA 95060, USA",
+    "status": "SENT",
+    "response": ""
+  },
+  {
+    "index": 304,
+    "date": "2026-10-08",
+    "company_name": "Telegraph Sound & Mindfulness Center",
+    "email": "jlee@eastbaysoundarts.com",
+    "address": "2430 Telegraph Ave, Berkeley, CA 94704, USA",
+    "status": "SENT",
+    "response": ""
+  },
+  {
+    "index": 305,
+    "date": "2026-10-08",
+    "company_name": "Pacific Coast Sound Healing Guild",
+    "email": "dsmith@rivierasoundguild.com",
+    "address": "800 State St, Santa Barbara, CA 93101, USA",
+    "status": "SENT",
+    "response": ""
+  },
+  {
+    "index": 306,
+    "date": "2026-10-08",
+    "company_name": "La Jolla Sound Meditation Collective",
+    "email": "kkrishna@sandiegosoundbath.com",
+    "address": "1420 University Ave, San Diego, CA 92103, USA",
+    "status": "SENT",
+    "response": ""
+  },
+  {
+    "index": 307,
+    "date": "2026-10-08",
+    "company_name": "Venice Sound Sanctuary & Acoustic Bowls",
+    "email": "mchen@venicebeachsounds.com",
+    "address": "1301 Abbot Kinney Blvd, Los Angeles, CA 90291, USA",
+    "status": "SENT",
+    "response": ""
+  },
+  {
+    "index": 308,
+    "date": "2026-10-08",
+    "company_name": "Presidio Sound Bath & Tibetan Arts",
+    "email": "sroy@missionsoundhealing.com",
+    "address": "984 Valencia St, San Francisco, CA 94110, USA",
+    "status": "SENT",
+    "response": ""
+  },
+  {
+    "index": 309,
+    "date": "2026-10-08",
+    "company_name": "Wine Country Banquet Candelabras",
+    "email": "wsterling@winecountrycandelabras.com",
+    "address": "1200 First St #200, Napa, CA 94559, USA",
+    "status": "SENT",
+    "response": ""
+  },
+  {
+    "index": 310,
+    "date": "2026-10-08",
+    "company_name": "Ojai Valley Sound Sanctuary & Bronze Bowls",
+    "email": "bthorne@ojaisoundhealing.com",
+    "address": "302 E Ojai Ave, Ojai, CA 93023, USA",
+    "status": "SENT",
+    "response": ""
+  },
+  {
+    "index": 311,
+    "date": "2026-10-08",
+    "company_name": "Encinitas Sacred Sound Imports",
+    "email": "tnorbu@encinitassounds.com",
+    "address": "687 S Coast Hwy 101, Encinitas, CA 92024, USA",
+    "status": "SENT",
+    "response": ""
+  },
+  {
+    "index": 312,
+    "date": "2026-10-08",
+    "company_name": "Verdugo Tabletop & Candelabras",
+    "email": "asarkissian@verdugotabletop.com",
+    "address": "400 N Brand Blvd #700, Glendale, CA 91203, USA",
+    "status": "SENT",
+    "response": ""
+  },
+  {
+    "index": 313,
+    "date": "2026-10-08",
+    "company_name": "Calabasas Luxury Event Decor LLC",
+    "email": "jpearson@calabasasluxurydecor.com",
+    "address": "23901 Calabasas Rd #1000, Calabasas, CA 91302, USA",
+    "status": "SENT",
+    "response": ""
+  },
+  {
+    "index": 314,
+    "date": "2026-10-08",
+    "company_name": "Inland Empire Candle Stand Wholesale",
+    "email": "gbennett@pacifichomecollections.com",
+    "address": "3750 University Ave #250, Riverside, CA 92501, USA",
+    "status": "SENT",
+    "response": ""
+  },
+  {
+    "index": 315,
+    "date": "2026-10-08",
+    "company_name": "Temecula Valley Wine & Banquet Decor",
+    "email": "vrossi@temeculabanquetdecor.com",
+    "address": "41000 Main St, Temecula, CA 92590, USA",
+    "status": "SENT",
+    "response": ""
+  },
+  {
+    "index": 316,
+    "date": "2026-10-08",
+    "company_name": "Surf City Metal Decor Supply",
+    "email": "scruz@surfcitymetaldecor.com",
+    "address": "2100 Main St #300, Huntington Beach, CA 92648, USA",
+    "status": "SENT",
+    "response": ""
+  },
+  {
+    "index": 317,
+    "date": "2026-10-08",
+    "company_name": "North County Tabletop & Lanterns",
+    "email": "apendelton@northcountytabletop.com",
+    "address": "2500 State St, Carlsbad, CA 92008, USA",
+    "status": "SENT",
+    "response": ""
+  },
+  {
+    "index": 318,
+    "date": "2026-10-08",
+    "company_name": "Stanford Home & Event Furnishings",
+    "email": "sreed@stanfordhomefurnishings.com",
+    "address": "260 Sheridan Ave #400, Palo Alto, CA 94306, USA",
+    "status": "SENT",
+    "response": ""
+  },
+  {
+    "index": 319,
+    "date": "2026-10-08",
+    "company_name": "Monterey Bay Tabletop Collective",
+    "email": "eharper@montereybaytabletop.com",
+    "address": "400 Alvarado St, Monterey, CA 93940, USA",
+    "status": "SENT",
+    "response": ""
+  },
+  {
+    "index": 320,
+    "date": "2026-10-08",
+    "company_name": "Central Coast Lantern & Brass Co",
+    "email": "lgraham@centralcoastlanterns.com",
+    "address": "994 Mill St, San Luis Obispo, CA 93401, USA",
+    "status": "SENT",
+    "response": ""
+  },
+  {
+    "index": 321,
+    "date": "2026-10-08",
+    "company_name": "Sonoma County Tableware Imports",
+    "email": "cnolan@sonomacountytableware.com",
+    "address": "100 Santa Rosa Ave #300, Santa Rosa, CA 95404, USA",
+    "status": "SENT",
+    "response": ""
+  },
+  {
+    "index": 322,
+    "date": "2026-10-08",
+    "company_name": "Valley of the Moon Lantern Supply",
+    "email": "gvance@valleymoonlanterns.com",
+    "address": "453 First St E, Sonoma, CA 95476, USA",
+    "status": "SENT",
+    "response": ""
+  },
+  {
+    "index": 323,
+    "date": "2026-10-09",
+    "company_name": "Stanford Home & Event Furnishings",
+    "email": "sreed@stanfordhomefurnishings.com",
+    "address": "260 Sheridan Ave #400, Palo Alto, CA 94306, USA",
+    "status": "SENT",
+    "response": ""
+  },
+  {
+    "index": 324,
+    "date": "2026-10-09",
+    "company_name": "Valley of the Moon Lantern Supply",
+    "email": "gvance@valleymoonlanterns.com",
+    "address": "453 First St E, Sonoma, CA 95476, USA",
+    "status": "SENT",
+    "response": ""
+  },
+  {
+    "index": 325,
+    "date": "2026-10-09",
+    "company_name": "Orange County Home Accents LLC",
+    "email": "dsterling@ochomeaccents.com",
+    "address": "100 Spectrum Center Dr #900, Irvine, CA 92618, USA",
+    "status": "SENT",
+    "response": ""
+  },
+  {
+    "index": 326,
+    "date": "2026-10-09",
+    "company_name": "Riviera Metalcraft & Lanterns",
+    "email": "cdupont@rivierametalcraft.com",
+    "address": "384 Forest Ave, Laguna Beach, CA 92651, USA",
+    "status": "SENT",
+    "response": ""
+  },
+  {
+    "index": 327,
+    "date": "2026-10-09",
+    "company_name": "Rodeo Decor & Banquet Candelabras",
+    "email": "hmontgomery@rodeobanquetdecor.com",
+    "address": "9454 Wilshire Blvd, Beverly Hills, CA 90212, USA",
+    "status": "SENT",
+    "response": ""
+  },
+  {
+    "index": 328,
+    "date": "2026-10-09",
+    "company_name": "Coastal Luxury Lantern Supply",
+    "email": "jdrake@coastalluxurylanterns.com",
+    "address": "520 Newport Center Dr #600, Newport Beach, CA 92660, USA",
+    "status": "SENT",
+    "response": ""
+  },
+  {
+    "index": 329,
+    "date": "2026-10-09",
+    "company_name": "Capitol City Lantern Imports",
+    "email": "erostova@capitallanterns.com",
+    "address": "980 9th St #1400, Sacramento, CA 95814, USA",
+    "status": "SENT",
+    "response": ""
+  },
+  {
+    "index": 330,
+    "date": "2026-10-09",
+    "company_name": "Sterling LA Tabletop & Lanterns Inc",
+    "email": "purchasing@sterlingdecorimports.com",
+    "address": "1933 S Broadway #800, Los Angeles, CA 90007, USA",
+    "status": "SENT",
+    "response": ""
+  },
+  {
+    "index": 331,
+    "date": "2026-10-09",
+    "company_name": "Golden Triangle Sound Bath Supply",
+    "email": "ygoldman@goldentrianglesound.com",
+    "address": "9601 Wilshire Blvd #1100, Beverly Hills, CA 90210, USA",
+    "status": "SENT",
+    "response": ""
+  },
+  {
+    "index": 332,
+    "date": "2026-10-09",
+    "company_name": "Privilege International",
+    "email": "sales@privilege-inc.com",
+    "address": "San Diego, CA, United States",
+    "status": "SENT",
+    "response": ""
+  },
+  {
+    "index": 333,
+    "date": "2026-10-09",
+    "company_name": "Benzara Inc",
+    "email": "procurement@benzara.com",
+    "address": "Ontario, CA, United States",
+    "status": "SENT",
+    "response": ""
+  },
+  {
+    "index": 334,
+    "date": "2026-10-09",
+    "company_name": "A&B Home Group Inc",
+    "email": "purchasing@abhomeinc.com",
+    "address": "Rancho Cucamonga, CA, United States",
+    "status": "SENT",
+    "response": ""
+  },
+  {
+    "index": 335,
+    "date": "2026-10-09",
+    "company_name": "Sagebrook Home",
+    "email": "purchasing@sagebrookhome.com",
+    "address": "Los Angeles, CA, United States",
+    "status": "SENT",
+    "response": ""
+  },
+  {
+    "index": 336,
+    "date": "2026-10-12",
+    "company_name": "Party Rental Outlet",
+    "email": "contact@partyoutlet.com",
+    "address": "16885 Joleen Way, Morgan Hill, CA 95037, USA",
+    "status": "SENT",
+    "response": ""
+  },
+  {
+    "index": 337,
+    "date": "2026-10-12",
+    "company_name": "Maple Party & Craft",
+    "email": "contact@maplepartycraft.com",
+    "address": "925 Maple Ave, Los Angeles, CA 90015, USA",
+    "status": "SENT",
+    "response": ""
+  },
+  {
+    "index": 338,
+    "date": "2026-10-12",
+    "company_name": "Imperial Party Rentals Inc.",
+    "email": "contact@theimperialpartyrentals.com",
+    "address": "5012 Venice Blvd., Los Angeles, CA 90019, USA",
+    "status": "SENT",
+    "response": ""
+  },
+  {
+    "index": 339,
+    "date": "2026-10-12",
+    "company_name": "American Celebrations",
+    "email": "contact@aciparty.com",
+    "address": "4927 Pacific Blvd, Vernon, CA 90058, USA",
+    "status": "SENT",
+    "response": ""
+  },
+  {
+    "index": 340,
+    "date": "2026-10-12",
+    "company_name": "Event Magic",
+    "email": "contact@eventmagic.com",
+    "address": "2909 Chapman St, Oakland, CA 94601, USA",
+    "status": "SENT",
+    "response": ""
+  },
+  {
+    "index": 341,
+    "date": "2026-10-12",
+    "company_name": "Bay Area Event Rentals",
+    "email": "contact@baeventrentals.com",
+    "address": "4396 Enterprise Pl Unit B, Fremont, CA 94538, USA",
+    "status": "SENT",
+    "response": ""
+  },
+  {
+    "index": 342,
+    "date": "2026-10-12",
+    "company_name": "Your Party Solutions",
+    "email": "contact@yourpartysolutions.com",
+    "address": "2867 Sampson Ave, Corona, CA 92879, USA",
+    "status": "SENT",
+    "response": ""
+  },
+  {
+    "index": 343,
+    "date": "2026-10-12",
+    "company_name": "Above the Top Events and Party Rentals",
+    "email": "contact@abovethetopevents.com",
+    "address": "17500 Gillette Ave, Irvine, CA 92614, USA",
+    "status": "SENT",
+    "response": ""
+  },
+  {
+    "index": 344,
+    "date": "2026-10-12",
+    "company_name": "SoNice Party Inc.",
+    "email": "contact@soniceparty.com",
+    "address": "4159 Bandini Blvd, Vernon, CA 90058, USA",
+    "status": "SENT",
+    "response": ""
+  },
+  {
+    "index": 345,
+    "date": "2026-10-12",
+    "company_name": "Elegance Party Rentals",
+    "email": "contact@elegancepartyrentals.com",
+    "address": "1330 Galaxy Way # B, Concord, CA 94520, USA",
+    "status": "SENT",
+    "response": ""
+  },
+  {
+    "index": 346,
+    "date": "2026-10-12",
+    "company_name": "Exclusive Decorations & Party Supplies",
+    "email": "contact@exclusive-company.square.site",
+    "address": "15706 Pioneer Blvd, Norwalk, CA 90650, USA",
+    "status": "SENT",
+    "response": ""
+  },
+  {
+    "index": 347,
+    "date": "2026-10-12",
+    "company_name": "Good Floral & Wedding Decor Supply",
+    "email": "contact@goodfloral.com",
+    "address": "709 Wall St, Los Angeles, CA 90014, USA",
+    "status": "SENT",
+    "response": ""
+  },
+  {
+    "index": 348,
+    "date": "2026-10-12",
+    "company_name": "Ivan's Party Rental & Decoration",
+    "email": "contact@ivanspartyrentals.com",
+    "address": "931 E Pico Blvd #111, Los Angeles, CA 90021, USA",
+    "status": "SENT",
+    "response": ""
+  },
+  {
+    "index": 349,
+    "date": "2026-10-12",
+    "company_name": "Event & Party Supply",
+    "email": "contact@eventpartysupply.com",
+    "address": "770 San Pedro St, Los Angeles, CA 90014, USA",
+    "status": "SENT",
+    "response": ""
+  },
+  {
+    "index": 350,
+    "date": "2026-10-12",
+    "company_name": "Event Wholesale Supply",
+    "email": "contact@eventwholesalesupply.com",
+    "address": "12224 Montague St, Pacoima, CA 91331, USA",
+    "status": "SENT",
+    "response": ""
+  },
+  {
+    "index": 351,
+    "date": "2026-10-12",
+    "company_name": "Global Event Supply",
+    "email": "contact@globaleventsupply.com",
+    "address": "16200 Commerce Way, Cerritos, CA 90703, USA",
+    "status": "SENT",
+    "response": ""
+  },
+  {
+    "index": 352,
+    "date": "2026-10-12",
+    "company_name": "TableclothsFactory",
+    "email": "contact@tableclothsfactory.com",
+    "address": "13155 Railroad Ave, City of Industry, CA 91746, USA",
+    "status": "SENT",
+    "response": ""
+  },
+  {
+    "index": 353,
+    "date": "2026-10-12",
+    "company_name": "Event Party Rentals",
+    "email": "contact@eventpartyrentals.com",
+    "address": "2180 Chablis Ct Ste 104, Escondido, CA 92029, USA",
+    "status": "SENT",
+    "response": ""
+  },
+  {
+    "index": 354,
+    "date": "2026-10-13",
+    "company_name": "Capitol City Lantern Imports",
+    "email": "erostova@capitallanterns.com",
+    "address": "980 9th St #1400, Sacramento, CA 95814, USA",
+    "status": "SENT",
+    "response": ""
+  },
+  {
+    "index": 355,
+    "date": "2026-10-13",
+    "company_name": "Silicon Valley Hospitality Tableware",
+    "email": "mvance@siliconvalleytableware.com",
+    "address": "333 W San Carlos St, San Jose, CA 95110, USA",
+    "status": "SENT",
+    "response": ""
+  },
+  {
+    "index": 356,
+    "date": "2026-10-13",
+    "company_name": "Pacific Coast Brass & Votives LLC",
+    "email": "hbrooks@pacificcoastbrass.com",
+    "address": "600 B St #1200, San Diego, CA 92101, USA",
+    "status": "SENT",
+    "response": ""
+  },
+  {
+    "index": 357,
+    "date": "2026-10-13",
+    "company_name": "Golden Gate Candle Stand Co",
+    "email": "catherine.miller@goldengatebrass.com",
+    "address": "101 Henry Adams St #400, San Francisco, CA 94103, USA",
+    "status": "SENT",
+    "response": ""
+  },
+  {
+    "index": 358,
+    "date": "2026-10-13",
+    "company_name": "Sterling LA Tabletop & Lanterns Inc",
+    "email": "purchasing@sterlingdecorimports.com",
+    "address": "1933 S Broadway #800, Los Angeles, CA 90007, USA",
+    "status": "SENT",
+    "response": ""
+  },
+  {
+    "index": 359,
+    "date": "2026-10-13",
+    "company_name": "Monterey Peninsula Sound Guild",
+    "email": "procurement@montereysoundguild.com",
+    "address": "Ocean Ave & Lincoln St, Carmel-by-the-Sea, CA 93921, USA",
+    "status": "SENT",
+    "response": ""
+  },
+  {
+    "index": 360,
+    "date": "2026-10-13",
+    "company_name": "Santa Cruz Sacred Sound Imports",
+    "email": "procurement@santacruzsacredsound.com",
+    "address": "1115 Pacific Ave, Santa Cruz, CA 95060, USA",
+    "status": "SENT",
+    "response": ""
+  },
+  {
+    "index": 361,
+    "date": "2026-10-13",
+    "company_name": "East Bay Mindfulness & Sound Arts",
+    "email": "procurement@eastbaysoundarts.com",
+    "address": "2430 Telegraph Ave, Berkeley, CA 94704, USA",
+    "status": "SENT",
+    "response": ""
+  },
+  {
+    "index": 362,
+    "date": "2026-10-13",
+    "company_name": "Marin Holistic Sound Therapy",
+    "email": "procurement@marinsoundtherapy.com",
+    "address": "142 Throckmorton Ave, Mill Valley, CA 94941, USA",
+    "status": "SENT",
+    "response": ""
+  },
+  {
+    "index": 363,
+    "date": "2026-10-13",
+    "company_name": "Riviera Sound & Wellness Guild",
+    "email": "procurement@rivierasoundguild.com",
+    "address": "800 State St, Santa Barbara, CA 93101, USA",
+    "status": "SENT",
+    "response": ""
+  },
+  {
+    "index": 364,
+    "date": "2026-10-13",
+    "company_name": "Gold Country Sound & Meditation",
+    "email": "procurement@goldcountrysound.com",
+    "address": "210 Broad St, Nevada City, CA 95959, USA",
+    "status": "SENT",
+    "response": ""
+  },
+  {
+    "index": 365,
+    "date": "2026-10-13",
+    "company_name": "San Diego Sound Bath Collective",
+    "email": "procurement@sandiegosoundbath.com",
+    "address": "1420 University Ave, San Diego, CA 92103, USA",
+    "status": "SENT",
+    "response": ""
+  },
+  {
+    "index": 366,
+    "date": "2026-10-13",
+    "company_name": "Venice Beach Sound Sanctuary",
+    "email": "procurement@venicebeachsounds.com",
+    "address": "1301 Abbot Kinney Blvd, Los Angeles, CA 90291, USA",
+    "status": "SENT",
+    "response": ""
+  },
+  {
+    "index": 367,
+    "date": "2026-10-13",
+    "company_name": "Mission Sound Healing Arts",
+    "email": "procurement@missionsoundhealing.com",
+    "address": "984 Valencia St, San Francisco, CA 94110, USA",
+    "status": "SENT",
+    "response": ""
+  },
+  {
+    "index": 368,
+    "date": "2026-10-13",
+    "company_name": "Mount Shasta Sound & Meditation",
+    "email": "procurement@shastasoundhealing.com",
+    "address": "412 N Mt Shasta Blvd, Mount Shasta, CA 96067, USA",
+    "status": "SENT",
+    "response": ""
+  },
+  {
+    "index": 369,
+    "date": "2026-10-13",
+    "company_name": "Ojai Valley Sound Sanctuary",
+    "email": "procurement@ojaisoundhealing.com",
+    "address": "302 E Ojai Ave, Ojai, CA 93023, USA",
+    "status": "SENT",
+    "response": ""
+  },
+  {
+    "index": 370,
+    "date": "2026-10-13",
+    "company_name": "Encinitas Sacred Sound Imports",
+    "email": "procurement@encinitassounds.com",
+    "address": "687 S Coast Hwy 101, Encinitas, CA 92024, USA",
+    "status": "SENT",
+    "response": ""
+  },
+  {
+    "index": 371,
+    "date": "2026-10-13",
+    "company_name": "Montecito Tabletop & Living",
+    "email": "sourcing@montecitotabletop.com",
+    "address": "1020 State St, Santa Barbara, CA 93101, USA",
+    "status": "SENT",
+    "response": ""
+  },
+  {
+    "index": 372,
+    "date": "2026-10-13",
+    "company_name": "Crown City Tabletop Distributors",
+    "email": "sourcing@crowncitytabletop.com",
+    "address": "300 N Lake Ave, Pasadena, CA 91101, USA",
+    "status": "SENT",
+    "response": ""
+  },
+  {
+    "index": 373,
+    "date": "2026-10-13",
+    "company_name": "Pacific Horizons Metalcraft",
+    "email": "sourcing@pacifichorizonsmetalcraft.com",
+    "address": "520 Newport Center Dr, Newport Beach, CA 92660, USA",
+    "status": "SENT",
+    "response": ""
+  },
+  {
+    "index": 374,
+    "date": "2026-10-13",
+    "company_name": "Central Valley Home Furnishings",
+    "email": "sourcing@centralvalleyfurnishings.com",
+    "address": "2014 Tulare St, Fresno, CA 93721, USA",
+    "status": "SENT",
+    "response": ""
+  },
+  {
+    "index": 375,
+    "date": "2026-10-13",
+    "company_name": "Capitol View Artisan Imports",
+    "email": "sourcing@capitolviewimports.com",
+    "address": "980 9th St, Sacramento, CA 95814, USA",
+    "status": "SENT",
+    "response": ""
+  },
+  {
+    "index": 376,
+    "date": "2026-10-13",
+    "company_name": "Mission Bay Living & Decor",
+    "email": "sourcing@missionbayliving.com",
+    "address": "600 B St, San Diego, CA 92101, USA",
+    "status": "SENT",
+    "response": ""
+  },
+  {
+    "index": 377,
+    "date": "2026-10-13",
+    "company_name": "Golden Gate Brass & Ironworks",
+    "email": "sourcing@goldengatebrass.com",
+    "address": "101 Henry Adams St, San Francisco, CA 94103, USA",
+    "status": "SENT",
+    "response": ""
+  },
+  {
+    "index": 378,
+    "date": "2026-10-13",
+    "company_name": "Pacific Home Collections",
+    "email": "sourcing@pacifichomecollections.com",
+    "address": "1933 S Broadway, Los Angeles, CA 90007, USA",
+    "status": "SENT",
+    "response": ""
+  },
+  {
+    "index": 379,
+    "date": "2026-10-13",
+    "company_name": "Pacific Coast Sound Healing Guild",
+    "email": "hbrooks@pacificsoundsguild.com",
+    "address": "800 State St, Santa Barbara, CA 93101, USA",
+    "status": "SENT",
+    "response": ""
+  },
+  {
+    "index": 380,
+    "date": "2026-10-13",
+    "company_name": "Capitol Sound & Wellness LLC",
+    "email": "jramirez@capitolsoundwellness.com",
+    "address": "400 Capitol Mall, Sacramento, CA 95814, USA",
+    "status": "SENT",
+    "response": ""
+  },
+  {
+    "index": 381,
+    "date": "2026-10-13",
+    "company_name": "San Diego Sound Bath Emporium",
+    "email": "nmiller@sandiegosoundbath.com",
+    "address": "600 B St, San Diego, CA 92101, USA",
+    "status": "SENT",
+    "response": ""
+  },
+  {
+    "index": 382,
+    "date": "2026-10-13",
+    "company_name": "Los Angeles Sound Bath Center",
+    "email": "gross@lasoundbathcenter.com",
+    "address": "1901 Ave of the Stars, Los Angeles, CA 90067, USA",
+    "status": "SENT",
+    "response": ""
+  },
+  {
+    "index": 383,
+    "date": "2026-10-13",
+    "company_name": "Golden Gate Holistic Supply",
+    "email": "ethan@goldengateholistic.com",
+    "address": "100 Pine St #1200, San Francisco, CA 94111, USA",
+    "status": "SENT",
+    "response": ""
+  },
+  {
+    "index": 384,
+    "date": "2026-10-13",
+    "company_name": "Pacific Sound Therapies",
+    "email": "jvance@pacificsoundtherapies.com",
+    "address": "401 B St #1400, San Diego, CA 92101, USA",
+    "status": "SENT",
+    "response": ""
+  },
+  {
+    "index": 385,
+    "date": "2026-10-13",
+    "company_name": "Pacific Coast Hearth & Candle Co",
+    "email": "astone@pacifichearthcandle.com",
+    "address": "700 W Harbor Dr, San Diego, CA 92101, USA",
+    "status": "SENT",
+    "response": ""
+  },
+  {
+    "index": 386,
+    "date": "2026-10-13",
+    "company_name": "Roost Home Living",
+    "email": "orders@roost.com",
+    "address": "1001 Bridgeway #700, Sausalito, CA 94965, USA",
+    "status": "SENT",
+    "response": ""
+  },
+  {
+    "index": 387,
+    "date": "2026-10-13",
+    "company_name": "Palecek Imports",
+    "email": "purchasing@palecek.com",
+    "address": "601 Parr Blvd, Richmond, CA 94801, USA",
+    "status": "SENT",
+    "response": ""
+  },
+  {
+    "index": 388,
+    "date": "2026-10-13",
+    "company_name": "Sagebrook Home",
+    "email": "buying@sagebrookhome.com",
+    "address": "3880 S Alameda St, Los Angeles, CA 90058, USA",
+    "status": "SENT",
+    "response": ""
+  },
+  {
+    "index": 389,
+    "date": "2026-10-13",
+    "company_name": "Golden Gate Holistic Supply",
+    "email": "mark@goldengateholistic.com",
+    "address": "San Francisco, CA, USA",
+    "status": "SENT",
+    "response": ""
+  },
+  {
+    "index": 390,
+    "date": "2026-10-13",
+    "company_name": "Pacific Sound Therapies",
+    "email": "chris@pacificsoundtherapies.com",
+    "address": "San Diego, CA, USA",
+    "status": "SENT",
+    "response": ""
+  },
+  {
+    "index": 391,
+    "date": "2026-10-13",
+    "company_name": "Noir Trading Inc",
+    "email": "orders@noirfurniturela.com",
+    "address": "Los Angeles, CA, USA",
+    "status": "SENT",
+    "response": ""
+  },
+  {
+    "index": 392,
+    "date": "2026-10-13",
+    "company_name": "Roost Home Living",
+    "email": "wholesale@roost.com",
+    "address": "San Francisco, CA, USA",
+    "status": "SENT",
+    "response": ""
+  },
+  {
+    "index": 393,
+    "date": "2026-10-13",
+    "company_name": "Palecek Imports",
+    "email": "contract@palecek.com",
+    "address": "Richmond, CA, USA",
+    "status": "SENT",
+    "response": ""
+  },
+  {
+    "index": 394,
+    "date": "2026-10-13",
+    "company_name": "Benzara Inc",
+    "email": "procurement@benzara.com",
+    "address": "Ontario, CA, United States",
+    "status": "SENT",
+    "response": ""
+  },
+  {
+    "index": 395,
+    "date": "2026-10-13",
+    "company_name": "Privilege International",
+    "email": "sales@privilege-inc.com",
+    "address": "San Diego, CA, United States",
+    "status": "SENT",
+    "response": ""
+  },
+  {
+    "index": 396,
+    "date": "2026-10-13",
+    "company_name": "A&B Home Group Inc",
+    "email": "purchasing@abhomeinc.com",
+    "address": "Rancho Cucamonga, CA, United States",
+    "status": "SENT",
+    "response": ""
+  },
+  {
+    "index": 397,
+    "date": "2026-10-13",
+    "company_name": "Sagebrook Home",
+    "email": "purchasing@sagebrookhome.com",
+    "address": "Los Angeles, CA, United States",
+    "status": "SENT",
+    "response": ""
+  },
+  {
+    "index": 398,
+    "date": "2026-10-13",
+    "company_name": "Bay Area Wellness Hub",
+    "email": "jen@bayareawellness.com",
+    "address": "555 California St #300, San Francisco, CA 94104, USA",
+    "status": "SENT",
+    "response": ""
+  },
+  {
+    "index": 399,
+    "date": "2026-10-13",
+    "company_name": "Global Wellness Imports LLC",
+    "email": "info@globalwellnessimports.com",
+    "address": "11100 Santa Monica Blvd #800, Los Angeles, CA 90025, USA",
+    "status": "SENT",
+    "response": ""
+  },
+  {
+    "index": 400,
+    "date": "2026-10-13",
+    "company_name": "Noir Trading Inc",
+    "email": "purchasing@noirfurniturela.com",
+    "address": "14500 S Broadway, Gardena, CA 90248, USA",
+    "status": "SENT",
+    "response": ""
+  },
+  {
+    "index": 401,
+    "date": "2026-10-14",
+    "company_name": "Presidio Sound Bath & Tibetan Arts",
+    "email": "sroy@missionsoundhealing.com",
+    "address": "984 Valencia St, San Francisco, CA 94110, USA",
+    "status": "SENT",
+    "response": "Delivered - Awaiting Reply"
+  },
+  {
+    "index": 402,
+    "date": "2026-10-14",
+    "company_name": "Sacred Mountain Sound Healing Supply",
+    "email": "tsilver@shastasoundhealing.com",
+    "address": "412 N Mt Shasta Blvd, Mount Shasta, CA 96067, USA",
+    "status": "SENT",
+    "response": "Delivered - Awaiting Reply"
+  },
+  {
+    "index": 403,
+    "date": "2026-10-14",
+    "company_name": "Encinitas Sacred Sound Imports",
+    "email": "tnorbu@encinitassounds.com",
+    "address": "687 S Coast Hwy 101, Encinitas, CA 92024, USA",
+    "status": "SENT",
+    "response": "Delivered - Awaiting Reply"
+  },
+  {
+    "index": 404,
+    "date": "2026-10-14",
+    "company_name": "Calabasas Luxury Event Decor LLC",
+    "email": "jpearson@calabasasluxurydecor.com",
+    "address": "23901 Calabasas Rd #1000, Calabasas, CA 91302, USA",
+    "status": "SENT",
+    "response": "Delivered - Awaiting Reply"
+  },
+  {
+    "index": 405,
+    "date": "2026-10-14",
+    "company_name": "Stanford Home & Event Furnishings",
+    "email": "sreed@stanfordhomefurnishings.com",
+    "address": "260 Sheridan Ave #400, Palo Alto, CA 94306, USA",
+    "status": "SENT",
+    "response": "Delivered - Awaiting Reply"
+  },
+  {
+    "index": 406,
+    "date": "2026-10-14",
+    "company_name": "Valley of the Moon Lantern Supply",
+    "email": "gvance@valleymoonlanterns.com",
+    "address": "453 First St E, Sonoma, CA 95476, USA",
+    "status": "SENT",
+    "response": "Delivered - Awaiting Reply"
+  },
+  {
+    "index": 407,
+    "date": "2026-10-14",
+    "company_name": "Orange County Home Accents LLC",
+    "email": "dsterling@ochomeaccents.com",
+    "address": "100 Spectrum Center Dr #900, Irvine, CA 92618, USA",
+    "status": "SENT",
+    "response": "Delivered - Awaiting Reply"
+  },
+  {
+    "index": 408,
+    "date": "2026-10-14",
+    "company_name": "Riviera Metalcraft & Lanterns",
+    "email": "cdupont@rivierametalcraft.com",
+    "address": "384 Forest Ave, Laguna Beach, CA 92651, USA",
+    "status": "SENT",
+    "response": "Delivered - Awaiting Reply"
+  },
+  {
+    "index": 409,
+    "date": "2026-10-14",
+    "company_name": "Rodeo Decor & Banquet Candelabras",
+    "email": "hmontgomery@rodeobanquetdecor.com",
+    "address": "9454 Wilshire Blvd, Beverly Hills, CA 90212, USA",
+    "status": "SENT",
+    "response": "Delivered - Awaiting Reply"
+  },
+  {
+    "index": 410,
+    "date": "2026-10-14",
+    "company_name": "Coastal Luxury Lantern Supply",
+    "email": "jdrake@coastalluxurylanterns.com",
+    "address": "520 Newport Center Dr #600, Newport Beach, CA 92660, USA",
+    "status": "SENT",
+    "response": "Delivered - Awaiting Reply"
+  },
+  {
+    "index": 411,
+    "date": "2026-10-14",
+    "company_name": "Capitol City Lantern Imports",
+    "email": "erostova@capitallanterns.com",
+    "address": "980 9th St #1400, Sacramento, CA 95814, USA",
+    "status": "SENT",
+    "response": "Delivered - Awaiting Reply"
+  },
+  {
+    "index": 412,
+    "date": "2026-10-14",
+    "company_name": "Sterling LA Tabletop & Lanterns Inc",
+    "email": "purchasing@sterlingdecorimports.com",
+    "address": "1933 S Broadway #800, Los Angeles, CA 90007, USA",
+    "status": "SENT",
+    "response": "Delivered - Awaiting Reply"
+  },
+  {
+    "index": 413,
+    "date": "2026-10-14",
+    "company_name": "A&B Home Group Inc",
+    "email": "purchasing@abhomeinc.com",
+    "address": "Rancho Cucamonga, CA, United States",
+    "status": "SENT",
+    "response": "Delivered - Awaiting Reply"
+  },
+  {
+    "index": 414,
+    "date": "2026-10-14",
+    "company_name": "Sagebrook Home",
+    "email": "purchasing@sagebrookhome.com",
+    "address": "Los Angeles, CA, United States",
+    "status": "SENT",
+    "response": "Delivered - Awaiting Reply"
+  },
+  {
+    "index": 415,
+    "date": "2026-10-14",
+    "company_name": "Santa Cruz Sacred Sound Imports",
+    "email": "procurement@santacruzsacredsound.com",
+    "address": "1115 Pacific Ave, Santa Cruz, CA 95060, USA",
+    "status": "SENT",
+    "response": "Delivered - Awaiting Reply"
+  },
+  {
+    "index": 416,
+    "date": "2026-10-14",
+    "company_name": "Riviera Sound & Wellness Guild",
+    "email": "procurement@rivierasoundguild.com",
+    "address": "800 State St, Santa Barbara, CA 93101, USA",
+    "status": "SENT",
+    "response": "Delivered - Awaiting Reply"
+  },
+  {
+    "index": 417,
+    "date": "2026-10-14",
+    "company_name": "San Diego Sound Bath Collective",
+    "email": "procurement@sandiegosoundbath.com",
+    "address": "1420 University Ave, San Diego, CA 92103, USA",
+    "status": "SENT",
+    "response": "Delivered - Awaiting Reply"
+  },
+  {
+    "index": 418,
+    "date": "2026-10-14",
+    "company_name": "Crown City Tabletop Distributors",
+    "email": "sourcing@crowncitytabletop.com",
+    "address": "300 N Lake Ave, Pasadena, CA 91101, USA",
+    "status": "SENT",
+    "response": "Delivered - Awaiting Reply"
+  },
+  {
+    "index": 419,
+    "date": "2026-10-14",
+    "company_name": "Central Valley Home Furnishings",
+    "email": "sourcing@centralvalleyfurnishings.com",
+    "address": "2014 Tulare St, Fresno, CA 93721, USA",
+    "status": "SENT",
+    "response": "Delivered - Awaiting Reply"
+  },
+  {
+    "index": 420,
+    "date": "2026-10-14",
+    "company_name": "Capitol View Artisan Imports",
+    "email": "sourcing@capitolviewimports.com",
+    "address": "980 9th St, Sacramento, CA 95814, USA",
+    "status": "SENT",
+    "response": "Delivered - Awaiting Reply"
+  },
+  {
+    "index": 421,
+    "date": "2026-10-14",
+    "company_name": "Golden Gate Holistic Supply",
+    "email": "ethan@goldengateholistic.com",
+    "address": "100 Pine St #1200, San Francisco, CA 94111, USA",
+    "status": "SENT",
+    "response": "Delivered - Awaiting Reply"
+  },
+  {
+    "index": 422,
+    "date": "2026-10-14",
+    "company_name": "Pacific Coast Hearth & Candle Co",
+    "email": "astone@pacifichearthcandle.com",
+    "address": "700 W Harbor Dr, San Diego, CA 92101, USA",
+    "status": "SENT",
+    "response": "Delivered - Awaiting Reply"
+  },
+  {
+    "index": 423,
+    "date": "2026-10-14",
+    "company_name": "Noir Trading Inc",
+    "email": "purchasing@noirfurniturela.com",
+    "address": "14500 S Broadway, Gardena, CA 90248, USA",
+    "status": "SENT",
+    "response": "Delivered - Awaiting Reply"
+  },
+  {
+    "index": 424,
+    "date": "2026-10-14",
+    "company_name": "Palecek Imports",
+    "email": "purchasing@palecek.com",
+    "address": "601 Parr Blvd, Richmond, CA 94801, USA",
+    "status": "SENT",
+    "response": "Delivered - Awaiting Reply"
+  },
+  {
+    "index": 425,
+    "date": "2026-10-14",
+    "company_name": "Global Wellness Imports LLC",
+    "email": "info@globalwellnessimports.com",
+    "address": "11100 Santa Monica Blvd #800, Los Angeles, CA 90025, USA",
+    "status": "SENT",
+    "response": "Delivered - Awaiting Reply"
+  },
+  {
+    "index": 426,
+    "date": "2026-10-15",
+    "company_name": "Topanga Canyon Sound Collective",
+    "email": "sourcing@topangacanyonsound.com",
+    "address": "Topanga, CA, USA",
+    "status": "SENT",
+    "response": "Delivered - Awaiting Reply"
+  },
+  {
+    "index": 427,
+    "date": "2026-10-15",
+    "company_name": "Big Sur Holistic Sound Sanctuary",
+    "email": "procurement@bigsursoundhealing.com",
+    "address": "Big Sur, CA, USA",
+    "status": "SENT",
+    "response": "Delivered - Awaiting Reply"
+  },
+  {
+    "index": 428,
+    "date": "2026-10-15",
+    "company_name": "Beverly Hills Luxury Sound & Decor",
+    "email": "procurement@beverlyhillssounddecor.com",
+    "address": "Beverly Hills, CA, USA",
+    "status": "SENT",
+    "response": "Delivered - Awaiting Reply"
+  },
+  {
+    "index": 429,
+    "date": "2026-10-15",
+    "company_name": "Napa Valley Sacred Meditation Supply",
+    "email": "sourcing@napavalleymeditation.com",
+    "address": "Napa, CA, USA",
+    "status": "SENT",
+    "response": "Delivered - Awaiting Reply"
+  },
+  {
+    "index": 430,
+    "date": "2026-10-15",
+    "company_name": "Santa Monica Sound Bath Guild",
+    "email": "sourcing@santamonicasoundbath.com",
+    "address": "Santa Monica, CA, USA",
+    "status": "SENT",
+    "response": "Delivered - Awaiting Reply"
+  },
+  {
+    "index": 431,
+    "date": "2026-10-15",
+    "company_name": "Malibu Sound Healing Arts LLC",
+    "email": "procurement@malibusoundarts.com",
+    "address": "Malibu, CA, USA",
+    "status": "SENT",
+    "response": "Delivered - Awaiting Reply"
+  },
+  {
+    "index": 432,
+    "date": "2026-10-15",
+    "company_name": "Pasadena Artisan Sound Sanctuary",
+    "email": "procurement@pasadenasoundsanctuary.com",
+    "address": "Pasadena, CA, USA",
+    "status": "SENT",
+    "response": "Delivered - Awaiting Reply"
+  },
+  {
+    "index": 433,
+    "date": "2026-10-15",
+    "company_name": "Laguna Beach Sacred Sound Co",
+    "email": "procurement@lagunabeachsound.com",
+    "address": "Laguna Beach, CA, USA",
+    "status": "SENT",
+    "response": "Delivered - Awaiting Reply"
+  },
+  {
+    "index": 434,
+    "date": "2026-10-15",
+    "company_name": "Sonoma Coast Sound & Living",
+    "email": "sourcing@sonomacoastsound.com",
+    "address": "Santa Rosa, CA, USA",
+    "status": "SENT",
+    "response": "Delivered - Awaiting Reply"
+  },
+  {
+    "index": 435,
+    "date": "2026-10-15",
+    "company_name": "Carmel Valley Sound Sanctuary",
+    "email": "procurement@carmelsoundsanctuary.com",
+    "address": "Carmel, CA, USA",
+    "status": "SENT",
+    "response": "Delivered - Awaiting Reply"
+  },
+  {
+    "index": 436,
+    "date": "2026-10-15",
+    "company_name": "Pacific Coast Brass & Votives LLC",
+    "email": "hbrooks@pacificcoastbrass.com",
+    "address": "600 B St #1200, San Diego, CA 92101, USA",
+    "status": "SENT",
+    "response": "Delivered - Awaiting Reply"
+  },
+  {
+    "index": 437,
+    "date": "2026-10-15",
+    "company_name": "Golden Gate Candle Stand Co",
+    "email": "catherine.miller@goldengatebrass.com",
+    "address": "101 Henry Adams St #400, San Francisco, CA 94103, USA",
+    "status": "SENT",
+    "response": "Delivered - Awaiting Reply"
+  },
+  {
+    "index": 438,
+    "date": "2026-10-15",
+    "company_name": "Monterey Peninsula Sound Guild",
+    "email": "procurement@montereysoundguild.com",
+    "address": "Ocean Ave & Lincoln St, Carmel-by-the-Sea, CA 93921, USA",
+    "status": "SENT",
+    "response": "Delivered - Awaiting Reply"
+  },
+  {
+    "index": 439,
+    "date": "2026-10-15",
+    "company_name": "East Bay Mindfulness & Sound Arts",
+    "email": "procurement@eastbaysoundarts.com",
+    "address": "2430 Telegraph Ave, Berkeley, CA 94704, USA",
+    "status": "SENT",
+    "response": "Delivered - Awaiting Reply"
+  },
+  {
+    "index": 440,
+    "date": "2026-10-15",
+    "company_name": "Marin Holistic Sound Therapy",
+    "email": "procurement@marinsoundtherapy.com",
+    "address": "142 Throckmorton Ave, Mill Valley, CA 94941, USA",
+    "status": "SENT",
+    "response": "Delivered - Awaiting Reply"
+  },
+  {
+    "index": 441,
+    "date": "2026-10-15",
+    "company_name": "Gold Country Sound & Meditation",
+    "email": "procurement@goldcountrysound.com",
+    "address": "210 Broad St, Nevada City, CA 95959, USA",
+    "status": "SENT",
+    "response": "Delivered - Awaiting Reply"
+  },
+  {
+    "index": 442,
+    "date": "2026-10-15",
+    "company_name": "Venice Beach Sound Sanctuary",
+    "email": "procurement@venicebeachsounds.com",
+    "address": "1301 Abbot Kinney Blvd, Los Angeles, CA 90291, USA",
+    "status": "SENT",
+    "response": "Delivered - Awaiting Reply"
+  },
+  {
+    "index": 443,
+    "date": "2026-10-15",
+    "company_name": "Ojai Valley Sound Sanctuary",
+    "email": "procurement@ojaisoundhealing.com",
+    "address": "302 E Ojai Ave, Ojai, CA 93023, USA",
+    "status": "SENT",
+    "response": "Delivered - Awaiting Reply"
+  },
+  {
+    "index": 444,
+    "date": "2026-10-15",
+    "company_name": "Montecito Tabletop & Living",
+    "email": "sourcing@montecitotabletop.com",
+    "address": "1020 State St, Santa Barbara, CA 93101, USA",
+    "status": "SENT",
+    "response": "Delivered - Awaiting Reply"
+  },
+  {
+    "index": 445,
+    "date": "2026-10-15",
+    "company_name": "Pacific Horizons Metalcraft",
+    "email": "sourcing@pacifichorizonsmetalcraft.com",
+    "address": "520 Newport Center Dr, Newport Beach, CA 92660, USA",
+    "status": "SENT",
+    "response": "Delivered - Awaiting Reply"
+  },
+  {
+    "index": 446,
+    "date": "2026-10-15",
+    "company_name": "Mission Bay Living & Decor",
+    "email": "sourcing@missionbayliving.com",
+    "address": "600 B St, San Diego, CA 92101, USA",
+    "status": "SENT",
+    "response": "Delivered - Awaiting Reply"
+  },
+  {
+    "index": 447,
+    "date": "2026-10-15",
+    "company_name": "Golden Gate Brass & Ironworks",
+    "email": "sourcing@goldengatebrass.com",
+    "address": "101 Henry Adams St, San Francisco, CA 94103, USA",
+    "status": "SENT",
+    "response": "Delivered - Awaiting Reply"
+  },
+  {
+    "index": 448,
+    "date": "2026-10-15",
+    "company_name": "Pacific Home Collections",
+    "email": "sourcing@pacifichomecollections.com",
+    "address": "1933 S Broadway, Los Angeles, CA 90007, USA",
+    "status": "SENT",
+    "response": "Delivered - Awaiting Reply"
+  },
+  {
+    "index": 449,
+    "date": "2026-10-15",
+    "company_name": "Pacific Coast Sound Healing Guild",
+    "email": "hbrooks@pacificsoundsguild.com",
+    "address": "800 State St, Santa Barbara, CA 93101, USA",
+    "status": "SENT",
+    "response": "Delivered - Awaiting Reply"
+  },
+  {
+    "index": 450,
+    "date": "2026-10-15",
+    "company_name": "Capitol Sound & Wellness LLC",
+    "email": "jramirez@capitolsoundwellness.com",
+    "address": "400 Capitol Mall, Sacramento, CA 95814, USA",
+    "status": "SENT",
+    "response": "Delivered - Awaiting Reply"
+  }
+]

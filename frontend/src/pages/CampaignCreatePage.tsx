@@ -55,43 +55,22 @@ Sales Executive | OM Enterprise (Nepal)
 };
 
 export const ASSIGNED_SINGING_BOWLS_TEMPLATE = {
-  subject: "Authentic Handmade Himalayan Singing Bowls – Direct Manufacturer | Wholesale & OEM",
-  body: `Authentic Handmade Himalayan Singing Bowls
-Direct Manufacturer from Nepal • Wholesale • OEM • Private Label
+  subject: "Handcrafted Singing Bowls – Wholesale Opportunity",
+  body: `Hello,
 
-Dear {{name}},
+I hope you’re doing well.
 
-While researching leading wellness businesses in {{country}}, we came across {{company}} and were very impressed by your product curation.
+I’m reaching out on behalf of OM Enterprise, where we specialize in handcrafted home décor and gifting products, particularly our **candle holder collection**, designed to add warmth, elegance, and charm to any space.
 
-We are a Nepal-based manufacturer and direct exporter of authentic handmade Himalayan Singing Bowls, crafted by skilled generational artisans using traditional metal-forging techniques.
+We would love to explore the possibility of working with your business and would be happy to share our candle holder collection for your review.
 
-Our Product Range:
-• Handmade Himalayan Singing Bowls & Full Moon Healing Sets
-• Antique & Matte Finish Singing Bowls
-• 7-Chakra Tuned Singing Bowl Sets
-• Meditation & Sound Bath Bowls
-• Handcrafted Tingsha Cymbals & Accessories
-• Custom Laser Logo & Private Label Manufacturing
+Would you be interested in exploring potential wholesale opportunities with us?
 
-Why International Importers Partner With Us:
-✔ 100% Direct Manufacturer from Nepal (Direct Factory FOB Pricing)
-✔ Traditional 7-Metal Alloy & Certified Acoustic Tuning (432Hz / 528Hz)
-✔ OEM, Custom Engraving & Private Label Packaging
-✔ Worldwide Door-to-Door (DHL/FedEx) & Ocean Freight Logistics
-✔ Dedicated Export Support & Sample Dispatch
+Looking forward to hearing from you.
 
-Our latest 2026 digital catalogue is attached for your review.
-
-Would you like us to send our wholesale price list or courier a sample piece to your office for quality evaluation?
-
-Kind Regards,
-
-{{sender_name}}
-Sales Executive | {{company_name}}
-📧 {{email}}
-📱 WhatsApp: {{phone}}
-
-Thank you for your valuable time. We look forward to building a successful and long-term partnership with {{company}}.`
+Best regards,  
+Ramesh Kumar Thakur
+OM Enterprise`
 };
 
 export const HIGH_CONVERTING_DUAL_TEMPLATE = {
@@ -174,7 +153,7 @@ const DEFAULT_STEPS: SequenceStep[] = [
   {
     id: 'step-1',
     step_number: 1,
-    step_name: 'Initial Introduction: Authentic Himalayan Singing Bowls (Official Assigned)',
+    step_name: 'Initial Introduction: Handcrafted Singing Bowls & Candle Holder Collection (Official)',
     delay_days: 0,
     condition: 'immediate',
     email_subject: ASSIGNED_SINGING_BOWLS_TEMPLATE.subject,
@@ -258,8 +237,17 @@ export default function CampaignCreatePage() {
         const list = res.data || [];
         setAttachments(list);
         if (list.length > 0) {
-          // Select all available catalogs by default so both Singing Bowls and Candle Holders are attached!
-          setSelectedAttachmentIds(list.map((a: any) => a.id));
+          // Select only the new poster by default as requested by user (removing old PDFs from default selection)
+          const posterAtt = list.find((a: any) =>
+            (a.original_name && a.original_name.toLowerCase().includes('poster')) ||
+            (a.filename && a.filename.toLowerCase().includes('poster')) ||
+            a.id === 3
+          );
+          if (posterAtt) {
+            setSelectedAttachmentIds([posterAtt.id]);
+          } else {
+            setSelectedAttachmentIds([list[list.length - 1].id]);
+          }
         }
       })
       .catch(err => console.error('Failed to load attachments', err));
@@ -593,15 +581,15 @@ export default function CampaignCreatePage() {
               <div className="flex items-center gap-2">
                 <Paperclip className="w-4 h-4 text-primary-400" />
                 <span className="text-xs font-bold text-dark-100 uppercase tracking-wider">
-                  Attach Product Catalogs & Lookbooks (Multiple PDFs Allowed)
+                  Attach Product Poster & Catalogs
                 </span>
               </div>
               <label className="cursor-pointer text-xs font-medium text-primary-400 hover:text-primary-300 flex items-center gap-1.5 bg-primary-500/10 hover:bg-primary-500/20 px-2.5 py-1.5 rounded-lg border border-primary-500/30 transition-colors self-start sm:self-auto">
                 <UploadCloud className="w-3.5 h-3.5" />
-                {uploadingAttachment ? 'Uploading PDF...' : '+ Upload New Catalog PDF'}
+                {uploadingAttachment ? 'Uploading...' : '+ Upload Poster / Catalog'}
                 <input
                   type="file"
-                  accept=".pdf,.docx,.doc,.xlsx,.pptx"
+                  accept=".pdf,.docx,.doc,.xlsx,.pptx,.jpg,.jpeg,.png"
                   onChange={handleUploadAttachment}
                   disabled={uploadingAttachment}
                   className="hidden"

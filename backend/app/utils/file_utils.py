@@ -1,7 +1,7 @@
 import os
 from typing import Tuple
 
-ALLOWED_EXTENSIONS = {'.pdf', '.docx', '.pptx', '.xlsx', '.doc', '.ppt'}
+ALLOWED_EXTENSIONS = {'.pdf', '.docx', '.pptx', '.xlsx', '.doc', '.ppt', '.jpg', '.jpeg', '.png', '.webp'}
 MAX_SIZE_BYTES = 10 * 1024 * 1024  # 10MB
 
 def validate_attachment(filename: str, size_bytes: int) -> Tuple[bool, str]:

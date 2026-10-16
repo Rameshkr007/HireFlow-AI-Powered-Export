@@ -206,6 +206,16 @@ def process_campaign(db: Session, campaign_id: int, user_id: int):
                     "name": att.original_name or os.path.basename(att.file_path)
                 })
         att_names = [a.original_name for a in atts if a.original_name]
+
+    if not attachment_list:
+        from ..services.email_service import DEFAULT_POSTER_PATH
+        if os.path.exists(DEFAULT_POSTER_PATH):
+            attachment_list.append({
+                "path": DEFAULT_POSTER_PATH,
+                "name": "OM_Enterprise_Home_Decor_Collection_Poster.jpg"
+            })
+            att_names = ["OM_Enterprise_Home_Decor_Collection_Poster.jpg"]
+
     attachment_name_str = ", ".join(att_names) if att_names else None
     first_path = attachment_list[0]["path"] if attachment_list else None
     first_name = attachment_list[0]["name"] if attachment_list else attachment_name_str

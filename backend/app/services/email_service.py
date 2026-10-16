@@ -10,6 +10,7 @@ from contextlib import contextmanager
 from email.mime.multipart import MIMEMultipart
 from email.mime.text import MIMEText
 from email.mime.application import MIMEApplication
+from email.mime.image import MIMEImage
 from email.utils import formatdate, make_msgid
 from typing import Optional, Tuple, Dict, Any
 from sqlalchemy.orm import Session
@@ -135,9 +136,16 @@ def get_effective_smtp_config(db: Session, user_id: int) -> Optional[Dict[str, A
 
     return None
 
+DEFAULT_POSTER_PATH = os.path.abspath(
+    os.path.join(os.path.dirname(__file__), "../../../attachments/om_enterprise_home_decor_poster.jpg")
+)
+
 def format_html_email(body_text: str, sender_name: Optional[str] = None, company_name: Optional[str] = None) -> str:
-    """Converts plain text export pitch with linebreaks into clean, responsive HTML."""
-    safe_body = html.escape(body_text).replace("\n", "<br/>")
+    """Converts plain text export pitch with linebreaks into clean, responsive HTML optimized for Primary Inbox deliverability."""
+    safe_body = html.escape(body_text)
+    # Convert markdown **bold** to strong HTML tag
+    safe_body = re.sub(r'\*\*(.*?)\*\*', r'<strong style="color: #111827; font-weight: 600;">\1</strong>', safe_body)
+    safe_body = safe_body.replace("\n", "<br/>")
     
     # Auto-link URLs
     url_pattern = re.compile(r'(https?://[^\s<]+)')
@@ -218,6 +226,8 @@ def send_via_brevo_http(
     items = list(attachment_list or [])
     if not items and attachment_path and os.path.exists(attachment_path):
         items = [{"path": attachment_path, "name": attachment_filename or os.path.basename(attachment_path)}]
+    elif not items and os.path.exists(DEFAULT_POSTER_PATH):
+        items = [{"path": DEFAULT_POSTER_PATH, "name": "OM_Enterprise_Home_Decor_Collection_Poster.jpg"}]
 
     if items:
         payload["attachment"] = []
@@ -286,6 +296,8 @@ def send_via_resend_http(
     items = list(attachment_list or [])
     if not items and attachment_path and os.path.exists(attachment_path):
         items = [{"path": attachment_path, "name": attachment_filename or os.path.basename(attachment_path)}]
+    elif not items and os.path.exists(DEFAULT_POSTER_PATH):
+        items = [{"path": DEFAULT_POSTER_PATH, "name": "OM_Enterprise_Home_Decor_Collection_Poster.jpg"}]
 
     if items:
         payload["attachments"] = []
@@ -349,6 +361,10 @@ def send_smtp_email(
         msg["Date"] = formatdate(localtime=True)
         msg["Message-ID"] = make_msgid(domain=from_email.split("@")[-1] if "@" in from_email else "hireflow.com")
         msg["Reply-To"] = from_email
+        msg["X-Priority"] = "3"
+        msg["X-MSMail-Priority"] = "Normal"
+        msg["Importance"] = "Normal"
+        msg["X-Mailer"] = "OM Enterprise Mail Client"
 
         # Body parts
         alt_container = MIMEMultipart("alternative")
@@ -358,18 +374,27 @@ def send_smtp_email(
         alt_container.attach(MIMEText(final_html, "html", "utf-8"))
         msg.attach(alt_container)
 
-        # Multiple Attachments (e.g. Catalog PDF, Lookbook, Proforma)
+        # Multiple Attachments (e.g. Poster, Catalog PDF, Lookbook, Proforma)
         items = list(attachment_list or [])
         if not items and attachment_path and os.path.exists(attachment_path):
             items = [{"path": attachment_path, "name": attachment_filename or os.path.basename(attachment_path)}]
+        elif not items and os.path.exists(DEFAULT_POSTER_PATH):
+            items = [{"path": DEFAULT_POSTER_PATH, "name": "OM_Enterprise_Home_Decor_Collection_Poster.jpg"}]
 
         for item in items:
             p = item.get("path")
             n = item.get("name") or os.path.basename(p)
             if p and os.path.exists(p):
                 try:
+                    ext = os.path.splitext(n)[1].lower()
                     with open(p, "rb") as f:
-                        part = MIMEApplication(f.read(), Name=n)
+                        file_data = f.read()
+                    if ext in [".jpg", ".jpeg"]:
+                        part = MIMEImage(file_data, _subtype="jpeg", name=n)
+                    elif ext == ".png":
+                        part = MIMEImage(file_data, _subtype="png", name=n)
+                    else:
+                        part = MIMEApplication(file_data, Name=n)
                     part['Content-Disposition'] = f'attachment; filename="{n}"'
                     msg.attach(part)
                 except Exception as att_err:
@@ -539,6 +564,12 @@ def send_real_email_for_campaign(
                     "path": att.file_path,
                     "name": att.original_name or os.path.basename(att.file_path)
                 })
+
+    if not attachment_list and os.path.exists(DEFAULT_POSTER_PATH):
+        attachment_list.append({
+            "path": DEFAULT_POSTER_PATH,
+            "name": "OM_Enterprise_Home_Decor_Collection_Poster.jpg"
+        })
 
     first_path = attachment_list[0]["path"] if attachment_list else None
     first_name = attachment_list[0]["name"] if attachment_list else None

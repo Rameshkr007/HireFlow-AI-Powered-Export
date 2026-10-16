@@ -231,7 +231,11 @@ def test_connection(
     current_user: User = Depends(get_current_user),
     db: Session = Depends(get_db)
 ):
-    target = payload.to_email if payload and payload.to_email else current_user.email
+    target = (payload.to_email if payload and payload.to_email else current_user.email or "rameshkrthakur1816@gmail.com").strip().lower()
+    if target.endswith("@gmail."):
+        target += "com"
+    elif target.endswith("@gmail"):
+        target += ".com"
     result = test_smtp_dispatch(db, current_user.id, target_email=target)
     if not result.get("success"):
         raise HTTPException(status_code=400, detail=result.get("error", "Email dispatch test failed"))

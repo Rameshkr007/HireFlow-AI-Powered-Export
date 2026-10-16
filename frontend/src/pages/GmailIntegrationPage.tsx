@@ -107,21 +107,29 @@ export default function GmailIntegrationPage() {
       
       const defaultPersonal = 'rameshkrthakur1816@gmail.com';
       const defaultCompany = 'exportindia2026us@gmail.com';
+      let cleanUser = (data.smtp_user || defaultPersonal).trim().toLowerCase();
+      if (cleanUser.endsWith('@gmail.')) cleanUser += 'com';
+      if (cleanUser.endsWith('@gmail')) cleanUser += '.com';
+
+      let cleanFromEmail = (data.from_email || defaultPersonal).trim().toLowerCase();
+      if (cleanFromEmail.endsWith('@gmail.')) cleanFromEmail += 'com';
+      if (cleanFromEmail.endsWith('@gmail')) cleanFromEmail += '.com';
+
       const hasWorkingCreds = Boolean(data.has_password || data.has_api_key);
 
       setProvider(data.provider || 'brevo');
       setSmtpHost(data.smtp_host || 'smtp.brevo.com');
       setSmtpPort(data.smtp_port || 587);
-      setSmtpUser(data.smtp_user || defaultPersonal);
+      setSmtpUser(cleanUser);
       setFromName(data.from_name || 'Ramesh Kumar Thakur | OM Enterprise');
-      setFromEmail(data.from_email || defaultPersonal);
+      setFromEmail(cleanFromEmail);
       setUseTls(data.use_tls ?? true);
       setUseSsl(data.use_ssl ?? false);
       setIsVerified(Boolean(hasWorkingCreds && data.is_verified));
       setHasPassword(Boolean(data.has_password));
       setHasApiKey(Boolean(data.has_api_key));
       setMaskedPassword(hasWorkingCreds ? (data.masked_password || null) : null);
-      setTestEmail(data.smtp_user || defaultPersonal);
+      setTestEmail(cleanUser);
 
       // Cache locally in browser ONLY if genuine credentials exist
       if (hasWorkingCreds) {
@@ -238,7 +246,18 @@ export default function GmailIntegrationPage() {
     setTesting(true);
     setLastTestResult(null);
     try {
-      const target = testEmail.trim() || smtpUser.trim();
+      let target = (testEmail.trim() || smtpUser.trim() || 'rameshkrthakur1816@gmail.com').toLowerCase();
+      // Auto-correct common email typos like missing .com
+      if (target.endsWith('@gmail.')) target += 'com';
+      if (target.endsWith('@gmail')) target += '.com';
+      setTestEmail(target);
+
+      if (!target.includes('@') || !target.includes('.')) {
+        showToast('Please enter a complete email address (e.g. rameshkrthakur1816@gmail.com)', 'error');
+        setTesting(false);
+        return;
+      }
+
       const res = await api.post('/api/email-settings/test', { to_email: target });
       setLastTestResult({
         success: true,
@@ -247,7 +266,22 @@ export default function GmailIntegrationPage() {
       setIsVerified(true);
       showToast(`Test email successfully sent to ${target}!`, 'success');
     } catch (err: any) {
-      const errorMsg = err.response?.data?.detail || 'SMTP Connection failed. Please verify credentials.';
+      let errorMsg = 'SMTP Connection failed. Please verify credentials.';
+      if (err.response?.data?.detail) {
+        if (typeof err.response.data.detail === 'string') {
+          errorMsg = err.response.data.detail;
+        } else if (Array.isArray(err.response.data.detail)) {
+          errorMsg = err.response.data.detail.map((d: any) => d.msg || JSON.stringify(d)).join('; ');
+        } else {
+          errorMsg = JSON.stringify(err.response.data.detail);
+        }
+      } else if (err.message) {
+        if (err.message.includes('Network Error') || err.message.includes('timeout')) {
+          errorMsg = 'Server connection timed out. On Render Cloud, direct Gmail port 587 is blocked by Render firewall. Please switch to Brevo HTTP API (Port 443) or run HireFlow on localhost.';
+        } else {
+          errorMsg = err.message;
+        }
+      }
       setLastTestResult({
         success: false,
         message: errorMsg
@@ -562,37 +596,50 @@ export default function GmailIntegrationPage() {
           </button>
 
           {showAdvanced && (
-            <div className="grid grid-cols-1 sm:grid-cols-3 gap-4 mt-3 p-4 bg-dark-800/40 border border-dark-700/50 rounded-xl">
-              <div>
-                <label className="text-xs text-dark-300 block mb-1">SMTP Server Host</label>
-                <input
-                  type="text"
-                  value={smtpHost}
-                  onChange={(e) => setSmtpHost(e.target.value)}
-                  className="input-field font-mono text-xs"
-                />
+            provider === 'brevo' ? (
+              <div className="mt-3 p-4 bg-emerald-950/40 border border-emerald-800/40 rounded-xl space-y-2 text-xs text-emerald-300">
+                <div className="flex items-center gap-2 font-semibold">
+                  <ShieldCheck className="w-4 h-4 text-emerald-400" />
+                  <span>Brevo HTTPS REST API (Port 443 — 100% Cloud Safe)</span>
+                </div>
+                <p className="text-dark-300">
+                  Brevo delivers outbound pitches directly via HTTPS API on port 443. Render Cloud allows port 443 without blocking.
+                  No manual SMTP host or port configuration is required. Just enter your Brevo API key (<code className="text-emerald-400">xkeysib-...</code>) above!
+                </p>
               </div>
-              <div>
-                <label className="text-xs text-dark-300 block mb-1">SMTP Port</label>
-                <input
-                  type="number"
-                  value={smtpPort}
-                  onChange={(e) => setSmtpPort(Number(e.target.value))}
-                  className="input-field font-mono text-xs"
-                />
-              </div>
-              <div className="flex flex-col justify-end">
-                <label className="flex items-center gap-2 text-xs text-dark-300 cursor-pointer pb-2.5">
+            ) : (
+              <div className="grid grid-cols-1 sm:grid-cols-3 gap-4 mt-3 p-4 bg-dark-800/40 border border-dark-700/50 rounded-xl">
+                <div>
+                  <label className="text-xs text-dark-300 block mb-1">SMTP Server Host</label>
                   <input
-                    type="checkbox"
-                    checked={useTls}
-                    onChange={(e) => setUseTls(e.target.checked)}
-                    className="rounded bg-dark-800 border-dark-700 text-primary-600 focus:ring-0"
+                    type="text"
+                    value={smtpHost}
+                    onChange={(e) => setSmtpHost(e.target.value)}
+                    className="input-field font-mono text-xs"
                   />
-                  <span>STARTTLS (Standard for Port 587)</span>
-                </label>
+                </div>
+                <div>
+                  <label className="text-xs text-dark-300 block mb-1">SMTP Port</label>
+                  <input
+                    type="number"
+                    value={smtpPort}
+                    onChange={(e) => setSmtpPort(Number(e.target.value))}
+                    className="input-field font-mono text-xs"
+                  />
+                </div>
+                <div className="flex flex-col justify-end">
+                  <label className="flex items-center gap-2 text-xs text-dark-300 cursor-pointer pb-2.5">
+                    <input
+                      type="checkbox"
+                      checked={useTls}
+                      onChange={(e) => setUseTls(e.target.checked)}
+                      className="rounded bg-dark-800 border-dark-700 text-primary-600 focus:ring-0"
+                    />
+                    <span>STARTTLS (Standard for Port 587)</span>
+                  </label>
+                </div>
               </div>
-            </div>
+            )
           )}
         </div>
 

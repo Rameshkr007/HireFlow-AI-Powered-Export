@@ -503,8 +503,37 @@ def dispatch_email_universal(
     from_name = smtp_config.get("from_name") or "OM Enterprise"
     from_email = smtp_config.get("from_email") or smtp_config.get("smtp_user") or ""
 
+    # Sanitize to_email typos
+    if to_email:
+        to_email = to_email.strip().lower()
+        if to_email.endswith("@gmail."):
+            to_email += "com"
+        elif to_email.endswith("@gmail"):
+            to_email += ".com"
+
     # Check for Brevo HTTP API
-    if provider == "brevo" or api_key.startswith("xkeysib-"):
+    host_str = (smtp_config.get("smtp_host") or "").lower()
+    port_val = smtp_config.get("smtp_port")
+    is_brevo = (
+        provider == "brevo"
+        or api_key.startswith("xkeysib-")
+        or "brevo" in host_str
+        or port_val == 443
+    )
+
+    if is_brevo:
+        if not api_key:
+            return False, (
+                "Brevo API Key is missing. Please enter your Brevo API key (starts with 'xkeysib-') in the password field. "
+                "Get one free at https://app.brevo.com (Settings > SMTP & API Keys)."
+            )
+        if not api_key.startswith("xkeysib-"):
+            return False, (
+                "Invalid Brevo API Key: You selected Brevo, but the saved password is not a Brevo API key "
+                "(Brevo API keys start with 'xkeysib-'). Please generate a free Brevo API key at https://app.brevo.com "
+                "(Account > SMTP & API Keys) and paste it into the password field. Or if you want to use your 16-character "
+                "Gmail App Password instead, switch Provider to 'Google Gmail' above and run HireFlow locally at http://localhost:5173."
+            )
         return send_via_brevo_http(
             api_key=api_key,
             from_name=from_name,
@@ -515,7 +544,7 @@ def dispatch_email_universal(
             body_html=body_html,
             attachment_path=attachment_path,
             attachment_filename=attachment_filename,
-            reply_to=reply_to or from_email,
+            reply_to=reply_to or smtp_config.get("reply_to") or from_email,
             attachment_list=attachment_list
         )
 
@@ -650,7 +679,12 @@ def test_smtp_dispatch(
             "error": "No email credentials found. Please save your email settings first."
         }
 
-    recipient = target_email.strip() if target_email else smtp_config["from_email"]
+    raw_target = target_email.strip() if target_email else smtp_config["from_email"]
+    recipient = raw_target.lower()
+    if recipient.endswith("@gmail."):
+        recipient += "com"
+    elif recipient.endswith("@gmail"):
+        recipient += ".com"
     sender_name = smtp_config.get("from_name") or "HireFlow Export System"
     
     subject = "✅ [HireFlow] Real Email Dispatch Connection Verified!"

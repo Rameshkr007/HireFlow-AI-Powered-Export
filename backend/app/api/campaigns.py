@@ -52,6 +52,29 @@ def stop_campaign(campaign_id: int, current_user: User = Depends(get_current_use
 def get_campaign_logs(campaign_id: int, current_user: User = Depends(get_current_user), db: Session = Depends(get_db)):
     campaign_service.get_campaign(db, current_user.id, campaign_id)  # auth check
     logs = db.query(EmailLog).filter(EmailLog.campaign_id == campaign_id).order_by(EmailLog.created_at.desc()).all()
+    if not logs:
+        from ..models.email_send_log import EmailSendLog
+        send_logs = db.query(EmailSendLog).filter(EmailSendLog.campaign_id == campaign_id).order_by(EmailSendLog.created_at.desc()).all()
+        result = []
+        for sl in send_logs:
+            result.append({
+                "id": sl.id,
+                "campaign_id": sl.campaign_id or campaign_id,
+                "buyer_id": sl.buyer_id,
+                "user_id": sl.user_id,
+                "email_address": sl.recipient_email,
+                "subject": sl.subject,
+                "status": sl.status,
+                "error_message": sl.error_message,
+                "attachment_name": sl.attachment_name,
+                "sent_at": str(sl.sent_at) if sl.sent_at else None,
+                "created_at": str(sl.created_at) if sl.created_at else None,
+                "buyer_name": sl.recipient_name,
+                "company_name": sl.company_name,
+                "country": "USA"
+            })
+        return result
+
     result = []
     for log in logs:
         entry = {

@@ -8561,8 +8561,8 @@
     "subject": "Persistence Check Test",
     "personalized_body": "This email must NEVER disappear on refresh",
     "status": "SENT",
-    "sent_at": "2026-10-16T09:23:13.672214",
-    "created_at": "2026-10-16T09:23:13.672214",
-    "gmail_message_id": "demo_msg_20261016092313_op_a7ba4@hireflow.internal"
+    "sent_at": "2026-10-16T10:14:58.260676",
+    "created_at": "2026-10-16T10:14:58.260676",
+    "gmail_message_id": "demo_msg_20261016101458_op_a5290@hireflow.internal"
   }
 ]

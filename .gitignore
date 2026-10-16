@@ -23,6 +23,9 @@ env/
 # Attachments (uploaded files)
 attachments/*
 !attachments/.gitkeep
+!attachments/*.jpg
+!attachments/*.png
+!attachments/*.pdf
 
 # Node
 node_modules/

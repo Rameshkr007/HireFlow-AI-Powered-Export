@@ -47,12 +47,16 @@ def delete_campaign(db: Session, user_id: int, campaign_id: int):
 
 def start_campaign(db: Session, user_id: int, campaign_id: int, background_tasks: BackgroundTasks) -> Campaign:
     campaign = get_campaign(db, user_id, campaign_id)
-    if campaign.status not in ['DRAFT', 'READY', 'PAUSED']:
+    if campaign.status not in ['DRAFT', 'READY', 'PAUSED', 'FAILED', 'COMPLETED']:
         raise HTTPException(status_code=400, detail=f"Cannot start campaign in status: {campaign.status}")
     
     # Get eligible buyers
     buyers = get_campaign_eligible_buyers(db, campaign)
     campaign.total_leads = len(buyers)
+    if campaign.status in ['FAILED', 'COMPLETED']:
+        campaign.sent_count = 0
+        campaign.failed_count = 0
+        campaign.skipped_count = 0
     campaign.status = 'RUNNING'
     campaign.started_at = datetime.utcnow()
     db.commit()
@@ -140,19 +144,37 @@ def get_campaign_eligible_buyers(db: Session, campaign: Campaign):
         elif parts:
             query = query.filter(Buyer.business_type.ilike(f"%{parts[0]}%"))
         
-    buyers = query.filter(Buyer.email_status != 'INVALID').limit(campaign.sending_limit).all()
+    # Prioritize leads not yet contacted in this campaign
+    from ..models.email_send_log import EmailSendLog
+    contacted_emails = [r[0] for r in db.query(EmailSendLog.recipient_email).filter(
+        EmailSendLog.campaign_id == campaign.id,
+        EmailSendLog.status == 'SENT'
+    ).all() if r[0]]
+
+    if contacted_emails:
+        uncontacted = query.filter(
+            Buyer.email_status != 'INVALID',
+            ~Buyer.email.in_(contacted_emails)
+        ).limit(campaign.sending_limit).all()
+        if uncontacted:
+            return uncontacted
+
+    buyers = query.filter(Buyer.email_status != 'INVALID').order_by(Buyer.last_contacted.asc().nullsfirst()).limit(campaign.sending_limit).all()
     return buyers
 
 def run_campaign_background(campaign_id: int, user_id: int):
     """Background task to run campaign sending."""
     import time
     import random
+    import traceback
     from ..workers.campaign_worker import process_campaign
     
     db = SessionLocal()
     try:
         process_campaign(db, campaign_id, user_id)
     except Exception as e:
+        print(f"[CAMPAIGN BACKGROUND CRITICAL ERROR] Campaign {campaign_id} error: {e}")
+        traceback.print_exc()
         db.query(Campaign).filter(Campaign.id == campaign_id).update({'status': 'FAILED'})
         db.commit()
     finally:

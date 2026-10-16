@@ -526,6 +526,35 @@ def dispatch_email_universal(
         attachment_list=attachment_list
     )
 
+def parse_attachment_ids(raw_ids: Any) -> list:
+    if not raw_ids:
+        return []
+    if isinstance(raw_ids, str):
+        try:
+            import json
+            parsed = json.loads(raw_ids)
+            if isinstance(parsed, list):
+                raw_ids = parsed
+            else:
+                raw_ids = [parsed]
+        except Exception:
+            raw_ids = [x.strip() for x in raw_ids.replace('[', '').replace(']', '').split(',') if x.strip()]
+    if isinstance(raw_ids, (list, tuple, set)):
+        result = []
+        for aid in raw_ids:
+            try:
+                if aid is not None and str(aid).strip().isdigit():
+                    result.append(int(aid))
+            except (ValueError, TypeError):
+                pass
+        return result
+    try:
+        if str(raw_ids).strip().isdigit():
+            return [int(raw_ids)]
+    except (ValueError, TypeError):
+        pass
+    return []
+
 def send_real_email_for_campaign(
     campaign: Any,
     buyer: Any,
@@ -551,8 +580,7 @@ def send_real_email_for_campaign(
     # Check for campaign attachments (multi-attachment support)
     attachment_list = []
     target_ids = []
-    if getattr(campaign, "attachment_ids", None):
-        target_ids.extend([int(aid) for aid in campaign.attachment_ids if aid])
+    target_ids.extend(parse_attachment_ids(getattr(campaign, "attachment_ids", None)))
     if getattr(campaign, "attachment_id", None) and campaign.attachment_id not in target_ids:
         target_ids.append(campaign.attachment_id)
 

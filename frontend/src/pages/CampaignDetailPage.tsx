@@ -75,6 +75,9 @@ export default function CampaignDetailPage() {
           {['DRAFT', 'READY'].includes(campaign.status) && (
             <button onClick={() => actionMutation.mutate('start')} disabled={actionMutation.isPending} className="btn-primary bg-green-600 hover:bg-green-500"><Play className="w-4 h-4" /> Start</button>
           )}
+          {['FAILED', 'COMPLETED'].includes(campaign.status) && (
+            <button onClick={() => actionMutation.mutate('start')} disabled={actionMutation.isPending} className="btn-primary bg-emerald-600 hover:bg-emerald-500 flex items-center gap-1.5"><Play className="w-4 h-4 fill-current" /> Restart Campaign</button>
+          )}
           {campaign.status === 'RUNNING' && (
             <>
               <button onClick={() => actionMutation.mutate('pause')} disabled={actionMutation.isPending} className="btn-secondary text-amber-400"><Pause className="w-4 h-4" /> Pause</button>

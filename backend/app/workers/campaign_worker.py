@@ -190,11 +190,11 @@ def process_campaign(db: Session, campaign_id: int, user_id: int):
     buyers = get_campaign_eligible_buyers(db, campaign)
 
     # Resolve attachment files & names for dispatching & logging
+    from ..services.email_service import parse_attachment_ids, DEFAULT_POSTER_PATH
     attachment_list = []
     att_names = []
     target_ids = []
-    if getattr(campaign, "attachment_ids", None):
-        target_ids.extend([int(aid) for aid in campaign.attachment_ids if aid])
+    target_ids.extend(parse_attachment_ids(getattr(campaign, "attachment_ids", None)))
     if getattr(campaign, "attachment_id", None) and campaign.attachment_id not in target_ids:
         target_ids.append(campaign.attachment_id)
     if target_ids:
@@ -207,19 +207,20 @@ def process_campaign(db: Session, campaign_id: int, user_id: int):
                 })
         att_names = [a.original_name for a in atts if a.original_name]
 
-    if not attachment_list:
-        from ..services.email_service import DEFAULT_POSTER_PATH
-        if os.path.exists(DEFAULT_POSTER_PATH):
-            attachment_list.append({
-                "path": DEFAULT_POSTER_PATH,
-                "name": "OM_Enterprise_Home_Decor_Collection_Poster.jpg"
-            })
-            att_names = ["OM_Enterprise_Home_Decor_Collection_Poster.jpg"]
+    if not attachment_list and os.path.exists(DEFAULT_POSTER_PATH):
+        attachment_list.append({
+            "path": DEFAULT_POSTER_PATH,
+            "name": "OM_Enterprise_Home_Decor_Collection_Poster.jpg"
+        })
+        att_names = ["OM_Enterprise_Home_Decor_Collection_Poster.jpg"]
 
     attachment_name_str = ", ".join(att_names) if att_names else None
     first_path = attachment_list[0]["path"] if attachment_list else None
     first_name = attachment_list[0]["name"] if attachment_list else attachment_name_str
 
+    initial_sent = campaign.sent_count or 0
+    initial_failed = campaign.failed_count or 0
+    initial_skipped = campaign.skipped_count or 0
     sent = 0
     failed = 0
     skipped = 0
@@ -244,7 +245,7 @@ def process_campaign(db: Session, campaign_id: int, user_id: int):
             )
             db.add(log)
             skipped += 1
-            campaign.skipped_count = skipped
+            campaign.skipped_count = initial_skipped + skipped
             db.commit()
             continue
 
@@ -263,7 +264,7 @@ def process_campaign(db: Session, campaign_id: int, user_id: int):
             )
             db.add(log)
             skipped += 1
-            campaign.skipped_count = skipped
+            campaign.skipped_count = initial_skipped + skipped
             db.commit()
             continue
 
@@ -281,7 +282,7 @@ def process_campaign(db: Session, campaign_id: int, user_id: int):
             )
             db.add(log)
             skipped += 1
-            campaign.skipped_count = skipped
+            campaign.skipped_count = initial_skipped + skipped
             db.commit()
             continue
 
@@ -312,9 +313,9 @@ def process_campaign(db: Session, campaign_id: int, user_id: int):
             failed += 1
 
         # Update campaign counts
-        campaign.sent_count = sent
-        campaign.failed_count = failed
-        campaign.skipped_count = skipped
+        campaign.sent_count = initial_sent + sent
+        campaign.failed_count = initial_failed + failed
+        campaign.skipped_count = initial_skipped + skipped
         db.commit()
 
         # Delay between sends (capped at 3s in demo mode for UX)
@@ -326,7 +327,7 @@ def process_campaign(db: Session, campaign_id: int, user_id: int):
     if campaign.status == 'RUNNING':
         campaign.status = 'COMPLETED'
         campaign.completed_at = datetime.utcnow()
-    campaign.sent_count = sent
-    campaign.failed_count = failed
-    campaign.skipped_count = skipped
+    campaign.sent_count = initial_sent + sent
+    campaign.failed_count = initial_failed + failed
+    campaign.skipped_count = initial_skipped + skipped
     db.commit()

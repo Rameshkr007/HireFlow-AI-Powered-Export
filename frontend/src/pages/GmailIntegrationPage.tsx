@@ -114,7 +114,7 @@ export default function GmailIntegrationPage() {
       setSmtpPort(data.smtp_port || 587);
       setSmtpUser(data.smtp_user || defaultPersonal);
       setFromName(data.from_name || 'Ramesh Kumar Thakur | OM Enterprise');
-      setFromEmail(data.from_email || defaultCompany);
+      setFromEmail(data.from_email || defaultPersonal);
       setUseTls(data.use_tls ?? true);
       setUseSsl(data.use_ssl ?? false);
       setIsVerified(Boolean(hasWorkingCreds && data.is_verified));
@@ -131,7 +131,7 @@ export default function GmailIntegrationPage() {
           smtp_port: data.smtp_port || 587,
           smtp_user: data.smtp_user || defaultPersonal,
           from_name: data.from_name || 'Ramesh Kumar Thakur | OM Enterprise',
-          from_email: data.from_email || defaultCompany,
+          from_email: data.from_email || defaultPersonal,
           has_password: Boolean(data.has_password),
           has_api_key: Boolean(data.has_api_key),
           is_verified: Boolean(data.is_verified),
@@ -535,17 +535,17 @@ export default function GmailIntegrationPage() {
 
           <div>
             <label className="text-xs font-semibold text-dark-300 block mb-1.5">
-              Company Reply-To Email <span className="text-dark-500 font-normal">(Buyer ke replies is company email par aayenge)</span>
+              Reply-To Email Address <span className="text-dark-500 font-normal">(Buyer ke replies aapke is email par aayenge)</span>
             </label>
             <input
               type="email"
-              placeholder="exportindia2026us@gmail.com"
+              placeholder="rameshkrthakur1816@gmail.com"
               value={fromEmail}
               onChange={(e) => setFromEmail(e.target.value)}
               className="input-field font-mono"
             />
             <p className="text-[11px] text-dark-400 mt-1">
-              🏢 OM Enterprise Official Company Email (<strong className="text-dark-200">exportindia2026us@gmail.com</strong>)
+              📥 Buyer ka har ek reply direct aapke personal email (<strong className="text-dark-200">rameshkrthakur1816@gmail.com</strong>) par aayega.
             </p>
           </div>
         </div>

@@ -113,7 +113,7 @@ def get_effective_smtp_config(db: Session, user_id: int) -> Optional[Dict[str, A
             "api_key": db_setting.api_key.strip() if db_setting.api_key else None,
             "from_name": db_setting.from_name or "Ramesh Kumar Thakur | OM Enterprise",
             "from_email": db_setting.from_email or (db_setting.smtp_user.strip() if db_setting.smtp_user else "rameshkrthakur1816@gmail.com"),
-            "reply_to": "exportindia2026us@gmail.com",
+            "reply_to": db_setting.from_email or (db_setting.smtp_user.strip() if db_setting.smtp_user else "rameshkrthakur1816@gmail.com"),
             "use_tls": db_setting.use_tls if db_setting.use_tls is not None else True,
             "use_ssl": db_setting.use_ssl if db_setting.use_ssl is not None else False,
             "source": "db"
@@ -129,8 +129,8 @@ def get_effective_smtp_config(db: Session, user_id: int) -> Optional[Dict[str, A
             "smtp_password": clean_password(settings.SMTP_PASSWORD),
             "api_key": None,
             "from_name": settings.SMTP_FROM_NAME or "Ramesh Kumar Thakur | OM Enterprise",
-            "from_email": settings.SMTP_FROM_EMAIL or settings.SMTP_USER.strip(),
-            "reply_to": "exportindia2026us@gmail.com",
+            "from_email": settings.SMTP_FROM_EMAIL or settings.SMTP_USER.strip() or "rameshkrthakur1816@gmail.com",
+            "reply_to": settings.SMTP_FROM_EMAIL or settings.SMTP_USER.strip() or "rameshkrthakur1816@gmail.com",
             "use_tls": settings.SMTP_USE_TLS,
             "use_ssl": settings.SMTP_USE_SSL,
             "source": "env"
@@ -215,8 +215,8 @@ def send_via_brevo_http(
         "htmlContent": html_body,
         "textContent": body_text
     }
-    target_reply_to = (reply_to or "exportindia2026us@gmail.com").strip()
-    payload["replyTo"] = {"email": target_reply_to, "name": "OM Enterprise"}
+    target_reply_to = (reply_to or from_email or "rameshkrthakur1816@gmail.com").strip()
+    payload["replyTo"] = {"email": target_reply_to, "name": from_name or "Ramesh Kumar Thakur"}
 
     # Auto-BCC both sender personal account and company account
     bcc_list = []
@@ -283,7 +283,7 @@ def send_via_resend_http(
     }
     
     sender_str = f"{from_name} <{from_email or 'rameshkrthakur1816@gmail.com'}>" if from_name else (from_email or 'rameshkrthakur1816@gmail.com')
-    target_reply_to = (reply_to or "exportindia2026us@gmail.com").strip()
+    target_reply_to = (reply_to or from_email or "rameshkrthakur1816@gmail.com").strip()
     payload: Dict[str, Any] = {
         "from": sender_str,
         "to": [to_email],
@@ -361,7 +361,7 @@ def send_smtp_email(
         smtp_pass = smtp_config["smtp_password"]
         use_tls = smtp_config.get("use_tls", True)
         use_ssl = smtp_config.get("use_ssl", False)
-        target_reply_to = (reply_to or smtp_config.get("reply_to") or "exportindia2026us@gmail.com").strip()
+        target_reply_to = (reply_to or smtp_config.get("reply_to") or from_email or "rameshkrthakur1816@gmail.com").strip()
 
         # Build email message
         msg = MIMEMultipart("mixed")
@@ -545,7 +545,7 @@ def dispatch_email_universal(
         attachment_path=attachment_path,
         attachment_filename=attachment_filename,
         attachment_list=attachment_list,
-        reply_to=reply_to or "exportindia2026us@gmail.com"
+        reply_to=reply_to or smtp_config.get("reply_to") or smtp_config.get("from_email") or "rameshkrthakur1816@gmail.com"
     )
 
 def parse_attachment_ids(raw_ids: Any) -> list:

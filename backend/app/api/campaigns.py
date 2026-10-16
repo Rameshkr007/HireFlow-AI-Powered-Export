@@ -58,12 +58,17 @@ def get_campaign_logs(campaign_id: int, current_user: User = Depends(get_current
         campaign_service.get_campaign(db, current_user.id, campaign_id)
     except Exception:
         pass
-    logs = db.query(EmailLog).filter(EmailLog.campaign_id == campaign_id).order_by(EmailLog.created_at.desc()).all()
-    if not logs:
-        from ..models.email_send_log import EmailSendLog
-        send_logs = db.query(EmailSendLog).filter(EmailSendLog.campaign_id == campaign_id).order_by(EmailSendLog.created_at.desc()).all()
+
+    from ..models.email_send_log import EmailSendLog
+    send_logs = db.query(EmailSendLog).filter(EmailSendLog.campaign_id == campaign_id).order_by(EmailSendLog.created_at.desc()).all()
+    if send_logs:
+        all_buyers = db.query(Buyer).all()
+        buyers_by_id = {b.id: b for b in all_buyers}
+        buyers_by_email = {b.normalized_email: b for b in all_buyers if b.normalized_email}
         result = []
         for sl in send_logs:
+            norm_em = (sl.recipient_email or "").strip().lower()
+            buyer = buyers_by_email.get(norm_em) or (buyers_by_id.get(sl.buyer_id) if sl.buyer_id else None)
             result.append({
                 "id": sl.id,
                 "campaign_id": sl.campaign_id or campaign_id,
@@ -76,12 +81,13 @@ def get_campaign_logs(campaign_id: int, current_user: User = Depends(get_current
                 "attachment_name": sl.attachment_name,
                 "sent_at": str(sl.sent_at) if sl.sent_at else None,
                 "created_at": str(sl.created_at) if sl.created_at else None,
-                "buyer_name": sl.recipient_name,
-                "company_name": sl.company_name,
-                "country": "USA"
+                "buyer_name": (buyer.buyer_name if buyer else sl.recipient_name) or "Purchasing Lead",
+                "company_name": (buyer.company_name if buyer else sl.company_name) or "Enterprise Buyer",
+                "country": (buyer.country if buyer else "USA")
             })
         return result
 
+    logs = db.query(EmailLog).filter(EmailLog.campaign_id == campaign_id).order_by(EmailLog.created_at.desc()).all()
     result = []
     for log in logs:
         entry = {

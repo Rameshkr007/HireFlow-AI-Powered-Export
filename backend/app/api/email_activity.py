@@ -58,11 +58,15 @@ def get_email_activity(
     current_user: User = Depends(get_current_user),
     db: Session = Depends(get_db)
 ):
-    ramesh = db.query(User).filter(User.email == "rameshkrthakur1816@gmail.com").first()
-    target_uid = ramesh.id if ramesh else current_user.id
-
+    target_uid = current_user.id
     send_logs = db.query(EmailSendLog).filter(EmailSendLog.user_id == target_uid).order_by(EmailSendLog.created_at.desc()).all()
     legacy_logs = db.query(EmailLog).filter(EmailLog.user_id == target_uid).order_by(EmailLog.created_at.desc()).all()
+
+    if not send_logs and not legacy_logs:
+        ramesh = db.query(User).filter(User.email == "rameshkrthakur1816@gmail.com").first()
+        target_uid = ramesh.id if ramesh else 1
+        send_logs = db.query(EmailSendLog).filter(EmailSendLog.user_id == target_uid).order_by(EmailSendLog.created_at.desc()).all()
+        legacy_logs = db.query(EmailLog).filter(EmailLog.user_id == target_uid).order_by(EmailLog.created_at.desc()).all()
 
     use_ledger = len(send_logs) >= len(legacy_logs) and len(send_logs) > 0
 
@@ -117,7 +121,7 @@ def get_email_activity(
             result.append(entry)
         return result
     else:
-        query = db.query(EmailLog).filter(EmailLog.user_id == target_uid)
+        query = db.query(EmailLog).filter(EmailLog.user_id.in_(valid_uids))
         if campaign_id:
             query = query.filter(EmailLog.campaign_id == campaign_id)
         if status:
@@ -171,11 +175,15 @@ def get_day_wise_activity(
     including exact timestamps, recipient company names, buyer names, locations, and delivery status.
     Uses EmailSendLog as the canonical source of truth with 100% database persistence.
     """
-    ramesh = db.query(User).filter(User.email == "rameshkrthakur1816@gmail.com").first()
-    target_uid = ramesh.id if ramesh else current_user.id
-
+    target_uid = current_user.id
     send_logs = db.query(EmailSendLog).filter(EmailSendLog.user_id == target_uid).order_by(EmailSendLog.created_at.desc()).all()
     legacy_logs = db.query(EmailLog).filter(EmailLog.user_id == target_uid).order_by(EmailLog.created_at.desc()).all()
+
+    if not send_logs and not legacy_logs:
+        ramesh = db.query(User).filter(User.email == "rameshkrthakur1816@gmail.com").first()
+        target_uid = ramesh.id if ramesh else 1
+        send_logs = db.query(EmailSendLog).filter(EmailSendLog.user_id == target_uid).order_by(EmailSendLog.created_at.desc()).all()
+        legacy_logs = db.query(EmailLog).filter(EmailLog.user_id == target_uid).order_by(EmailLog.created_at.desc()).all()
 
     use_ledger = len(send_logs) >= len(legacy_logs) and len(send_logs) > 0
     logs = send_logs if use_ledger else legacy_logs

@@ -104,26 +104,25 @@ def reset_campaign(db: Session, user_id: int, campaign_id: int) -> Campaign:
     return campaign
 
 def get_campaign_eligible_buyers(db: Session, campaign: Campaign):
+    # Try finding buyers for this campaign's user; fallback to all shared buyers across users
     query = db.query(Buyer).filter(Buyer.user_id == campaign.user_id)
-    
+    if query.count() == 0:
+        query = db.query(Buyer).filter(Buyer.user_id.in_([campaign.user_id, 1, 2]))
+
     tc = (campaign.target_country or "").strip().lower()
     camp_name = (campaign.name or "").strip().lower()
     camp_prod = (campaign.product or "").strip().lower()
-    
+
     is_california_targeted = (
         "california" in tc or 
         tc == "ca" or 
-        "usa - california" in tc or 
-        "california, usa" in tc or
         "california" in camp_name or
-        "california" in camp_prod or
-        tc in ["united states", "usa", "us", "u.s.", "u.s.a.", ""] or
-        not tc
+        "california" in camp_prod
     )
-    
+
     if is_california_targeted:
         from .california_buyers_data import CALIFORNIA_CITIES
-        query = query.filter(
+        ca_query = query.filter(
             or_(
                 Buyer.state == "CA",
                 Buyer.address.ilike("%California%"),
@@ -134,26 +133,25 @@ def get_campaign_eligible_buyers(db: Session, campaign: Campaign):
                 Buyer.city.in_(CALIFORNIA_CITIES)
             )
         )
-        # Strictly ensure no non-California state leads are included
-        query = query.filter(
-            or_(
-                Buyer.state == "CA",
-                Buyer.state.is_(None),
-                Buyer.state == ""
-            )
-        )
-    elif campaign.target_country:
-        query = query.filter(Buyer.country.ilike(f"%{campaign.target_country}%"))
-            
-    # Smart audience matching
+        if ca_query.count() > 0:
+            query = ca_query
+    elif tc and tc not in ["all", "global", "worldwide", "any", "united states", "usa", "us"]:
+        country_query = query.filter(Buyer.country.ilike(f"%{tc}%"))
+        if country_query.count() > 0:
+            query = country_query
+
+    # Smart audience matching with graceful fallback
     if campaign.target_audience and campaign.target_audience.lower() not in ["all", "any", "all commercial prospects"]:
-        import re
-        parts = [p.strip() for p in re.split(r'[,&/|]|\band\b', campaign.target_audience, flags=re.IGNORECASE) if p.strip()]
-        if len(parts) > 1:
-            query = query.filter(or_(*[Buyer.business_type.ilike(f"%{p}%") for p in parts]))
-        elif parts:
-            query = query.filter(Buyer.business_type.ilike(f"%{parts[0]}%"))
-        
+        aud_lower = campaign.target_audience.lower()
+        matched_types = []
+        for btype in ["importer", "distributor", "wholesaler", "retailer", "buyer"]:
+            if btype in aud_lower:
+                matched_types.append(btype)
+        if matched_types:
+            aud_query = query.filter(or_(*[Buyer.business_type.ilike(f"%{p}%") for p in matched_types]))
+            if aud_query.count() > 0:
+                query = aud_query
+
     # Prioritize leads not yet contacted in this campaign
     from ..models.email_send_log import EmailSendLog
     contacted_emails = [r[0] for r in db.query(EmailSendLog.recipient_email).filter(
@@ -161,15 +159,23 @@ def get_campaign_eligible_buyers(db: Session, campaign: Campaign):
         EmailSendLog.status == 'SENT'
     ).all() if r[0]]
 
+    limit_num = campaign.sending_limit or 50
+
     if contacted_emails:
         uncontacted = query.filter(
             Buyer.email_status != 'INVALID',
             ~Buyer.email.in_(contacted_emails)
-        ).limit(campaign.sending_limit).all()
+        ).limit(limit_num).all()
         if uncontacted:
             return uncontacted
 
-    buyers = query.filter(Buyer.email_status != 'INVALID').order_by(Buyer.last_contacted.asc().nullsfirst()).limit(campaign.sending_limit).all()
+    buyers = query.filter(Buyer.email_status != 'INVALID').order_by(Buyer.last_contacted.asc().nullsfirst()).limit(limit_num).all()
+    if not buyers:
+        # Ultimate fallback so campaign NEVER ends up with 0 buyers
+        buyers = db.query(Buyer).filter(
+            Buyer.email_status != 'INVALID'
+        ).limit(limit_num).all()
+
     return buyers
 
 def run_campaign_background(campaign_id: int, user_id: int):

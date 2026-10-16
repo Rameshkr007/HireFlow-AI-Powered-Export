@@ -1,5 +1,5 @@
 import React from 'react';
-import { useParams, useNavigate } from 'react-router-dom';
+import { useParams, useNavigate, Link } from 'react-router-dom';
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { ArrowLeft, Play, Pause, Square, AlertTriangle, CheckCircle, Mail, RotateCcw } from 'lucide-react';
 import api from '../lib/api';
@@ -142,6 +142,25 @@ export default function CampaignDetailPage() {
         <KPICard title="Skipped" value={campaign.skipped_count} icon={RotateCcw} color="amber" />
         <KPICard title="Remaining" value={remaining} icon={Mail} color="primary" />
       </div>
+
+      {campaign.failed_count > 0 && (
+        <div className="mb-6 p-4 rounded-xl bg-amber-500/10 border border-amber-500/30 text-amber-200 flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
+          <div className="flex items-start gap-3">
+            <AlertTriangle className="w-5 h-5 text-amber-400 shrink-0 mt-0.5" />
+            <div>
+              <h4 className="font-semibold text-sm text-amber-300">Outbound Dispatch Notice</h4>
+              <p className="text-xs text-amber-200/80 mt-0.5">
+                {logs?.some(l => l.error_message?.toLowerCase().includes('credential') || l.error_message?.toLowerCase().includes('password'))
+                  ? 'Real emails were stopped because outbound credentials (Brevo API key or Gmail App Password) are missing or not verified. Configure your email settings, then click Restart Campaign.'
+                  : 'Some emails encountered delivery errors. Check the activity log below for exact reasons.'}
+              </p>
+            </div>
+          </div>
+          <Link to="/gmail-connect" className="btn-primary bg-amber-600 hover:bg-amber-500 text-xs whitespace-nowrap shrink-0">
+            Configure Email Settings
+          </Link>
+        </div>
+      )}
 
       <div className="card">
         <div className="p-4 border-b border-dark-800 flex justify-between items-center">

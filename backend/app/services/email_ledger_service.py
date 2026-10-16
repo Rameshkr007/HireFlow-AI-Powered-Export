@@ -48,6 +48,8 @@ def record_and_dispatch_email(
     6. Returns canonical saved database record.
     """
     clean_rec_email = (recipient_email or "").strip().lower()
+    clean_subject = (subject or "").strip() or "Wholesale Opportunity & Product Inquiry"
+    clean_body = body_text or ""
     op_id = idempotency_key or operation_id or generate_operation_id()
 
     # 1. Idempotency Check: Prevent duplicate sends
@@ -56,7 +58,7 @@ def record_and_dispatch_email(
         (EmailSendLog.operation_id == op_id) |
         (
             (EmailSendLog.recipient_email == clean_rec_email) &
-            (EmailSendLog.subject == subject) &
+            (EmailSendLog.subject == clean_subject) &
             (EmailSendLog.status == "SENT") &
             (EmailSendLog.created_at >= datetime.utcnow() - timedelta(minutes=5))
         )
@@ -75,8 +77,8 @@ def record_and_dispatch_email(
             buyer_id=buyer_id,
             campaign_id=campaign_id,
             recipient_email=clean_rec_email,
-            subject=subject,
-            body_text=body_text,
+            subject=clean_subject,
+            body_text=clean_body,
             status="FAILED",
             error_message=f"Validation failed: {val.get('reason', 'Invalid email address')}",
             created_at=datetime.utcnow()
@@ -111,12 +113,12 @@ def record_and_dispatch_email(
             buyer_id=buyer.id if buyer else None,
             campaign_id=campaign_id,
             recipient_email=clean_rec_email,
-            recipient_name=buyer.buyer_name if buyer else "Purchasing Lead",
-            company_name=buyer.company_name if buyer else "",
+            recipient_name=(buyer.buyer_name if buyer else "Purchasing Lead") or "Purchasing Lead",
+            company_name=(buyer.company_name if buyer else "Enterprise Buyer") or "Enterprise Buyer",
             product=getattr(buyer, "product", None) or (campaign.product if campaign else "Handcrafted Export Products"),
             campaign_name=campaign.name if campaign else "Direct Outreach",
-            subject=subject,
-            body_text=body_text,
+            subject=clean_subject,
+            body_text=clean_body,
             body_html=body_html,
             attachment_name=attachment_name or (os.path.basename(attachment_path) if attachment_path else None),
             status="PENDING",
@@ -130,7 +132,7 @@ def record_and_dispatch_email(
     legacy_log = db.query(EmailLog).filter(
         EmailLog.user_id == user_id,
         EmailLog.email_address == clean_rec_email,
-        EmailLog.subject == subject,
+        EmailLog.subject == clean_subject,
         EmailLog.created_at >= datetime.utcnow() - timedelta(minutes=2)
     ).first()
     if not legacy_log:
@@ -139,8 +141,8 @@ def record_and_dispatch_email(
             buyer_id=buyer.id if buyer else None,
             user_id=user_id,
             email_address=clean_rec_email,
-            subject=subject,
-            personalized_body=body_text,
+            subject=clean_subject,
+            personalized_body=clean_body,
             status="PENDING",
             attachment_name=attachment_name,
             created_at=datetime.utcnow()

@@ -47,6 +47,10 @@ def startup():
                 conn.execute(text("ALTER TABLE buyers ADD COLUMN IF NOT EXISTS address TEXT;"))
                 conn.execute(text("ALTER TABLE campaigns ADD COLUMN IF NOT EXISTS sequence_steps JSON;"))
                 conn.execute(text("ALTER TABLE campaigns ADD COLUMN IF NOT EXISTS attachment_ids JSON;"))
+                try:
+                    conn.execute(text("ALTER TABLE email_send_logs ALTER COLUMN subject DROP NOT NULL;"))
+                except Exception:
+                    pass
                 conn.commit()
             except Exception:
                 try:

@@ -28,7 +28,7 @@ class EmailSendLog(Base):
     product = Column(String(255), nullable=True)
     campaign_name = Column(String(255), nullable=True)
 
-    subject = Column(Text, nullable=False)
+    subject = Column(Text, nullable=True, default="Wholesale Opportunity & Product Inquiry")
     body_text = Column(Text, nullable=True)
     body_html = Column(Text, nullable=True)
     attachment_name = Column(String(255), nullable=True)

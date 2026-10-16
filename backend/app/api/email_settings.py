@@ -109,7 +109,7 @@ def get_email_settings(
             from_email=setting.from_email or setting.smtp_user or default_email,
             use_tls=setting.use_tls if setting.use_tls is not None else True,
             use_ssl=setting.use_ssl if setting.use_ssl is not None else False,
-            is_verified=True if has_creds else bool(setting.is_verified),
+            is_verified=bool(has_creds and setting.is_verified),
             has_password=bool(setting.smtp_password),
             masked_password=mask_password(setting.smtp_password),
             api_key=setting.api_key,
@@ -246,4 +246,11 @@ def disconnect_email(
     if setting:
         db.delete(setting)
         db.commit()
+    import os
+    from ..services.credential_store import CREDENTIALS_FILE
+    if os.path.exists(CREDENTIALS_FILE):
+        try:
+            os.remove(CREDENTIALS_FILE)
+        except Exception:
+            pass
     return {"success": True, "message": "Email settings removed"}

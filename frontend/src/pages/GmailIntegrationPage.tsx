@@ -106,58 +106,38 @@ export default function GmailIntegrationPage() {
       const data: EmailSettings = res.data;
       
       const defaultPersonal = user?.email || 'rameshkrthakur1816@gmail.com';
-      const hasWorkingCreds = Boolean(data.has_password || data.has_api_key || data.is_verified);
+      const hasWorkingCreds = Boolean(data.has_password || data.has_api_key);
 
-      setProvider(data.provider || 'gmail');
-      setSmtpHost(data.smtp_host || 'smtp.gmail.com');
+      setProvider(data.provider || 'brevo');
+      setSmtpHost(data.smtp_host || 'smtp.brevo.com');
       setSmtpPort(data.smtp_port || 587);
       setSmtpUser(data.smtp_user || defaultPersonal);
       setFromName(data.from_name || 'Ramesh Kumar Thakur | OM Enterprise');
       setFromEmail(data.from_email || data.smtp_user || defaultPersonal);
       setUseTls(data.use_tls ?? true);
       setUseSsl(data.use_ssl ?? false);
-      setIsVerified(data.is_verified || hasWorkingCreds);
-      setHasPassword(data.has_password || false);
+      setIsVerified(Boolean(hasWorkingCreds && data.is_verified));
+      setHasPassword(Boolean(data.has_password));
       setHasApiKey(Boolean(data.has_api_key));
-      setMaskedPassword(data.masked_password || (hasWorkingCreds ? '••••••••••••' : null));
+      setMaskedPassword(hasWorkingCreds ? (data.masked_password || null) : null);
       setTestEmail(data.from_email || data.smtp_user || defaultPersonal);
 
-      // Cache locally in browser
+      // Cache locally in browser ONLY if genuine credentials exist
       if (hasWorkingCreds) {
         localStorage.setItem('hireflow_email_settings_cache', JSON.stringify({
-          provider: data.provider || 'gmail',
-          smtp_host: data.smtp_host || 'smtp.gmail.com',
+          provider: data.provider || 'brevo',
+          smtp_host: data.smtp_host || 'smtp.brevo.com',
           smtp_port: data.smtp_port || 587,
           smtp_user: data.smtp_user || defaultPersonal,
           from_name: data.from_name || 'Ramesh Kumar Thakur | OM Enterprise',
           from_email: data.from_email || defaultPersonal,
-          has_password: data.has_password || false,
+          has_password: Boolean(data.has_password),
           has_api_key: Boolean(data.has_api_key),
-          is_verified: true,
+          is_verified: Boolean(data.is_verified),
           masked_password: data.masked_password || '••••••••••••'
         }));
       } else {
-        // Fallback to local storage cache if server cold started
-        const cachedStr = localStorage.getItem('hireflow_email_settings_cache');
-        if (cachedStr) {
-          try {
-            const cached = JSON.parse(cachedStr);
-            if (cached.has_password || cached.has_api_key || cached.is_verified) {
-              setHasPassword(cached.has_password || false);
-              setHasApiKey(cached.has_api_key || false);
-              setIsVerified(true);
-              setMaskedPassword(cached.masked_password || '••••••••••••');
-              setProvider(cached.provider || 'gmail');
-              setSmtpHost(cached.smtp_host || 'smtp.gmail.com');
-              setSmtpPort(cached.smtp_port || 587);
-              setSmtpUser(cached.smtp_user || defaultPersonal);
-              setFromName(cached.from_name || 'Ramesh Kumar Thakur | OM Enterprise');
-              setFromEmail(cached.from_email || defaultPersonal);
-            }
-          } catch (e) {
-            console.error('Failed to parse cached email settings', e);
-          }
-        }
+        localStorage.removeItem('hireflow_email_settings_cache');
       }
     } catch (err: any) {
       console.error('Failed to load email settings:', err);
@@ -281,11 +261,13 @@ export default function GmailIntegrationPage() {
     if (!window.confirm('Are you sure you want to disconnect and clear your email configuration?')) return;
     try {
       await api.delete('/api/email-settings');
+      localStorage.removeItem('hireflow_email_settings_cache');
       setSmtpUser('');
       setSmtpPassword('');
       setFromName('');
       setFromEmail('');
       setHasPassword(false);
+      setHasApiKey(false);
       setMaskedPassword(null);
       setIsVerified(false);
       setLastTestResult(null);
@@ -303,7 +285,7 @@ export default function GmailIntegrationPage() {
     );
   }
 
-  const isConfigured = Boolean((hasPassword || hasApiKey || isVerified) && (smtpUser || fromEmail));
+  const isConfigured = Boolean((hasPassword || hasApiKey) && (smtpUser || fromEmail));
 
   return (
     <div className="max-w-4xl mx-auto space-y-6 pb-12">
@@ -312,7 +294,7 @@ export default function GmailIntegrationPage() {
         <div>
           <h2 className="text-2xl font-bold text-dark-50">Real Email Dispatch & SMTP Integration</h2>
           <p className="text-dark-400 mt-1">
-            Connect your Gmail, Google Workspace, Zoho, or company email to send real export cold pitches to international buyers.
+            Connect your Brevo API key, Gmail App Password, or SMTP server to send genuine export cold pitches to international buyers.
           </p>
         </div>
 
@@ -341,24 +323,25 @@ export default function GmailIntegrationPage() {
           <div className="flex-1">
             <div className="flex items-center gap-2">
               <h4 className="font-semibold text-base text-dark-100">
-                {isVerified ? 'Active & Verified for Real Email Delivery' : 'Credentials Saved (Pending Test Verification)'}
+                {isVerified ? 'Active & Verified for Real Email Delivery' : 'Credentials Saved (Ready for Test & Outreach)'}
               </h4>
               <span className="text-xs px-2 py-0.5 rounded-full bg-emerald-500/20 text-emerald-400 border border-emerald-500/30 font-medium">
                 REAL DISPATCH
               </span>
             </div>
             <p className="text-sm mt-1 text-dark-300">
-              Outreach campaigns will send emails directly from <strong className="text-dark-100">{fromEmail || smtpUser}</strong> using {smtpHost}:{smtpPort}.
+              Outreach campaigns will send genuine emails directly from <strong className="text-dark-100">{fromEmail || smtpUser}</strong> using {provider === 'brevo' ? 'Brevo HTTP API (Port 443)' : `${smtpHost}:${smtpPort}`}.
             </p>
           </div>
         </div>
       ) : (
-        <div className="p-4 bg-sky-500/10 border border-sky-500/20 rounded-xl flex items-start gap-3.5">
-          <Info className="w-5 h-5 text-sky-400 flex-shrink-0 mt-0.5" />
-          <div>
-            <h4 className="text-sky-300 font-semibold mb-1">Send Real Emails to International Clients</h4>
-            <p className="text-sky-200/80 text-sm">
-              Enter your email and Google App Password below. Once connected, HireFlow will deliver genuine, personalized export proposals directly into buyer inboxes (like wholesale@zentique.com, buyers@wildwoodhome.com).
+        <div className="p-4 bg-amber-500/10 border border-amber-500/30 rounded-xl flex items-start gap-3.5 text-amber-300">
+          <AlertCircle className="w-6 h-6 text-amber-400 flex-shrink-0 mt-0.5" />
+          <div className="flex-1">
+            <h4 className="text-amber-200 font-semibold text-base mb-1">Real Outbound Credentials Required</h4>
+            <p className="text-amber-200/80 text-sm">
+              Live outreach requires valid outbound credentials so emails reach genuine buyer inboxes without simulation.
+              Please select your provider below (<strong>Brevo HTTP API</strong> for Render cloud hosting, or <strong>Gmail App Password</strong> for localhost), enter your credentials, and click <strong>"Save & Verify Settings"</strong>.
             </p>
           </div>
         </div>
@@ -461,16 +444,23 @@ export default function GmailIntegrationPage() {
           <Mail className="w-4 h-4 text-primary-400" /> Account & Outbound Credentials
         </h3>
 
-        {hasPassword && (
+        {hasPassword || hasApiKey ? (
           <div className="p-3.5 rounded-xl bg-emerald-500/10 border border-emerald-500/30 text-emerald-400 flex flex-col sm:flex-row sm:items-center justify-between gap-2 text-xs">
             <div className="flex items-center gap-2">
               <CheckCircle2 className="w-4 h-4 text-emerald-400 shrink-0" />
               <span>
-                <strong>Aapka Brevo API Key pehle se SAVED ({maskedPassword || '••••••••6UZn'}) hai!</strong> Ise dobara fill karne ki zaroorat nahi hai.
+                <strong>{provider === 'brevo' ? 'Brevo API Key' : 'Email Password'} Saved ({maskedPassword || '••••••••••••'})!</strong> Ready to deliver outreach emails to buyers.
               </span>
             </div>
             <span className="px-2 py-0.5 rounded bg-emerald-500/20 text-emerald-300 text-[10px] uppercase font-bold border border-emerald-500/40 self-start sm:self-auto">
               ✓ Ready for Campaigns
+            </span>
+          </div>
+        ) : (
+          <div className="p-3.5 rounded-xl bg-amber-500/10 border border-amber-500/30 text-amber-300 flex items-center gap-2 text-xs">
+            <AlertCircle className="w-4 h-4 text-amber-400 shrink-0" />
+            <span>
+              <strong>Setup Required:</strong> Please enter your {provider === 'brevo' ? 'Brevo API Key (starts with xkeysib-)' : '16-character Gmail App Password'} below to activate live outreach.
             </span>
           </div>
         )}

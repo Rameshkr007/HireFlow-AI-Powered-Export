@@ -311,10 +311,10 @@ def process_campaign(db: Session, campaign_id: int, user_id: int):
             if send_success:
                 sent += 1
             else:
-                sent += 1
+                failed += 1
         except Exception as dispatch_exc:
             print(f"[CAMPAIGN DISPATCH ERROR] Handled dispatch notice for buyer {buyer.id} ({buyer.email}): {dispatch_exc}")
-            sent += 1
+            failed += 1
 
         # Update campaign counts
         campaign.sent_count = initial_sent + sent

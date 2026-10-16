@@ -163,11 +163,24 @@ def record_and_dispatch_email(
     should_dispatch_real = has_real_credentials and (not is_demo) and (getattr(settings, "GMAIL_MODE", "demo").lower() != "force_demo")
 
     if not should_dispatch_real:
-        # Simulated send in demo mode
-        send_success = True
-        ts = datetime.utcnow().strftime("%Y%m%d%H%M%S")
-        msg_id = f"demo_msg_{ts}_{op_id[:8]}@hireflow.internal"
-        thread_id = f"demo_thrd_{ts[:8]}_{op_id[:8]}"
+        if is_demo:
+            # Simulated send in demo mode
+            send_success = True
+            send_error = None
+            ts = datetime.utcnow().strftime("%Y%m%d%H%M%S")
+            msg_id = f"demo_msg_{ts}_{op_id[:8]}@hireflow.internal"
+            thread_id = f"demo_thrd_{ts[:8]}_{op_id[:8]}"
+        else:
+            # Real outreach requested but no credentials configured
+            send_success = False
+            send_error = (
+                "Real email sending is enabled, but no email credentials were found. "
+                "Please configure your Brevo API Key (for cloud hosting like Render) or "
+                "16-character Google App Password (for localhost) under Email Integration (/gmail-connect)."
+            )
+            ts = datetime.utcnow().strftime("%Y%m%d%H%M%S")
+            msg_id = f"unconfigured_{ts}_{op_id[:8]}@hireflow.internal"
+            thread_id = f"unconfigured_thrd_{ts[:8]}_{op_id[:8]}"
     else:
         send_log.sender_email = smtp_config.get("from_email") or smtp_config.get("smtp_user")
         send_log.sender_account_id = smtp_config.get("smtp_user")
@@ -191,21 +204,21 @@ def record_and_dispatch_email(
                 msg_id = f"real_msg_{ts}_{op_id[:8]}@{domain}"
                 thread_id = f"thrd_{ts[:8]}_{op_id[:8]}"
             else:
-                # Real dispatch failed (e.g. Render cloud blocks raw SMTP ports 587/465, or invalid credentials)
-                print(f"[DISPATCH NOTICE] Dispatch attempt: ({err}).")
-                send_success = True
+                print(f"[DISPATCH FAILURE] Dispatch error: {err}")
+                send_success = False
                 send_error = err
                 ts = datetime.utcnow().strftime("%Y%m%d%H%M%S")
-                msg_id = f"demo_msg_{ts}_{op_id[:8]}@hireflow.internal"
-                thread_id = f"demo_thrd_{ts[:8]}_{op_id[:8]}"
+                domain = clean_rec_email.split('@')[-1] if '@' in clean_rec_email else "gmail.com"
+                msg_id = f"failed_msg_{ts}_{op_id[:8]}@{domain}"
+                thread_id = f"failed_thrd_{ts[:8]}_{op_id[:8]}"
         except Exception as ex:
             err_text = str(ex)
-            print(f"[DISPATCH EXCEPTION] ({err_text}).")
-            send_success = True
+            print(f"[DISPATCH EXCEPTION] {err_text}")
+            send_success = False
             send_error = err_text
             ts = datetime.utcnow().strftime("%Y%m%d%H%M%S")
-            msg_id = f"demo_msg_{ts}_{op_id[:8]}@hireflow.internal"
-            thread_id = f"demo_thrd_{ts[:8]}_{op_id[:8]}"
+            msg_id = f"failed_msg_{ts}_{op_id[:8]}@hireflow.internal"
+            thread_id = f"failed_thrd_{ts[:8]}_{op_id[:8]}"
 
     # 5. Persist Confirmed Outcome
     now_utc = datetime.utcnow()
@@ -248,10 +261,14 @@ def record_and_dispatch_email(
             pass
     else:
         send_log.status = "FAILED"
+        send_log.sent_at = None
+        send_log.gmail_message_id = msg_id
+        send_log.gmail_thread_id = thread_id
         send_log.error_message = send_error
 
         if legacy_log:
             legacy_log.status = "FAILED"
+            legacy_log.sent_at = None
             legacy_log.error_message = send_error
 
     db.commit()

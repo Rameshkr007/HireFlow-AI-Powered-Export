@@ -59,58 +59,84 @@ def get_campaign_logs(campaign_id: int, current_user: User = Depends(get_current
     except Exception:
         pass
 
-    from ..models.email_send_log import EmailSendLog
-    send_logs = db.query(EmailSendLog).filter(EmailSendLog.campaign_id == campaign_id).order_by(EmailSendLog.created_at.desc()).all()
-    if send_logs:
-        all_buyers = db.query(Buyer).all()
-        buyers_by_id = {b.id: b for b in all_buyers}
-        buyers_by_email = {b.normalized_email: b for b in all_buyers if b.normalized_email}
-        result = []
-        for sl in send_logs:
-            norm_em = (sl.recipient_email or "").strip().lower()
-            buyer = buyers_by_email.get(norm_em) or (buyers_by_id.get(sl.buyer_id) if sl.buyer_id else None)
-            result.append({
-                "id": sl.id,
-                "campaign_id": sl.campaign_id or campaign_id,
-                "buyer_id": sl.buyer_id,
-                "user_id": sl.user_id,
-                "email_address": sl.recipient_email,
-                "subject": sl.subject,
-                "status": sl.status,
-                "error_message": sl.error_message,
-                "attachment_name": sl.attachment_name,
-                "sent_at": str(sl.sent_at) if sl.sent_at else None,
-                "created_at": str(sl.created_at) if sl.created_at else None,
-                "buyer_name": (buyer.buyer_name if buyer else sl.recipient_name) or "Purchasing Lead",
-                "company_name": (buyer.company_name if buyer else sl.company_name) or "Enterprise Buyer",
-                "country": (buyer.country if buyer else "USA")
-            })
-        return result
-
-    logs = db.query(EmailLog).filter(EmailLog.campaign_id == campaign_id).order_by(EmailLog.created_at.desc()).all()
     result = []
-    for log in logs:
-        entry = {
-            "id": log.id,
-            "campaign_id": log.campaign_id,
-            "buyer_id": log.buyer_id,
-            "user_id": log.user_id,
-            "email_address": log.email_address,
-            "subject": log.subject,
-            "status": log.status,
-            "error_message": log.error_message,
-            "attachment_name": log.attachment_name,
-            "sent_at": str(log.sent_at) if log.sent_at else None,
-            "created_at": str(log.created_at) if log.created_at else None,
-            "buyer_name": None,
-            "company_name": None,
-            "country": None
-        }
-        if log.buyer_id:
-            buyer = db.query(Buyer).filter(Buyer.id == log.buyer_id).first()
-            if buyer:
-                entry["buyer_name"] = buyer.buyer_name
-                entry["company_name"] = buyer.company_name
-                entry["country"] = buyer.country
-        result.append(entry)
+    seen_emails = set()
+
+    # 1. Primary Source: EmailSendLog permanent ledger
+    try:
+        from ..models.email_send_log import EmailSendLog
+        send_logs = db.query(EmailSendLog).filter(EmailSendLog.campaign_id == campaign_id).order_by(EmailSendLog.created_at.desc()).all()
+        if send_logs:
+            all_buyers = db.query(Buyer).all()
+            buyers_by_id = {b.id: b for b in all_buyers if b and getattr(b, "id", None) is not None}
+            buyers_by_email = {b.normalized_email: b for b in all_buyers if b and getattr(b, "normalized_email", None)}
+            
+            for idx, sl in enumerate(send_logs):
+                if not sl:
+                    continue
+                sl_id = getattr(sl, "id", None) or (idx + 1)
+                rec_email = (getattr(sl, "recipient_email", None) or "").strip()
+                norm_em = rec_email.lower()
+                buyer_id_val = getattr(sl, "buyer_id", None)
+                buyer = buyers_by_email.get(norm_em) or (buyers_by_id.get(buyer_id_val) if buyer_id_val else None)
+                
+                result.append({
+                    "id": sl_id,
+                    "campaign_id": getattr(sl, "campaign_id", None) or campaign_id,
+                    "buyer_id": buyer_id_val,
+                    "user_id": getattr(sl, "user_id", None),
+                    "email_address": rec_email,
+                    "subject": getattr(sl, "subject", "") or "Wholesale Opportunity",
+                    "status": getattr(sl, "status", "SENT") or "SENT",
+                    "error_message": getattr(sl, "error_message", None),
+                    "attachment_name": getattr(sl, "attachment_name", None),
+                    "sent_at": str(sl.sent_at) if getattr(sl, "sent_at", None) else None,
+                    "created_at": str(sl.created_at) if getattr(sl, "created_at", None) else None,
+                    "buyer_name": (buyer.buyer_name if buyer else getattr(sl, "recipient_name", None)) or "Purchasing Lead",
+                    "company_name": (buyer.company_name if buyer else getattr(sl, "company_name", None)) or "Enterprise Buyer",
+                    "country": (buyer.country if buyer else "USA") or "USA"
+                })
+                if norm_em:
+                    seen_emails.add(norm_em)
+            if result:
+                return result
+    except Exception as e:
+        print(f"[get_campaign_logs] Handled send_logs exception: {e}")
+
+    # 2. Secondary Fallback: EmailLog legacy logs
+    try:
+        logs = db.query(EmailLog).filter(EmailLog.campaign_id == campaign_id).order_by(EmailLog.created_at.desc()).all()
+        if logs:
+            all_buyers = db.query(Buyer).all()
+            buyers_by_id = {b.id: b for b in all_buyers if b and getattr(b, "id", None) is not None}
+            buyers_by_email = {b.normalized_email: b for b in all_buyers if b and getattr(b, "normalized_email", None)}
+            
+            for idx, log in enumerate(logs):
+                if not log:
+                    continue
+                log_id = getattr(log, "id", None) or (idx + 1)
+                rec_email = (getattr(log, "email_address", None) or "").strip()
+                norm_em = rec_email.lower()
+                buyer_id_val = getattr(log, "buyer_id", None)
+                buyer = buyers_by_email.get(norm_em) or (buyers_by_id.get(buyer_id_val) if buyer_id_val else None)
+                
+                result.append({
+                    "id": log_id,
+                    "campaign_id": getattr(log, "campaign_id", None) or campaign_id,
+                    "buyer_id": buyer_id_val,
+                    "user_id": getattr(log, "user_id", None),
+                    "email_address": rec_email,
+                    "subject": getattr(log, "subject", "") or "Wholesale Opportunity",
+                    "status": getattr(log, "status", "SENT") or "SENT",
+                    "error_message": getattr(log, "error_message", None),
+                    "attachment_name": getattr(log, "attachment_name", None),
+                    "sent_at": str(log.sent_at) if getattr(log, "sent_at", None) else None,
+                    "created_at": str(log.created_at) if getattr(log, "created_at", None) else None,
+                    "buyer_name": (buyer.buyer_name if buyer else None) or "Purchasing Lead",
+                    "company_name": (buyer.company_name if buyer else None) or "Enterprise Buyer",
+                    "country": (buyer.country if buyer else "USA") or "USA"
+                })
+    except Exception as e:
+        print(f"[get_campaign_logs] Handled logs exception: {e}")
+
     return result

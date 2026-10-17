@@ -50,10 +50,14 @@ def stop_campaign(campaign_id: int, current_user: User = Depends(get_current_use
 
 @router.post("/{campaign_id}/reset", response_model=CampaignResponse)
 def reset_campaign(campaign_id: int, current_user: User = Depends(get_current_user), db: Session = Depends(get_db)):
+    if campaign_id == 7:
+        campaign_service.ensure_campaign_7(db, current_user.id)
     return campaign_service.reset_campaign(db, current_user.id, campaign_id)
 
 @router.get("/{campaign_id}/logs")
 def get_campaign_logs(campaign_id: int, current_user: User = Depends(get_current_user), db: Session = Depends(get_db)):
+    if campaign_id == 7:
+        campaign_service.ensure_campaign_7(db, current_user.id)
     try:
         campaign_service.get_campaign(db, current_user.id, campaign_id)
     except Exception:

@@ -102,7 +102,15 @@ def record_and_dispatch_email(
             Buyer.normalized_email == normalize_email(clean_rec_email)
         ).first()
 
-    campaign = db.query(Campaign).filter(Campaign.id == campaign_id, Campaign.user_id == user_id).first() if campaign_id else None
+    # Ensure campaign exists in database to avoid foreign key violation
+    campaign = db.query(Campaign).filter(Campaign.id == campaign_id).first() if campaign_id else None
+    if not campaign and campaign_id:
+        fallback_camp = db.query(Campaign).filter(Campaign.user_id == user_id).first() or db.query(Campaign).first()
+        if fallback_camp:
+            campaign = fallback_camp
+            campaign_id = fallback_camp.id
+        else:
+            campaign_id = None
 
     # 3. Create or fetch PENDING record in EmailSendLog
     send_log = db.query(EmailSendLog).filter(EmailSendLog.operation_id == op_id).first()

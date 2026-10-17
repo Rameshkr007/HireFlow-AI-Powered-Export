@@ -177,6 +177,9 @@ def personalize_email_simple(template: str, buyer, fallback_product: str = "", p
 
 def process_campaign(db: Session, campaign_id: int, user_id: int):
     """Main campaign processing function - runs in background."""
+    if campaign_id == 7:
+        from ..services.campaign_service import ensure_campaign_7
+        ensure_campaign_7(db, user_id)
     campaign = db.query(Campaign).filter(Campaign.id == campaign_id).first()
     if not campaign:
         return

@@ -1,6 +1,7 @@
 import os
 import uuid
 import re
+import time
 from datetime import datetime, date, timedelta, timezone
 from typing import Optional, Dict, Any, List, Tuple
 from sqlalchemy.orm import Session
@@ -128,7 +129,13 @@ def record_and_dispatch_email(
     # 3. Create or fetch PENDING record in EmailSendLog
     send_log = db.query(EmailSendLog).filter(EmailSendLog.operation_id == op_id).first()
     if not send_log:
+        try:
+            max_id = db.query(func.max(EmailSendLog.id)).scalar() or 0
+        except Exception:
+            max_id = int(time.time() * 1000) % 1000000000
+
         send_log = EmailSendLog(
+            id=max_id + 1,
             operation_id=op_id,
             user_id=user_id,
             buyer_id=buyer.id if buyer else None,
@@ -148,21 +155,18 @@ def record_and_dispatch_email(
         db.add(send_log)
         try:
             db.commit()
-            db.refresh(send_log)
         except Exception as e1:
             print(f"[EmailSendLog Initial Commit Warning] {e1}")
             db.rollback()
-            # Synchronize PostgreSQL sequence if needed
+            # If unique constraint or FK failed, use fresh op_id and next max_id without FKs
+            op_retry = f"{op_id[:50]}_{uuid.uuid4().hex[:10]}"
             try:
-                from sqlalchemy import text
-                db.execute(text("SELECT setval(pg_get_serial_sequence('email_send_logs', 'id'), COALESCE((SELECT MAX(id) FROM email_send_logs), 1));"))
-                db.commit()
+                max_id = db.query(func.max(EmailSendLog.id)).scalar() or 1000
             except Exception:
-                db.rollback()
-
-            # Fresh instance with detached state to prevent ObjectDeletedError
+                max_id = 1000
             send_log = EmailSendLog(
-                operation_id=op_id,
+                id=max_id + 1,
+                operation_id=op_retry,
                 user_id=user_id,
                 buyer_id=None,
                 campaign_id=None,
@@ -181,32 +185,9 @@ def record_and_dispatch_email(
             db.add(send_log)
             try:
                 db.commit()
-                db.refresh(send_log)
             except Exception as e2:
-                print(f"[EmailSendLog Manual ID Fallback] {e2}")
+                print(f"[EmailSendLog Retry Commit Warning] {e2}")
                 db.rollback()
-                max_id = db.query(func.max(EmailSendLog.id)).scalar() or 500
-                send_log = EmailSendLog(
-                    id=max_id + 1,
-                    operation_id=op_id,
-                    user_id=user_id,
-                    buyer_id=None,
-                    campaign_id=None,
-                    recipient_email=clean_rec_email,
-                    recipient_name=(buyer.buyer_name if buyer else "Purchasing Lead") or "Purchasing Lead",
-                    company_name=(buyer.company_name if buyer else "Enterprise Buyer") or "Enterprise Buyer",
-                    product=getattr(buyer, "product", None) or (campaign.product if campaign else "Handcrafted Export Products"),
-                    campaign_name=campaign.name if campaign else "Direct Outreach",
-                    subject=clean_subject,
-                    body_text=clean_body,
-                    body_html=body_html,
-                    attachment_name=attachment_name or (os.path.basename(attachment_path) if attachment_path else None),
-                    status="PENDING",
-                    created_at=datetime.utcnow()
-                )
-                db.add(send_log)
-                db.commit()
-                db.refresh(send_log)
 
     # Also create matching EmailLog for backwards compatibility with legacy screens
     legacy_log = None
@@ -219,7 +200,12 @@ def record_and_dispatch_email(
                 EmailLog.created_at >= datetime.utcnow() - timedelta(minutes=2)
             ).first()
             if not legacy_log:
+                try:
+                    max_el_id = db.query(func.max(EmailLog.id)).scalar() or 0
+                except Exception:
+                    max_el_id = 0
                 legacy_log = EmailLog(
+                    id=max_el_id + 1,
                     campaign_id=valid_cid,
                     buyer_id=buyer.id if buyer else None,
                     user_id=user_id,
@@ -232,7 +218,6 @@ def record_and_dispatch_email(
                 )
                 db.add(legacy_log)
                 db.commit()
-                db.refresh(legacy_log)
         except Exception:
             db.rollback()
             legacy_log = None
@@ -359,7 +344,6 @@ def record_and_dispatch_email(
             legacy_log.sent_at = None
     try:
         db.commit()
-        db.refresh(send_log)
     except Exception as e:
         print(f"[Outcome commit notice] {e}")
         try:

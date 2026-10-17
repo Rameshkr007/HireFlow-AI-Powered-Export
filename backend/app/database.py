@@ -90,7 +90,7 @@ try:
 except Exception as _mig_err:
     logger.warning(f"[MIGRATION] Migration notice: {_mig_err}")
 
-SessionLocal = sessionmaker(autocommit=False, autoflush=False, bind=engine)
+SessionLocal = sessionmaker(autocommit=False, autoflush=False, expire_on_commit=False, bind=engine)
 Base = declarative_base()
 
 def get_db():

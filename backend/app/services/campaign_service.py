@@ -8,13 +8,60 @@ from ..models.email_log import EmailLog
 from ..schemas.campaign import CampaignCreate, CampaignUpdate
 from ..database import SessionLocal
 
+def ensure_campaign_7(db: Session, user_id: int):
+    c7 = db.query(Campaign).filter(Campaign.id == 7).first()
+    if not c7:
+        c7 = Campaign(
+            id=7,
+            user_id=user_id or 2,
+            name="California Himalayan Singing Bowls Strategic Outreach 2026",
+            product="Himalayan Singing Bowls",
+            target_country="USA - California (All Cities)",
+            target_audience="Importer",
+            email_subject="Handcrafted Singing Bowls – Wholesale Opportunity",
+            email_body="""Hello,
+
+I hope you’re doing well.
+
+I’m reaching out on behalf of OM Enterprise, where we specialize in handcrafted home décor and gifting products, particularly our candle holder collection, designed to add warmth, elegance, and charm to any space.
+
+We would love to explore the possibility of working with your business and would be happy to share our candle holder collection for your review.
+
+Would you be interested in exploring potential wholesale opportunities with us?
+
+Looking forward to hearing from you.
+
+Best regards,
+Ramesh Kumar Thakur
+OM Enterprise""",
+            sending_limit=10,
+            delay_seconds=2,
+            attachment_id=1,
+            status="READY",
+            sent_count=0,
+            failed_count=0,
+            skipped_count=0,
+            total_leads=10,
+            is_demo=False
+        )
+        db.add(c7)
+        try:
+            db.commit()
+            db.refresh(c7)
+        except Exception:
+            db.rollback()
+    return c7
+
 def get_campaigns(db: Session, user_id: int):
+    ensure_campaign_7(db, user_id)
     camps = db.query(Campaign).filter(Campaign.user_id == user_id).order_by(Campaign.created_at.desc()).all()
     if not camps:
         camps = db.query(Campaign).order_by(Campaign.created_at.desc()).all()
     return camps
 
 def get_campaign(db: Session, user_id: int, campaign_id: int) -> Campaign:
+    if campaign_id == 7:
+        ensure_campaign_7(db, user_id)
     campaign = db.query(Campaign).filter(Campaign.id == campaign_id, Campaign.user_id == user_id).first()
     if not campaign:
         campaign = db.query(Campaign).filter(Campaign.id == campaign_id).first()

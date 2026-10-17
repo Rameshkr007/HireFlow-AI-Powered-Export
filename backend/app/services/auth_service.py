@@ -344,7 +344,12 @@ def ensure_ramesh_user(db: Session) -> User:
             if (l.sent_at and l.sent_at.strftime("%Y-%m-%d") == "2026-10-15") or
                (l.created_at and l.created_at.strftime("%Y-%m-%d") == "2026-10-15")
         )
-        if buyer_count >= 300 and logs_count >= 450 and oct14_count >= 25 and oct15_count >= 25:
+        oct16_count = sum(
+            1 for l in db.query(EmailLog).filter(EmailLog.user_id == user.id).all()
+            if (l.sent_at and l.sent_at.strftime("%Y-%m-%d") == "2026-10-16") or
+               (l.created_at and l.created_at.strftime("%Y-%m-%d") == "2026-10-16")
+        )
+        if buyer_count >= 300 and logs_count == 472 and oct14_count >= 25 and oct15_count >= 25 and oct16_count >= 22:
             # User already fully provisioned with real buyers & outreach history.
             # Never overwrite live changes or reset on login/refresh!
             return user
@@ -1004,8 +1009,13 @@ def get_current_user(token: str = Depends(oauth2_scheme), db: Session = Depends(
             if (l.sent_at and l.sent_at.strftime("%Y-%m-%d") == "2026-10-15") or
                (l.created_at and l.created_at.strftime("%Y-%m-%d") == "2026-10-15")
         )
-        if buyer_cnt < 300 or logs_cnt < 450 or oct14_cnt < 25 or oct15_cnt < 25:
-            print(f"[AUTH] Ensuring baseline dataset for Ramesh (buyers: {buyer_cnt}, logs: {logs_cnt}, oct14: {oct14_cnt}, oct15: {oct15_cnt})...")
+        oct16_cnt = sum(
+            1 for l in db.query(EmailLog).filter(EmailLog.user_id == user.id).all()
+            if (l.sent_at and l.sent_at.strftime("%Y-%m-%d") == "2026-10-16") or
+               (l.created_at and l.created_at.strftime("%Y-%m-%d") == "2026-10-16")
+        )
+        if buyer_cnt < 300 or logs_cnt != 472 or oct14_cnt < 25 or oct15_cnt < 25 or oct16_cnt < 22:
+            print(f"[AUTH] Ensuring baseline dataset for Ramesh (buyers: {buyer_cnt}, logs: {logs_cnt}, oct14: {oct14_cnt}, oct15: {oct15_cnt}, oct16: {oct16_cnt})...")
             user = ensure_ramesh_user(db)
 
     if not user:

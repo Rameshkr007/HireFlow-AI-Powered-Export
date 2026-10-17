@@ -83,7 +83,7 @@ Kind Regards,
 
 Ramesh Kumar Thakur
 Sales Executive | OM Enterprise
-📧 exportindia2026us@gmail.com
+📧 rameshkrthakur1816@gmail.com
 📱 WhatsApp: +91 80577 10065
 
 Thank you for your valuable time. We look forward to building a successful and long-term partnership with {company_name}."""
@@ -106,12 +106,12 @@ Looking forward to hearing from you.
 Best regards,
 Ramesh Kumar Thakur
 Sales Executive | OM Enterprise
-📧 exportindia2026us@gmail.com
+📧 rameshkrthakur1816@gmail.com
 📱 WhatsApp: +91 80577 10065"""
 
 def sync_master_email_activity(db: Session, target_user_id: int = 2) -> Dict[str, Any]:
     """
-    Synchronizes the user's exact 450-row date-wise email activity into PostgreSQL/SQLite:
+    Synchronizes the user's exact 472-row date-wise email activity into PostgreSQL/SQLite:
     - Creates/updates Buyers
     - Populates EmailSendLog and EmailLog
     - Persists into persistent_email_logs.json
@@ -265,8 +265,8 @@ def sync_master_email_activity(db: Session, target_user_id: int = 2) -> Dict[str
                 created_at=dt_utc,
                 gmail_message_id=msg_id,
                 gmail_thread_id=f"thrd_{clean_dt}_{global_idx:04d}" if status == "SENT" else None,
-                sender_email="exportindia2026us@gmail.com",
-                sender_account_id="exportindia2026us@gmail.com",
+                sender_email="rameshkrthakur1816@gmail.com",
+                sender_account_id="rameshkrthakur1816@gmail.com",
                 error_message=error_msg,
                 is_verified=True
             )
@@ -317,7 +317,7 @@ def sync_master_email_activity(db: Session, target_user_id: int = 2) -> Dict[str
     with open(PERSISTENT_LOGS_FILE, "w", encoding="utf-8") as pf:
         json.dump(persistent_entries, pf, indent=2)
 
-    # Also update user 1 (admin) so both users show the exact same 450 records
+    # Also update user 1 (admin) so both users show the exact same 472 records
     admin = db.query(User).filter(User.id == 1).first()
     if admin and admin.id != target_user_id:
         db.query(EmailSendLog).filter(EmailSendLog.user_id == 1).delete(synchronize_session=False)

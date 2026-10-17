@@ -20,6 +20,26 @@ from ..utils.duplicate_utils import normalize_email
 
 INDIA_TZ = ZoneInfo("Asia/Kolkata")
 
+def get_effective_user_id(db: Session, current_user: User) -> int:
+    ramesh = db.query(User).filter(User.email == "rameshkrthakur1816@gmail.com").first()
+    ramesh_id = ramesh.id if ramesh else 2
+    if current_user.id == ramesh_id:
+        return ramesh_id
+    cnt = db.query(EmailSendLog).filter(EmailSendLog.user_id == current_user.id).count()
+    if cnt > 0:
+        return current_user.id
+    return ramesh_id
+
+def get_effective_buyer_user_id(db: Session, current_user: User) -> int:
+    ramesh = db.query(User).filter(User.email == "rameshkrthakur1816@gmail.com").first()
+    ramesh_id = ramesh.id if ramesh else 2
+    if current_user.id == ramesh_id:
+        return ramesh_id
+    cnt = db.query(Buyer).filter(Buyer.user_id == current_user.id).count()
+    if cnt > 0:
+        return current_user.id
+    return ramesh_id
+
 router = APIRouter(prefix="/api/email-activity", tags=["email-activity"])
 
 @router.get("/ledger")
@@ -32,8 +52,7 @@ def get_daily_report(
     Returns official, high-precision email dispatch ledger report backed by permanent database table.
     Grouped strictly in Asia/Kolkata timezone with complete audit metrics.
     """
-    ramesh = db.query(User).filter(User.email == "rameshkrthakur1816@gmail.com").first()
-    uid = ramesh.id if ramesh else current_user.id
+    uid = get_effective_user_id(db, current_user)
     return get_daily_email_ledger_report(db, uid)
 
 @router.get("/reconcile")
@@ -44,8 +63,7 @@ def reconcile_ledger(
     """
     Reconciliation & audit endpoint: validates consistency between ledger, legacy logs, and buyer records.
     """
-    ramesh = db.query(User).filter(User.email == "rameshkrthakur1816@gmail.com").first()
-    uid = ramesh.id if ramesh else current_user.id
+    uid = get_effective_user_id(db, current_user)
     return reconcile_sent_ledger(db, uid)
 
 @router.get("")
@@ -58,14 +76,15 @@ def get_email_activity(
     current_user: User = Depends(get_current_user),
     db: Session = Depends(get_db)
 ):
-    valid_uids = list({current_user.id, 1, 2})
-    send_logs = db.query(EmailSendLog).filter(EmailSendLog.user_id.in_(valid_uids)).order_by(EmailSendLog.created_at.desc()).all()
-    legacy_logs = db.query(EmailLog).filter(EmailLog.user_id.in_(valid_uids)).order_by(EmailLog.created_at.desc()).all()
+    uid = get_effective_user_id(db, current_user)
+    buyer_uid = get_effective_buyer_user_id(db, current_user)
+    send_logs = db.query(EmailSendLog).filter(EmailSendLog.user_id == uid).order_by(EmailSendLog.created_at.desc()).all()
+    legacy_logs = db.query(EmailLog).filter(EmailLog.user_id == uid).order_by(EmailLog.created_at.desc()).all()
 
     use_ledger = len(send_logs) >= len(legacy_logs) and len(send_logs) > 0
 
     if use_ledger:
-        query = db.query(EmailSendLog).filter(EmailSendLog.user_id.in_(valid_uids))
+        query = db.query(EmailSendLog).filter(EmailSendLog.user_id == uid)
         if campaign_id:
             query = query.filter(EmailSendLog.campaign_id == campaign_id)
         if status:
@@ -81,10 +100,10 @@ def get_email_activity(
         limit_val = limit if isinstance(limit, int) else 1000
         logs = query.order_by(EmailSendLog.created_at.desc()).offset(offset_val).limit(limit_val).all()
         
-        all_buyers = db.query(Buyer).filter(Buyer.user_id.in_(valid_uids)).all()
+        all_buyers = db.query(Buyer).filter(Buyer.user_id == buyer_uid).all()
         buyers_by_id = {b.id: b for b in all_buyers if b and getattr(b, 'id', None) is not None}
         buyers_by_email = {b.normalized_email: b for b in all_buyers if b and getattr(b, 'normalized_email', None)}
-        all_camps = db.query(Campaign).filter(Campaign.user_id.in_(valid_uids)).all()
+        all_camps = db.query(Campaign).filter(Campaign.user_id == uid).all()
         camps_by_id = {c.id: c for c in all_camps if c and getattr(c, 'id', None) is not None}
 
         result = []
@@ -119,7 +138,7 @@ def get_email_activity(
             result.append(entry)
         return result
     else:
-        query = db.query(EmailLog).filter(EmailLog.user_id.in_(valid_uids))
+        query = db.query(EmailLog).filter(EmailLog.user_id == uid)
         if campaign_id:
             query = query.filter(EmailLog.campaign_id == campaign_id)
         if status:
@@ -177,18 +196,19 @@ def get_day_wise_activity(
     including exact timestamps, recipient company names, buyer names, locations, and delivery status.
     Uses EmailSendLog as the canonical source of truth with 100% database persistence.
     """
-    valid_uids = list({current_user.id, 1, 2})
-    send_logs = db.query(EmailSendLog).filter(EmailSendLog.user_id.in_(valid_uids)).order_by(EmailSendLog.created_at.desc()).all()
-    legacy_logs = db.query(EmailLog).filter(EmailLog.user_id.in_(valid_uids)).order_by(EmailLog.created_at.desc()).all()
+    uid = get_effective_user_id(db, current_user)
+    buyer_uid = get_effective_buyer_user_id(db, current_user)
+    send_logs = db.query(EmailSendLog).filter(EmailSendLog.user_id == uid).order_by(EmailSendLog.created_at.desc()).all()
+    legacy_logs = db.query(EmailLog).filter(EmailLog.user_id == uid).order_by(EmailLog.created_at.desc()).all()
 
     use_ledger = len(send_logs) >= len(legacy_logs) and len(send_logs) > 0
     logs = send_logs if use_ledger else legacy_logs
 
     # Preload buyers and campaigns
-    all_buyers = db.query(Buyer).filter(Buyer.user_id.in_(valid_uids)).all()
+    all_buyers = db.query(Buyer).filter(Buyer.user_id == buyer_uid).all()
     buyers_by_id = {b.id: b for b in all_buyers if b and getattr(b, 'id', None) is not None}
     buyers_by_email = {b.normalized_email: b for b in all_buyers if b and getattr(b, 'normalized_email', None)}
-    all_camps = db.query(Campaign).filter(Campaign.user_id.in_(valid_uids)).all()
+    all_camps = db.query(Campaign).filter(Campaign.user_id == uid).all()
     camps_by_id = {c.id: c for c in all_camps if c and getattr(c, 'id', None) is not None}
 
     now_kolkata = datetime.now(INDIA_TZ)
@@ -435,16 +455,17 @@ def export_activity_csv(
     db: Session = Depends(get_db)
 ):
     """Export complete day-wise email log history as a downloadable CSV."""
-    valid_uids = list({current_user.id, 1, 2})
-    send_logs = db.query(EmailSendLog).filter(EmailSendLog.user_id.in_(valid_uids)).order_by(EmailSendLog.created_at.desc()).all()
-    legacy_logs = db.query(EmailLog).filter(EmailLog.user_id.in_(valid_uids)).order_by(EmailLog.created_at.desc()).all()
+    uid = get_effective_user_id(db, current_user)
+    buyer_uid = get_effective_buyer_user_id(db, current_user)
+    send_logs = db.query(EmailSendLog).filter(EmailSendLog.user_id == uid).order_by(EmailSendLog.created_at.desc()).all()
+    legacy_logs = db.query(EmailLog).filter(EmailLog.user_id == uid).order_by(EmailLog.created_at.desc()).all()
     use_ledger = len(send_logs) >= len(legacy_logs) and len(send_logs) > 0
     logs = send_logs if use_ledger else legacy_logs
 
-    all_buyers = db.query(Buyer).filter(Buyer.user_id.in_(valid_uids)).all()
+    all_buyers = db.query(Buyer).filter(Buyer.user_id == buyer_uid).all()
     buyers_by_id = {b.id: b for b in all_buyers if b and getattr(b, 'id', None) is not None}
     buyers_by_email = {b.normalized_email: b for b in all_buyers if b and getattr(b, 'normalized_email', None)}
-    all_camps = db.query(Campaign).filter(Campaign.user_id.in_(valid_uids)).all()
+    all_camps = db.query(Campaign).filter(Campaign.user_id == uid).all()
     camps_by_id = {c.id: c for c in all_camps if c and getattr(c, 'id', None) is not None}
 
     output = io.StringIO()
@@ -516,13 +537,14 @@ def export_google_sheets_csv(
     Columns: Date | Company name | Email Id | Address | Status | Response
     Filters strictly to SENT emails by default (excludes Failed and Skipped).
     """
-    valid_uids = list({current_user.id, 1, 2})
-    send_logs = db.query(EmailSendLog).filter(EmailSendLog.user_id.in_(valid_uids)).order_by(EmailSendLog.created_at.desc()).all()
-    legacy_logs = db.query(EmailLog).filter(EmailLog.user_id.in_(valid_uids)).order_by(EmailLog.created_at.desc()).all()
+    uid = get_effective_user_id(db, current_user)
+    buyer_uid = get_effective_buyer_user_id(db, current_user)
+    send_logs = db.query(EmailSendLog).filter(EmailSendLog.user_id == uid).order_by(EmailSendLog.created_at.desc()).all()
+    legacy_logs = db.query(EmailLog).filter(EmailLog.user_id == uid).order_by(EmailLog.created_at.desc()).all()
     use_ledger = len(send_logs) >= len(legacy_logs) and len(send_logs) > 0
     logs = send_logs if use_ledger else legacy_logs
 
-    all_buyers = db.query(Buyer).filter(Buyer.user_id.in_(valid_uids)).all()
+    all_buyers = db.query(Buyer).filter(Buyer.user_id == buyer_uid).all()
     buyers_by_id = {b.id: b for b in all_buyers if b and getattr(b, 'id', None) is not None}
     buyers_by_email = {b.normalized_email: b for b in all_buyers if b and getattr(b, 'normalized_email', None)}
 
@@ -616,13 +638,14 @@ def get_google_sheets_rows(
     [Date, Company name, Email Id, Address, Status, Response]
     Filters strictly to SENT emails by default (excludes Failed and Skipped).
     """
-    valid_uids = list({current_user.id, 1, 2})
-    send_logs = db.query(EmailSendLog).filter(EmailSendLog.user_id.in_(valid_uids)).order_by(EmailSendLog.created_at.desc()).all()
-    legacy_logs = db.query(EmailLog).filter(EmailLog.user_id.in_(valid_uids)).order_by(EmailLog.created_at.desc()).all()
+    uid = get_effective_user_id(db, current_user)
+    buyer_uid = get_effective_buyer_user_id(db, current_user)
+    send_logs = db.query(EmailSendLog).filter(EmailSendLog.user_id == uid).order_by(EmailSendLog.created_at.desc()).all()
+    legacy_logs = db.query(EmailLog).filter(EmailLog.user_id == uid).order_by(EmailLog.created_at.desc()).all()
     use_ledger = len(send_logs) >= len(legacy_logs) and len(send_logs) > 0
     logs = send_logs if use_ledger else legacy_logs
 
-    all_buyers = db.query(Buyer).filter(Buyer.user_id.in_(valid_uids)).all()
+    all_buyers = db.query(Buyer).filter(Buyer.user_id == buyer_uid).all()
     buyers_by_id = {b.id: b for b in all_buyers if b and getattr(b, 'id', None) is not None}
     buyers_by_email = {b.normalized_email: b for b in all_buyers if b and getattr(b, 'normalized_email', None)}
 
@@ -699,19 +722,17 @@ def sync_all_data(
     current_user: User = Depends(get_current_user),
     db: Session = Depends(get_db)
 ):
-    """Forces a complete synchronization of all 320 export buyers and 330+ day-wise outreach logs."""
-    from ..services.email_log_store import restore_email_logs_to_db
+    """Forces a complete synchronization of all export buyers and 472 outreach logs."""
+    from ..services.sync_master_activity import sync_master_email_activity
     from ..services.auth_service import ensure_ramesh_user
-    camp = db.query(Campaign).filter(Campaign.user_id == current_user.id).first()
-    camp_id = camp.id if camp else 1
-    restore_email_logs_to_db(db, current_user.id, camp_id)
+    sync_master_email_activity(db, target_user_id=current_user.id)
     ensure_ramesh_user(db)
     total_buyers = db.query(Buyer).filter(Buyer.user_id == current_user.id).count()
-    total_logs = db.query(EmailLog).filter(EmailLog.user_id == current_user.id).count()
-    total_sent = db.query(EmailLog).filter(EmailLog.user_id == current_user.id, EmailLog.status == 'SENT').count()
+    total_logs = db.query(EmailSendLog).filter(EmailSendLog.user_id == current_user.id).count()
+    total_sent = db.query(EmailSendLog).filter(EmailSendLog.user_id == current_user.id, EmailSendLog.status == 'SENT').count()
     return {
         "status": "success",
-        "message": "All buyers and 423 email logs synchronized successfully",
+        "message": f"All buyers and {total_logs} email logs synchronized successfully",
         "total_buyers": total_buyers,
         "total_logs": total_logs,
         "emails_sent": total_sent

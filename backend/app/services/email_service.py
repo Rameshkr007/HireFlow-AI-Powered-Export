@@ -201,9 +201,10 @@ DEFAULT_POSTER_PATH = os.path.abspath(
     os.path.join(os.path.dirname(__file__), "../../../attachments/om_enterprise_home_decor_poster.jpg")
 )
 
-def format_html_email(body_text: str, sender_name: Optional[str] = None, company_name: Optional[str] = None) -> str:
+def format_html_email(body_text: Optional[str], sender_name: Optional[str] = None, company_name: Optional[str] = None) -> str:
     """Converts plain text export pitch with linebreaks into clean, responsive HTML optimized for Primary Inbox deliverability."""
-    safe_body = html.escape(body_text)
+    raw = str(body_text or "").strip()
+    safe_body = html.escape(raw)
     # Convert markdown **bold** to strong HTML tag
     safe_body = re.sub(r'\*\*(.*?)\*\*', r'<strong style="color: #111827; font-weight: 600;">\1</strong>', safe_body)
     safe_body = safe_body.replace("\n", "<br/>")
@@ -270,13 +271,28 @@ def send_via_brevo_http(
         "accept": "application/json"
     }
     
-    final_html = body_html or format_html_email(body_text, from_name)
+    body_text_str = str(body_text or "").strip()
+    if not body_text_str:
+        body_text_str = (
+            f"Dear Procurement Lead,\n\n"
+            f"I hope this email finds you well.\n\n"
+            f"I am reaching out on behalf of OM Enterprise regarding our authentic handmade Himalayan Singing Bowls "
+            f"and handcrafted home décor collections. As a direct manufacturer, we offer competitive FOB pricing, "
+            f"custom OEM packaging, and international freight delivery.\n\n"
+            f"Would you be open to reviewing our wholesale pricing?\n\n"
+            f"Best regards,\n\n"
+            f"{from_name or 'Ramesh Kumar Thakur'}\n"
+            f"OM Enterprise\n"
+            f"📧 {from_email or 'rameshkrthakur1816@gmail.com'}\n"
+            f"📱 WhatsApp: +91 80577 10065"
+        )
+    final_html = body_html or format_html_email(body_text_str, from_name)
     payload: Dict[str, Any] = {
         "sender": {"name": from_name or "Ramesh Kumar Thakur | OM Enterprise", "email": from_email or "rameshkrthakur1816@gmail.com"},
         "to": [{"email": to_email}],
-        "subject": subject,
+        "subject": subject or "Wholesale Opportunity",
         "htmlContent": final_html,
-        "textContent": body_text
+        "textContent": body_text_str
     }
     target_reply_to = (reply_to or from_email or "rameshkrthakur1816@gmail.com").strip()
     payload["replyTo"] = {"email": target_reply_to, "name": from_name or "Ramesh Kumar Thakur"}

@@ -41,8 +41,22 @@ def check_already_contacted(db: Session, campaign_id: int, buyer_email: str) -> 
 
 def personalize_email_simple(template: str, buyer, fallback_product: str = "", profile=None, user_email: str = "") -> str:
     """Simple placeholder replacement supporting {}, <>, and [] styles."""
-    if not template:
-        return ""
+    if not template or not template.strip():
+        template = """Hello {buyer_name},
+
+I hope this email finds you well.
+
+I am reaching out on behalf of OM Enterprise regarding our handcrafted export collection for {company_name}. We are a direct manufacturer specializing in authentic Himalayan Singing Bowls, home décor, and candle holders.
+
+We offer direct factory FOB pricing, OEM customization, and worldwide freight delivery.
+
+Would you be open to reviewing our wholesale pricing and receiving a sample?
+
+Best regards,
+Ramesh Kumar Thakur
+Export Sales Executive | OM Enterprise
+📧 rameshkrthakur1816@gmail.com
+📱 WhatsApp: +91 80577 10065"""
     
     buyer_name = (buyer.buyer_name or 'Sir/Madam').strip()
     company_name = (buyer.company_name or 'your company').strip()

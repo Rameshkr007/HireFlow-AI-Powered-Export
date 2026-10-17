@@ -7,7 +7,7 @@ from ..models.user import User
 from ..models.email_setting import EmailSetting
 from ..schemas.email_setting import EmailSettingCreateOrUpdate, EmailSettingResponse, TestEmailRequest
 from ..services.auth_service import get_current_user
-from ..services.email_service import test_smtp_dispatch, clean_password
+from ..services.email_service import test_smtp_dispatch, clean_password, clean_brevo_key
 from ..services.credential_store import save_persistent_email_credentials, load_persistent_email_credentials
 from ..config import settings
 
@@ -27,6 +27,23 @@ def get_email_settings(
     db: Session = Depends(get_db)
 ):
     setting = db.query(EmailSetting).filter(EmailSetting.user_id == current_user.id).first()
+
+    # Auto-heal contaminated keys in DB
+    if setting:
+        if setting.api_key and "xkeysib-" in setting.api_key:
+            proper = clean_brevo_key(setting.api_key)
+            if proper != setting.api_key:
+                setting.api_key = proper
+                db.commit()
+                db.refresh(setting)
+        if setting.smtp_password and "xkeysib-" in setting.smtp_password:
+            proper_pwd = clean_brevo_key(setting.smtp_password)
+            if proper_pwd != setting.smtp_password:
+                setting.smtp_password = proper_pwd
+                setting.api_key = proper_pwd
+                db.commit()
+                db.refresh(setting)
+
     has_creds = bool(setting and (setting.smtp_password or setting.api_key))
 
     # Fallback 1: If current user lacks password/api_key, check any other user's saved credentials in DB
@@ -175,12 +192,29 @@ def save_email_settings(
     setting.smtp_port = payload.smtp_port or 587
     setting.smtp_user = payload.smtp_user.strip() if payload.smtp_user else default_personal_email
     
-    # Update password if provided
-    if payload.smtp_password and payload.smtp_password.strip():
-        setting.smtp_password = clean_password(payload.smtp_password)
+    # Update password / API key if provided, strictly sanitizing Brevo keys
+    cleaned_api_key = clean_brevo_key(payload.api_key) if payload.api_key else None
+    if cleaned_api_key:
+        setting.api_key = cleaned_api_key
 
-    if payload.api_key and payload.api_key.strip():
-        setting.api_key = payload.api_key.strip()
+    if payload.smtp_password and payload.smtp_password.strip():
+        cleaned_pwd = clean_password(payload.smtp_password)
+        if "xkeysib-" in cleaned_pwd:
+            brevo_k = clean_brevo_key(cleaned_pwd)
+            setting.api_key = brevo_k
+            setting.smtp_password = brevo_k
+            setting.provider = "brevo"
+            setting.smtp_host = "api.brevo.com"
+            setting.smtp_port = 443
+        else:
+            setting.smtp_password = cleaned_pwd
+
+    if setting.provider == "brevo" or (setting.api_key and setting.api_key.startswith("xkeysib-")):
+        setting.provider = "brevo"
+        setting.smtp_host = "api.brevo.com"
+        setting.smtp_port = 443
+        if setting.api_key:
+            setting.api_key = clean_brevo_key(setting.api_key)
 
     setting.from_name = payload.from_name.strip() if payload.from_name else "Ramesh Kumar Thakur | OM Enterprise"
     setting.from_email = payload.from_email.strip() if payload.from_email else (payload.smtp_user.strip() if payload.smtp_user else default_personal_email)

@@ -194,9 +194,19 @@ export default function GmailIntegrationPage() {
         use_ssl: useSsl
       };
       if (smtpPassword.trim()) {
-        payload.smtp_password = smtpPassword.trim();
-        if (provider === 'brevo' || smtpPassword.trim().startsWith('xkeysib-') || smtpPassword.trim().startsWith('re_')) {
-          payload.api_key = smtpPassword.trim();
+        let rawPwd = smtpPassword.trim().replace(/\s+/g, '');
+        if (rawPwd.includes('xkeysib-')) {
+          rawPwd = rawPwd.slice(rawPwd.indexOf('xkeysib-'));
+          payload.provider = 'brevo';
+          payload.smtp_host = 'api.brevo.com';
+          payload.smtp_port = 443;
+          payload.api_key = rawPwd;
+          payload.smtp_password = rawPwd;
+        } else {
+          payload.smtp_password = rawPwd;
+          if (provider === 'brevo' || rawPwd.startsWith('re_')) {
+            payload.api_key = rawPwd;
+          }
         }
       }
 
@@ -551,6 +561,9 @@ export default function GmailIntegrationPage() {
             <div className="relative">
               <input
                 type={showPassword ? 'text' : 'password'}
+                name="hireflow_api_outreach_key"
+                id="hireflow_api_outreach_key"
+                autoComplete="new-password"
                 placeholder={(hasPassword || hasApiKey) ? '•••••••••••••••• (Saved & Active — Leave blank to keep)' : (provider === 'brevo' ? 'xkeysib-...' : '16-character App Password')}
                 value={smtpPassword}
                 onChange={(e) => setSmtpPassword(e.target.value)}

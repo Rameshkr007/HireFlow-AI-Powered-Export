@@ -192,9 +192,24 @@ def sync_master_email_activity(db: Session, target_user_id: int = 2) -> Dict[str
     camp_id = camp.id if camp else 1
     camp_name = camp.name if camp else "Official Outreach Campaign"
 
-    # 2. Clear previous email logs for target user to prevent duplicates or date mismatches
-    db.query(EmailSendLog).filter(EmailSendLog.user_id == target_user_id).delete(synchronize_session=False)
-    db.query(EmailLog).filter(EmailLog.user_id == target_user_id).delete(synchronize_session=False)
+    # Check if 472 historic records already exist for target user
+    existing_historic = db.query(EmailSendLog).filter(
+        EmailSendLog.user_id == target_user_id,
+        EmailSendLog.operation_id.like("op_send_%")
+    ).count()
+
+    if existing_historic >= 472:
+        return {"status": "already_synced", "count": existing_historic}
+
+    # 2. Clear ONLY previous historic sync logs (op_send_%) - NEVER delete campaign logs (op_camp_%)!
+    db.query(EmailSendLog).filter(
+        EmailSendLog.user_id == target_user_id,
+        EmailSendLog.operation_id.like("op_send_%")
+    ).delete(synchronize_session=False)
+    db.query(EmailLog).filter(
+        EmailLog.user_id == target_user_id,
+        EmailLog.campaign_id == 1
+    ).delete(synchronize_session=False)
     db.commit()
 
     send_logs_to_insert = []
@@ -320,8 +335,14 @@ def sync_master_email_activity(db: Session, target_user_id: int = 2) -> Dict[str
     # Also update user 1 (admin) so both users show the exact same 472 records
     admin = db.query(User).filter(User.id == 1).first()
     if admin and admin.id != target_user_id:
-        db.query(EmailSendLog).filter(EmailSendLog.user_id == 1).delete(synchronize_session=False)
-        db.query(EmailLog).filter(EmailLog.user_id == 1).delete(synchronize_session=False)
+        db.query(EmailSendLog).filter(
+            EmailSendLog.user_id == 1,
+            EmailSendLog.operation_id.like("adm_%")
+        ).delete(synchronize_session=False)
+        db.query(EmailLog).filter(
+            EmailLog.user_id == 1,
+            EmailLog.campaign_id == 1
+        ).delete(synchronize_session=False)
         db.commit()
 
         admin_send_logs = []

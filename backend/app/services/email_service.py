@@ -42,6 +42,16 @@ def clean_password(pwd: Optional[str]) -> str:
         return ""
     return pwd.strip().replace(" ", "")
 
+def clean_brevo_key(k: Optional[str]) -> Optional[str]:
+    """Extracts and sanitizes a Brevo API key, stripping any leading autofill prefixes (e.g. 'admin') or whitespace."""
+    if not k:
+        return None
+    s = str(k).strip().replace(" ", "").replace("\r", "").replace("\n", "")
+    if "xkeysib-" in s:
+        idx = s.find("xkeysib-")
+        return s[idx:]
+    return s
+
 def get_effective_smtp_config(db: Session, user_id: int) -> Optional[Dict[str, Any]]:
     """
     Retrieves the active SMTP / API configuration for outreach dispatch.
@@ -104,13 +114,26 @@ def get_effective_smtp_config(db: Session, user_id: int) -> Optional[Dict[str, A
             has_creds = True
 
     if db_setting and has_creds:
+        cleaned_api_key = clean_brevo_key(db_setting.api_key)
+        cleaned_password = clean_password(db_setting.smtp_password)
+        if cleaned_password and "xkeysib-" in cleaned_password:
+            cleaned_api_key = clean_brevo_key(cleaned_password)
+
+        # Auto-heal contaminated DB records (e.g. if browser autofill prepended 'admin')
+        if db_setting.api_key and "xkeysib-" in db_setting.api_key and db_setting.api_key != cleaned_api_key:
+            db_setting.api_key = cleaned_api_key
+            try:
+                db.commit()
+            except Exception:
+                pass
+
         return {
-            "provider": db_setting.provider or "gmail",
-            "smtp_host": db_setting.smtp_host or "smtp.gmail.com",
-            "smtp_port": int(db_setting.smtp_port or 587),
+            "provider": "brevo" if (cleaned_api_key and cleaned_api_key.startswith("xkeysib-")) else (db_setting.provider or "gmail"),
+            "smtp_host": "api.brevo.com" if (cleaned_api_key and cleaned_api_key.startswith("xkeysib-")) else (db_setting.smtp_host or "smtp.gmail.com"),
+            "smtp_port": 443 if (cleaned_api_key and cleaned_api_key.startswith("xkeysib-")) else int(db_setting.smtp_port or 587),
             "smtp_user": db_setting.smtp_user.strip() if db_setting.smtp_user else "rameshkrthakur1816@gmail.com",
-            "smtp_password": clean_password(db_setting.smtp_password),
-            "api_key": db_setting.api_key.strip() if db_setting.api_key else None,
+            "smtp_password": cleaned_password,
+            "api_key": cleaned_api_key,
             "from_name": db_setting.from_name or "Ramesh Kumar Thakur | OM Enterprise",
             "from_email": db_setting.from_email or (db_setting.smtp_user.strip() if db_setting.smtp_user else "rameshkrthakur1816@gmail.com"),
             "reply_to": db_setting.from_email or (db_setting.smtp_user.strip() if db_setting.smtp_user else "rameshkrthakur1816@gmail.com"),
@@ -237,9 +260,12 @@ def send_via_brevo_http(
     attachment_list: Optional[list] = None
 ) -> Tuple[bool, Optional[str]]:
     """Sends email via Brevo REST API over HTTPS (Port 443) - completely bypasses cloud SMTP port blocks."""
+    clean_k = clean_brevo_key(api_key)
+    if not clean_k or not clean_k.startswith("xkeysib-"):
+        return False, "Invalid Brevo API key: key must start with 'xkeysib-'"
     url = "https://api.brevo.com/v3/smtp/email"
     headers = {
-        "api-key": api_key.strip(),
+        "api-key": clean_k,
         "Content-Type": "application/json",
         "accept": "application/json"
     }
@@ -553,22 +579,22 @@ def dispatch_email_universal(
     port_val = smtp_config.get("smtp_port")
 
     brevo_key = (
-        (api_key if api_key.startswith("xkeysib-") else None)
-        or (smtp_config.get("api_key") if (smtp_config.get("api_key") or "").startswith("xkeysib-") else None)
-        or getattr(settings, "BREVO_API_KEY", None)
+        clean_brevo_key(api_key)
+        or clean_brevo_key(smtp_config.get("api_key"))
+        or clean_brevo_key(getattr(settings, "BREVO_API_KEY", None))
     )
     is_on_render = bool(os.environ.get("RENDER") or os.environ.get("RENDER_EXTERNAL_HOSTNAME"))
 
     is_brevo = (
         provider == "brevo"
-        or api_key.startswith("xkeysib-")
+        or bool(brevo_key)
         or "brevo" in host_str
         or port_val == 443
         or (is_on_render and bool(brevo_key))
     )
 
     if is_brevo:
-        active_key = brevo_key or api_key
+        active_key = brevo_key or clean_brevo_key(api_key)
         if not active_key:
             return False, (
                 "Brevo API Key is missing. Please enter your Brevo API key (starts with 'xkeysib-') in the password field. "

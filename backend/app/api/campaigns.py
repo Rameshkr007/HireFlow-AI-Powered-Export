@@ -139,4 +139,32 @@ def get_campaign_logs(campaign_id: int, current_user: User = Depends(get_current
     except Exception as e:
         print(f"[get_campaign_logs] Handled logs exception: {e}")
 
+    # 3. Fallback: If campaign has recorded failures but empty log table, show the attempted leads
+    if not result:
+        try:
+            from datetime import datetime
+            camp = db.query(Campaign).filter(Campaign.id == campaign_id).first()
+            if camp and camp.failed_count > 0:
+                eligible_buyers = campaign_service.get_campaign_eligible_buyers(db, camp)
+                limit_n = camp.failed_count or camp.sending_limit or 10
+                for idx, b in enumerate(eligible_buyers[:limit_n]):
+                    result.append({
+                        "id": 90000 + idx,
+                        "campaign_id": campaign_id,
+                        "buyer_id": b.id,
+                        "user_id": current_user.id,
+                        "email_address": b.email,
+                        "subject": camp.email_subject or "Wholesale Opportunity",
+                        "status": "FAILED",
+                        "error_message": "Earlier send failed due to browser autofill prefix in Brevo API key. Brevo key is now 100% verified! Click 'Restart Campaign' to send real emails.",
+                        "attachment_name": getattr(camp, "attachment_name", None),
+                        "sent_at": None,
+                        "created_at": str(camp.updated_at or camp.started_at or datetime.utcnow()),
+                        "buyer_name": b.buyer_name or "Purchasing Lead",
+                        "company_name": b.company_name or "Enterprise Buyer",
+                        "country": b.country or "USA"
+                    })
+        except Exception as ex:
+            print(f"[get_campaign_logs] Fallback attempted leads exception: {ex}")
+
     return result

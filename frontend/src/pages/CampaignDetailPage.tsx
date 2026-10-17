@@ -156,9 +156,18 @@ export default function CampaignDetailPage() {
               </p>
             </div>
           </div>
-          <Link to="/gmail-connect" className="btn-primary bg-amber-600 hover:bg-amber-500 text-xs whitespace-nowrap shrink-0">
-            Configure Email Settings
-          </Link>
+          <div className="flex items-center gap-2 shrink-0">
+            <button
+              onClick={() => actionMutation.mutate('start')}
+              disabled={actionMutation.isPending}
+              className="btn-primary bg-emerald-600 hover:bg-emerald-500 text-xs whitespace-nowrap flex items-center gap-1.5"
+            >
+              <Play className="w-3.5 h-3.5 fill-current" /> Restart & Send Now
+            </button>
+            <Link to="/gmail-connect" className="btn-secondary text-xs whitespace-nowrap">
+              Email Settings
+            </Link>
+          </div>
         </div>
       )}
 

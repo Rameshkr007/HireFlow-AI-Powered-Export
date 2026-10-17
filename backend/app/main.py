@@ -74,6 +74,14 @@ def startup():
                 except Exception:
                     pass
                 conn.commit()
+
+            # Synchronize PostgreSQL sequences with max(id) so new inserts never collide
+            for tbl in ["email_send_logs", "email_logs", "campaigns", "buyers", "users", "attachments", "email_settings"]:
+                try:
+                    conn.execute(text(f"SELECT setval(pg_get_serial_sequence('{tbl}', 'id'), COALESCE((SELECT MAX(id) FROM {tbl}), 1));"))
+                    conn.commit()
+                except Exception:
+                    pass
     except Exception as e:
         print(f"[STARTUP] Migration notice: {e}")
 
@@ -265,7 +273,7 @@ async def test_tradewind():
 @app.get("/api/build-info")
 def build_info():
     return {
-        "version": "1.0.4",
+        "version": "1.0.5",
         "brevo_safe": True,
-        "updated": "2026-10-17T14:49:00Z"
+        "updated": "2026-10-17T15:12:00Z"
     }

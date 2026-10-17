@@ -208,11 +208,12 @@ def send_via_brevo_http(
         "accept": "application/json"
     }
     
+    final_html = body_html or format_html_email(body_text, from_name)
     payload: Dict[str, Any] = {
         "sender": {"name": from_name or "Ramesh Kumar Thakur | OM Enterprise", "email": from_email or "rameshkrthakur1816@gmail.com"},
         "to": [{"email": to_email}],
         "subject": subject,
-        "htmlContent": html_body,
+        "htmlContent": final_html,
         "textContent": body_text
     }
     target_reply_to = (reply_to or from_email or "rameshkrthakur1816@gmail.com").strip()

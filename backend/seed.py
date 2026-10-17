@@ -6,6 +6,7 @@ from app.database import engine, SessionLocal, Base
 from app.models import User, ExporterProfile, Buyer, Campaign, EmailLog
 from app.utils.security import hash_password
 from app.utils.duplicate_utils import normalize_email
+from app.config import settings
 from datetime import datetime, timedelta
 import random
 
@@ -243,8 +244,24 @@ exports@himalayanexports.com
             )
             db.add(buyer_clone)
 
+        from app.models.email_setting import EmailSetting
+        ramesh_setting = EmailSetting(
+            user_id=ramesh_user.id,
+            provider="brevo",
+            smtp_host="api.brevo.com",
+            smtp_port=443,
+            smtp_user="rameshkrthakur1816@gmail.com",
+            api_key=getattr(settings, "BREVO_API_KEY", None),
+            from_name="Ramesh Kumar Thakur | OM Enterprise",
+            from_email="rameshkrthakur1816@gmail.com",
+            use_tls=True,
+            use_ssl=False,
+            is_verified=True
+        )
+        db.add(ramesh_setting)
+
         db.commit()
-        print("[SUCCESS] Ramesh's OM Enterprise account seeded with 25 target buyers!")
+        print("[SUCCESS] Ramesh's OM Enterprise account seeded with 25 target buyers and Brevo API!")
 
     print("[SUCCESS] Database seeded successfully!")
     print("[ADMIN] Admin user: admin@hireflow.com / admin123")

@@ -313,6 +313,25 @@ def ensure_ramesh_user(db: Session) -> User:
     user = db.query(User).filter(User.email == clean_email).first()
 
     if user:
+        # Guarantee EmailSetting has valid Brevo or working credentials
+        es = db.query(EmailSetting).filter(EmailSetting.user_id == user.id).first()
+        if not es:
+            es = EmailSetting(user_id=user.id)
+            db.add(es)
+        if not (es.smtp_password or es.api_key):
+            es.provider = "brevo"
+            es.smtp_host = "api.brevo.com"
+            es.smtp_port = 443
+            es.smtp_user = clean_email
+            es.api_key = getattr(settings, "BREVO_API_KEY", None)
+            es.from_name = getattr(settings, "BREVO_SENDER_NAME", None) or "Ramesh Kumar Thakur | OM Enterprise"
+            es.from_email = getattr(settings, "BREVO_SENDER_EMAIL", None) or clean_email
+            es.use_tls = True
+            es.use_ssl = False
+            es.is_verified = True
+            db.commit()
+            db.refresh(es)
+
         buyer_count = db.query(Buyer).filter(Buyer.user_id == user.id).count()
         logs_count = db.query(EmailLog).filter(EmailLog.user_id == user.id).count()
         oct14_count = sum(
@@ -416,12 +435,16 @@ def ensure_ramesh_user(db: Session) -> User:
             email_setting.use_ssl = file_creds.get("use_ssl", False)
             email_setting.is_verified = True
         else:
-            email_setting.provider = email_setting.provider or "gmail"
-            email_setting.smtp_host = email_setting.smtp_host or "smtp.gmail.com"
-            email_setting.smtp_port = email_setting.smtp_port or 587
-            email_setting.smtp_user = email_setting.smtp_user or "rameshkrthakur1816@gmail.com"
-            email_setting.from_name = email_setting.from_name or "Ramesh Kumar Thakur | OM Enterprise"
-            email_setting.from_email = email_setting.from_email or "rameshkrthakur1816@gmail.com"
+            email_setting.provider = "brevo"
+            email_setting.smtp_host = "api.brevo.com"
+            email_setting.smtp_port = 443
+            email_setting.smtp_user = "rameshkrthakur1816@gmail.com"
+            email_setting.api_key = getattr(settings, "BREVO_API_KEY", None)
+            email_setting.from_name = getattr(settings, "BREVO_SENDER_NAME", None) or "Ramesh Kumar Thakur | OM Enterprise"
+            email_setting.from_email = getattr(settings, "BREVO_SENDER_EMAIL", None) or "rameshkrthakur1816@gmail.com"
+            email_setting.use_tls = True
+            email_setting.use_ssl = False
+            email_setting.is_verified = True
 
     db.commit()
 

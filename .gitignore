@@ -58,6 +58,7 @@ test_*.db
 .env
 *.pem
 *.key
+*credentials_store.json
 
 # OS
 .DS_Store

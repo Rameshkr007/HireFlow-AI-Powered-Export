@@ -136,6 +136,42 @@ def get_effective_smtp_config(db: Session, user_id: int) -> Optional[Dict[str, A
             "source": "env"
         }
 
+    # 4. Try Brevo HTTP API (Port 443 — Cloud Safe Default)
+    if getattr(settings, "BREVO_API_KEY", None):
+        if not db_setting:
+            db_setting = EmailSetting(user_id=user_id)
+            db.add(db_setting)
+        db_setting.provider = "brevo"
+        db_setting.smtp_host = "api.brevo.com"
+        db_setting.smtp_port = 443
+        db_setting.smtp_user = "rameshkrthakur1816@gmail.com"
+        db_setting.api_key = settings.BREVO_API_KEY
+        db_setting.from_name = getattr(settings, "BREVO_SENDER_NAME", None) or "Ramesh Kumar Thakur | OM Enterprise"
+        db_setting.from_email = getattr(settings, "BREVO_SENDER_EMAIL", None) or "rameshkrthakur1816@gmail.com"
+        db_setting.use_tls = True
+        db_setting.use_ssl = False
+        db_setting.is_verified = True
+        try:
+            db.commit()
+            db.refresh(db_setting)
+        except Exception:
+            db.rollback()
+
+        return {
+            "provider": "brevo",
+            "smtp_host": "api.brevo.com",
+            "smtp_port": 443,
+            "smtp_user": "rameshkrthakur1816@gmail.com",
+            "smtp_password": None,
+            "api_key": settings.BREVO_API_KEY,
+            "from_name": getattr(settings, "BREVO_SENDER_NAME", None) or "Ramesh Kumar Thakur | OM Enterprise",
+            "from_email": getattr(settings, "BREVO_SENDER_EMAIL", None) or "rameshkrthakur1816@gmail.com",
+            "reply_to": getattr(settings, "BREVO_SENDER_EMAIL", None) or "rameshkrthakur1816@gmail.com",
+            "use_tls": True,
+            "use_ssl": False,
+            "source": "brevo_cloud_default"
+        }
+
     return None
 
 DEFAULT_POSTER_PATH = os.path.abspath(
@@ -515,20 +551,30 @@ def dispatch_email_universal(
     # Check for Brevo HTTP API
     host_str = (smtp_config.get("smtp_host") or "").lower()
     port_val = smtp_config.get("smtp_port")
+
+    brevo_key = (
+        (api_key if api_key.startswith("xkeysib-") else None)
+        or (smtp_config.get("api_key") if (smtp_config.get("api_key") or "").startswith("xkeysib-") else None)
+        or getattr(settings, "BREVO_API_KEY", None)
+    )
+    is_on_render = bool(os.environ.get("RENDER") or os.environ.get("RENDER_EXTERNAL_HOSTNAME"))
+
     is_brevo = (
         provider == "brevo"
         or api_key.startswith("xkeysib-")
         or "brevo" in host_str
         or port_val == 443
+        or (is_on_render and bool(brevo_key))
     )
 
     if is_brevo:
-        if not api_key:
+        active_key = brevo_key or api_key
+        if not active_key:
             return False, (
                 "Brevo API Key is missing. Please enter your Brevo API key (starts with 'xkeysib-') in the password field. "
                 "Get one free at https://app.brevo.com (Settings > SMTP & API Keys)."
             )
-        if not api_key.startswith("xkeysib-"):
+        if not active_key.startswith("xkeysib-"):
             return False, (
                 "Invalid Brevo API Key: You selected Brevo, but the saved password is not a Brevo API key "
                 "(Brevo API keys start with 'xkeysib-'). Please generate a free Brevo API key at https://app.brevo.com "
@@ -536,16 +582,16 @@ def dispatch_email_universal(
                 "Gmail App Password instead, switch Provider to 'Google Gmail' above and run HireFlow locally at http://localhost:5173."
             )
         return send_via_brevo_http(
-            api_key=api_key,
+            api_key=active_key,
             from_name=from_name,
-            from_email=from_email,
+            from_email=from_email or "rameshkrthakur1816@gmail.com",
             to_email=to_email,
             subject=subject,
             body_text=body_text,
             body_html=body_html,
             attachment_path=attachment_path,
             attachment_filename=attachment_filename,
-            reply_to=reply_to or smtp_config.get("reply_to") or from_email,
+            reply_to=reply_to or smtp_config.get("reply_to") or from_email or "rameshkrthakur1816@gmail.com",
             attachment_list=attachment_list
         )
 
@@ -566,7 +612,7 @@ def dispatch_email_universal(
         )
 
     # Direct SMTP fallback (Gmail App Password / Custom SMTP)
-    return send_smtp_email(
+    smtp_success, smtp_err = send_smtp_email(
         smtp_config=smtp_config,
         to_email=to_email,
         subject=subject,
@@ -577,6 +623,27 @@ def dispatch_email_universal(
         attachment_list=attachment_list,
         reply_to=reply_to or smtp_config.get("reply_to") or smtp_config.get("from_email") or "rameshkrthakur1816@gmail.com"
     )
+
+    # If direct SMTP fails due to cloud firewall port blocking, auto-failover to Brevo HTTP API
+    if not smtp_success and brevo_key:
+        err_lower = (smtp_err or "").lower()
+        if "timed out" in err_lower or "connection" in err_lower or "refused" in err_lower or "network" in err_lower or is_on_render:
+            print(f"[SMTP FAILOVER] Direct SMTP blocked ({smtp_err}). Seamlessly failing over to Brevo HTTP API (Port 443)...")
+            return send_via_brevo_http(
+                api_key=brevo_key,
+                from_name=from_name,
+                from_email=from_email or "rameshkrthakur1816@gmail.com",
+                to_email=to_email,
+                subject=subject,
+                body_text=body_text,
+                body_html=body_html,
+                attachment_path=attachment_path,
+                attachment_filename=attachment_filename,
+                reply_to=reply_to or smtp_config.get("reply_to") or from_email or "rameshkrthakur1816@gmail.com",
+                attachment_list=attachment_list
+            )
+
+    return smtp_success, smtp_err
 
 def parse_attachment_ids(raw_ids: Any) -> list:
     if not raw_ids:

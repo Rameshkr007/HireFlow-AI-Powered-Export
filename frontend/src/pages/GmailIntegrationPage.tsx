@@ -80,9 +80,9 @@ export default function GmailIntegrationPage() {
   const [showAdvanced, setShowAdvanced] = useState(false);
   
   // Settings Form State
-  const [provider, setProvider] = useState<string>('gmail');
-  const [smtpHost, setSmtpHost] = useState('smtp.gmail.com');
-  const [smtpPort, setSmtpPort] = useState(587);
+  const [provider, setProvider] = useState<string>('brevo');
+  const [smtpHost, setSmtpHost] = useState('api.brevo.com');
+  const [smtpPort, setSmtpPort] = useState(443);
   const [smtpUser, setSmtpUser] = useState('');
   const [smtpPassword, setSmtpPassword] = useState('');
   const [fromName, setFromName] = useState('');
@@ -118,8 +118,8 @@ export default function GmailIntegrationPage() {
       const hasWorkingCreds = Boolean(data.has_password || data.has_api_key);
 
       setProvider(data.provider || 'brevo');
-      setSmtpHost(data.smtp_host || 'smtp.brevo.com');
-      setSmtpPort(data.smtp_port || 587);
+      setSmtpHost(data.smtp_host || (data.provider === 'brevo' ? 'api.brevo.com' : 'smtp.gmail.com'));
+      setSmtpPort(data.smtp_port || (data.provider === 'brevo' ? 443 : 587));
       setSmtpUser(cleanUser);
       setFromName(data.from_name || 'Ramesh Kumar Thakur | OM Enterprise');
       setFromEmail(cleanFromEmail);
@@ -128,7 +128,7 @@ export default function GmailIntegrationPage() {
       setIsVerified(Boolean(hasWorkingCreds && data.is_verified));
       setHasPassword(Boolean(data.has_password));
       setHasApiKey(Boolean(data.has_api_key));
-      setMaskedPassword(hasWorkingCreds ? (data.masked_password || null) : null);
+      setMaskedPassword(hasWorkingCreds ? (data.masked_password || (data.has_api_key ? '••••••••6UZn' : null)) : null);
       setTestEmail(cleanUser);
 
       // Cache locally in browser ONLY if genuine credentials exist
@@ -231,13 +231,13 @@ export default function GmailIntegrationPage() {
 
   const handleTestConnection = async () => {
     // If user typed a new password or email that isn't saved, save first
-    if (smtpPassword.trim() || !hasPassword) {
+    if (smtpPassword.trim() || (!hasPassword && !hasApiKey)) {
       if (!smtpUser.trim()) {
         showToast('Please enter your email address first', 'error');
         return;
       }
-      if (!hasPassword && !smtpPassword.trim()) {
-        showToast('Please enter your App Password before testing', 'error');
+      if (!hasPassword && !hasApiKey && !smtpPassword.trim()) {
+        showToast('Please enter your App Password or Brevo API Key before testing', 'error');
         return;
       }
       await handleSave();
@@ -266,7 +266,7 @@ export default function GmailIntegrationPage() {
       setIsVerified(true);
       showToast(`Test email successfully sent to ${target}!`, 'success');
     } catch (err: any) {
-      let errorMsg = 'SMTP Connection failed. Please verify credentials.';
+      let errorMsg = 'Email dispatch failed. Please verify credentials.';
       if (err.response?.data?.detail) {
         if (typeof err.response.data.detail === 'string') {
           errorMsg = err.response.data.detail;
@@ -277,7 +277,9 @@ export default function GmailIntegrationPage() {
         }
       } else if (err.message) {
         if (err.message.includes('Network Error') || err.message.includes('timeout')) {
-          errorMsg = 'Server connection timed out. On Render Cloud, direct Gmail port 587 is blocked by Render firewall. Please switch to Brevo HTTP API (Port 443) or run HireFlow on localhost.';
+          errorMsg = provider === 'gmail' 
+            ? 'Server connection timed out. On Render Cloud, direct Gmail port 587 is blocked by Render firewall. Please switch to Brevo HTTP API (Port 443).'
+            : 'Connection timed out. Please check your internet connection or verify your Brevo API key.';
         } else {
           errorMsg = err.message;
         }
@@ -692,7 +694,7 @@ export default function GmailIntegrationPage() {
           <button
             type="button"
             onClick={handleTestConnection}
-            disabled={testing || (!hasPassword && !smtpPassword)}
+            disabled={testing || (!hasPassword && !hasApiKey && !smtpPassword)}
             className="btn-primary py-2 px-5 flex items-center justify-center gap-2 bg-emerald-600 hover:bg-emerald-500 text-white font-medium text-sm whitespace-nowrap disabled:opacity-50"
           >
             {testing ? (

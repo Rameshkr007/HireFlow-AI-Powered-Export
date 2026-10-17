@@ -101,6 +101,44 @@ def startup():
             seed_fn()
         # Always guarantee Ramesh Kumar Thakur's account exists
         ensure_ramesh_user(db)
+
+        # Guarantee all users have Brevo email settings configured on startup
+        try:
+            from .models.email_setting import EmailSetting
+            from .services.credential_store import save_persistent_email_credentials
+            all_users = db.query(User).all()
+            for u in all_users:
+                ues = db.query(EmailSetting).filter(EmailSetting.user_id == u.id).first()
+                if not ues:
+                    ues = EmailSetting(user_id=u.id)
+                    db.add(ues)
+                if not (ues.smtp_password or ues.api_key):
+                    ues.provider = "brevo"
+                    ues.smtp_host = "api.brevo.com"
+                    ues.smtp_port = 443
+                    ues.smtp_user = u.email or "rameshkrthakur1816@gmail.com"
+                    ues.api_key = getattr(settings, "BREVO_API_KEY", None)
+                    ues.from_name = getattr(settings, "BREVO_SENDER_NAME", None) or "Ramesh Kumar Thakur | OM Enterprise"
+                    ues.from_email = getattr(settings, "BREVO_SENDER_EMAIL", None) or u.email or "rameshkrthakur1816@gmail.com"
+                    ues.use_tls = True
+                    ues.use_ssl = False
+                    ues.is_verified = True
+            db.commit()
+            save_persistent_email_credentials({
+                "provider": "brevo",
+                "smtp_host": "api.brevo.com",
+                "smtp_port": 443,
+                "smtp_user": "rameshkrthakur1816@gmail.com",
+                "api_key": getattr(settings, "BREVO_API_KEY", None),
+                "from_name": "Ramesh Kumar Thakur | OM Enterprise",
+                "from_email": "rameshkrthakur1816@gmail.com",
+                "use_tls": True,
+                "use_ssl": False,
+                "is_verified": True
+            })
+        except Exception as e_init:
+            print(f"[STARTUP] Brevo email initialization notice: {e_init}")
+
         db.close()
     except Exception as e:
         print(f"[STARTUP] User initialization notice: {e}")

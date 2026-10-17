@@ -96,35 +96,57 @@ def get_email_settings(
         db.refresh(setting)
         has_creds = True
 
+    # Fallback 4: Check Brevo Cloud Default (Port 443 — 100% Cloud Safe for Render)
+    if not has_creds and getattr(settings, "BREVO_API_KEY", None):
+        if not setting:
+            setting = EmailSetting(user_id=current_user.id)
+            db.add(setting)
+        setting.provider = "brevo"
+        setting.smtp_host = "api.brevo.com"
+        setting.smtp_port = 443
+        setting.smtp_user = current_user.email or "rameshkrthakur1816@gmail.com"
+        setting.api_key = settings.BREVO_API_KEY
+        setting.from_name = getattr(settings, "BREVO_SENDER_NAME", None) or "Ramesh Kumar Thakur | OM Enterprise"
+        setting.from_email = getattr(settings, "BREVO_SENDER_EMAIL", None) or current_user.email or "rameshkrthakur1816@gmail.com"
+        setting.use_tls = True
+        setting.use_ssl = False
+        setting.is_verified = True
+        try:
+            db.commit()
+            db.refresh(setting)
+        except Exception:
+            db.rollback()
+        has_creds = True
+
     default_email = current_user.email or "rameshkrthakur1816@gmail.com"
     if setting:
         return EmailSettingResponse(
             id=setting.id,
             user_id=setting.user_id,
-            provider=setting.provider or "gmail",
-            smtp_host=setting.smtp_host or "smtp.gmail.com",
-            smtp_port=setting.smtp_port or 587,
+            provider=setting.provider or "brevo",
+            smtp_host=setting.smtp_host or "api.brevo.com",
+            smtp_port=setting.smtp_port or 443,
             smtp_user=setting.smtp_user or default_email,
             from_name=setting.from_name or "Ramesh Kumar Thakur | OM Enterprise",
             from_email=setting.from_email or setting.smtp_user or default_email,
             use_tls=setting.use_tls if setting.use_tls is not None else True,
             use_ssl=setting.use_ssl if setting.use_ssl is not None else False,
             is_verified=bool(has_creds and setting.is_verified),
-            has_password=bool(setting.smtp_password),
-            masked_password=mask_password(setting.smtp_password),
+            has_password=bool(setting.smtp_password or setting.api_key),
+            masked_password=mask_password(setting.smtp_password or setting.api_key),
             api_key=setting.api_key,
             has_api_key=bool(setting.api_key),
             created_at=setting.created_at,
             updated_at=setting.updated_at
         )
 
-    # Default unconfigured response
+    # Default unconfigured response (defaults to Cloud-safe Brevo Port 443)
     return EmailSettingResponse(
         id=None,
         user_id=current_user.id,
-        provider="gmail",
-        smtp_host="smtp.gmail.com",
-        smtp_port=587,
+        provider="brevo",
+        smtp_host="api.brevo.com",
+        smtp_port=443,
         smtp_user=default_email,
         from_name="Ramesh Kumar Thakur | OM Enterprise",
         from_email=default_email,

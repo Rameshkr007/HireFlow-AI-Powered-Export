@@ -261,3 +261,11 @@ async def test_tradewind():
         "key_length": key_len,
         "results": diagnostic_results
     }
+
+@app.get("/api/build-info")
+def build_info():
+    return {
+        "version": "1.0.3",
+        "brevo_safe": True,
+        "updated": "2026-10-17T14:17:00Z"
+    }

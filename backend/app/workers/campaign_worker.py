@@ -337,12 +337,19 @@ def process_campaign(db: Session, campaign_id: int, user_id: int):
         except Exception as dispatch_exc:
             print(f"[CAMPAIGN DISPATCH ERROR] Handled dispatch notice for buyer {buyer.id} ({buyer.email}): {dispatch_exc}")
             failed += 1
+            try:
+                db.rollback()
+            except Exception:
+                pass
 
         # Update campaign counts
-        campaign.sent_count = initial_sent + sent
-        campaign.failed_count = initial_failed + failed
-        campaign.skipped_count = initial_skipped + skipped
-        db.commit()
+        try:
+            campaign.sent_count = initial_sent + sent
+            campaign.failed_count = initial_failed + failed
+            campaign.skipped_count = initial_skipped + skipped
+            db.commit()
+        except Exception:
+            db.rollback()
 
         # Delay between sends (responsive 1-2s pacing)
         delay = min(campaign.delay_seconds or 2, 2)

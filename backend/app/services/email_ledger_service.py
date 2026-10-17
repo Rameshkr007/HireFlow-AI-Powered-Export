@@ -112,6 +112,19 @@ def record_and_dispatch_email(
         else:
             campaign_id = None
 
+    valid_cid = campaign_id or (campaign.id if campaign else None)
+    if not valid_cid:
+        any_c = db.query(Campaign).filter(Campaign.user_id == user_id).first() or db.query(Campaign).first()
+        if any_c:
+            valid_cid = any_c.id
+        else:
+            try:
+                from ..services.campaign_service import ensure_campaign_7
+                c7 = ensure_campaign_7(db, user_id)
+                valid_cid = c7.id if c7 else None
+            except Exception:
+                valid_cid = None
+
     # 3. Create or fetch PENDING record in EmailSendLog
     send_log = db.query(EmailSendLog).filter(EmailSendLog.operation_id == op_id).first()
     if not send_log:
@@ -119,7 +132,7 @@ def record_and_dispatch_email(
             operation_id=op_id,
             user_id=user_id,
             buyer_id=buyer.id if buyer else None,
-            campaign_id=campaign_id,
+            campaign_id=valid_cid,
             recipient_email=clean_rec_email,
             recipient_name=(buyer.buyer_name if buyer else "Purchasing Lead") or "Purchasing Lead",
             company_name=(buyer.company_name if buyer else "Enterprise Buyer") or "Enterprise Buyer",
@@ -133,31 +146,46 @@ def record_and_dispatch_email(
             created_at=datetime.utcnow()
         )
         db.add(send_log)
-        db.commit()
-        db.refresh(send_log)
+        try:
+            db.commit()
+            db.refresh(send_log)
+        except Exception:
+            db.rollback()
+            # If foreign key violation occurred on buyer_id or campaign_id, retry with None
+            send_log.buyer_id = None
+            send_log.campaign_id = None
+            db.add(send_log)
+            db.commit()
+            db.refresh(send_log)
 
     # Also create matching EmailLog for backwards compatibility with legacy screens
-    legacy_log = db.query(EmailLog).filter(
-        EmailLog.user_id == user_id,
-        EmailLog.email_address == clean_rec_email,
-        EmailLog.subject == clean_subject,
-        EmailLog.created_at >= datetime.utcnow() - timedelta(minutes=2)
-    ).first()
-    if not legacy_log:
-        legacy_log = EmailLog(
-            campaign_id=campaign_id or 1,
-            buyer_id=buyer.id if buyer else None,
-            user_id=user_id,
-            email_address=clean_rec_email,
-            subject=clean_subject,
-            personalized_body=clean_body,
-            status="PENDING",
-            attachment_name=attachment_name,
-            created_at=datetime.utcnow()
-        )
-        db.add(legacy_log)
-        db.commit()
-        db.refresh(legacy_log)
+    legacy_log = None
+    if valid_cid:
+        try:
+            legacy_log = db.query(EmailLog).filter(
+                EmailLog.user_id == user_id,
+                EmailLog.email_address == clean_rec_email,
+                EmailLog.subject == clean_subject,
+                EmailLog.created_at >= datetime.utcnow() - timedelta(minutes=2)
+            ).first()
+            if not legacy_log:
+                legacy_log = EmailLog(
+                    campaign_id=valid_cid,
+                    buyer_id=buyer.id if buyer else None,
+                    user_id=user_id,
+                    email_address=clean_rec_email,
+                    subject=clean_subject,
+                    personalized_body=clean_body,
+                    status="PENDING",
+                    attachment_name=attachment_name,
+                    created_at=datetime.utcnow()
+                )
+                db.add(legacy_log)
+                db.commit()
+                db.refresh(legacy_log)
+        except Exception:
+            db.rollback()
+            legacy_log = None
 
     # 4. Dispatch Email
     send_success = False

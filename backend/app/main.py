@@ -265,7 +265,7 @@ async def test_tradewind():
 @app.get("/api/build-info")
 def build_info():
     return {
-        "version": "1.0.3",
+        "version": "1.0.4",
         "brevo_safe": True,
-        "updated": "2026-10-17T14:17:00Z"
+        "updated": "2026-10-17T14:49:00Z"
     }

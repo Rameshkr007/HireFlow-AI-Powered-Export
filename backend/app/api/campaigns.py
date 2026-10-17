@@ -54,6 +54,85 @@ def reset_campaign(campaign_id: int, current_user: User = Depends(get_current_us
         campaign_service.ensure_campaign_7(db, current_user.id)
     return campaign_service.reset_campaign(db, current_user.id, campaign_id)
 
+@router.post("/{campaign_id}/test-single-dispatch")
+def test_single_dispatch(campaign_id: int, current_user: User = Depends(get_current_user), db: Session = Depends(get_db)):
+    import traceback
+    import uuid
+    import os
+    from ..workers.campaign_worker import personalize_email_simple
+    from ..services.email_ledger_service import record_and_dispatch_email
+    from ..models.exporter_profile import ExporterProfile
+    from ..models.attachment import Attachment
+    from ..services.email_service import parse_attachment_ids, DEFAULT_POSTER_PATH
+
+    try:
+        campaign = campaign_service.get_campaign(db, current_user.id, campaign_id)
+        buyers = campaign_service.get_campaign_eligible_buyers(db, campaign)
+        if not buyers:
+            return {"error": "No eligible buyers found"}
+        buyer = buyers[0]
+        profile = db.query(ExporterProfile).filter(ExporterProfile.user_id == current_user.id).first()
+        user_email_str = current_user.email or "rameshkrthakur1816@gmail.com"
+
+        personalized_subject = personalize_email_simple(campaign.email_subject or "Export Partnership Opportunity", buyer, campaign.product or "", profile=profile, user_email=user_email_str)
+        personalized_body = personalize_email_simple(campaign.email_body or "", buyer, campaign.product or "", profile=profile, user_email=user_email_str)
+
+        attachment_list = []
+        att_names = []
+        target_ids = []
+        target_ids.extend(parse_attachment_ids(getattr(campaign, "attachment_ids", None)))
+        if getattr(campaign, "attachment_id", None) and campaign.attachment_id not in target_ids:
+            target_ids.append(campaign.attachment_id)
+        if target_ids:
+            atts = db.query(Attachment).filter(Attachment.id.in_(target_ids)).all()
+            for att in atts:
+                if att.file_path and os.path.exists(att.file_path):
+                    attachment_list.append({
+                        "path": att.file_path,
+                        "name": att.original_name or os.path.basename(att.file_path)
+                    })
+            att_names = [a.original_name for a in atts if a.original_name]
+
+        if not attachment_list and os.path.exists(DEFAULT_POSTER_PATH):
+            attachment_list.append({
+                "path": DEFAULT_POSTER_PATH,
+                "name": "OM_Enterprise_Home_Decor_Collection_Poster.jpg"
+            })
+            att_names = ["OM_Enterprise_Home_Decor_Collection_Poster.jpg"]
+
+        first_path = attachment_list[0]["path"] if attachment_list else None
+        first_name = attachment_list[0]["name"] if attachment_list else None
+
+        op_id = f"op_test_{campaign_id}_{buyer.id}_{uuid.uuid4().hex[:12]}"
+        send_log, send_success, send_err = record_and_dispatch_email(
+            db=db,
+            user_id=current_user.id,
+            recipient_email=buyer.email,
+            subject=personalized_subject,
+            body_text=personalized_body,
+            buyer_id=buyer.id,
+            campaign_id=campaign_id,
+            operation_id=op_id,
+            attachment_name=first_name,
+            attachment_path=first_path,
+            attachment_list=attachment_list,
+            is_demo=campaign.is_demo
+        )
+        return {
+            "success": send_success,
+            "error": send_err,
+            "buyer": buyer.email,
+            "buyer_id": buyer.id,
+            "log_id": getattr(send_log, "id", None),
+            "log_status": getattr(send_log, "status", None),
+            "log_campaign_id": getattr(send_log, "campaign_id", None)
+        }
+    except Exception as e:
+        return {
+            "exception": str(e),
+            "traceback": traceback.format_exc()
+        }
+
 @router.get("/{campaign_id}/logs")
 def get_campaign_logs(campaign_id: int, current_user: User = Depends(get_current_user), db: Session = Depends(get_db)):
     if campaign_id == 7:

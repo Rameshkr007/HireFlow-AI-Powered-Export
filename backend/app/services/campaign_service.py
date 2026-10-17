@@ -11,6 +11,9 @@ from ..database import SessionLocal
 def ensure_campaign_7(db: Session, user_id: int):
     c7 = db.query(Campaign).filter(Campaign.id == 7).first()
     if not c7:
+        from ..models.attachment import Attachment
+        att = db.query(Attachment).filter(Attachment.id == 1).first() or db.query(Attachment).first()
+        valid_att_id = att.id if att else None
         c7 = Campaign(
             id=7,
             user_id=user_id or 2,
@@ -36,7 +39,7 @@ Ramesh Kumar Thakur
 OM Enterprise""",
             sending_limit=10,
             delay_seconds=2,
-            attachment_id=1,
+            attachment_id=valid_att_id,
             status="READY",
             sent_count=0,
             failed_count=0,

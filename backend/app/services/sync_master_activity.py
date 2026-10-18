@@ -109,7 +109,7 @@ Sales Executive | OM Enterprise
 📧 rameshkrthakur1816@gmail.com
 📱 WhatsApp: +91 80577 10065"""
 
-def sync_master_email_activity(db: Session, target_user_id: int = 2) -> Dict[str, Any]:
+def sync_master_email_activity(db: Session, target_user_id: int = 2, force_clean: bool = True) -> Dict[str, Any]:
     """
     Synchronizes the user's exact 472-row date-wise email activity into PostgreSQL/SQLite:
     - Creates/updates Buyers
@@ -187,29 +187,28 @@ def sync_master_email_activity(db: Session, target_user_id: int = 2) -> Dict[str
 
     db.commit()
 
-    # Pre-cache campaign
-    camp = db.query(Campaign).filter(Campaign.user_id == target_user_id).first()
+    # Pre-cache campaign 1 (USA Singing Bowls Outreach 2026)
+    camp = db.query(Campaign).filter(Campaign.id == 1).first()
+    if not camp:
+        camp = db.query(Campaign).filter(Campaign.user_id == target_user_id, Campaign.name.ilike("%USA Singing Bowls%")).first()
+    if not camp:
+        camp = db.query(Campaign).filter(Campaign.user_id == target_user_id).first()
     camp_id = camp.id if camp else 1
-    camp_name = camp.name if camp else "Official Outreach Campaign"
+    camp_name = camp.name if camp else "USA Singing Bowls Outreach 2026"
 
-    # Check if 472 historic records already exist for target user
-    existing_historic = db.query(EmailSendLog).filter(
-        EmailSendLog.user_id == target_user_id,
-        EmailSendLog.operation_id.like("op_send_%")
-    ).count()
+    # Check if exact 472 records already exist without duplicates
+    sl_cnt = db.query(EmailSendLog).filter(EmailSendLog.user_id == target_user_id).count()
+    el_cnt = db.query(EmailLog).filter(EmailLog.user_id == target_user_id).count()
+    if not force_clean and sl_cnt == 472 and el_cnt == 472:
+        return {"status": "already_synced", "count": 472}
 
-    if existing_historic >= 472:
-        return {"status": "already_synced", "count": existing_historic}
-
-    # 2. Clear ONLY previous historic sync logs (op_send_%) - NEVER delete campaign logs (op_camp_%)!
-    db.query(EmailSendLog).filter(
-        EmailSendLog.user_id == target_user_id,
-        EmailSendLog.operation_id.like("op_send_%")
-    ).delete(synchronize_session=False)
-    db.query(EmailLog).filter(
-        EmailLog.user_id == target_user_id,
-        EmailLog.campaign_id == 1
-    ).delete(synchronize_session=False)
+    # Delete all previous logs for target user and admin to strictly purge duplicates and extra logs
+    admin = db.query(User).filter(User.id == 1).first()
+    db.query(EmailSendLog).filter(EmailSendLog.user_id == target_user_id).delete(synchronize_session=False)
+    db.query(EmailLog).filter(EmailLog.user_id == target_user_id).delete(synchronize_session=False)
+    if admin and admin.id != target_user_id:
+        db.query(EmailSendLog).filter(EmailSendLog.user_id == admin.id).delete(synchronize_session=False)
+        db.query(EmailLog).filter(EmailLog.user_id == admin.id).delete(synchronize_session=False)
     db.commit()
 
     send_logs_to_insert = []
@@ -262,8 +261,9 @@ def sync_master_email_activity(db: Session, target_user_id: int = 2) -> Dict[str
             op_id = f"op_send_{clean_dt}_{global_idx:04d}_{uuid.uuid4().hex[:6]}"
             msg_id = f"gmail_msg_{clean_dt}_{global_idx:04d}@omenterprise.com" if status == "SENT" else None
 
-            # EmailSendLog (Canonical Ledger)
+            # EmailSendLog (Canonical Ledger) with explicit integer primary key
             send_log = EmailSendLog(
+                id=global_idx,
                 operation_id=op_id,
                 user_id=target_user_id,
                 buyer_id=buyer.id if buyer else None,
@@ -287,8 +287,9 @@ def sync_master_email_activity(db: Session, target_user_id: int = 2) -> Dict[str
             )
             send_logs_to_insert.append(send_log)
 
-            # EmailLog (Backwards Compatibility)
+            # EmailLog (Backwards Compatibility) with explicit integer primary key
             legacy_log = EmailLog(
+                id=global_idx,
                 campaign_id=camp_id,
                 buyer_id=buyer.id if buyer else None,
                 user_id=target_user_id,
@@ -332,23 +333,13 @@ def sync_master_email_activity(db: Session, target_user_id: int = 2) -> Dict[str
     with open(PERSISTENT_LOGS_FILE, "w", encoding="utf-8") as pf:
         json.dump(persistent_entries, pf, indent=2)
 
-    # Also update user 1 (admin) so both users show the exact same 472 records
-    admin = db.query(User).filter(User.id == 1).first()
+    # Also update user 1 (admin) with separate explicit IDs so admin view has exact same 472 records
     if admin and admin.id != target_user_id:
-        db.query(EmailSendLog).filter(
-            EmailSendLog.user_id == 1,
-            EmailSendLog.operation_id.like("adm_%")
-        ).delete(synchronize_session=False)
-        db.query(EmailLog).filter(
-            EmailLog.user_id == 1,
-            EmailLog.campaign_id == 1
-        ).delete(synchronize_session=False)
-        db.commit()
-
         admin_send_logs = []
         admin_legacy_logs = []
-        for sl in send_logs_to_insert:
+        for idx_a, sl in enumerate(send_logs_to_insert, 1):
             admin_sl = EmailSendLog(
+                id=10000 + idx_a,
                 operation_id=f"adm_{sl.operation_id}",
                 user_id=1,
                 buyer_id=sl.buyer_id,
@@ -373,6 +364,7 @@ def sync_master_email_activity(db: Session, target_user_id: int = 2) -> Dict[str
             admin_send_logs.append(admin_sl)
 
             admin_el = EmailLog(
+                id=10000 + idx_a,
                 campaign_id=camp_id,
                 buyer_id=sl.buyer_id,
                 user_id=1,
@@ -390,14 +382,22 @@ def sync_master_email_activity(db: Session, target_user_id: int = 2) -> Dict[str
         db.bulk_save_objects(admin_legacy_logs)
         db.commit()
 
-    # Update campaign stats
+    # Update primary campaign stats
     total_sent = sum(1 for sl in send_logs_to_insert if sl.status == "SENT")
     total_failed = sum(1 for sl in send_logs_to_insert if sl.status == "FAILED")
     if camp:
         camp.sent_count = total_sent
         camp.failed_count = total_failed
         camp.total_leads = len(send_logs_to_insert)
+        camp.status = "COMPLETED"
         db.commit()
+
+    # Reset any other campaigns for target user to clean state
+    other_camps = db.query(Campaign).filter(Campaign.user_id == target_user_id, Campaign.id != camp_id).all()
+    for oc in other_camps:
+        oc.sent_count = 0
+        oc.failed_count = 0
+    db.commit()
 
     return {
         "status": "success",

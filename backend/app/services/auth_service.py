@@ -777,7 +777,7 @@ Warm regards,
 
 Ramesh Kumar Thakur
 Sales Executive | OM Enterprise (Nepal)
-📧 exportindia2026us@gmail.com
+📧 rameshkrthakur1816@gmail.com
 📱 WhatsApp: +91 80577 10065"""
 
         if not nepal_sample_camp:
@@ -816,7 +816,7 @@ Best regards,
 
 Ramesh Kumar Thakur
 Sales Executive | OM Enterprise (Nepal)
-📧 exportindia2026us@gmail.com
+📧 rameshkrthakur1816@gmail.com
 📱 WhatsApp: +91 80577 10065"""
 
         if not nepal_followup_camp:
@@ -840,14 +840,7 @@ Sales Executive | OM Enterprise (Nepal)
             db.add(nepal_followup_camp)
             db.commit()
 
-        # 1. Restore persistent email logs from disk fallback store (guarantees 100% permanence across Render restarts)
-        try:
-            from .email_log_store import restore_email_logs_to_db
-            restored = restore_email_logs_to_db(db, user.id, assigned_bowl_camp.id if assigned_bowl_camp else campaign.id)
-            if restored > 0:
-                print(f"[AUTH] Restored {restored} persistent email logs into database.")
-        except Exception as e:
-            print(f"[AUTH] Error restoring persistent email logs: {e}")
+        # Master activity synchronization is handled canonically by sync_master_email_activity
 
         # Populate complete working-day email dispatch logs matching Ramesh's exact user records (Sat & Sun OFF)
         from .sync_master_activity import sync_master_email_activity

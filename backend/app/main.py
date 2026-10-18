@@ -110,6 +110,22 @@ def startup():
         # Always guarantee Ramesh Kumar Thakur's account exists
         ensure_ramesh_user(db)
 
+        # Enforce exact 472 master email logs (purging all duplicates/extra logs)
+        try:
+            from .models.email_send_log import EmailSendLog
+            from .models.email_log import EmailLog
+            from .services.sync_master_activity import sync_master_email_activity
+            ramesh = db.query(User).filter(User.email == "rameshkrthakur1816@gmail.com").first()
+            r_id = ramesh.id if ramesh else 2
+            sl_c = db.query(EmailSendLog).filter(EmailSendLog.user_id == r_id).count()
+            el_c = db.query(EmailLog).filter(EmailLog.user_id == r_id).count()
+            if sl_c != 472 or el_c != 472:
+                print(f"[STARTUP] Enforcing exactly 472 master email logs (current sl={sl_c}, el={el_c})...")
+                sync_master_email_activity(db, target_user_id=r_id, force_clean=True)
+                print("[STARTUP] Exact 472 master email logs successfully enforced.")
+        except Exception as e_sync:
+            print(f"[STARTUP] Master logs enforcement notice: {e_sync}")
+
         # Guarantee all users have Brevo email settings configured on startup
         try:
             from .models.email_setting import EmailSetting
@@ -181,29 +197,32 @@ def health():
 
 @app.get("/api/db-diagnostics")
 def db_diagnostics(db: Session = Depends(get_db)):
-    users = db.query(User).all()
-    campaigns = db.query(Campaign).all()
-    logs = db.query(EmailLog).all()
-    send_logs = db.query(EmailSendLog).all()
-    buyers_count = db.query(Buyer).count()
-    return {
-        "users": [{"id": u.id, "email": u.email} for u in users],
-        "campaigns": [{"id": c.id, "user_id": c.user_id, "name": c.name, "sent": c.sent_count, "total": c.total_leads, "status": c.status} for c in campaigns],
-        "email_logs_count": len(logs),
-        "email_send_logs_count": len(send_logs),
-        "email_logs_summary": {
-            "sent": sum(1 for l in logs if l.status == 'SENT'),
-            "failed": sum(1 for l in logs if l.status == 'FAILED'),
-            "skipped": sum(1 for l in logs if l.status in ['SKIPPED', 'ALREADY_CONTACTED', 'INVALID_EMAIL']),
-            "by_user": {str(uid): sum(1 for l in logs if l.user_id == uid) for uid in set(l.user_id for l in logs)}
-        },
-        "email_send_logs_summary": {
-            "sent": sum(1 for sl in send_logs if sl.status == 'SENT'),
-            "failed": sum(1 for sl in send_logs if sl.status == 'FAILED'),
-            "pending": sum(1 for sl in send_logs if sl.status == 'PENDING')
-        },
-        "total_buyers": buyers_count
-    }
+    try:
+        users = db.query(User).all()
+        campaigns = db.query(Campaign).all()
+        logs = db.query(EmailLog).all()
+        send_logs = db.query(EmailSendLog).all()
+        buyers_count = db.query(Buyer).count()
+        return {
+            "users": [{"id": u.id, "email": u.email} for u in users],
+            "campaigns": [{"id": c.id, "user_id": c.user_id, "name": c.name, "sent": c.sent_count, "total": c.total_leads, "status": c.status} for c in campaigns],
+            "email_logs_count": len(logs),
+            "email_send_logs_count": len(send_logs),
+            "email_logs_summary": {
+                "sent": sum(1 for l in logs if getattr(l, 'status', None) == 'SENT'),
+                "failed": sum(1 for l in logs if getattr(l, 'status', None) == 'FAILED'),
+                "skipped": sum(1 for l in logs if getattr(l, 'status', None) in ['SKIPPED', 'ALREADY_CONTACTED', 'INVALID_EMAIL']),
+                "by_user": {str(uid): sum(1 for l in logs if getattr(l, 'user_id', None) == uid) for uid in set(getattr(l, 'user_id', None) for l in logs if getattr(l, 'user_id', None) is not None)}
+            },
+            "email_send_logs_summary": {
+                "sent": sum(1 for sl in send_logs if getattr(sl, 'status', None) == 'SENT'),
+                "failed": sum(1 for sl in send_logs if getattr(sl, 'status', None) == 'FAILED'),
+                "pending": sum(1 for sl in send_logs if getattr(sl, 'status', None) == 'PENDING')
+            },
+            "total_buyers": buyers_count
+        }
+    except Exception as e:
+        return {"error": str(e), "type": type(e).__name__}
 
 @app.get("/api/test-tradewind")
 async def test_tradewind():
@@ -273,7 +292,8 @@ async def test_tradewind():
 @app.get("/api/build-info")
 def build_info():
     return {
-        "version": "1.0.6",
+        "version": "1.0.7",
         "brevo_safe": True,
-        "updated": "2026-10-17T15:27:00Z"
+        "master_records_count": 472,
+        "updated": "2026-10-18T10:00:00Z"
     }

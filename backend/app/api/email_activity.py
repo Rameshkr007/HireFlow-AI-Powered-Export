@@ -392,12 +392,28 @@ def sync_browser_activity(
         for l in existing_logs
     }
 
+    # Load allowed master keys to prevent stale or duplicate browser localStorage logs from re-inflating
+    import json
+    from ..services.sync_master_activity import JSON_PATH
+    master_keys = set()
+    if os.path.exists(JSON_PATH):
+        try:
+            with open(JSON_PATH, "r", encoding="utf-8") as f:
+                for r in json.load(f):
+                    master_keys.add((normalize_email(r.get("email") or ""), str(r.get("date") or "")[:10]))
+        except Exception:
+            pass
+
     for item in incoming_logs:
         em = item.get("email_address") or item.get("email")
         dt_str = str(item.get("sent_at") or item.get("datetime") or item.get("date") or "")[:10]
         if not em or not dt_str:
             continue
-        if (em, dt_str) in existing_keys:
+        norm_em = normalize_email(em)
+        # Skip if already exists or if it is an unknown historic log not in master 472 records
+        if (norm_em, dt_str) in existing_keys:
+            continue
+        if dt_str < "2026-10-17" and (norm_em, dt_str) not in master_keys:
             continue
 
         dt = None
@@ -718,24 +734,29 @@ def get_google_sheets_rows(
     return {"rows": rows, "total": len(rows), "date": date}
 
 @router.post("/sync-all-data")
+@router.post("/enforce-master-records")
 def sync_all_data(
     current_user: User = Depends(get_current_user),
     db: Session = Depends(get_db)
 ):
-    """Forces a complete synchronization of all export buyers and 472 outreach logs."""
+    """Forces a complete purge of duplicate/obsolete logs and synchronizes exactly Ramesh's 472 outreach logs."""
     from ..services.sync_master_activity import sync_master_email_activity
     from ..services.auth_service import ensure_ramesh_user
-    sync_master_email_activity(db, target_user_id=current_user.id)
+    uid = get_effective_user_id(db, current_user)
+    sync_res = sync_master_email_activity(db, target_user_id=uid, force_clean=True)
     ensure_ramesh_user(db)
-    total_buyers = db.query(Buyer).filter(Buyer.user_id == current_user.id).count()
-    total_logs = db.query(EmailSendLog).filter(EmailSendLog.user_id == current_user.id).count()
-    total_sent = db.query(EmailSendLog).filter(EmailSendLog.user_id == current_user.id, EmailSendLog.status == 'SENT').count()
+    total_buyers = db.query(Buyer).filter(Buyer.user_id == uid).count()
+    total_logs = db.query(EmailSendLog).filter(EmailSendLog.user_id == uid).count()
+    total_sent = db.query(EmailSendLog).filter(EmailSendLog.user_id == uid, EmailSendLog.status == 'SENT').count()
+    total_failed = db.query(EmailSendLog).filter(EmailSendLog.user_id == uid, EmailSendLog.status == 'FAILED').count()
     return {
         "status": "success",
-        "message": f"All buyers and {total_logs} email logs synchronized successfully",
+        "message": f"Successfully enforced exact 472 email records: {total_sent} SENT, {total_failed} FAILED",
         "total_buyers": total_buyers,
         "total_logs": total_logs,
-        "emails_sent": total_sent
+        "emails_sent": total_sent,
+        "emails_failed": total_failed,
+        "details": sync_res
     }
 
 

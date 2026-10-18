@@ -480,7 +480,7 @@ def reconcile_sent_ledger(db: Session, user_id: int) -> Dict[str, Any]:
     email_logs = db.query(EmailLog).filter(EmailLog.user_id == user_id).all()
     buyers = db.query(Buyer).filter(Buyer.user_id == user_id).all()
 
-    send_log_emails = {sl.recipient_email.lower(): sl for sl in send_logs}
+    send_log_emails = {(sl.recipient_email or "").lower(): sl for sl in send_logs if sl.recipient_email}
     buyers_by_email = {b.normalized_email: b for b in buyers if b.normalized_email}
 
     mismatched_records = []

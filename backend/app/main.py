@@ -110,19 +110,22 @@ def startup():
         # Always guarantee Ramesh Kumar Thakur's account exists
         ensure_ramesh_user(db)
 
-        # Enforce exact 472 master email logs (purging all duplicates/extra logs)
+        # Ensure baseline master email logs exist (never purge or delete new campaign records)
         try:
             from .models.email_send_log import EmailSendLog
             from .models.email_log import EmailLog
-            from .services.sync_master_activity import sync_master_email_activity
+            from .services.sync_master_activity import sync_master_email_activity, ensure_campaign_6_logs
             ramesh = db.query(User).filter(User.email == "rameshkrthakur1816@gmail.com").first()
             r_id = ramesh.id if ramesh else 2
             sl_c = db.query(EmailSendLog).filter(EmailSendLog.user_id == r_id).count()
             el_c = db.query(EmailLog).filter(EmailLog.user_id == r_id).count()
-            if sl_c != 472 or el_c != 472:
-                print(f"[STARTUP] Enforcing exactly 472 master email logs (current sl={sl_c}, el={el_c})...")
-                sync_master_email_activity(db, target_user_id=r_id, force_clean=True)
-                print("[STARTUP] Exact 472 master email logs successfully enforced.")
+            if sl_c < 472 or el_c < 472:
+                print(f"[STARTUP] Master email logs below baseline (current sl={sl_c}, el={el_c}). Seeding baseline without touching new campaigns...")
+                sync_master_email_activity(db, target_user_id=r_id, force_clean=False)
+                print("[STARTUP] Master email logs baseline verified.")
+            
+            # Permanently ensure Campaign 6's 20 logs are present
+            ensure_campaign_6_logs(db, target_user_id=r_id)
         except Exception as e_sync:
             print(f"[STARTUP] Master logs enforcement notice: {e_sync}")
 
@@ -292,8 +295,8 @@ async def test_tradewind():
 @app.get("/api/build-info")
 def build_info():
     return {
-        "version": "1.0.7",
+        "version": "1.0.8",
         "brevo_safe": True,
-        "master_records_count": 472,
-        "updated": "2026-10-18T10:00:00Z"
+        "master_records_count": 492,
+        "updated": "2026-10-19T15:30:00Z"
     }

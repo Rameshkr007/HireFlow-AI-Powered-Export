@@ -152,7 +152,9 @@ def get_campaign_logs(campaign_id: int, current_user: User = Depends(get_current
     # 1. Primary Source: EmailSendLog permanent ledger
     try:
         from ..models.email_send_log import EmailSendLog
-        send_logs = db.query(EmailSendLog).filter(EmailSendLog.campaign_id == campaign_id).order_by(EmailSendLog.created_at.desc()).all()
+        send_logs = db.query(EmailSendLog).filter(EmailSendLog.campaign_id == campaign_id, EmailSendLog.user_id == current_user.id).order_by(EmailSendLog.created_at.desc()).all()
+        if not send_logs:
+            send_logs = db.query(EmailSendLog).filter(EmailSendLog.campaign_id == campaign_id).order_by(EmailSendLog.created_at.desc()).all()
         if send_logs:
             all_buyers = db.query(Buyer).all()
             buyers_by_id = {b.id: b for b in all_buyers if b and getattr(b, "id", None) is not None}
@@ -192,7 +194,9 @@ def get_campaign_logs(campaign_id: int, current_user: User = Depends(get_current
 
     # 2. Secondary Fallback: EmailLog legacy logs
     try:
-        logs = db.query(EmailLog).filter(EmailLog.campaign_id == campaign_id).order_by(EmailLog.created_at.desc()).all()
+        logs = db.query(EmailLog).filter(EmailLog.campaign_id == campaign_id, EmailLog.user_id == current_user.id).order_by(EmailLog.created_at.desc()).all()
+        if not logs:
+            logs = db.query(EmailLog).filter(EmailLog.campaign_id == campaign_id).order_by(EmailLog.created_at.desc()).all()
         if logs:
             all_buyers = db.query(Buyer).all()
             buyers_by_id = {b.id: b for b in all_buyers if b and getattr(b, "id", None) is not None}

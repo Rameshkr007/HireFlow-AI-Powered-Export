@@ -429,10 +429,10 @@ def ensure_campaign_6_logs(db: Session, target_user_id: int = 2) -> Dict[str, An
     db.commit()
 
     # Check how many logs already exist for Campaign 6
-    existing_c6_sl = db.query(EmailSendLog).filter(EmailSendLog.user_id == target_user_id, EmailSendLog.campaign_id == c6.id).count()
-    existing_c6_el = db.query(EmailLog).filter(EmailLog.user_id == target_user_id, EmailLog.campaign_id == c6.id).count()
-    if existing_c6_sl >= 20 and existing_c6_el >= 20:
-        return {"status": "already_present", "count": existing_c6_sl}
+    total_c6_sl = db.query(EmailSendLog).filter(EmailSendLog.campaign_id == c6.id).count()
+    total_c6_el = db.query(EmailLog).filter(EmailLog.campaign_id == c6.id).count()
+    if total_c6_sl == 20 and total_c6_el == 20:
+        return {"status": "already_present", "count": 20}
 
     # The exact 20 buyers dispatched by Campaign 6
     C6_BUYERS = [
@@ -461,14 +461,11 @@ def ensure_campaign_6_logs(db: Session, target_user_id: int = 2) -> Dict[str, An
     subject = c6.email_subject or "Handcrafted Singing Bowls – Wholesale Opportunity"
     body_tmpl = c6.email_body or CANDLE_HOLDER_TEMPLATE
 
-    # Delete existing logs for campaign 6 or target IDs to insert clean canonical set
+    # Delete existing logs for campaign 6 or any target IDs >= 473 to insert clean canonical set
     from sqlalchemy import or_
-    target_ids = [472 + i for i in range(1, 25)] + [10472 + i for i in range(1, 25)]
-    db.query(EmailSendLog).filter(or_(EmailSendLog.campaign_id == c6.id, EmailSendLog.id.in_(target_ids))).delete(synchronize_session=False)
-    db.query(EmailLog).filter(or_(EmailLog.campaign_id == c6.id, EmailLog.id.in_(target_ids))).delete(synchronize_session=False)
+    db.query(EmailSendLog).filter(or_(EmailSendLog.campaign_id == c6.id, EmailSendLog.id >= 473)).delete(synchronize_session=False)
+    db.query(EmailLog).filter(or_(EmailLog.campaign_id == c6.id, EmailLog.id >= 473)).delete(synchronize_session=False)
     db.commit()
-
-    admin = db.query(User).filter(User.id == 1).first()
 
     for idx, item in enumerate(C6_BUYERS, 1):
         dt = datetime.fromisoformat(item["time_str"])
@@ -532,48 +529,6 @@ def ensure_campaign_6_logs(db: Session, target_user_id: int = 2) -> Dict[str, An
             created_at=dt
         )
         db.add(el)
-
-        # Mirror for admin
-        if admin and admin.id != target_user_id:
-            adm_sl = EmailSendLog(
-                id=10472 + idx,
-                operation_id=f"adm_{op_id}",
-                user_id=admin.id,
-                buyer_id=actual_buyer_id,
-                campaign_id=c6.id,
-                recipient_email=item["email"],
-                recipient_name=item["buyer_name"],
-                company_name=item["company_name"],
-                product="Metal Candelabras",
-                campaign_name=c6.name,
-                subject=subject,
-                body_text=body,
-                attachment_name="OM_Enterprise_Home_Decor_Collection_Poster.jpg",
-                status="SENT",
-                sent_at=dt,
-                created_at=dt,
-                gmail_message_id=msg_id,
-                gmail_thread_id=thrd_id,
-                sender_email="rameshkrthakur1816@gmail.com",
-                sender_account_id="rameshkrthakur1816@gmail.com",
-                is_verified=True
-            )
-            db.add(adm_sl)
-
-            adm_el = EmailLog(
-                id=10472 + idx,
-                campaign_id=c6.id,
-                buyer_id=actual_buyer_id,
-                user_id=admin.id,
-                email_address=item["email"],
-                subject=subject,
-                personalized_body=body,
-                attachment_name="OM_Enterprise_Home_Decor_Collection_Poster.jpg",
-                status="SENT",
-                sent_at=dt,
-                created_at=dt
-            )
-            db.add(adm_el)
 
     db.commit()
 

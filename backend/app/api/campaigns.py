@@ -135,7 +135,11 @@ def test_single_dispatch(campaign_id: int, current_user: User = Depends(get_curr
 
 @router.get("/{campaign_id}/logs")
 def get_campaign_logs(campaign_id: int, current_user: User = Depends(get_current_user), db: Session = Depends(get_db)):
-    if campaign_id == 7:
+    if campaign_id == 6:
+        from ..services.sync_master_activity import ensure_campaign_6_logs
+        campaign_service.ensure_campaign_6(db, current_user.id)
+        ensure_campaign_6_logs(db, current_user.id)
+    elif campaign_id == 7:
         campaign_service.ensure_campaign_7(db, current_user.id)
     try:
         campaign_service.get_campaign(db, current_user.id, campaign_id)

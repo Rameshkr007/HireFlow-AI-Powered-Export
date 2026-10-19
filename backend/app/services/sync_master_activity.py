@@ -418,7 +418,8 @@ def ensure_campaign_6_logs(db: Session, target_user_id: int = 2) -> Dict[str, An
     if not c6:
         c6 = db.query(Campaign).filter(Campaign.user_id == target_user_id, Campaign.name.ilike("%California Metal Candelabras%")).first()
     if not c6:
-        return {"status": "campaign_not_found"}
+        from .campaign_service import ensure_campaign_6
+        c6 = ensure_campaign_6(db, target_user_id)
 
     c6.sent_count = 20
     c6.total_leads = 20

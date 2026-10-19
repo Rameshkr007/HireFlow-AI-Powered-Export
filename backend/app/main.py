@@ -124,6 +124,11 @@ def startup():
                 sync_master_email_activity(db, target_user_id=r_id, force_clean=False)
                 print("[STARTUP] Master email logs baseline verified.")
             
+            # Guarantee Campaign 6 and Campaign 7 exist
+            from .services.campaign_service import ensure_campaign_6, ensure_campaign_7
+            ensure_campaign_6(db, r_id)
+            ensure_campaign_7(db, r_id)
+
             # Permanently ensure Campaign 6's 20 logs are present
             ensure_campaign_6_logs(db, target_user_id=r_id)
         except Exception as e_sync:
@@ -295,8 +300,8 @@ async def test_tradewind():
 @app.get("/api/build-info")
 def build_info():
     return {
-        "version": "1.0.8",
+        "version": "1.0.9",
         "brevo_safe": True,
         "master_records_count": 492,
-        "updated": "2026-10-19T15:30:00Z"
+        "updated": "2026-10-19T15:42:00Z"
     }

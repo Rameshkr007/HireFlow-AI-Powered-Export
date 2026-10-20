@@ -95,10 +95,22 @@ def list_attachments(
                 db.add(att)
                 db.commit()
 
-    atts = db.query(Attachment).filter(Attachment.user_id == current_user.id).order_by(Attachment.id.asc()).all()
+    # Deduplicate: ensure only 1 record per unique file exists for this user
+    seen_filenames = set()
+    unique_atts = []
+    all_user_atts = db.query(Attachment).filter(Attachment.user_id == current_user.id).order_by(Attachment.id.asc()).all()
+    for a in all_user_atts:
+        fname = a.filename or a.original_name
+        if fname in seen_filenames:
+            db.delete(a)
+        else:
+            seen_filenames.add(fname)
+            unique_atts.append(a)
+    db.commit()
+
     return [
         {"id": a.id, "original_name": a.original_name, "file_size": a.file_size, "created_at": str(a.created_at)}
-        for a in atts
+        for a in unique_atts
     ]
 
 @router.delete("/{attachment_id}")

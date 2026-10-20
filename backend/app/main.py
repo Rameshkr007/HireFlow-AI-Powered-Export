@@ -342,9 +342,9 @@ async def test_tradewind():
 @app.get("/api/build-info")
 def build_info():
     return {
-        "version": "1.1.2",
+        "version": "1.1.3",
         "brevo_safe": True,
         "master_records_count": 502,
         "attachments": ["OM_Enterprise_Halloween_Special_Offer_Poster.jpg", "OM_Enterprise_Halloween_Special_Offer_Badge.jpg"],
-        "updated": "2026-10-20T15:25:00Z"
+        "updated": "2026-10-20T15:35:00Z"
     }

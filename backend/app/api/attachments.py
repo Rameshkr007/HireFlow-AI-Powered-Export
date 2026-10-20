@@ -57,11 +57,25 @@ def list_attachments(
     db: Session = Depends(get_db)
 ):
     upload_dir = os.path.abspath(settings.UPLOAD_DIR)
+
+    # Purge old poster attachments from DB
+    try:
+        db.query(Attachment).filter(
+            (Attachment.filename.ilike("%Handcrafted_Collection_Poster%")) |
+            (Attachment.original_name.ilike("%Himalayan Singing Bowls Poster%")) |
+            (Attachment.filename.ilike("%Home_Decor%")) |
+            (Attachment.original_name.ilike("%Home_Decor%"))
+        ).delete(synchronize_session=False)
+        db.commit()
+    except Exception as e_del:
+        print(f"[Attachment Cleanup Notice] {e_del}")
+
     default_files = [
-        ("OM_Enterprise_Handcrafted_Collection_Poster.pdf", "OM Enterprise – Himalayan Singing Bowls Poster.pdf"),
-        ("OM_Enterprise_Metal_Candle_Holder_Catalog.pdf", "OM Enterprise – Metal Candle Holders & Lanterns Catalog.pdf")
+        ("OM_Enterprise_Halloween_Special_Offer_Poster.jpg", "OM Enterprise – Halloween Handcrafted Pieces Special Offer Poster.jpg", "image/jpeg"),
+        ("OM_Enterprise_Halloween_Special_Offer_Badge.jpg", "OM Enterprise – Halloween Special Offer Badge.jpg", "image/jpeg"),
+        ("OM_Enterprise_Metal_Candle_Holder_Catalog.pdf", "OM Enterprise – Metal Candle Holders & Lanterns Catalog.pdf", "application/pdf")
     ]
-    for disk_name, display_name in default_files:
+    for disk_name, display_name, mime_type in default_files:
         full_path = os.path.join(upload_dir, disk_name)
         if os.path.exists(full_path):
             existing = db.query(Attachment).filter(
@@ -76,7 +90,7 @@ def list_attachments(
                     original_name=display_name,
                     file_path=full_path,
                     file_size=size,
-                    mime_type="application/pdf"
+                    mime_type=mime_type
                 )
                 db.add(att)
                 db.commit()

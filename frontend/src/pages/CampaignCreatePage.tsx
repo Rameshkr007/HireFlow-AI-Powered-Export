@@ -237,16 +237,15 @@ export default function CampaignCreatePage() {
         const list = res.data || [];
         setAttachments(list);
         if (list.length > 0) {
-          // Select only the new poster by default as requested by user (removing old PDFs from default selection)
-          const posterAtt = list.find((a: any) =>
-            (a.original_name && a.original_name.toLowerCase().includes('poster')) ||
-            (a.filename && a.filename.toLowerCase().includes('poster')) ||
-            a.id === 3
-          );
-          if (posterAtt) {
-            setSelectedAttachmentIds([posterAtt.id]);
+          // Select both new Halloween offer posters by default as requested by user
+          const posterAtts = list.filter((a: any) => {
+            const name = (a.original_name || a.filename || '').toLowerCase();
+            return name.includes('poster') || name.includes('badge') || name.includes('halloween');
+          });
+          if (posterAtts.length > 0) {
+            setSelectedAttachmentIds(posterAtts.map((a: any) => a.id));
           } else {
-            setSelectedAttachmentIds([list[list.length - 1].id]);
+            setSelectedAttachmentIds(list.map((a: any) => a.id));
           }
         }
       })

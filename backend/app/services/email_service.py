@@ -198,8 +198,19 @@ def get_effective_smtp_config(db: Session, user_id: int) -> Optional[Dict[str, A
     return None
 
 DEFAULT_POSTER_PATH = os.path.abspath(
-    os.path.join(os.path.dirname(__file__), "../../../attachments/om_enterprise_home_decor_poster.jpg")
+    os.path.join(os.path.dirname(__file__), "../../../attachments/OM_Enterprise_Halloween_Special_Offer_Poster.jpg")
 )
+DEFAULT_POSTER_BADGE_PATH = os.path.abspath(
+    os.path.join(os.path.dirname(__file__), "../../../attachments/OM_Enterprise_Halloween_Special_Offer_Badge.jpg")
+)
+
+def get_default_poster_items():
+    items = []
+    if os.path.exists(DEFAULT_POSTER_PATH):
+        items.append({"path": DEFAULT_POSTER_PATH, "name": "OM_Enterprise_Halloween_Special_Offer_Poster.jpg"})
+    if os.path.exists(DEFAULT_POSTER_BADGE_PATH):
+        items.append({"path": DEFAULT_POSTER_BADGE_PATH, "name": "OM_Enterprise_Halloween_Special_Offer_Badge.jpg"})
+    return items
 
 def format_html_email(body_text: Optional[str], sender_name: Optional[str] = None, company_name: Optional[str] = None) -> str:
     """Converts plain text export pitch with linebreaks into clean, responsive HTML optimized for Primary Inbox deliverability."""
@@ -311,8 +322,8 @@ def send_via_brevo_http(
     items = list(attachment_list or [])
     if not items and attachment_path and os.path.exists(attachment_path):
         items = [{"path": attachment_path, "name": attachment_filename or os.path.basename(attachment_path)}]
-    elif not items and os.path.exists(DEFAULT_POSTER_PATH):
-        items = [{"path": DEFAULT_POSTER_PATH, "name": "OM_Enterprise_Home_Decor_Collection_Poster.jpg"}]
+    elif not items:
+        items = get_default_poster_items()
 
     if items:
         payload["attachment"] = []
@@ -386,8 +397,8 @@ def send_via_resend_http(
     items = list(attachment_list or [])
     if not items and attachment_path and os.path.exists(attachment_path):
         items = [{"path": attachment_path, "name": attachment_filename or os.path.basename(attachment_path)}]
-    elif not items and os.path.exists(DEFAULT_POSTER_PATH):
-        items = [{"path": DEFAULT_POSTER_PATH, "name": "OM_Enterprise_Home_Decor_Collection_Poster.jpg"}]
+    elif not items:
+        items = get_default_poster_items()
 
     if items:
         payload["attachments"] = []
@@ -470,8 +481,8 @@ def send_smtp_email(
         items = list(attachment_list or [])
         if not items and attachment_path and os.path.exists(attachment_path):
             items = [{"path": attachment_path, "name": attachment_filename or os.path.basename(attachment_path)}]
-        elif not items and os.path.exists(DEFAULT_POSTER_PATH):
-            items = [{"path": DEFAULT_POSTER_PATH, "name": "OM_Enterprise_Home_Decor_Collection_Poster.jpg"}]
+        elif not items:
+            items = get_default_poster_items()
 
         for item in items:
             p = item.get("path")
@@ -754,11 +765,8 @@ def send_real_email_for_campaign(
                     "name": att.original_name or os.path.basename(att.file_path)
                 })
 
-    if not attachment_list and os.path.exists(DEFAULT_POSTER_PATH):
-        attachment_list.append({
-            "path": DEFAULT_POSTER_PATH,
-            "name": "OM_Enterprise_Home_Decor_Collection_Poster.jpg"
-        })
+    if not attachment_list:
+        attachment_list = get_default_poster_items()
 
     first_path = attachment_list[0]["path"] if attachment_list else None
     first_name = attachment_list[0]["name"] if attachment_list else None

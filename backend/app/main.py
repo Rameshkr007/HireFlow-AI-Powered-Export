@@ -172,6 +172,47 @@ def startup():
         except Exception as e_init:
             print(f"[STARTUP] Brevo email initialization notice: {e_init}")
 
+        # Ensure new Halloween offer poster attachments and purge old ones
+        try:
+            from .models.attachment import Attachment
+            upload_dir = os.path.abspath(settings.UPLOAD_DIR)
+            # 1. Purge old posters
+            db.query(Attachment).filter(
+                (Attachment.filename.ilike("%Handcrafted_Collection_Poster%")) |
+                (Attachment.original_name.ilike("%Himalayan Singing Bowls Poster%")) |
+                (Attachment.filename.ilike("%Home_Decor%")) |
+                (Attachment.original_name.ilike("%Home_Decor%"))
+            ).delete(synchronize_session=False)
+            db.commit()
+
+            # 2. Add both new posters for each user
+            new_posters = [
+                ("OM_Enterprise_Halloween_Special_Offer_Poster.jpg", "OM Enterprise – Halloween Handcrafted Pieces Special Offer Poster.jpg", "image/jpeg"),
+                ("OM_Enterprise_Halloween_Special_Offer_Badge.jpg", "OM Enterprise – Halloween Special Offer Badge.jpg", "image/jpeg"),
+                ("OM_Enterprise_Metal_Candle_Holder_Catalog.pdf", "OM Enterprise – Metal Candle Holders & Lanterns Catalog.pdf", "application/pdf")
+            ]
+            all_users = db.query(User).all()
+            for u in all_users:
+                for disk_name, disp_name, mime_type in new_posters:
+                    fpath = os.path.join(upload_dir, disk_name)
+                    if os.path.exists(fpath):
+                        ext_att = db.query(Attachment).filter(
+                            Attachment.user_id == u.id,
+                            (Attachment.filename == disk_name) | (Attachment.original_name == disp_name)
+                        ).first()
+                        if not ext_att:
+                            db.add(Attachment(
+                                user_id=u.id,
+                                filename=disk_name,
+                                original_name=disp_name,
+                                file_path=fpath,
+                                file_size=os.path.getsize(fpath),
+                                mime_type=mime_type
+                            ))
+            db.commit()
+        except Exception as e_att:
+            print(f"[STARTUP] Poster attachment sync notice: {e_att}")
+
         db.close()
     except Exception as e:
         print(f"[STARTUP] User initialization notice: {e}")
@@ -301,8 +342,9 @@ async def test_tradewind():
 @app.get("/api/build-info")
 def build_info():
     return {
-        "version": "1.1.1",
+        "version": "1.1.2",
         "brevo_safe": True,
         "master_records_count": 502,
-        "updated": "2026-10-20T14:35:00Z"
+        "attachments": ["OM_Enterprise_Halloween_Special_Offer_Poster.jpg", "OM_Enterprise_Halloween_Special_Offer_Badge.jpg"],
+        "updated": "2026-10-20T15:25:00Z"
     }

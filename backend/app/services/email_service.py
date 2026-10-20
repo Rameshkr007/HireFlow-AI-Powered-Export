@@ -198,18 +198,18 @@ def get_effective_smtp_config(db: Session, user_id: int) -> Optional[Dict[str, A
     return None
 
 DEFAULT_POSTER_PATH = os.path.abspath(
-    os.path.join(os.path.dirname(__file__), "../../../attachments/OM_Enterprise_Halloween_Special_Offer_Poster.jpg")
+    os.path.join(os.path.dirname(__file__), "../../../attachments/OM_Enterprise_Handcrafted_Pieces_Poster.jpg")
 )
 DEFAULT_POSTER_BADGE_PATH = os.path.abspath(
-    os.path.join(os.path.dirname(__file__), "../../../attachments/OM_Enterprise_Halloween_Special_Offer_Badge.jpg")
+    os.path.join(os.path.dirname(__file__), "../../../attachments/OM_Enterprise_Special_Offer_Badge.jpg")
 )
 
 def get_default_poster_items():
     items = []
     if os.path.exists(DEFAULT_POSTER_PATH):
-        items.append({"path": DEFAULT_POSTER_PATH, "name": "OM_Enterprise_Halloween_Special_Offer_Poster.jpg"})
+        items.append({"path": DEFAULT_POSTER_PATH, "name": "OM_Enterprise_Handcrafted_Pieces_Poster.jpg"})
     if os.path.exists(DEFAULT_POSTER_BADGE_PATH):
-        items.append({"path": DEFAULT_POSTER_BADGE_PATH, "name": "OM_Enterprise_Halloween_Special_Offer_Badge.jpg"})
+        items.append({"path": DEFAULT_POSTER_BADGE_PATH, "name": "OM_Enterprise_Special_Offer_Badge.jpg"})
     return items
 
 def format_html_email(body_text: Optional[str], sender_name: Optional[str] = None, company_name: Optional[str] = None) -> str:

@@ -176,7 +176,7 @@ def startup():
         except Exception as e_init:
             print(f"[STARTUP] Brevo email initialization notice: {e_init}")
 
-        # Ensure new Halloween offer poster attachments and purge old ones
+        # Ensure new poster attachments and purge old ones
         try:
             from .models.attachment import Attachment
             upload_dir = os.path.abspath(settings.UPLOAD_DIR)
@@ -185,14 +185,16 @@ def startup():
                 (Attachment.filename.ilike("%Handcrafted_Collection_Poster%")) |
                 (Attachment.original_name.ilike("%Himalayan Singing Bowls Poster%")) |
                 (Attachment.filename.ilike("%Home_Decor%")) |
-                (Attachment.original_name.ilike("%Home_Decor%"))
+                (Attachment.original_name.ilike("%Home_Decor%")) |
+                (Attachment.filename.ilike("%Halloween%")) |
+                (Attachment.original_name.ilike("%Halloween%"))
             ).delete(synchronize_session=False)
             db.commit()
 
             # 2. Add both new posters for each user
             new_posters = [
-                ("OM_Enterprise_Halloween_Special_Offer_Poster.jpg", "OM Enterprise – Halloween Handcrafted Pieces Special Offer Poster.jpg", "image/jpeg"),
-                ("OM_Enterprise_Halloween_Special_Offer_Badge.jpg", "OM Enterprise – Halloween Special Offer Badge.jpg", "image/jpeg"),
+                ("OM_Enterprise_Handcrafted_Pieces_Poster.jpg", "OM Enterprise – Handcrafted Beautiful Pieces Poster.jpg", "image/jpeg"),
+                ("OM_Enterprise_Special_Offer_Badge.jpg", "OM Enterprise – Special Offer Badge.jpg", "image/jpeg"),
                 ("OM_Enterprise_Metal_Candle_Holder_Catalog.pdf", "OM Enterprise – Metal Candle Holders & Lanterns Catalog.pdf", "application/pdf")
             ]
             all_users = db.query(User).all()
@@ -346,7 +348,7 @@ async def test_tradewind():
 @app.get("/api/build-info")
 def build_info():
     return {
-        "version": "1.2.0",
+        "version": "1.2.1",
         "brevo_safe": True,
         "master_records_count": 571,
         "attachments": ["OM_Enterprise_Halloween_Special_Offer_Poster.jpg", "OM_Enterprise_Halloween_Special_Offer_Badge.jpg"],

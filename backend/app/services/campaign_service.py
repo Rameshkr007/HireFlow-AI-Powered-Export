@@ -78,13 +78,13 @@ def ensure_campaign_8(db: Session, user_id: int):
                 Campaign.name.ilike("%California Statewide Halloween Special%")
             )
         ).first()
+    from ..models.attachment import Attachment
+    att = db.query(Attachment).filter(
+        (Attachment.filename.ilike("%Handcrafted_Pieces_Poster%")) |
+        (Attachment.original_name.ilike("%Handcrafted%Poster%"))
+    ).first() or db.query(Attachment).first()
+    valid_att_id = att.id if att else None
     if not c8:
-        from ..models.attachment import Attachment
-        att = db.query(Attachment).filter(
-            (Attachment.filename.ilike("%Halloween_Special_Offer_Poster%")) |
-            (Attachment.original_name.ilike("%Halloween%"))
-        ).first()
-        valid_att_id = att.id if att else None
         c8 = Campaign(
             id=8,
             user_id=user_id or 2,
@@ -239,6 +239,13 @@ OM Enterprise | WhatsApp: +91 80577 10065"""
         }
     ]
 
+    from ..models.attachment import Attachment
+    att = db.query(Attachment).filter(
+        (Attachment.filename.ilike("%Handcrafted_Pieces_Poster%")) |
+        (Attachment.original_name.ilike("%Handcrafted%Poster%"))
+    ).first() or db.query(Attachment).first()
+    valid_att_id = att.id if att else None
+
     if not c9:
         c9 = Campaign(
             id=9,
@@ -252,7 +259,7 @@ OM Enterprise | WhatsApp: +91 80577 10065"""
             sequence_steps=seq_steps,
             sending_limit=35,
             delay_seconds=30,
-            attachment_id=None,
+            attachment_id=valid_att_id,
             status="COMPLETED",
             sent_count=35,
             failed_count=0,
@@ -273,7 +280,8 @@ OM Enterprise | WhatsApp: +91 80577 10065"""
         c9.total_leads = 35
         c9.status = "COMPLETED"
         c9.sequence_steps = seq_steps
-        c9.started_at = datetime.fromisoformat("2026-10-20T17:40:00+00:00")
+        c9.attachment_id = valid_att_id
+        c9.started_at = datetime.fromisoformat("2026-10-20T17:40:00+00:00"),
         c9.completed_at = datetime.fromisoformat("2026-10-20T17:55:00+00:00")
         try:
             db.commit()

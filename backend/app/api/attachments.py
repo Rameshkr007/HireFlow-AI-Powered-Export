@@ -64,15 +64,17 @@ def list_attachments(
             (Attachment.filename.ilike("%Handcrafted_Collection_Poster%")) |
             (Attachment.original_name.ilike("%Himalayan Singing Bowls Poster%")) |
             (Attachment.filename.ilike("%Home_Decor%")) |
-            (Attachment.original_name.ilike("%Home_Decor%"))
+            (Attachment.original_name.ilike("%Home_Decor%")) |
+            (Attachment.filename.ilike("%Halloween%")) |
+            (Attachment.original_name.ilike("%Halloween%"))
         ).delete(synchronize_session=False)
         db.commit()
     except Exception as e_del:
         print(f"[Attachment Cleanup Notice] {e_del}")
 
     default_files = [
-        ("OM_Enterprise_Halloween_Special_Offer_Poster.jpg", "OM Enterprise – Halloween Handcrafted Pieces Special Offer Poster.jpg", "image/jpeg"),
-        ("OM_Enterprise_Halloween_Special_Offer_Badge.jpg", "OM Enterprise – Halloween Special Offer Badge.jpg", "image/jpeg"),
+        ("OM_Enterprise_Handcrafted_Pieces_Poster.jpg", "OM Enterprise – Handcrafted Beautiful Pieces Poster.jpg", "image/jpeg"),
+        ("OM_Enterprise_Special_Offer_Badge.jpg", "OM Enterprise – Special Offer Badge.jpg", "image/jpeg"),
         ("OM_Enterprise_Metal_Candle_Holder_Catalog.pdf", "OM Enterprise – Metal Candle Holders & Lanterns Catalog.pdf", "application/pdf")
     ]
     for disk_name, display_name, mime_type in default_files:

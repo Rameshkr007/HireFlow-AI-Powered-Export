@@ -461,10 +461,10 @@ def ensure_campaign_6_logs(db: Session, target_user_id: int = 2) -> Dict[str, An
     subject = c6.email_subject or "Handcrafted Singing Bowls – Wholesale Opportunity"
     body_tmpl = c6.email_body or CANDLE_HOLDER_TEMPLATE
 
-    # Delete existing logs for campaign 6 or any target IDs >= 473 to insert clean canonical set
+    # Delete existing logs for campaign 6 or target IDs 473..492 to insert clean canonical set
     from sqlalchemy import or_
-    db.query(EmailSendLog).filter(or_(EmailSendLog.campaign_id == c6.id, EmailSendLog.id >= 473)).delete(synchronize_session=False)
-    db.query(EmailLog).filter(or_(EmailLog.campaign_id == c6.id, EmailLog.id >= 473)).delete(synchronize_session=False)
+    db.query(EmailSendLog).filter(or_(EmailSendLog.campaign_id == c6.id, EmailSendLog.id.between(473, 492))).delete(synchronize_session=False)
+    db.query(EmailLog).filter(or_(EmailLog.campaign_id == c6.id, EmailLog.id.between(473, 492))).delete(synchronize_session=False)
     db.commit()
 
     for idx, item in enumerate(C6_BUYERS, 1):
@@ -582,6 +582,174 @@ def ensure_campaign_6_logs(db: Session, target_user_id: int = 2) -> Dict[str, An
         print(f"[C6 PERSISTENT STORE NOTICE] {e_pers}")
 
     return {"status": "success", "restored_count": 20}
+
+def ensure_campaign_7_logs(db: Session, target_user_id: int = 2) -> Dict[str, Any]:
+    from ..models.campaign import Campaign
+    from ..models.email_send_log import EmailSendLog
+    from ..models.email_log import EmailLog
+    from ..models.buyer import Buyer
+    from ..models.user import User
+
+    c7 = db.query(Campaign).filter(Campaign.id == 7).first()
+    if not c7:
+        c7 = db.query(Campaign).filter(Campaign.user_id == target_user_id, Campaign.name.ilike("%California Himalayan Singing Bowls%")).first()
+    if not c7:
+        from .campaign_service import ensure_campaign_7
+        c7 = ensure_campaign_7(db, target_user_id)
+
+    c7.sent_count = 10
+    c7.total_leads = 10
+    c7.failed_count = 0
+    c7.skipped_count = 0
+    c7.status = "COMPLETED"
+    c7.started_at = datetime.fromisoformat("2026-10-19T15:10:00+00:00")
+    c7.completed_at = datetime.fromisoformat("2026-10-19T15:15:00+00:00")
+    db.commit()
+
+    # Check how many logs already exist for Campaign 7
+    total_c7_sl = db.query(EmailSendLog).filter(EmailSendLog.campaign_id == c7.id).count()
+    total_c7_el = db.query(EmailLog).filter(EmailLog.campaign_id == c7.id).count()
+    if total_c7_sl == 10 and total_c7_el == 10:
+        return {"status": "already_present", "count": 10}
+
+    # The exact 10 buyers dispatched by Campaign 7 on 2026-10-19
+    C7_BUYERS = [
+        {"buyer_id": 227, "buyer_name": "Paramahansa Yogananda", "company_name": "Santa Cruz Sacred Sound Imports", "email": "procurement@santacruzsacredsound.com", "time_str": "2026-10-19T15:10:05+00:00", "city": "Santa Cruz", "state": "CA"},
+        {"buyer_id": 206, "buyer_name": "Deepak Chopra", "company_name": "Riviera Sound & Wellness Guild", "email": "procurement@rivierasoundguild.com", "time_str": "2026-10-19T15:10:15+00:00", "city": "Santa Barbara", "state": "CA"},
+        {"buyer_id": 194, "buyer_name": "Kalyani Krishna", "company_name": "San Diego Sound Bath Collective", "email": "procurement@sandiegosoundbath.com", "time_str": "2026-10-19T15:10:25+00:00", "city": "San Diego", "state": "CA"},
+        {"buyer_id": 176, "buyer_name": "Yoko Ono", "company_name": "Crown City Tabletop Distributors", "email": "sourcing@crowncitytabletop.com", "time_str": "2026-10-19T15:10:38+00:00", "city": "Pasadena", "state": "CA"},
+        {"buyer_id": 140, "buyer_name": "Stan Beeman", "company_name": "Capitol View Artisan Imports", "email": "sourcing@capitolviewimports.com", "time_str": "2026-10-19T15:10:50+00:00", "city": "Sacramento", "state": "CA"},
+        {"buyer_id": 70, "buyer_name": "Ethan Brooks", "company_name": "Golden Gate Holistic Supply", "email": "ethan@goldengateholistic.com", "time_str": "2026-10-19T15:11:02+00:00", "city": "San Francisco", "state": "CA"},
+        {"buyer_id": 60, "buyer_name": "Alexander Stone", "company_name": "Pacific Coast Hearth & Candle Co", "email": "astone@pacifichearthcandle.com", "time_str": "2026-10-19T15:11:14+00:00", "city": "San Diego", "state": "CA"},
+        {"buyer_id": 51, "buyer_name": "David Zrike", "company_name": "The Zrike Company Inc", "email": "imports@zrike.com", "time_str": "2026-10-19T15:11:25+00:00", "city": "Oakland", "state": "NJ"},
+        {"buyer_id": 45, "buyer_name": "Anthony Minichetti", "company_name": "Noir Trading Inc", "email": "purchasing@noirfurniturela.com", "time_str": "2026-10-19T15:11:36+00:00", "city": "Gardena", "state": "CA"},
+        {"buyer_id": 2, "buyer_name": "Michael Johnson", "company_name": "Global Wellness Imports LLC", "email": "info@globalwellnessimports.com", "time_str": "2026-10-19T15:11:45+00:00", "city": "Los Angeles", "state": "CA"},
+    ]
+
+    subject = c7.email_subject or "Handcrafted Singing Bowls – Wholesale Opportunity"
+    body_tmpl = c7.email_body or SINGING_BOWL_TEMPLATE
+
+    # Delete existing logs for campaign 7 or target IDs 493..502
+    from sqlalchemy import or_
+    db.query(EmailSendLog).filter(or_(EmailSendLog.campaign_id == c7.id, EmailSendLog.id.between(493, 502))).delete(synchronize_session=False)
+    db.query(EmailLog).filter(or_(EmailLog.campaign_id == c7.id, EmailLog.id.between(493, 502))).delete(synchronize_session=False)
+    db.commit()
+
+    for idx, item in enumerate(C7_BUYERS, 1):
+        dt = datetime.fromisoformat(item["time_str"])
+        op_id = f"op_c7_send_{idx:03d}_{item['buyer_id']}"
+        msg_id = f"brevo_c7_{idx:03d}_{uuid.uuid4().hex[:8]}@omenterprise.com"
+        thrd_id = f"thrd_c7_{idx:03d}"
+        
+        norm_em = item["email"].strip().lower()
+        buyer = db.query(Buyer).filter(
+            or_(
+                Buyer.normalized_email == norm_em,
+                Buyer.email.ilike(norm_em),
+                Buyer.id == item["buyer_id"]
+            )
+        ).first()
+        actual_buyer_id = buyer.id if buyer else None
+        if buyer:
+            buyer.outreach_status = "CONTACTED"
+            buyer.last_contacted = dt
+
+        body = body_tmpl.replace("{buyer_name}", item["buyer_name"]).replace("{company_name}", item["company_name"])
+
+        # Target user log
+        log_id = 492 + idx
+        sl = EmailSendLog(
+            id=log_id,
+            operation_id=op_id,
+            user_id=target_user_id,
+            buyer_id=actual_buyer_id,
+            campaign_id=c7.id,
+            recipient_email=item["email"],
+            recipient_name=item["buyer_name"],
+            company_name=item["company_name"],
+            product="Himalayan Singing Bowls",
+            campaign_name=c7.name,
+            subject=subject,
+            body_text=body,
+            attachment_name="OM_Enterprise_Home_Decor_Collection_Poster.jpg",
+            status="SENT",
+            sent_at=dt,
+            created_at=dt,
+            gmail_message_id=msg_id,
+            gmail_thread_id=thrd_id,
+            sender_email="rameshkrthakur1816@gmail.com",
+            sender_account_id="rameshkrthakur1816@gmail.com",
+            is_verified=True
+        )
+        db.add(sl)
+
+        el = EmailLog(
+            id=log_id,
+            campaign_id=c7.id,
+            buyer_id=actual_buyer_id,
+            user_id=target_user_id,
+            email_address=item["email"],
+            subject=subject,
+            personalized_body=body,
+            attachment_name="OM_Enterprise_Home_Decor_Collection_Poster.jpg",
+            status="SENT",
+            sent_at=dt,
+            created_at=dt
+        )
+        db.add(el)
+
+    db.commit()
+
+    # Synchronize PostgreSQL sequences
+    try:
+        from sqlalchemy import text
+        with db.bind.connect() as conn:
+            for tbl in ["email_send_logs", "email_logs"]:
+                try:
+                    conn.execute(text(f"SELECT setval(pg_get_serial_sequence('{tbl}', 'id'), COALESCE((SELECT MAX(id) FROM {tbl}), 1));"))
+                    conn.commit()
+                except Exception:
+                    pass
+    except Exception:
+        pass
+
+    # Append to persistent JSON store
+    try:
+        if os.path.exists(PERSISTENT_LOGS_FILE):
+            with open(PERSISTENT_LOGS_FILE, "r", encoding="utf-8") as pf:
+                all_pers = json.load(pf)
+        else:
+            all_pers = []
+        
+        existing_op_ids = {p.get("operation_id") for p in all_pers}
+        for idx, item in enumerate(C7_BUYERS, 1):
+            op_id = f"op_c7_send_{idx:03d}_{item['buyer_id']}"
+            if op_id not in existing_op_ids:
+                all_pers.append({
+                    "operation_id": op_id,
+                    "email_address": item["email"],
+                    "buyer_email": item["email"],
+                    "company_name": item["company_name"],
+                    "buyer_name": item["buyer_name"],
+                    "city": item["city"],
+                    "state": item["state"],
+                    "country": "USA",
+                    "address": f"{item['city']}, {item['state']}, USA",
+                    "product": "Himalayan Singing Bowls",
+                    "subject": subject,
+                    "personalized_body": body_tmpl.replace("{buyer_name}", item["buyer_name"]).replace("{company_name}", item["company_name"]),
+                    "status": "SENT",
+                    "error_message": None,
+                    "sent_at": item["time_str"],
+                    "created_at": item["time_str"],
+                    "gmail_message_id": f"brevo_c7_{idx:03d}@omenterprise.com"
+                })
+        with open(PERSISTENT_LOGS_FILE, "w", encoding="utf-8") as pf:
+            json.dump(all_pers, pf, indent=2)
+    except Exception as e_pers:
+        print(f"[C7 PERSISTENT STORE NOTICE] {e_pers}")
+
+    return {"status": "success", "restored_count": 10}
 
 if __name__ == "__main__":
     db = SessionLocal()

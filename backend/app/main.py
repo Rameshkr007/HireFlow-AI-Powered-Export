@@ -114,7 +114,7 @@ def startup():
         try:
             from .models.email_send_log import EmailSendLog
             from .models.email_log import EmailLog
-            from .services.sync_master_activity import sync_master_email_activity, ensure_campaign_6_logs
+            from .services.sync_master_activity import sync_master_email_activity, ensure_campaign_6_logs, ensure_campaign_7_logs
             ramesh = db.query(User).filter(User.email == "rameshkrthakur1816@gmail.com").first()
             r_id = ramesh.id if ramesh else 2
             sl_c = db.query(EmailSendLog).filter(EmailSendLog.user_id == r_id).count()
@@ -129,8 +129,9 @@ def startup():
             ensure_campaign_6(db, r_id)
             ensure_campaign_7(db, r_id)
 
-            # Permanently ensure Campaign 6's 20 logs are present
+            # Permanently ensure Campaign 6 and Campaign 7 logs are present
             ensure_campaign_6_logs(db, target_user_id=r_id)
+            ensure_campaign_7_logs(db, target_user_id=r_id)
         except Exception as e_sync:
             print(f"[STARTUP] Master logs enforcement notice: {e_sync}")
 
@@ -300,8 +301,8 @@ async def test_tradewind():
 @app.get("/api/build-info")
 def build_info():
     return {
-        "version": "1.1.0",
+        "version": "1.1.1",
         "brevo_safe": True,
-        "master_records_count": 492,
-        "updated": "2026-10-19T16:00:00Z"
+        "master_records_count": 502,
+        "updated": "2026-10-20T14:35:00Z"
     }

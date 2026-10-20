@@ -141,6 +141,10 @@ def get_campaign_logs(campaign_id: int, current_user: User = Depends(get_current
         from ..services.sync_master_activity import ensure_campaign_7_logs
         campaign_service.ensure_campaign_7(db, current_user.id)
         ensure_campaign_7_logs(db, current_user.id)
+    elif campaign_id == 8:
+        from ..services.sync_master_activity import ensure_campaign_8_logs
+        campaign_service.ensure_campaign_8(db, current_user.id)
+        ensure_campaign_8_logs(db, current_user.id)
     try:
         campaign_service.get_campaign(db, current_user.id, campaign_id)
     except Exception:

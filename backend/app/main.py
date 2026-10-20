@@ -114,7 +114,7 @@ def startup():
         try:
             from .models.email_send_log import EmailSendLog
             from .models.email_log import EmailLog
-            from .services.sync_master_activity import sync_master_email_activity, ensure_campaign_6_logs, ensure_campaign_7_logs
+            from .services.sync_master_activity import sync_master_email_activity, ensure_campaign_6_logs, ensure_campaign_7_logs, ensure_campaign_8_logs
             ramesh = db.query(User).filter(User.email == "rameshkrthakur1816@gmail.com").first()
             r_id = ramesh.id if ramesh else 2
             sl_c = db.query(EmailSendLog).filter(EmailSendLog.user_id == r_id).count()
@@ -124,14 +124,16 @@ def startup():
                 sync_master_email_activity(db, target_user_id=r_id, force_clean=False)
                 print("[STARTUP] Master email logs baseline verified.")
             
-            # Guarantee Campaign 6 and Campaign 7 exist
-            from .services.campaign_service import ensure_campaign_6, ensure_campaign_7
+            # Guarantee Campaign 6, Campaign 7, and Campaign 8 exist
+            from .services.campaign_service import ensure_campaign_6, ensure_campaign_7, ensure_campaign_8
             ensure_campaign_6(db, r_id)
             ensure_campaign_7(db, r_id)
+            ensure_campaign_8(db, r_id)
 
-            # Permanently ensure Campaign 6 and Campaign 7 logs are present
+            # Permanently ensure Campaign 6, Campaign 7, and Campaign 8 logs are present
             ensure_campaign_6_logs(db, target_user_id=r_id)
             ensure_campaign_7_logs(db, target_user_id=r_id)
+            ensure_campaign_8_logs(db, target_user_id=r_id)
         except Exception as e_sync:
             print(f"[STARTUP] Master logs enforcement notice: {e_sync}")
 
@@ -342,9 +344,9 @@ async def test_tradewind():
 @app.get("/api/build-info")
 def build_info():
     return {
-        "version": "1.1.3",
+        "version": "1.1.4",
         "brevo_safe": True,
-        "master_records_count": 502,
+        "master_records_count": 536,
         "attachments": ["OM_Enterprise_Halloween_Special_Offer_Poster.jpg", "OM_Enterprise_Halloween_Special_Offer_Badge.jpg"],
-        "updated": "2026-10-20T15:35:00Z"
+        "updated": "2026-10-20T17:30:00Z"
     }

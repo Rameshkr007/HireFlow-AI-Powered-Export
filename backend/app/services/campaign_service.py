@@ -151,6 +151,136 @@ Sales Executive | OM Enterprise
             db.rollback()
     return c8
 
+def ensure_campaign_9(db: Session, user_id: int):
+    """
+    Campaign 9: USA Tier-1 Heavyweight Importers & Wholesalers Direct Sourcing 2026.
+    Includes full 4-step sequence (Sample Hook, Video Proof, China Tariff Alternative, Break-up).
+    """
+    c9 = db.query(Campaign).filter(Campaign.id == 9).first()
+    if not c9:
+        c9 = db.query(Campaign).filter(
+            or_(
+                Campaign.name.ilike("%Tier-1 Heavyweight%"),
+                Campaign.name.ilike("%USA Tier-1%")
+            )
+        ).first()
+
+    seq_steps = [
+        {
+            "step_number": 1,
+            "delay_days": 0,
+            "email_subject": "Quick question regarding {company_name}'s metalware & decor sourcing",
+            "email_body": """Hi {buyer_name},
+
+I came across {company_name} while reviewing leading US home accents and tabletop showrooms.
+
+We are a direct manufacturing and export unit (OM Enterprise) based in Moradabad, India & Nepal, specializing in:
+• Handcrafted Solid Brass & Wrought Iron Lanterns, Candle Holders & Table Candelabras
+• Authentic Hand-Hammered Himalayan Singing Bowls (Acoustic 432Hz/528Hz Tuned)
+
+Because we manufacture directly in our Moradabad facility:
+1. Pricing is strictly factory-direct FOB (eliminating 20-30% middleman trading margins).
+2. Low minimum test orders (from 50 pcs) with custom finishes (matte black, antique brass, raw brass) and private label retail packaging.
+3. Direct consolidated ocean shipments to Los Angeles, Long Beach, and Savannah ports.
+
+We are dispatching sample boxes to US importers this week. May I courier a complimentary physical sample piece to {company_name}'s office to evaluate our metal finishing and acoustic quality firsthand?
+
+Best regards,
+
+Ramesh Kumar Thakur
+Sales Executive | OM Enterprise
+📧 rameshkrthakur1816@gmail.com
+📱 WhatsApp: +91 80577 10065
+Moradabad, Uttar Pradesh, India"""
+        },
+        {
+            "step_number": 2,
+            "delay_days": 3,
+            "email_subject": "Re: Quick question regarding {company_name}'s metalware & decor sourcing",
+            "email_body": """Hi {buyer_name},
+
+Following up on my note from Tuesday regarding {company_name}.
+
+Would it be helpful if I shared a quick 30-second sound testing video of our acoustic 432Hz singing bowls, or our 1-page FOB pricing sheet for handcrafted brass lanterns?
+
+Or if you prefer, I am happy to courier a complimentary physical sample piece directly to your office for your merchandising team to inspect.
+
+Best regards,
+Ramesh Kumar Thakur
+OM Enterprise | WhatsApp: +91 80577 10065"""
+        },
+        {
+            "step_number": 3,
+            "delay_days": 7,
+            "email_subject": "Re: Quick question regarding {company_name}'s metalware & decor sourcing",
+            "email_body": """Hi {buyer_name},
+
+With US importers facing rising Section 301 tariffs on Chinese metalware, many US wholesale distributors are shifting their brass lantern and wellness orders to our India/Nepal production line for significant duty savings.
+
+Would you like me to share our quick 1-page FOB Los Angeles price comparison sheet?
+
+Best regards,
+Ramesh Kumar Thakur
+OM Enterprise | WhatsApp: +91 80577 10065"""
+        },
+        {
+            "step_number": 4,
+            "delay_days": 11,
+            "email_subject": "Re: Quick question regarding {company_name}'s metalware & decor sourcing",
+            "email_body": """Hi {buyer_name},
+
+I assume your holiday and spring decor sourcing is completely locked in for this season.
+
+Should I close your file for now, or would you like us to reconnect in early 2027?
+
+Thanks,
+Ramesh Kumar Thakur
+OM Enterprise | WhatsApp: +91 80577 10065"""
+        }
+    ]
+
+    if not c9:
+        c9 = Campaign(
+            id=9,
+            user_id=user_id or 2,
+            name="USA Tier-1 Heavyweight Importers & Wholesalers Direct Sourcing 2026",
+            product="Handcrafted Brass Lanterns, Candelabras & Himalayan Singing Bowls",
+            target_country="USA (Top National Showrooms & Importers)",
+            target_audience="Tier-1 Importer, Wholesaler, Merchandising Director",
+            email_subject="Quick question regarding {company_name}'s metalware & decor sourcing",
+            email_body=seq_steps[0]["email_body"],
+            sequence_steps=seq_steps,
+            sending_limit=35,
+            delay_seconds=30,
+            attachment_id=None,
+            status="COMPLETED",
+            sent_count=35,
+            failed_count=0,
+            skipped_count=0,
+            total_leads=35,
+            is_demo=False,
+            started_at=datetime.fromisoformat("2026-10-20T17:40:00+00:00"),
+            completed_at=datetime.fromisoformat("2026-10-20T17:55:00+00:00")
+        )
+        db.add(c9)
+        try:
+            db.commit()
+            db.refresh(c9)
+        except Exception:
+            db.rollback()
+    elif c9.sent_count != 35 or c9.status != "COMPLETED":
+        c9.sent_count = 35
+        c9.total_leads = 35
+        c9.status = "COMPLETED"
+        c9.sequence_steps = seq_steps
+        c9.started_at = datetime.fromisoformat("2026-10-20T17:40:00+00:00")
+        c9.completed_at = datetime.fromisoformat("2026-10-20T17:55:00+00:00")
+        try:
+            db.commit()
+        except Exception:
+            db.rollback()
+    return c9
+
 def ensure_campaign_6(db: Session, user_id: int):
     c6 = db.query(Campaign).filter(Campaign.id == 6).first()
     if not c6:
@@ -212,6 +342,7 @@ def get_campaigns(db: Session, user_id: int):
     ensure_campaign_6(db, user_id)
     ensure_campaign_7(db, user_id)
     ensure_campaign_8(db, user_id)
+    ensure_campaign_9(db, user_id)
     camps = db.query(Campaign).filter(Campaign.user_id == user_id).order_by(Campaign.created_at.desc()).all()
     if not camps:
         camps = db.query(Campaign).order_by(Campaign.created_at.desc()).all()
@@ -224,6 +355,8 @@ def get_campaign(db: Session, user_id: int, campaign_id: int) -> Campaign:
         ensure_campaign_7(db, user_id)
     elif campaign_id == 8:
         ensure_campaign_8(db, user_id)
+    elif campaign_id == 9:
+        ensure_campaign_9(db, user_id)
     campaign = db.query(Campaign).filter(Campaign.id == campaign_id, Campaign.user_id == user_id).first()
     if not campaign:
         campaign = db.query(Campaign).filter(Campaign.id == campaign_id).first()

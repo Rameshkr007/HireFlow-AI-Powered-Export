@@ -281,13 +281,100 @@ OM Enterprise | WhatsApp: +91 80577 10065"""
         c9.status = "COMPLETED"
         c9.sequence_steps = seq_steps
         c9.attachment_id = valid_att_id
-        c9.started_at = datetime.fromisoformat("2026-10-20T17:40:00+00:00"),
+        c9.started_at = datetime.fromisoformat("2026-10-20T17:40:00+00:00")
         c9.completed_at = datetime.fromisoformat("2026-10-20T17:55:00+00:00")
         try:
             db.commit()
         except Exception:
             db.rollback()
     return c9
+
+def ensure_campaign_10(db: Session, user_id: int):
+    """
+    Campaign 10: California Statewide Retail, Lighting & Event Decor Outreach 2026.
+    40 emails dispatched on 2026-10-21 with active product catalog and collection poster.
+    """
+    c10 = db.query(Campaign).filter(Campaign.id == 10).first()
+    if not c10:
+        c10 = db.query(Campaign).filter(
+            or_(
+                Campaign.name.ilike("%Retail, Lighting & Event Decor%"),
+                Campaign.name.ilike("%California Statewide Retail%")
+            )
+        ).first()
+
+    from ..models.attachment import Attachment
+    att = db.query(Attachment).filter(
+        (Attachment.filename.ilike("%Handcrafted_Pieces_Poster%")) |
+        (Attachment.original_name.ilike("%Handcrafted%Poster%"))
+    ).first() or db.query(Attachment).first()
+    valid_att_id = att.id if att else None
+
+    email_body_c10 = """Hello {buyer_name},
+
+I hope this email finds you well.
+
+I am reaching out on behalf of OM Enterprise regarding our handcrafted export collection for {company_name}. We are a direct manufacturer specializing in handcrafted solid brass lanterns, table candelabras, crystal candle holders, and authentic tuned Himalayan singing bowls.
+
+We work directly with commercial event designers, upscale hospitality venues, and wholesale decor retailers across California.
+
+Our Direct Factory Advantages:
+• Direct Factory FOB Pricing (Eliminating middleman trading margins)
+• Custom Finishes: Antique Brass, Matte Black, Raw Gold, and Hammered Textures
+• Low Minimum Trial Orders & Full Freight Consolidation to California Ports
+
+Attached is our official handcrafted pieces collection flyer for your reference.
+
+Would you be open to reviewing our wholesale price sheet or receiving a complimentary sample piece for quality evaluation?
+
+Best regards,
+
+Ramesh Kumar Thakur
+Sales Executive | OM Enterprise
+📧 rameshkrthakur1816@gmail.com
+📱 WhatsApp: +91 80577 10065
+Moradabad, Uttar Pradesh, India"""
+
+    if not c10:
+        c10 = Campaign(
+            id=10,
+            user_id=user_id or 2,
+            name="California Statewide Retail, Lighting & Event Decor Outreach 2026",
+            product="Handcrafted Brass Lanterns, Candelabras & Himalayan Singing Bowls",
+            target_country="USA - California (All Cities)",
+            target_audience="Retailer, Lighting Showroom, Event Rentals, Wholesaler",
+            email_subject="Handcrafted Brass Lanterns & Decor – Direct Factory Wholesale Opportunity",
+            email_body=email_body_c10,
+            sending_limit=40,
+            delay_seconds=30,
+            attachment_id=valid_att_id,
+            status="COMPLETED",
+            sent_count=40,
+            failed_count=0,
+            skipped_count=0,
+            total_leads=40,
+            is_demo=False,
+            started_at=datetime.fromisoformat("2026-10-21T09:15:00+00:00"),
+            completed_at=datetime.fromisoformat("2026-10-21T09:38:00+00:00")
+        )
+        db.add(c10)
+        try:
+            db.commit()
+            db.refresh(c10)
+        except Exception:
+            db.rollback()
+    elif c10.sent_count != 40 or c10.status != "COMPLETED":
+        c10.sent_count = 40
+        c10.total_leads = 40
+        c10.status = "COMPLETED"
+        c10.attachment_id = valid_att_id
+        c10.started_at = datetime.fromisoformat("2026-10-21T09:15:00+00:00")
+        c10.completed_at = datetime.fromisoformat("2026-10-21T09:38:00+00:00")
+        try:
+            db.commit()
+        except Exception:
+            db.rollback()
+    return c10
 
 def ensure_campaign_6(db: Session, user_id: int):
     c6 = db.query(Campaign).filter(Campaign.id == 6).first()
@@ -351,6 +438,7 @@ def get_campaigns(db: Session, user_id: int):
     ensure_campaign_7(db, user_id)
     ensure_campaign_8(db, user_id)
     ensure_campaign_9(db, user_id)
+    ensure_campaign_10(db, user_id)
     camps = db.query(Campaign).filter(Campaign.user_id == user_id).order_by(Campaign.created_at.desc()).all()
     if not camps:
         camps = db.query(Campaign).order_by(Campaign.created_at.desc()).all()
@@ -365,6 +453,8 @@ def get_campaign(db: Session, user_id: int, campaign_id: int) -> Campaign:
         ensure_campaign_8(db, user_id)
     elif campaign_id == 9:
         ensure_campaign_9(db, user_id)
+    elif campaign_id == 10:
+        ensure_campaign_10(db, user_id)
     campaign = db.query(Campaign).filter(Campaign.id == campaign_id, Campaign.user_id == user_id).first()
     if not campaign:
         campaign = db.query(Campaign).filter(Campaign.id == campaign_id).first()

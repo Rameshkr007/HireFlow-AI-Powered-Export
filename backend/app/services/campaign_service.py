@@ -292,7 +292,7 @@ OM Enterprise | WhatsApp: +91 80577 10065"""
 def ensure_campaign_10(db: Session, user_id: int):
     """
     Campaign 10: California Statewide Retail, Lighting & Event Decor Outreach 2026.
-    40 emails dispatched on 2026-10-21 with active product catalog and collection poster.
+    50 emails dispatched on 2026-10-21 with active product catalog and collection poster.
     """
     c10 = db.query(Campaign).filter(Campaign.id == 10).first()
     if not c10:
@@ -345,17 +345,17 @@ Moradabad, Uttar Pradesh, India"""
             target_audience="Retailer, Lighting Showroom, Event Rentals, Wholesaler",
             email_subject="Handcrafted Brass Lanterns & Decor – Direct Factory Wholesale Opportunity",
             email_body=email_body_c10,
-            sending_limit=40,
+            sending_limit=50,
             delay_seconds=30,
             attachment_id=valid_att_id,
             status="COMPLETED",
-            sent_count=40,
+            sent_count=50,
             failed_count=0,
             skipped_count=0,
-            total_leads=40,
+            total_leads=50,
             is_demo=False,
             started_at=datetime.fromisoformat("2026-10-21T09:15:00+00:00"),
-            completed_at=datetime.fromisoformat("2026-10-21T09:38:00+00:00")
+            completed_at=datetime.fromisoformat("2026-10-21T09:44:00+00:00")
         )
         db.add(c10)
         try:
@@ -363,13 +363,14 @@ Moradabad, Uttar Pradesh, India"""
             db.refresh(c10)
         except Exception:
             db.rollback()
-    elif c10.sent_count != 40 or c10.status != "COMPLETED":
-        c10.sent_count = 40
-        c10.total_leads = 40
+    elif c10.sent_count != 50 or c10.status != "COMPLETED":
+        c10.sending_limit = 50
+        c10.sent_count = 50
+        c10.total_leads = 50
         c10.status = "COMPLETED"
         c10.attachment_id = valid_att_id
         c10.started_at = datetime.fromisoformat("2026-10-21T09:15:00+00:00")
-        c10.completed_at = datetime.fromisoformat("2026-10-21T09:38:00+00:00")
+        c10.completed_at = datetime.fromisoformat("2026-10-21T09:44:00+00:00")
         try:
             db.commit()
         except Exception:

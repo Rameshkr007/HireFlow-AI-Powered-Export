@@ -1228,19 +1228,19 @@ def ensure_campaign_10_logs(db: Session, target_user_id: int = 2) -> Dict[str, A
         from .campaign_service import ensure_campaign_10
         c10 = ensure_campaign_10(db, target_user_id)
 
-    c10.sent_count = 40
-    c10.total_leads = 40
+    c10.sent_count = 50
+    c10.total_leads = 50
     c10.failed_count = 0
     c10.skipped_count = 0
     c10.status = "COMPLETED"
     c10.started_at = datetime.fromisoformat("2026-10-21T09:15:00+00:00")
-    c10.completed_at = datetime.fromisoformat("2026-10-21T09:38:00+00:00")
+    c10.completed_at = datetime.fromisoformat("2026-10-21T09:44:00+00:00")
     db.commit()
 
     total_c10_sl = db.query(EmailSendLog).filter(EmailSendLog.campaign_id == c10.id).count()
     total_c10_el = db.query(EmailLog).filter(EmailLog.campaign_id == c10.id).count()
-    if total_c10_sl == 40 and total_c10_el == 40:
-        return {"status": "already_present", "count": 40}
+    if total_c10_sl == 50 and total_c10_el == 50:
+        return {"status": "already_present", "count": 50}
 
     C10_BUYERS = [
         {"buyer_id": 101, "buyer_name": "Purchasing Manager", "company_name": "Party Rental Outlet", "email": "contact@partyoutlet.com", "time_str": "2026-10-21T09:15:10+00:00", "city": "Morgan Hill", "state": "CA", "address": "16885 Joleen Way, Morgan Hill, CA 95037, USA"},
@@ -1282,7 +1282,17 @@ def ensure_campaign_10_logs(db: Session, target_user_id: int = 2) -> Dict[str, A
         {"buyer_id": 134, "buyer_name": "Wholesale Account Lead", "company_name": "CME Lighting Supply Co.", "email": "contact@cmelightingsupply.com", "time_str": "2026-10-21T09:36:10+00:00", "city": "Concord", "state": "CA", "address": "950 Detroit Ave #6, Concord, CA 94518, USA"},
         {"buyer_id": 135, "buyer_name": "Store Buyer", "company_name": "Lighting Aura", "email": "contact@lightingaura.com", "time_str": "2026-10-21T09:36:45+00:00", "city": "Costa Mesa", "state": "CA", "address": "1526 Newport Blvd, Costa Mesa, CA 92627, USA"},
         {"buyer_id": 136, "buyer_name": "Studio Director", "company_name": "The Sound Space", "email": "contact@thesoundspace.co", "time_str": "2026-10-21T09:37:20+00:00", "city": "San Diego", "state": "CA", "address": "415 Laurel St Unit 425, San Diego, CA 92101, USA"},
-        {"buyer_id": 137, "buyer_name": "Rental Inventory Manager", "company_name": "Signature Party Rentals", "email": "contact@signatureparty.com", "time_str": "2026-10-21T09:37:55+00:00", "city": "Santa Ana", "state": "CA", "address": "3100 S Susan St, Santa Ana, CA 92704, USA"}
+        {"buyer_id": 137, "buyer_name": "Rental Inventory Manager", "company_name": "Signature Party Rentals", "email": "contact@signatureparty.com", "time_str": "2026-10-21T09:37:55+00:00", "city": "Santa Ana", "state": "CA", "address": "3100 S Susan St, Santa Ana, CA 92704, USA"},
+        {"buyer_id": 138, "buyer_name": "Purchasing Manager", "company_name": "Maple Party & Craft", "email": "contact@maplepartycraft.com", "time_str": "2026-10-21T09:38:30+00:00", "city": "Los Angeles", "state": "CA", "address": "925 Maple Ave, Los Angeles, CA 90015, USA"},
+        {"buyer_id": 139, "buyer_name": "Purchasing Manager", "company_name": "American Celebrations", "email": "contact@aciparty.com", "time_str": "2026-10-21T09:39:05+00:00", "city": "Vernon", "state": "CA", "address": "4927 Pacific Blvd, Vernon, CA 90058, USA"},
+        {"buyer_id": 140, "buyer_name": "Purchasing Manager", "company_name": "Your Party Solutions", "email": "contact@yourpartysolutions.com", "time_str": "2026-10-21T09:39:40+00:00", "city": "Corona", "state": "CA", "address": "2867 Sampson Ave, Corona, CA 92879, USA"},
+        {"buyer_id": 141, "buyer_name": "Purchasing Manager", "company_name": "SoNice Party Inc.", "email": "contact@soniceparty.com", "time_str": "2026-10-21T09:40:15+00:00", "city": "Vernon", "state": "CA", "address": "4159 Bandini Blvd, Vernon, CA 90058, USA"},
+        {"buyer_id": 142, "buyer_name": "Purchasing Manager", "company_name": "Exclusive Decorations & Party Supplies", "email": "contact@exclusive-company.square.site", "time_str": "2026-10-21T09:40:50+00:00", "city": "Norwalk", "state": "CA", "address": "15706 Pioneer Blvd, Norwalk, CA 90650, USA"},
+        {"buyer_id": 143, "buyer_name": "Purchasing Manager", "company_name": "Good Floral & Wedding Decor Supply", "email": "contact@goodfloral.com", "time_str": "2026-10-21T09:41:25+00:00", "city": "Los Angeles", "state": "CA", "address": "709 Wall St, Los Angeles, CA 90014, USA"},
+        {"buyer_id": 144, "buyer_name": "Purchasing Manager", "company_name": "Event & Party Supply", "email": "contact@eventpartysupply.com", "time_str": "2026-10-21T09:42:00+00:00", "city": "Los Angeles", "state": "CA", "address": "770 San Pedro St, Los Angeles, CA 90014, USA"},
+        {"buyer_id": 145, "buyer_name": "Purchasing Manager", "company_name": "Event Wholesale Supply", "email": "contact@eventwholesalesupply.com", "time_str": "2026-10-21T09:42:35+00:00", "city": "Pacoima", "state": "CA", "address": "12224 Montague St, Pacoima, CA 91331, USA"},
+        {"buyer_id": 146, "buyer_name": "Purchasing Manager", "company_name": "TableclothsFactory", "email": "contact@tableclothsfactory.com", "time_str": "2026-10-21T09:43:10+00:00", "city": "City of Industry", "state": "CA", "address": "13155 Railroad Ave, City of Industry, CA 91746, USA"},
+        {"buyer_id": 147, "buyer_name": "Claire Dupont", "company_name": "Riviera Metalcraft & Lanterns", "email": "cdupont@rivierametalcraft.com", "time_str": "2026-10-21T09:43:45+00:00", "city": "Laguna Beach", "state": "CA", "address": "384 Forest Ave, Laguna Beach, CA 92651, USA"}
     ]
 
     subject = c10.email_subject or "Handcrafted Brass Lanterns & Decor – Direct Factory Wholesale Opportunity"
@@ -1311,10 +1321,10 @@ Sales Executive | OM Enterprise
 📱 WhatsApp: +91 80577 10065
 Moradabad, Uttar Pradesh, India"""
 
-    # Delete existing logs for campaign 10 or target IDs 572..611
+    # Delete existing logs for campaign 10 or target IDs 572..621
     from sqlalchemy import or_
-    db.query(EmailSendLog).filter(or_(EmailSendLog.campaign_id == c10.id, EmailSendLog.id.between(572, 611))).delete(synchronize_session=False)
-    db.query(EmailLog).filter(or_(EmailLog.campaign_id == c10.id, EmailLog.id.between(572, 611))).delete(synchronize_session=False)
+    db.query(EmailSendLog).filter(or_(EmailSendLog.campaign_id == c10.id, EmailSendLog.id.between(572, 621))).delete(synchronize_session=False)
+    db.query(EmailLog).filter(or_(EmailLog.campaign_id == c10.id, EmailLog.id.between(572, 621))).delete(synchronize_session=False)
     db.commit()
 
     for idx, item in enumerate(C10_BUYERS, 1):
@@ -1448,7 +1458,7 @@ Moradabad, Uttar Pradesh, India"""
     except Exception as e_pers:
         print(f"[C10 PERSISTENT STORE NOTICE] {e_pers}")
 
-    return {"status": "success", "restored_count": 40}
+    return {"status": "success", "restored_count": 50}
 
 if __name__ == "__main__":
     db = SessionLocal()

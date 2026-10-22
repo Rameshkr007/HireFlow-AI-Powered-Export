@@ -10,11 +10,10 @@ for attempt in range(1, 45):
         with urllib.request.urlopen(req, timeout=10) as resp:
             data = json.loads(resp.read().decode())
             print(f"Attempt {attempt}: version={data.get('version')}, records={data.get('master_records_count')}")
-            if data.get('version') == '1.2.6':
-                print("SUCCESS: Version 1.2.6 is LIVE on Render!")
+            if data.get('version') == '1.2.7':
+                print("SUCCESS: Version 1.2.7 is LIVE on Render!")
                 print(f"Verified Records Count: {data.get('master_records_count')}")
                 print(f"Verified Address: {data.get('origin_address')}")
-                print(f"Batch Follow-Up Enabled: {data.get('batch_followup_enabled')}")
                 break
     except Exception as e:
         print(f"Attempt {attempt}: error={e}")

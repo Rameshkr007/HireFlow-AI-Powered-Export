@@ -352,9 +352,9 @@ async def test_tradewind():
 @app.get("/api/build-info")
 def build_info():
     return {
-        "version": "1.2.6",
+        "version": "1.2.7",
         "brevo_safe": True,
-        "master_records_count": 671,
+        "master_records_count": 621,
         "origin_address": "Direct Manufacturer from Nepal • Wholesale • OEM • Private Label",
         "batch_followup_enabled": True,
         "attachments": ["OM_Enterprise_Handcrafted_Pieces_Poster.jpg", "OM_Enterprise_Special_Offer_Badge.jpg"],

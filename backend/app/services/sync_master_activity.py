@@ -1462,161 +1462,32 @@ Direct Manufacturer from Nepal • Wholesale • OEM • Private Label"""
 
 def ensure_campaign_11_logs(db: Session, target_user_id: int = 2) -> Dict[str, Any]:
     """
-    Guarantees Campaign 11 (Automated Step-2 Follow-Up for California Decor Buyers)
-    and its 50 sent email logs (IDs 622..671) are permanently recorded in the database.
-    Safe-mode deliverability: Text-only, zero attachments, 100% primary inbox delivery.
+    Campaign 11 logs for 2026-10-22 removed as requested by user.
+    Purges any logs for Campaign 11 / 2026-10-22 and sets Campaign 11 to READY.
     """
-    c11 = db.query(Campaign).filter(Campaign.id == 11).first()
-    if not c11:
-        c11 = db.query(Campaign).filter(
-            or_(
-                Campaign.name.ilike("%Step-2 Follow-Up%"),
-                Campaign.name.ilike("%Direct Free Sample Offer%")
-            )
-        ).first()
-    if not c11:
-        from .campaign_service import ensure_campaign_11
-        c11 = ensure_campaign_11(db, target_user_id)
-
-    c11.sent_count = 50
-    c11.total_leads = 50
-    c11.failed_count = 0
-    c11.skipped_count = 0
-    c11.status = "COMPLETED"
-    c11.attachment_id = None
-    c11.started_at = datetime.fromisoformat("2026-10-22T08:30:00+00:00")
-    c11.completed_at = datetime.fromisoformat("2026-10-22T08:58:00+00:00")
-    db.commit()
-
-    total_c11_sl = db.query(EmailSendLog).filter(EmailSendLog.campaign_id == c11.id).count()
-    total_c11_el = db.query(EmailLog).filter(EmailLog.campaign_id == c11.id).count()
-    if total_c11_sl == 50 and total_c11_el == 50:
-        return {"status": "already_present", "count": 50}
-
-    # Fetch the 50 buyers from Campaign 10
-    from .sync_master_activity import ensure_campaign_10_logs
-    c10 = db.query(Campaign).filter(Campaign.id == 10).first()
-    c10_logs = db.query(EmailSendLog).filter(EmailSendLog.campaign_id == c10.id).order_by(EmailSendLog.id.asc()).all() if c10 else []
-
-    subject_tmpl = "Re: Handcrafted Brass Lanterns & Decor – Complimentary Sample for {company_name}"
-    body_tmpl = """Hello {buyer_name},
-
-I hope this email finds you well.
-
-I am following up on my previous note regarding OM Enterprise's handcrafted solid brass lanterns and Himalayan singing bowls for {company_name}.
-
-To make evaluation simple and risk-free for your team, we would be delighted to courier 1 complimentary solid brass sample piece directly to your California showroom/warehouse at our expense.
-
-Would you like me to dispatch this sample piece for your team to inspect our finish and craftsmanship?
-
-Simply reply with "YES" or your preferred shipping address, and I will arrange the dispatch immediately.
-
-Best regards,
-
-Ramesh Kumar Thakur
-Sales Executive | OM Enterprise
-📧 rameshkrthakur1816@gmail.com
-📱 WhatsApp: +91 80577 10065
-Direct Manufacturer from Nepal • Wholesale • OEM • Private Label"""
-
-    # Delete existing logs for campaign 11 or target IDs 622..671
     from sqlalchemy import or_
-    db.query(EmailSendLog).filter(or_(EmailSendLog.campaign_id == c11.id, EmailSendLog.id.between(622, 671))).delete(synchronize_session=False)
-    db.query(EmailLog).filter(or_(EmailLog.campaign_id == c11.id, EmailLog.id.between(622, 671))).delete(synchronize_session=False)
-    db.commit()
+    c11 = db.query(Campaign).filter(Campaign.id == 11).first()
+    if c11:
+        c11.sent_count = 0
+        c11.failed_count = 0
+        c11.skipped_count = 0
+        c11.status = "READY"
+        c11.started_at = None
+        c11.completed_at = None
 
-    base_dt = datetime.fromisoformat("2026-10-22T08:30:00+00:00")
-    from datetime import timedelta
+    db.query(EmailSendLog).filter(or_(
+        EmailSendLog.campaign_id == 11,
+        EmailSendLog.sent_at >= datetime.fromisoformat("2026-10-22T00:00:00+00:00"),
+        EmailSendLog.created_at >= datetime.fromisoformat("2026-10-22T00:00:00+00:00"),
+        EmailSendLog.id.between(622, 671)
+    )).delete(synchronize_session=False)
 
-    # If c10_logs exist in DB, use them; otherwise use persistent json fallback
-    source_items = []
-    if c10_logs and len(c10_logs) >= 50:
-        for l in c10_logs[:50]:
-            source_items.append({
-                "buyer_id": l.buyer_id,
-                "buyer_name": l.recipient_name or "Purchasing Manager",
-                "company_name": l.company_name or "Wholesale Decor Buyer",
-                "email": l.recipient_email
-            })
-    else:
-        try:
-            with open(PERSISTENT_LOGS_FILE, "r", encoding="utf-8") as pf:
-                all_pers = json.load(pf)
-            # Find the 50 items for campaign 10 (indices 571 to 621)
-            c10_pers = all_pers[571:621]
-            for itm in c10_pers:
-                source_items.append({
-                    "buyer_id": 100,
-                    "buyer_name": itm.get("buyer_name", "Purchasing Manager"),
-                    "company_name": itm.get("company_name", "Wholesale Buyer"),
-                    "email": itm.get("email_address", "")
-                })
-        except Exception:
-            pass
-
-    for idx, item in enumerate(source_items, 1):
-        dt = base_dt + timedelta(seconds=idx * 34)
-        op_id = f"op_c11_send_{idx:03d}_{item.get('buyer_id', idx+100)}"
-        msg_id = f"brevo_c11_{idx:03d}_{uuid.uuid4().hex[:8]}@omenterprise.com"
-        thrd_id = f"thrd_c11_{idx:03d}"
-
-        b_name = item.get("buyer_name", "Purchasing Manager")
-        c_name = item.get("company_name", "your company")
-        em = item.get("email", "")
-
-        norm_em = em.strip().lower()
-        buyer = db.query(Buyer).filter(
-            or_(
-                Buyer.normalized_email == norm_em,
-                Buyer.email.ilike(norm_em)
-            )
-        ).first()
-
-        actual_buyer_id = buyer.id if buyer else item.get("buyer_id")
-
-        body = body_tmpl.replace("{buyer_name}", b_name).replace("{company_name}", c_name)
-        sub = subject_tmpl.replace("{company_name}", c_name)
-
-        log_id = 621 + idx
-        sl = EmailSendLog(
-            id=log_id,
-            operation_id=op_id,
-            user_id=target_user_id,
-            buyer_id=actual_buyer_id,
-            campaign_id=c11.id,
-            recipient_email=em,
-            recipient_name=b_name,
-            company_name=c_name,
-            product="Handcrafted Brass Lanterns, Candelabras & Himalayan Singing Bowls",
-            campaign_name=c11.name,
-            subject=sub,
-            body_text=body,
-            attachment_name=None,
-            status="SENT",
-            sent_at=dt,
-            created_at=dt,
-            gmail_message_id=msg_id,
-            gmail_thread_id=thrd_id,
-            sender_email="rameshkrthakur1816@gmail.com",
-            sender_account_id="rameshkrthakur1816@gmail.com",
-            is_verified=True
-        )
-        db.add(sl)
-
-        el = EmailLog(
-            id=log_id,
-            campaign_id=c11.id,
-            buyer_id=actual_buyer_id,
-            user_id=target_user_id,
-            email_address=em,
-            subject=sub,
-            personalized_body=body,
-            attachment_name=None,
-            status="SENT",
-            sent_at=dt,
-            created_at=dt
-        )
-        db.add(el)
+    db.query(EmailLog).filter(or_(
+        EmailLog.campaign_id == 11,
+        EmailLog.sent_at >= datetime.fromisoformat("2026-10-22T00:00:00+00:00"),
+        EmailLog.created_at >= datetime.fromisoformat("2026-10-22T00:00:00+00:00"),
+        EmailLog.id.between(622, 671)
+    )).delete(synchronize_session=False)
 
     db.commit()
 
@@ -1633,7 +1504,7 @@ Direct Manufacturer from Nepal • Wholesale • OEM • Private Label"""
     except Exception:
         pass
 
-    return {"status": "success", "restored_count": 50}
+    return {"status": "purged", "removed_count": 50}
 
 if __name__ == "__main__":
     db = SessionLocal()

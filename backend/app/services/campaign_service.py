@@ -425,14 +425,14 @@ Direct Manufacturer from Nepal • Wholesale • OEM • Private Label"""
             sending_limit=50,
             delay_seconds=30,
             attachment_id=None,
-            status="COMPLETED",
-            sent_count=50,
+            status="READY",
+            sent_count=0,
             failed_count=0,
             skipped_count=0,
             total_leads=50,
             is_demo=False,
-            started_at=datetime.fromisoformat("2026-10-22T08:30:00+00:00"),
-            completed_at=datetime.fromisoformat("2026-10-22T08:58:00+00:00")
+            started_at=None,
+            completed_at=None
         )
         db.add(c11)
         try:
@@ -440,14 +440,15 @@ Direct Manufacturer from Nepal • Wholesale • OEM • Private Label"""
             db.refresh(c11)
         except Exception:
             db.rollback()
-    elif c11.sent_count != 50 or c11.status != "COMPLETED":
+    else:
         c11.sending_limit = 50
-        c11.sent_count = 50
+        c11.sent_count = 0
+        c11.failed_count = 0
+        c11.skipped_count = 0
         c11.total_leads = 50
-        c11.status = "COMPLETED"
-        c11.attachment_id = None
-        c11.started_at = datetime.fromisoformat("2026-10-22T08:30:00+00:00")
-        c11.completed_at = datetime.fromisoformat("2026-10-22T08:58:00+00:00")
+        c11.status = "READY"
+        c11.started_at = None
+        c11.completed_at = None
         try:
             db.commit()
         except Exception:

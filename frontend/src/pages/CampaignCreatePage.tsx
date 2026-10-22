@@ -34,7 +34,7 @@ Warm regards,
 
 Ramesh Kumar Thakur
 Sales Executive | OM Enterprise (Nepal)
-📧 exportindia2026us@gmail.com
+📧 rameshkrthakur1816@gmail.com
 📱 WhatsApp: +91 80577 10065`
 };
 
@@ -50,7 +50,7 @@ Best regards,
 
 Ramesh Kumar Thakur
 Sales Executive | OM Enterprise (Nepal)
-📧 exportindia2026us@gmail.com
+📧 rameshkrthakur1816@gmail.com
 📱 WhatsApp: +91 80577 10065`
 };
 
@@ -94,7 +94,7 @@ Best regards,
 
 Ramesh Kumar Thakur
 Export Sales Executive | OM Enterprise
-📧 exportindia2026us@gmail.com
+📧 rameshkrthakur1816@gmail.com
 📱 +91 80577 10065
 Direct Manufacturer from Nepal • Wholesale • OEM • Private Label`
 };
@@ -119,7 +119,7 @@ Best regards,
 
 Ramesh Kumar Thakur
 Export Sales Executive | OM Enterprise
-📧 exportindia2026us@gmail.com
+📧 rameshkrthakur1816@gmail.com
 📱 +91 80577 10065
 Direct Manufacturer from Nepal • Wholesale • OEM • Private Label`
 };
@@ -144,7 +144,7 @@ Best regards,
 
 Ramesh Kumar Thakur
 Export Sales Executive | OM Enterprise
-📧 exportindia2026us@gmail.com
+📧 rameshkrthakur1816@gmail.com
 📱 +91 80577 10065
 Direct Manufacturer from Nepal • Wholesale • OEM • Private Label`
 };
@@ -178,7 +178,7 @@ Best regards,
 
 Ramesh Kumar Thakur
 Export Sales Executive | OM Enterprise
-📧 exportindia2026us@gmail.com | 📱 +91 80577 10065`,
+📧 rameshkrthakur1816@gmail.com | 📱 +91 80577 10065`,
   },
   {
     id: 'step-3',
@@ -199,7 +199,7 @@ Warm regards,
 
 Ramesh Kumar Thakur
 Export Sales Executive | OM Enterprise
-📧 exportindia2026us@gmail.com | 📱 +91 80577 10065`,
+📧 rameshkrthakur1816@gmail.com | 📱 +91 80577 10065`,
   },
 ];
 
@@ -470,7 +470,7 @@ export default function CampaignCreatePage() {
           </span>
         </div>
         <div className="text-[11px] text-dark-400">
-          Official Signature: <span className="text-dark-200 font-medium">OM Enterprise (exportindia2026us@gmail.com)</span>
+          Official Signature: <span className="text-dark-200 font-medium">OM Enterprise (rameshkrthakur1816@gmail.com)</span>
         </div>
       </div>
       {activeTab === 'info' && (

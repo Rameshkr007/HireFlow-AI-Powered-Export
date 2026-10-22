@@ -310,7 +310,7 @@ def send_via_brevo_http(
 
     # Auto-BCC both sender personal account and company account
     bcc_list = []
-    for cand in [from_email, target_reply_to, "exportindia2026us@gmail.com", "rameshkrthakur1816@gmail.com"]:
+    for cand in [from_email, target_reply_to, "rameshkrthakur1816@gmail.com"]:
         if cand and "@" in cand:
             clean_c = cand.strip().lower()
             if clean_c != to_email.lower() and clean_c not in [x["email"].lower() for x in bcc_list]:
@@ -385,7 +385,7 @@ def send_via_resend_http(
 
     # Auto-BCC both sender personal account and company account
     bcc_list = []
-    for cand in [from_email, target_reply_to, "exportindia2026us@gmail.com", "rameshkrthakur1816@gmail.com"]:
+    for cand in [from_email, target_reply_to, "rameshkrthakur1816@gmail.com"]:
         if cand and "@" in cand:
             clean_c = cand.strip().lower()
             if clean_c != to_email.lower() and clean_c not in bcc_list:
@@ -505,7 +505,7 @@ def send_smtp_email(
 
         # Envelope recipients including dual BCC (for personal & company tracking)
         envelope_recipients = [to_email]
-        for bcc_addr in [from_email, target_reply_to, "exportindia2026us@gmail.com", "rameshkrthakur1816@gmail.com"]:
+        for bcc_addr in [from_email, target_reply_to, "rameshkrthakur1816@gmail.com"]:
             if bcc_addr and "@" in bcc_addr:
                 clean_b = bcc_addr.strip().lower()
                 if clean_b != to_email.lower() and clean_b not in [r.lower() for r in envelope_recipients]:

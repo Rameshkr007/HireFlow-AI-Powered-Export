@@ -71,7 +71,7 @@ Export Sales Executive | OM Enterprise
     # Company & Sender details
     p_sender_name = (getattr(profile, 'sender_name', None) or getattr(profile, 'exporter_name', None) or "Ramesh Kumar Thakur").strip()
     p_company_name = (getattr(profile, 'company_name', None) or "OM Enterprise").strip()
-    p_company_email = "exportindia2026us@gmail.com"
+    p_company_email = "rameshkrthakur1816@gmail.com"
     p_personal_email = "rameshkrthakur1816@gmail.com"
     p_phone = (getattr(profile, 'phone', None) or "+91 80577 10065").strip()
     p_website = ""  # No company website per user instruction

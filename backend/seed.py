@@ -25,7 +25,7 @@ def seed():
             user_id=admin_user.id,
             exporter_name="Ramesh Kumar Thakur",
             company_name="OM Enterprise",
-            company_email="exportindia2026us@gmail.com",
+            company_email="rameshkrthakur1816@gmail.com",
             phone="+91 80577 10065",
             website="",
             country="Nepal",
@@ -48,7 +48,7 @@ def seed():
             existing_profile.exporter_name = "Ramesh Kumar Thakur"
             existing_profile.sender_name = "Ramesh Kumar Thakur"
             existing_profile.company_name = "OM Enterprise"
-            existing_profile.company_email = "exportindia2026us@gmail.com"
+            existing_profile.company_email = "rameshkrthakur1816@gmail.com"
             existing_profile.phone = "+91 80577 10065"
             existing_profile.website = ""
             existing_profile.country = "Nepal"
@@ -210,7 +210,7 @@ exports@himalayanexports.com
             user_id=ramesh_user.id,
             exporter_name="Ramesh Kumar Thakur",
             company_name="OM Enterprise",
-            company_email="exportindia2026us@gmail.com",
+            company_email="rameshkrthakur1816@gmail.com",
             phone="+91 80577 10065",
             country="India",
             product_categories=["Singing Bowls", "Metal Candle Holders", "Handicrafts"],

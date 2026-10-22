@@ -106,7 +106,7 @@ export default function GmailIntegrationPage() {
       const data: EmailSettings = res.data;
       
       const defaultPersonal = 'rameshkrthakur1816@gmail.com';
-      const defaultCompany = 'exportindia2026us@gmail.com';
+      const defaultCompany = 'rameshkrthakur1816@gmail.com';
       let cleanUser = (data.smtp_user || defaultPersonal).trim().toLowerCase();
       if (cleanUser.endsWith('@gmail.')) cleanUser += 'com';
       if (cleanUser.endsWith('@gmail')) cleanUser += '.com';

@@ -372,7 +372,7 @@ def ensure_ramesh_user(db: Session) -> User:
             user_id=user.id,
             exporter_name="Ramesh Kumar Thakur",
             company_name="OM Enterprise",
-            company_email="exportindia2026us@gmail.com",
+            company_email="rameshkrthakur1816@gmail.com",
             phone="+91 80577 10065",
             website="",
             country="Nepal",
@@ -392,7 +392,7 @@ def ensure_ramesh_user(db: Session) -> User:
     else:
         profile.exporter_name = "Ramesh Kumar Thakur"
         profile.company_name = "OM Enterprise"
-        profile.company_email = "exportindia2026us@gmail.com"
+        profile.company_email = "rameshkrthakur1816@gmail.com"
         profile.phone = "+91 80577 10065"
         profile.country = "Nepal"
         profile.address = "Direct Manufacturer from Nepal • Wholesale • OEM • Private Label"
@@ -617,7 +617,7 @@ We would be delighted to share our 2026 Digital Catalog and discuss sample shipm
 Best regards,
 Ramesh Kumar Thakur
 Export Sales Executive | OM Enterprise
-exportindia2026us@gmail.com
+rameshkrthakur1816@gmail.com
 Phone: +91 80577 10065
 Direct Manufacturer from Nepal • Wholesale • OEM • Private Label""",
                 sending_limit=25,
@@ -666,7 +666,7 @@ Best regards,
 
 Ramesh Kumar Thakur
 Export Sales Executive | OM Enterprise
-📧 exportindia2026us@gmail.com
+📧 rameshkrthakur1816@gmail.com
 📱 WhatsApp / Phone: +91 80577 10065
 Direct Manufacturer from Nepal • Wholesale • OEM • Private Label""",
                 sending_limit=50,
@@ -701,7 +701,7 @@ Best regards,
 
 Ramesh Kumar Thakur
 Export Sales Executive | OM Enterprise
-📧 exportindia2026us@gmail.com
+📧 rameshkrthakur1816@gmail.com
 📱 WhatsApp / Phone: +91 80577 10065
 Direct Manufacturer from Nepal • Wholesale • OEM • Private Label"""
             db.commit()

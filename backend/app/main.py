@@ -110,6 +110,17 @@ def startup():
         # Always guarantee Ramesh Kumar Thakur's account exists
         ensure_ramesh_user(db)
 
+        # Guarantee all ExporterProfiles have company_email set to rameshkrthakur1816@gmail.com
+        try:
+            from .models.exporter_profile import ExporterProfile
+            db.query(ExporterProfile).filter(
+                (ExporterProfile.company_email != "rameshkrthakur1816@gmail.com") |
+                (ExporterProfile.company_email.is_(None))
+            ).update({"company_email": "rameshkrthakur1816@gmail.com"}, synchronize_session=False)
+            db.commit()
+        except Exception as e_prof:
+            print(f"[STARTUP] ExporterProfile email update notice: {e_prof}")
+
         # Ensure baseline master email logs exist (never purge or delete new campaign records)
         try:
             from .models.email_send_log import EmailSendLog
@@ -359,13 +370,15 @@ async def test_tradewind():
 @app.get("/api/build-info")
 def build_info():
     return {
-        "version": "1.2.9",
+        "version": "1.3.0",
         "brevo_safe": True,
         "master_records_count": 621,
         "origin_address": "Direct Manufacturer from Nepal • Wholesale • OEM • Private Label",
+        "reply_to_email": "rameshkrthakur1816@gmail.com",
+        "company_email": "rameshkrthakur1816@gmail.com",
         "batch_followup_enabled": True,
         "automated_cadence_engine": True,
         "attachments": ["OM_Enterprise_Handcrafted_Pieces_Poster.jpg", "OM_Enterprise_Special_Offer_Badge.jpg"],
         "safe_delivery_mode": "Text-Only (Zero Attachments) enabled for Cold Outreach & Follow-ups",
-        "updated": "2026-10-22T06:00:00Z"
+        "updated": "2026-10-22T07:35:00Z"
     }

@@ -371,7 +371,7 @@ async def test_tradewind():
 @app.get("/api/build-info")
 def build_info():
     return {
-        "version": "1.3.2",
+        "version": "1.3.3",
         "halloween_attachments": True,
         "email_tester_enabled": True,
         "brevo_safe": True,

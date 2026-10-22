@@ -77,25 +77,17 @@ export const HIGH_CONVERTING_DUAL_TEMPLATE = {
   subject: "Quick question regarding {company_name}'s decor & singing bowls sourcing",
   body: `Hi {buyer_name},
 
-I came across {company_name} while reviewing leading home decor showrooms and wellness businesses across {country}.
+I came across {company_name} while reviewing leading home decor and wellness businesses across California.
 
-We are a direct manufacturing and export unit based in Nepal, specializing in:
-• Handcrafted Metal Candle Stands, Lanterns & Table Candelabras
-• Authentic Hand-Hammered Himalayan Singing Bowls & Meditation Sets
+We are a direct manufacturer in Nepal specializing in handcrafted metal candle holders, lanterns, and authentic hand-hammered Himalayan Singing Bowls. Because you source directly from our workshop, pricing is factory-direct FOB with zero trading margins.
 
-Because we produce directly in our manufacturing facility:
-1. Pricing is strictly factory-direct FOB (eliminating 20-30% middleman trading margins).
-2. We provide custom finishes (matte black, antique bronze, raw brass), laser engraving & private label packaging.
-3. Direct consolidated ocean shipments to Los Angeles & Long Beach ports.
-
-Would it make sense to courier a complimentary sample piece to your office for quality evaluation?
+Would it make sense to courier a complimentary sample piece to your office this week for quality evaluation?
 
 Best regards,
 
 Ramesh Kumar Thakur
 Export Sales Executive | OM Enterprise
-📧 rameshkrthakur1816@gmail.com
-📱 +91 80577 10065
+📧 rameshkrthakur1816@gmail.com | 📱 +91 80577 10065
 Direct Manufacturer from Nepal • Wholesale • OEM • Private Label`
 };
 
@@ -103,49 +95,35 @@ export const CANDLE_STANDS_TEMPLATE = {
   subject: "Direct factory sourcing for {company_name} – Handcrafted metal candle holders & lanterns",
   body: `Hi {buyer_name},
 
-I noticed {company_name}'s impressive collection of premium home accents and tabletop accessories.
+I noticed {company_name}'s collection of premium home accents and tabletop accessories.
 
-We are OM Enterprise, a direct manufacturer and exporter of handcrafted metal candle holders, candelabras, and wrought iron lanterns based in Nepal.
+We are OM Enterprise, a direct manufacturer in Nepal specializing in handcrafted metal candle stands, candelabras, and wrought iron lanterns with custom OEM finishes.
 
-How we support US wholesalers & design showrooms:
-• Custom OEM designs, private label packaging & barcode retail tagging
-• Solid brass, wrought iron, and antique finishes built to export standards
-• Factory FOB pricing with low minimum orders for test shipments
-• Direct door-to-door express or ocean freight to major US ports (LA & Long Beach)
-
-Our digital lookbook is attached for your review. Would you be open to receiving a physical sample at {company_name} so your team can test our metal finishing firsthand?
+Our catalog is attached. Would you be open to receiving a physical sample at {company_name} to test our metal finishing firsthand?
 
 Best regards,
 
 Ramesh Kumar Thakur
 Export Sales Executive | OM Enterprise
-📧 rameshkrthakur1816@gmail.com
-📱 +91 80577 10065
+📧 rameshkrthakur1816@gmail.com | 📱 +91 80577 10065
 Direct Manufacturer from Nepal • Wholesale • OEM • Private Label`
 };
 
 export const SINGING_BOWLS_TEMPLATE = {
-  subject: "Question regarding {company_name}'s singing bowls & sound healing collection",
+  subject: "Authentic Handmade Himalayan Singing Bowls – Direct Manufacturer | Wholesale & OEM",
   body: `Hi {buyer_name},
 
-While exploring reputable sound wellness and meditation brands in {country}, {company_name} caught our attention.
+We are a direct manufacturer in Nepal of authentic handmade Himalayan Singing Bowls (432Hz & 528Hz tuned sets) and sound healing instruments.
 
-We are direct artisan exporters of authentic hand-hammered Himalayan Singing Bowls, Full Moon healing sets, and meditation accessories.
+We provide direct factory FOB pricing, custom laser branding, low MOQs, and door-to-door courier logistics.
 
-Why US wellness importers partner with us:
-• Handcrafted from 7 traditional acoustic metals by skilled Himalayan artisans
-• Master-tested frequencies (432Hz / 528Hz tuned sets available)
-• Direct artisan pricing with no intermediary markups
-• Custom branding, silk cushions, and wooden mallet gift sets
+May I courier a complimentary sample bowl to {company_name} this week for acoustic evaluation?
 
-Would you like us to mail a complimentary sample bowl to your office so you can experience the sustained acoustic vibration firsthand?
-
-Best regards,
+Kind Regards,
 
 Ramesh Kumar Thakur
-Export Sales Executive | OM Enterprise
-📧 rameshkrthakur1816@gmail.com
-📱 +91 80577 10065
+Sales Executive | OM Enterprise
+📧 rameshkrthakur1816@gmail.com | 📱 +91 80577 10065
 Direct Manufacturer from Nepal • Wholesale • OEM • Private Label`
 };
 

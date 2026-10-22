@@ -50,35 +50,22 @@ AVAILABLE_TEMPLATES = [
         "category": "Active Campaign",
         "recommended_mode": "with_attachments",
         "default_attachments": ["halloween_poster", "halloween_badge"],
-        "subject": "Halloween Special Offer - Handcrafted Decor & Singing Bowls Wholesale",
-        "body": """Halloween Special Offer – Handcrafted Pieces & Singing Bowls
-Direct Manufacturer from Nepal • Wholesale • OEM • Private Label
+        "subject": "Quick question regarding {company_name}'s seasonal decor & singing bowls sourcing",
+        "body": """Hi {buyer_name},
 
-Dear {buyer_name},
+I noticed {company_name}'s collection and wanted to reach out directly.
 
-I hope this email finds you well.
+We are OM Enterprise, a direct manufacturer in Nepal specializing in authentic handmade Himalayan Singing Bowls and handcrafted metal candle decor.
 
-I am reaching out on behalf of OM Enterprise regarding our handcrafted export collection for {company_name}. We are a direct manufacturer specializing in authentic Himalayan Singing Bowls, home décor, lanterns, and metal candle holders.
+For the seasonal buying window, we offer direct factory FOB pricing (20-30% savings with zero middlemen) along with custom OEM packaging.
 
-For the upcoming festive season, we have launched exclusive Halloween & Fall wholesale discounts on our most popular handcrafted pieces.
+Our seasonal lookbook and offer poster are attached. May I courier a complimentary sample piece to your office this week for quality evaluation?
 
-Our Exclusive Offer:
-✔ Direct Factory FOB Pricing (Save 20-30% on Wholesale Orders)
-✔ Certified Acoustic Tuning (432Hz / 528Hz) for Singing Bowls
-✔ Premium Matte Black, Antique Brass & Hammered Metal Finishes
-✔ OEM Custom Engraving & Private Label Packaging
-✔ Door-to-Door Air (DHL/FedEx) & Ocean Freight Delivery to California
-
-Our latest Halloween Special Offer catalogue is attached for your review.
-
-Would you be open to receiving our wholesale price list or a complimentary sample piece for quality evaluation?
-
-Kind Regards,
+Best regards,
 
 Ramesh Kumar Thakur
 Sales Executive | OM Enterprise
-📧 rameshkrthakur1816@gmail.com
-📱 WhatsApp: +91 80577 10065
+📧 rameshkrthakur1816@gmail.com | 📱 +91 80577 10065
 Direct Manufacturer from Nepal • Wholesale • OEM • Private Label"""
     },
     {
@@ -90,25 +77,17 @@ Direct Manufacturer from Nepal • Wholesale • OEM • Private Label"""
         "subject": "Quick question regarding {company_name}'s decor & singing bowls sourcing",
         "body": """Hi {buyer_name},
 
-I came across {company_name} while reviewing leading home decor showrooms and wellness businesses across California.
+I came across {company_name} while reviewing leading home decor and wellness businesses across California.
 
-We are a direct manufacturing and export unit based in Nepal, specializing in:
-• Handcrafted Metal Candle Stands, Lanterns & Table Candelabras
-• Authentic Hand-Hammered Himalayan Singing Bowls & Meditation Sets
+We are a direct manufacturer in Nepal specializing in handcrafted metal candle holders, lanterns, and authentic hand-hammered Himalayan Singing Bowls. Because you source directly from our workshop, pricing is factory-direct FOB with zero trading margins.
 
-Because we produce directly in our manufacturing facility:
-1. Pricing is strictly factory-direct FOB (eliminating 20-30% middleman trading margins).
-2. We provide custom finishes (matte black, antique bronze, raw brass), laser engraving & private label packaging.
-3. Direct consolidated ocean shipments to Los Angeles & Long Beach ports.
-
-Would it make sense to courier a complimentary sample piece to your California office for quality evaluation?
+Would it make sense to courier a complimentary sample piece to your office this week for quality evaluation?
 
 Best regards,
 
 Ramesh Kumar Thakur
 Export Sales Executive | OM Enterprise
-📧 rameshkrthakur1816@gmail.com
-📱 WhatsApp / Phone: +91 80577 10065
+📧 rameshkrthakur1816@gmail.com | 📱 +91 80577 10065
 Direct Manufacturer from Nepal • Wholesale • OEM • Private Label"""
     },
     {
@@ -118,38 +97,19 @@ Direct Manufacturer from Nepal • Wholesale • OEM • Private Label"""
         "recommended_mode": "text_only",
         "default_attachments": ["halloween_poster", "halloween_badge"],
         "subject": "Authentic Handmade Himalayan Singing Bowls – Direct Manufacturer | Wholesale & OEM",
-        "body": """Authentic Handmade Himalayan Singing Bowls
-Direct Manufacturer from Nepal • Wholesale • OEM • Private Label
+        "body": """Hi {buyer_name},
 
-Dear {buyer_name},
+We are a direct manufacturer in Nepal of authentic handmade Himalayan Singing Bowls (432Hz & 528Hz tuned sets) and sound healing instruments.
 
-While researching leading wellness and meditation businesses in {country}, we came across {company_name} and were very impressed by your product curation.
+We provide direct factory FOB pricing, custom laser branding, low MOQs, and door-to-door courier logistics.
 
-We are a Nepal-based manufacturer and direct exporter of authentic handmade Himalayan Singing Bowls, crafted by skilled generational artisans using traditional metal-forging techniques.
-
-Our Product Range:
-• Handmade Himalayan Singing Bowls & Full Moon Healing Sets
-• Antique & Matte Finish Singing Bowls
-• 7-Chakra Tuned Singing Bowl Sets (432Hz / 528Hz)
-• Meditation & Sound Bath Bowls
-• Handcrafted Tingsha Cymbals & Accessories
-• Custom Laser Logo & Private Label Manufacturing
-
-Why International Importers Partner With Us:
-✔ 100% Direct Manufacturer from Nepal (Direct Factory FOB Pricing)
-✔ Traditional 7-Metal Alloy & Certified Acoustic Tuning
-✔ OEM, Custom Engraving & Private Label Packaging
-✔ Worldwide Door-to-Door (DHL/FedEx) & Ocean Freight Logistics
-✔ Dedicated Export Support & Sample Dispatch
-
-Would you like us to send our wholesale price list or courier a sample piece to your office for quality evaluation?
+May I courier a complimentary sample bowl to {company_name} this week for acoustic evaluation?
 
 Kind Regards,
 
 Ramesh Kumar Thakur
 Sales Executive | OM Enterprise
-📧 rameshkrthakur1816@gmail.com
-📱 WhatsApp: +91 80577 10065
+📧 rameshkrthakur1816@gmail.com | 📱 +91 80577 10065
 Direct Manufacturer from Nepal • Wholesale • OEM • Private Label"""
     },
     {
@@ -161,24 +121,17 @@ Direct Manufacturer from Nepal • Wholesale • OEM • Private Label"""
         "subject": "Direct factory sourcing for {company_name} – Handcrafted metal candle holders & lanterns",
         "body": """Hi {buyer_name},
 
-I noticed {company_name}'s impressive collection of premium home accents and tabletop accessories.
+I noticed {company_name}'s collection of premium home accents and tabletop accessories.
 
-We are OM Enterprise, a direct manufacturer and exporter of handcrafted metal candle holders, candelabras, and wrought iron lanterns based in Nepal.
+We are OM Enterprise, a direct manufacturer in Nepal specializing in handcrafted metal candle stands, candelabras, and wrought iron lanterns with custom OEM finishes.
 
-How we support US wholesalers & design showrooms:
-• Custom OEM designs, private label packaging & barcode retail tagging
-• Solid brass, wrought iron, and antique finishes built to export standards
-• Factory FOB pricing with low minimum orders for test shipments
-• Direct door-to-door express or ocean freight to major US ports (LA & Long Beach)
-
-Our digital lookbook is attached for your review. Would you be open to receiving a physical sample at {company_name} so your team can test our metal finishing firsthand?
+Our catalog is attached. Would you be open to receiving a physical sample at {company_name} to test our metal finishing firsthand?
 
 Best regards,
 
 Ramesh Kumar Thakur
 Export Sales Executive | OM Enterprise
-📧 rameshkrthakur1816@gmail.com
-📱 +91 80577 10065
+📧 rameshkrthakur1816@gmail.com | 📱 +91 80577 10065
 Direct Manufacturer from Nepal • Wholesale • OEM • Private Label"""
     },
     {
@@ -197,6 +150,7 @@ We eliminate intermediary trading costs and provide custom private label packagi
 May I courier a complimentary sample piece to {company_name} this week for evaluation?
 
 Kind Regards,
+
 Ramesh Kumar Thakur
 OM Enterprise
 📧 rameshkrthakur1816@gmail.com | 📱 +91 80577 10065
@@ -211,9 +165,9 @@ Direct Manufacturer from Nepal • Wholesale • OEM • Private Label"""
         "subject": "Quick follow-up regarding complimentary sample for {company_name}",
         "body": """Hi {buyer_name},
 
-I wanted to quickly follow up on my note regarding our handcrafted metalware and wellness collection for {company_name}.
+Following up on my previous note regarding your product curation at {company_name}.
 
-We have updated our export capacity for this quarter and can offer preferential FOB pricing along with direct shipping to US ports (including Los Angeles / Long Beach).
+We have updated our export capacity for this quarter and can offer preferential FOB pricing along with direct shipping to US ports.
 
 Can I send over our 2-page wholesale price list and sample request form?
 
@@ -235,8 +189,6 @@ Direct Manufacturer from Nepal • Wholesale • OEM • Private Label"""
 
 I understand you have a demanding procurement schedule. As a direct manufacturer, we also provide complete OEM customization, laser logo engraving, and custom barcode packaging tailored for US retail shelves.
 
-If you have any upcoming seasonal purchasing requirements, please let us know how we can support {company_name}'s inventory.
-
 Would you be open to a brief 5-minute phone or WhatsApp call this week?
 
 Warm regards,
@@ -257,15 +209,13 @@ Direct Manufacturer from Nepal • Wholesale • OEM • Private Label"""
 
 I hope this message finds you well at {company_name}.
 
-We are reaching out from OM Enterprise, direct manufacturer and exporter based in Nepal.
-
-We would be pleased to share our latest product specifications, FOB wholesale price list, and arrange sample delivery to your office.
+We are reaching out from OM Enterprise, direct manufacturer and exporter based in Nepal. We would be pleased to share our latest product specifications, FOB wholesale price list, and arrange sample delivery to your office.
 
 Best regards,
+
 Ramesh Kumar Thakur
 Export Sales Executive | OM Enterprise
-📧 rameshkrthakur1816@gmail.com
-📱 +91 80577 10065
+📧 rameshkrthakur1816@gmail.com | 📱 +91 80577 10065
 Direct Manufacturer from Nepal • Wholesale • OEM • Private Label"""
     }
 ]

@@ -25,6 +25,31 @@ def create_batch_followup(current_user: User = Depends(get_current_user), db: Se
     """Creates or resets an automated batch follow-up campaign targeting all previously contacted buyers."""
     return campaign_service.create_or_get_batch_followup_campaign(db, current_user.id)
 
+@router.get("/{campaign_id}/cadence")
+def get_campaign_cadence(campaign_id: int, current_user: User = Depends(get_current_user), db: Session = Depends(get_db)):
+    """Returns visual cadence status, step timings, and reply stops for this campaign."""
+    from ..services.cadence_service import get_campaign_cadence_status
+    return get_campaign_cadence_status(db, campaign_id, current_user.id)
+
+@router.post("/{campaign_id}/trigger-cadence-step")
+def trigger_cadence_step(
+    campaign_id: int,
+    data: dict,
+    current_user: User = Depends(get_current_user),
+    db: Session = Depends(get_db)
+):
+    """Triggers Step 2 or Step 3 follow-up on demand for buyers who haven't replied."""
+    from ..services.cadence_service import execute_cadence_step
+    step_num = int(data.get("step_number", 2))
+    return execute_cadence_step(db, campaign_id, step_number=step_num, user_id=current_user.id, force=True)
+
+@router.post("/run-all-cadences")
+def run_all_cadences(current_user: User = Depends(get_current_user), db: Session = Depends(get_db)):
+    """Runs automated cadence checks across all active campaigns."""
+    from ..services.cadence_service import check_and_run_due_cadences
+    return check_and_run_due_cadences(db)
+
+
 @router.get("/{campaign_id}", response_model=CampaignResponse)
 def get_campaign(campaign_id: int, current_user: User = Depends(get_current_user), db: Session = Depends(get_db)):
     return campaign_service.get_campaign(db, current_user.id, campaign_id)

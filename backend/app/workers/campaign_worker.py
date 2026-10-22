@@ -367,4 +367,25 @@ def process_campaign(db: Session, campaign_id: int, user_id: int):
     campaign.sent_count = initial_sent + sent
     campaign.failed_count = initial_failed + failed
     campaign.skipped_count = initial_skipped + skipped
+
+    # Initialize cadence schedule for multi-step follow-ups
+    steps = campaign.sequence_steps or []
+    if steps:
+        updated_steps = []
+        from datetime import timedelta
+        for idx, s in enumerate(steps, 1):
+            s_dict = dict(s)
+            if idx == 1:
+                s_dict["status"] = "COMPLETED"
+                s_dict["sent_at"] = datetime.utcnow().isoformat()
+                s_dict["sent_count"] = sent
+            elif idx == 2:
+                s_dict["status"] = "SCHEDULED"
+                s_dict["scheduled_for"] = (datetime.utcnow() + timedelta(days=s_dict.get("delay_days", 3))).isoformat()
+            elif idx == 3:
+                s_dict["status"] = "SCHEDULED"
+                s_dict["scheduled_for"] = (datetime.utcnow() + timedelta(days=s_dict.get("delay_days", 7))).isoformat()
+            updated_steps.append(s_dict)
+        campaign.sequence_steps = updated_steps
+
     db.commit()

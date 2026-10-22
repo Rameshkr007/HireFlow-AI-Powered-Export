@@ -140,6 +140,13 @@ def startup():
             ensure_campaign_9_logs(db, target_user_id=r_id)
             ensure_campaign_10_logs(db, target_user_id=r_id)
             ensure_campaign_11_logs(db, target_user_id=r_id)
+            
+            # Check and execute due cadence follow-ups (Step 2 after 3 days, Step 3 after 7 days)
+            try:
+                from .services.cadence_service import check_and_run_due_cadences
+                check_and_run_due_cadences(db)
+            except Exception as e_cad:
+                print(f"[STARTUP] Cadence check notice: {e_cad}")
         except Exception as e_sync:
             print(f"[STARTUP] Master logs enforcement notice: {e_sync}")
 
@@ -352,11 +359,12 @@ async def test_tradewind():
 @app.get("/api/build-info")
 def build_info():
     return {
-        "version": "1.2.7",
+        "version": "1.2.8",
         "brevo_safe": True,
         "master_records_count": 621,
         "origin_address": "Direct Manufacturer from Nepal • Wholesale • OEM • Private Label",
         "batch_followup_enabled": True,
+        "automated_cadence_engine": True,
         "attachments": ["OM_Enterprise_Handcrafted_Pieces_Poster.jpg", "OM_Enterprise_Special_Offer_Badge.jpg"],
         "safe_delivery_mode": "Text-Only (Zero Attachments) enabled for Cold Outreach & Follow-ups",
         "updated": "2026-10-22T06:00:00Z"

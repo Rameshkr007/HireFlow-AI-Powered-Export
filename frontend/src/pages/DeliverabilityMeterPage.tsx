@@ -1,11 +1,13 @@
 import React, { useState } from 'react';
+import { useNavigate } from 'react-router-dom';
 import {
   ShieldCheck, AlertTriangle, CheckCircle, Flame, Mail,
-  Activity, RefreshCw, Lock, Server, Sparkles
+  Activity, RefreshCw, Lock, Server, Sparkles, Send
 } from 'lucide-react';
 import { useToast } from '../contexts/ToastContext';
 
 export default function DeliverabilityMeterPage() {
+  const navigate = useNavigate();
   const { showToast } = useToast();
   const [testingText, setTestingText] = useState(
     "Dear Marcus, I hope this email finds you well. We are offering exclusive wholesale FOB pricing on handcrafted singing bowls and home decor for US distributors. Our products are 100% certified and guaranteed compliant with US customs."
@@ -45,6 +47,26 @@ export default function DeliverabilityMeterPage() {
             </div>
           </div>
         </div>
+      </div>
+
+      {/* Real Test Pitch CTA Banner */}
+      <div className="card p-5 bg-gradient-to-r from-emerald-950/40 via-dark-850 to-dark-850 border border-emerald-500/30 flex flex-col sm:flex-row sm:items-center justify-between gap-4 shadow-md">
+        <div className="space-y-1">
+          <div className="text-xs font-bold text-emerald-400 flex items-center gap-1.5">
+            <Send className="w-4 h-4" />
+            <span>लाइव ईमेल टेस्ट: क्या आपका ईमेल खरीदार के इनबॉक्स में जा रहा है या जंक फोल्डर में?</span>
+          </div>
+          <p className="text-xs text-dark-300">
+            अपने खुद के ईमेल पर असली टेस्ट पिच भेजकर तुरंत चेक करें कि मेल Primary Inbox में पहुंचा या Spam/Junk में।
+          </p>
+        </div>
+        <button
+          onClick={() => navigate('/email-tester')}
+          className="btn-primary text-xs px-4 py-2 flex items-center gap-2 shrink-0 bg-emerald-600 hover:bg-emerald-500 shadow-md shadow-emerald-600/20 font-bold"
+        >
+          <Send className="w-3.5 h-3.5" />
+          <span>Open Inbox & Spam Tester (टेस्ट मेल भेजें)</span>
+        </button>
       </div>
 
       {/* DNS Records Status Grid */}

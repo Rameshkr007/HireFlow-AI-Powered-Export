@@ -5,7 +5,7 @@ import os
 
 from .database import engine, Base, SessionLocal, get_db
 from .models import User, ExporterProfile, Buyer, Campaign, EmailLog, EmailSendLog, Attachment, GmailConnection
-from .api import auth, profile, buyers, discovery, campaigns, email_activity, reports, gmail, attachments, dashboard, email_settings
+from .api import auth, profile, buyers, discovery, campaigns, email_activity, reports, gmail, attachments, dashboard, email_settings, email_tester
 from .config import settings
 
 app = FastAPI(
@@ -256,6 +256,7 @@ app.include_router(gmail.router)
 app.include_router(email_settings.router)
 app.include_router(attachments.router)
 app.include_router(dashboard.router)
+app.include_router(email_tester.router)
 
 @app.get("/")
 def root():
@@ -370,7 +371,8 @@ async def test_tradewind():
 @app.get("/api/build-info")
 def build_info():
     return {
-        "version": "1.3.0",
+        "version": "1.3.1",
+        "email_tester_enabled": True,
         "brevo_safe": True,
         "master_records_count": 621,
         "origin_address": "Direct Manufacturer from Nepal • Wholesale • OEM • Private Label",

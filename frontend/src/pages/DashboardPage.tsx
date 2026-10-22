@@ -299,6 +299,15 @@ export default function DashboardPage() {
           </button>
 
           <button
+            onClick={() => navigate('/email-tester')}
+            className="px-3.5 py-2 rounded-lg bg-emerald-600/20 hover:bg-emerald-600/30 border border-emerald-500/40 text-emerald-300 text-xs font-semibold flex items-center gap-1.5 transition-all shadow-sm"
+            title="Test real email dispatch and verify Inbox vs Spam folder placement"
+          >
+            <Send className="w-3.5 h-3.5 text-emerald-400" />
+            <span>Test Inbox & Spam (टेस्ट मेल)</span>
+          </button>
+
+          <button
             onClick={() => navigate('/campaigns/new')}
             className="btn-primary text-xs px-4 py-2 flex items-center gap-1.5 shadow-lg shadow-primary-500/10"
           >
@@ -995,6 +1004,14 @@ export default function DashboardPage() {
                   <Play className="w-3.5 h-3.5 fill-current" />
                   <span>Check Active Campaigns</span>
                 </button>
+                <button
+                  onClick={() => navigate('/email-tester')}
+                  className="px-4 py-2 rounded-lg bg-emerald-600/25 hover:bg-emerald-600/35 border border-emerald-500/50 text-emerald-300 text-xs font-bold flex items-center gap-1.5 shadow-sm transition-colors"
+                >
+                  <Send className="w-3.5 h-3.5 text-emerald-400" />
+                  <span>🧪 Test Inbox vs Spam Placement (इनबॉक्स टेस्ट करें)</span>
+                </button>
+
                 <button
                   onClick={() => navigate('/email-activity')}
                   className="px-4 py-2 rounded-lg bg-dark-800 hover:bg-dark-700 border border-dark-700 text-dark-200 text-xs font-medium"

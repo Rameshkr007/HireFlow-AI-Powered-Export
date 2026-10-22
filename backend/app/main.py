@@ -371,7 +371,7 @@ async def test_tradewind():
 @app.get("/api/build-info")
 def build_info():
     return {
-        "version": "1.3.3",
+        "version": "1.3.4",
         "halloween_attachments": True,
         "email_tester_enabled": True,
         "brevo_safe": True,
@@ -383,5 +383,5 @@ def build_info():
         "automated_cadence_engine": True,
         "attachments": ["OM_Enterprise_Handcrafted_Pieces_Poster.jpg", "OM_Enterprise_Special_Offer_Badge.jpg"],
         "safe_delivery_mode": "Text-Only (Zero Attachments) enabled for Cold Outreach & Follow-ups",
-        "updated": "2026-10-22T07:35:00Z"
+        "updated": "2026-10-23T00:48:00Z"
     }

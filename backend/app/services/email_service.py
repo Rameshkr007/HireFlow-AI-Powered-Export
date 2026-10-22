@@ -213,50 +213,22 @@ def get_default_poster_items():
     return items
 
 def format_html_email(body_text: Optional[str], sender_name: Optional[str] = None, company_name: Optional[str] = None) -> str:
-    """Converts plain text export pitch with linebreaks into clean, responsive HTML optimized for Primary Inbox deliverability."""
+    """Converts plain text export pitch into clean, native-looking HTML optimized for Primary Inbox deliverability (avoids newsletter/marketing triggers)."""
     raw = str(body_text or "").strip()
     safe_body = html.escape(raw)
-    # Convert markdown **bold** to strong HTML tag
-    safe_body = re.sub(r'\*\*(.*?)\*\*', r'<strong style="color: #111827; font-weight: 600;">\1</strong>', safe_body)
-    safe_body = safe_body.replace("\n", "<br/>")
+    safe_body = re.sub(r'\*\*(.*?)\*\*', r'<strong>\1</strong>', safe_body)
     
     # Auto-link URLs
     url_pattern = re.compile(r'(https?://[^\s<]+)')
     safe_body = url_pattern.sub(r'<a href="\1" style="color: #2563eb; text-decoration: underline;" target="_blank">\1</a>', safe_body)
 
-    html_content = f"""<!DOCTYPE html>
-<html>
-<head>
-  <meta charset="utf-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <style>
-    body {{
-      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
-      line-height: 1.6;
-      color: #1f2937;
-      background-color: #ffffff;
-      margin: 0;
-      padding: 16px;
-    }}
-    .email-container {{
-      max-width: 600px;
-      margin: 0 auto;
-      font-size: 15px;
-    }}
-    .body-content {{
-      margin-bottom: 24px;
-    }}
-  </style>
-</head>
-<body>
-  <div class="email-container">
-    <div class="body-content">
-      {safe_body}
-    </div>
-  </div>
-</body>
-</html>"""
-    return html_content
+    # Use native paragraph blocks instead of heavy marketing doctype
+    paragraphs = safe_body.split("\n\n")
+    p_tags = "".join(f'<p style="margin: 0 0 14px 0; line-height: 1.6;">{p.replace(chr(10), "<br/>")}</p>' for p in paragraphs if p.strip())
+    
+    return f"""<div style="font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif; font-size: 15px; color: #1f2937; line-height: 1.6; max-width: 650px;">
+{p_tags}
+</div>"""
 
 def send_via_brevo_http(
     api_key: str,
@@ -308,22 +280,24 @@ def send_via_brevo_http(
     target_reply_to = (reply_to or from_email or "rameshkrthakur1816@gmail.com").strip()
     payload["replyTo"] = {"email": target_reply_to, "name": from_name or "Ramesh Kumar Thakur"}
 
-    # Auto-BCC both sender personal account and company account
+    # Auto-BCC sender account for tracking (skipped when recipient is sender to avoid Google self-spoofing flags)
     bcc_list = []
-    for cand in [from_email, target_reply_to, "rameshkrthakur1816@gmail.com"]:
-        if cand and "@" in cand:
-            clean_c = cand.strip().lower()
-            if clean_c != to_email.lower() and clean_c not in [x["email"].lower() for x in bcc_list]:
-                bcc_list.append({"email": clean_c})
+    clean_to = (to_email or "").strip().lower()
+    if clean_to != "rameshkrthakur1816@gmail.com":
+        for cand in [from_email, target_reply_to]:
+            if cand and "@" in cand:
+                clean_c = cand.strip().lower()
+                if clean_c != clean_to and clean_c not in [x["email"].lower() for x in bcc_list]:
+                    bcc_list.append({"email": clean_c})
     if bcc_list:
         payload["bcc"] = bcc_list
 
-    # Process multiple attachments
-    items = list(attachment_list or [])
-    if not items and attachment_path and os.path.exists(attachment_path):
+    # Process multiple attachments: only include if explicitly passed (never force posters on text-only cold outreach)
+    items = []
+    if attachment_list is not None and len(attachment_list) > 0:
+        items = [it for it in attachment_list if it and it.get("path") and os.path.exists(it.get("path"))]
+    elif attachment_path and os.path.exists(attachment_path):
         items = [{"path": attachment_path, "name": attachment_filename or os.path.basename(attachment_path)}]
-    elif not items:
-        items = get_default_poster_items()
 
     if items:
         payload["attachment"] = []
@@ -393,12 +367,12 @@ def send_via_resend_http(
     if bcc_list:
         payload["bcc"] = bcc_list
 
-    # Process multiple attachments
-    items = list(attachment_list or [])
-    if not items and attachment_path and os.path.exists(attachment_path):
+    # Process multiple attachments: only include if explicitly passed
+    items = []
+    if attachment_list is not None and len(attachment_list) > 0:
+        items = [it for it in attachment_list if it and it.get("path") and os.path.exists(it.get("path"))]
+    elif attachment_path and os.path.exists(attachment_path):
         items = [{"path": attachment_path, "name": attachment_filename or os.path.basename(attachment_path)}]
-    elif not items:
-        items = get_default_poster_items()
 
     if items:
         payload["attachments"] = []
@@ -477,12 +451,12 @@ def send_smtp_email(
         alt_container.attach(MIMEText(final_html, "html", "utf-8"))
         msg.attach(alt_container)
 
-        # Multiple Attachments (e.g. Poster, Catalog PDF, Lookbook, Proforma)
-        items = list(attachment_list or [])
-        if not items and attachment_path and os.path.exists(attachment_path):
+        # Multiple Attachments: only include if explicitly passed
+        items = []
+        if attachment_list is not None and len(attachment_list) > 0:
+            items = [it for it in attachment_list if it and it.get("path") and os.path.exists(it.get("path"))]
+        elif attachment_path and os.path.exists(attachment_path):
             items = [{"path": attachment_path, "name": attachment_filename or os.path.basename(attachment_path)}]
-        elif not items:
-            items = get_default_poster_items()
 
         for item in items:
             p = item.get("path")
@@ -765,8 +739,8 @@ def send_real_email_for_campaign(
                     "name": att.original_name or os.path.basename(att.file_path)
                 })
 
-    if not attachment_list:
-        attachment_list = get_default_poster_items()
+    # Safe cold outreach: do not auto-force poster attachments if not chosen
+    pass
 
     first_path = attachment_list[0]["path"] if attachment_list else None
     first_name = attachment_list[0]["name"] if attachment_list else None

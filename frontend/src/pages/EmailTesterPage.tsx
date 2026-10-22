@@ -63,10 +63,10 @@ export default function EmailTesterPage() {
 
   // Form State - Pre-configured with active Halloween Outreach & both Halloween attachments
   const [toEmail, setToEmail] = useState('rameshkrthakur1816@gmail.com');
-  const [selectedTemplateId, setSelectedTemplateId] = useState('halloween_special_offer');
+  const [selectedTemplateId, setSelectedTemplateId] = useState('ultra_short_outreach');
   const [subject, setSubject] = useState('');
   const [bodyText, setBodyText] = useState('');
-  const [includeAttachments, setIncludeAttachments] = useState(true);
+  const [includeAttachments, setIncludeAttachments] = useState(false);
   const [selectedAttachmentKeys, setSelectedAttachmentKeys] = useState<string[]>([
     'halloween_poster',
     'halloween_badge'
@@ -99,13 +99,14 @@ export default function EmailTesterPage() {
       setTemplates(loadedTemplates);
       setAvailableAttachments(loadedAttachments);
 
-      // Default to Halloween Special Offer active template
-      const halloweenTpl = loadedTemplates.find(t => t.id === 'halloween_special_offer') || loadedTemplates[0];
-      if (halloweenTpl) {
-        setSelectedTemplateId(halloweenTpl.id);
-        setSubject(halloweenTpl.subject);
-        setBodyText(halloweenTpl.body);
-        calculateLocalSpamScore(halloweenTpl.subject, halloweenTpl.body, true);
+      // Default to Ultra-Short Direct Outreach (Primary Inbox #1)
+      const primaryTpl = loadedTemplates.find(t => t.id === 'ultra_short_outreach') || loadedTemplates[0];
+      if (primaryTpl) {
+        setSelectedTemplateId(primaryTpl.id);
+        setSubject(primaryTpl.subject);
+        setBodyText(primaryTpl.body);
+        setIncludeAttachments(false);
+        calculateLocalSpamScore(primaryTpl.subject, primaryTpl.body, false);
       }
     } catch (err: any) {
       console.error('Failed to load email tester templates', err);
@@ -128,12 +129,8 @@ export default function EmailTesterPage() {
     setSelectedTemplateId(tpl.id);
     setSubject(tpl.subject);
     setBodyText(tpl.body);
-    const hasAtt = tpl.id === 'halloween_special_offer' ? true : includeAttachments;
-    if (tpl.id === 'halloween_special_offer') {
-      setIncludeAttachments(true);
-      setSelectedAttachmentKeys(['halloween_poster', 'halloween_badge']);
-    }
-    calculateLocalSpamScore(tpl.subject, tpl.body, hasAtt);
+    const isSpecialWithAtt = tpl.id === 'halloween_special_offer' && includeAttachments;
+    calculateLocalSpamScore(tpl.subject, tpl.body, isSpecialWithAtt);
   };
 
   const calculateLocalSpamScore = (sub: string, body: string, hasAtt: boolean) => {
@@ -272,6 +269,58 @@ export default function EmailTesterPage() {
                 Direct Nepal Workshop • FOB OEM
               </div>
             </div>
+          </div>
+        </div>
+      </div>
+
+      {/* Deliverability & Inbox Strategy Diagnostic Guide */}
+      <div className="p-5 rounded-2xl bg-gradient-to-br from-dark-850 via-dark-900 to-primary-950/20 border border-primary-500/30 space-y-4 shadow-md">
+        <div className="flex items-center justify-between border-b border-dark-800 pb-3">
+          <div className="flex items-center gap-2 text-primary-400 font-bold text-sm">
+            <Sparkles className="w-4 h-4 text-amber-400" />
+            <span>Why Cold Emails Land in Promotions or Spam & How to Fix It</span>
+          </div>
+          <span className="text-[10px] font-mono px-2 py-0.5 rounded bg-emerald-500/10 text-emerald-400 border border-emerald-500/20 font-bold">
+            PROVEN DELIVERABILITY BLUEPRINT
+          </span>
+        </div>
+
+        <div className="grid grid-cols-1 md:grid-cols-3 gap-3 text-xs leading-relaxed">
+          {/* Card 1: Promotions */}
+          <div className="p-3.5 rounded-xl bg-amber-500/5 border border-amber-500/20 space-y-1.5">
+            <div className="font-bold text-amber-400 flex items-center gap-1.5">
+              <FolderCheck className="w-4 h-4" />
+              <span>Why Emails Land in Promotions?</span>
+            </div>
+            <p className="text-dark-300 text-[11px]">
+              <strong>1. Image Attachments (.jpg):</strong> Cold emails with image flyers/posters are flagged by Google as marketing flyers.<br/>
+              <strong>2. Sales Buzzwords:</strong> Words like "Special Offer", "Wholesale Discount", "FOB", and "Savings" trigger commercial filters.<br/>
+              <strong>3. Third-party ESP Headers:</strong> Brevo headers mark the email as automated campaign traffic.
+            </p>
+          </div>
+
+          {/* Card 2: Spam */}
+          <div className="p-3.5 rounded-xl bg-rose-500/5 border border-rose-500/20 space-y-1.5">
+            <div className="font-bold text-rose-400 flex items-center gap-1.5">
+              <AlertTriangle className="w-4 h-4" />
+              <span>Why Emails Land in Spam?</span>
+            </div>
+            <p className="text-dark-300 text-[11px]">
+              <strong>@gmail.com SPF/DMARC Mismatch:</strong> Google owns gmail.com and does not authorize Brevo's servers in its SPF record.<br/>
+              When Brevo sends as <em>@gmail.com</em>, receiving servers see unaligned headers ("via sendinblue.com") and may route to Spam or Junk.
+            </p>
+          </div>
+
+          {/* Card 3: Should I change email ID? */}
+          <div className="p-3.5 rounded-xl bg-emerald-500/5 border border-emerald-500/20 space-y-1.5">
+            <div className="font-bold text-emerald-400 flex items-center gap-1.5">
+              <ShieldCheck className="w-4 h-4" />
+              <span>Should You Change Your Email ID?</span>
+            </div>
+            <p className="text-dark-300 text-[11px]">
+              <strong>Recommended for Export:</strong> Yes, get a custom domain (e.g. <em>ramesh@omenterprise.com</em>) and add Brevo's DKIM/SPF DNS records. 100% authenticated!<br/>
+              <strong>If using @gmail.com:</strong> You MUST use <strong>Text-Only Safe Mode (Zero Attachments, &lt;45 words)</strong> so emails look like personal 1-to-1 notes.
+            </p>
           </div>
         </div>
       </div>

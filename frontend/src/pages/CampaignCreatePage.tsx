@@ -74,32 +74,30 @@ OM Enterprise`
 };
 
 export const HIGH_CONVERTING_DUAL_TEMPLATE = {
-  subject: "Quick question regarding {company_name}'s decor & singing bowls sourcing",
+  subject: "Quick question for {buyer_name}",
   body: `Hi {buyer_name},
 
-I came across {company_name} while reviewing leading home decor and wellness businesses across California.
+Are you currently sourcing handcrafted Himalayan singing bowls or metal candle holders for {company_name}?
 
-We are a direct manufacturer in Nepal specializing in handcrafted metal candle holders, lanterns, and authentic hand-hammered Himalayan Singing Bowls. Because you source directly from our workshop, pricing is factory-direct FOB with zero trading margins.
+We are a direct artisan workshop in Nepal supplying US retail and wellness brands factory-direct.
 
-Would it make sense to courier a complimentary sample piece to your office this week for quality evaluation?
+May I email over our 1-page catalog and FOB price list for review?
 
 Best regards,
 
 Ramesh Kumar Thakur
-Export Sales Executive | OM Enterprise
+OM Enterprise
 📧 rameshkrthakur1816@gmail.com | 📱 +91 80577 10065
 Direct Manufacturer from Nepal • Wholesale • OEM • Private Label`
 };
 
 export const CANDLE_STANDS_TEMPLATE = {
-  subject: "Direct factory sourcing for {company_name} – Handcrafted metal candle holders & lanterns",
+  subject: "Handcrafted metal candle decor for {company_name}",
   body: `Hi {buyer_name},
 
-I noticed {company_name}'s collection of premium home accents and tabletop accessories.
+We manufacture handcrafted metal candle stands, lanterns, and brass decor directly in Nepal with factory FOB pricing.
 
-We are OM Enterprise, a direct manufacturer in Nepal specializing in handcrafted metal candle stands, candelabras, and wrought iron lanterns with custom OEM finishes.
-
-Our catalog is attached. Would you be open to receiving a physical sample at {company_name} to test our metal finishing firsthand?
+Would it make sense to courier a sample piece to your office this week for quality evaluation?
 
 Best regards,
 
@@ -110,14 +108,12 @@ Direct Manufacturer from Nepal • Wholesale • OEM • Private Label`
 };
 
 export const SINGING_BOWLS_TEMPLATE = {
-  subject: "Authentic Handmade Himalayan Singing Bowls – Direct Manufacturer | Wholesale & OEM",
+  subject: "Singing bowls sourcing for {company_name}",
   body: `Hi {buyer_name},
 
-We are a direct manufacturer in Nepal of authentic handmade Himalayan Singing Bowls (432Hz & 528Hz tuned sets) and sound healing instruments.
+We handcraft authentic 7-metal Himalayan Singing Bowls (432Hz & 528Hz tuned sets) directly in Nepal.
 
-We provide direct factory FOB pricing, custom laser branding, low MOQs, and door-to-door courier logistics.
-
-May I courier a complimentary sample bowl to {company_name} this week for acoustic evaluation?
+May I courier a complimentary sample bowl to {company_name} this week so your team can test the acoustic sound?
 
 Kind Regards,
 

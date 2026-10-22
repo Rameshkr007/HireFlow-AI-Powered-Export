@@ -45,67 +45,41 @@ def resolve_badge_path() -> str:
 
 AVAILABLE_TEMPLATES = [
     {
-        "id": "halloween_special_offer",
-        "name": "Halloween Special Offer – Handcrafted Decor & Singing Bowls (Active Campaign)",
-        "category": "Active Campaign",
-        "recommended_mode": "with_attachments",
-        "default_attachments": ["halloween_poster", "halloween_badge"],
-        "subject": "Quick question regarding {company_name}'s seasonal decor & singing bowls sourcing",
-        "body": """Hi {buyer_name},
-
-I noticed {company_name}'s collection and wanted to reach out directly.
-
-We are OM Enterprise, a direct manufacturer in Nepal specializing in authentic handmade Himalayan Singing Bowls and handcrafted metal candle decor.
-
-For the seasonal buying window, we offer direct factory FOB pricing (20-30% savings with zero middlemen) along with custom OEM packaging.
-
-Our seasonal lookbook and offer poster are attached. May I courier a complimentary sample piece to your office this week for quality evaluation?
-
-Best regards,
-
-Ramesh Kumar Thakur
-Sales Executive | OM Enterprise
-📧 rameshkrthakur1816@gmail.com | 📱 +91 80577 10065
-Direct Manufacturer from Nepal • Wholesale • OEM • Private Label"""
-    },
-    {
-        "id": "california_outreach",
-        "name": "California Statewide Outreach 2026 (Decor & Bowls)",
-        "category": "Cold Outreach",
+        "id": "ultra_short_outreach",
+        "name": "Ultra-Short Direct Outreach (Primary Inbox #1 – Recommended)",
+        "category": "High Deliverability",
         "recommended_mode": "text_only",
-        "default_attachments": ["halloween_poster", "halloween_badge"],
-        "subject": "Quick question regarding {company_name}'s decor & singing bowls sourcing",
+        "default_attachments": [],
+        "subject": "Quick question for {buyer_name}",
         "body": """Hi {buyer_name},
 
-I came across {company_name} while reviewing leading home decor and wellness businesses across California.
+Are you currently sourcing handcrafted Himalayan singing bowls or metal candle holders for {company_name}?
 
-We are a direct manufacturer in Nepal specializing in handcrafted metal candle holders, lanterns, and authentic hand-hammered Himalayan Singing Bowls. Because you source directly from our workshop, pricing is factory-direct FOB with zero trading margins.
+We are a direct artisan workshop in Nepal supplying US retail and wellness brands factory-direct.
 
-Would it make sense to courier a complimentary sample piece to your office this week for quality evaluation?
+May I email over our 1-page catalog and FOB price list for review?
 
 Best regards,
 
 Ramesh Kumar Thakur
-Export Sales Executive | OM Enterprise
+OM Enterprise
 📧 rameshkrthakur1816@gmail.com | 📱 +91 80577 10065
 Direct Manufacturer from Nepal • Wholesale • OEM • Private Label"""
     },
     {
         "id": "nepal_singing_bowls",
-        "name": "Authentic Nepal Himalayan Singing Bowls (Direct FOB)",
-        "category": "Cold Outreach",
+        "name": "Singing Bowls Ultra-Short Pitch (42 words)",
+        "category": "High Deliverability",
         "recommended_mode": "text_only",
-        "default_attachments": ["halloween_poster", "halloween_badge"],
-        "subject": "Authentic Handmade Himalayan Singing Bowls – Direct Manufacturer | Wholesale & OEM",
+        "default_attachments": [],
+        "subject": "Singing bowls sourcing for {company_name}",
         "body": """Hi {buyer_name},
 
-We are a direct manufacturer in Nepal of authentic handmade Himalayan Singing Bowls (432Hz & 528Hz tuned sets) and sound healing instruments.
+We handcraft authentic 7-metal Himalayan Singing Bowls (432Hz & 528Hz tuned sets) directly in Nepal.
 
-We provide direct factory FOB pricing, custom laser branding, low MOQs, and door-to-door courier logistics.
+May I courier a complimentary sample bowl to {company_name} this week so your team can test the acoustic sound?
 
-May I courier a complimentary sample bowl to {company_name} this week for acoustic evaluation?
-
-Kind Regards,
+Kind regards,
 
 Ramesh Kumar Thakur
 Sales Executive | OM Enterprise
@@ -114,18 +88,16 @@ Direct Manufacturer from Nepal • Wholesale • OEM • Private Label"""
     },
     {
         "id": "candle_holders",
-        "name": "Metal Candle Holders & Lanterns Lookbook Pitch",
-        "category": "Cold Outreach",
+        "name": "Handcrafted Metal Candle Decor Pitch (41 words)",
+        "category": "High Deliverability",
         "recommended_mode": "text_only",
-        "default_attachments": ["catalog"],
-        "subject": "Direct factory sourcing for {company_name} – Handcrafted metal candle holders & lanterns",
+        "default_attachments": [],
+        "subject": "Handcrafted metal candle decor for {company_name}",
         "body": """Hi {buyer_name},
 
-I noticed {company_name}'s collection of premium home accents and tabletop accessories.
+We manufacture handcrafted metal candle stands, lanterns, and brass decor directly in Nepal with factory FOB pricing.
 
-We are OM Enterprise, a direct manufacturer in Nepal specializing in handcrafted metal candle stands, candelabras, and wrought iron lanterns with custom OEM finishes.
-
-Our catalog is attached. Would you be open to receiving a physical sample at {company_name} to test our metal finishing firsthand?
+Would it make sense to courier a sample piece to your office this week for quality evaluation?
 
 Best regards,
 
@@ -135,17 +107,37 @@ Export Sales Executive | OM Enterprise
 Direct Manufacturer from Nepal • Wholesale • OEM • Private Label"""
     },
     {
+        "id": "halloween_special_offer",
+        "name": "Seasonal Festive Outreach (Optional Poster Attachments)",
+        "category": "Seasonal Campaign",
+        "recommended_mode": "text_only",
+        "default_attachments": ["halloween_poster", "halloween_badge"],
+        "subject": "Seasonal decor & bowls sourcing for {company_name}",
+        "body": """Hi {buyer_name},
+
+I noticed {company_name}'s collection and wanted to reach out directly.
+
+We are OM Enterprise, a direct manufacturer in Nepal of handmade singing bowls and handcrafted metal candle decor.
+
+Would you be open to receiving our wholesale price list or a complimentary sample piece for quality evaluation?
+
+Best regards,
+
+Ramesh Kumar Thakur
+OM Enterprise
+📧 rameshkrthakur1816@gmail.com | 📱 +91 80577 10065
+Direct Manufacturer from Nepal • Wholesale • OEM • Private Label"""
+    },
+    {
         "id": "cadence_step1",
-        "name": "Cadence Step 1: Initial Cold Introduction",
+        "name": "Cadence Step 1: Initial Cold Introduction (38 words)",
         "category": "Cadence",
         "recommended_mode": "text_only",
         "default_attachments": [],
-        "subject": "Wholesale Himalayan Singing Bowls & Metalware – Direct Nepal Workshop",
+        "subject": "Wholesale singing bowls & metalware for {company_name}",
         "body": """Hi {buyer_name},
 
-We specialize in direct factory sourcing of authentic hand-hammered 432Hz Himalayan Singing Bowls and handcrafted metal decor from Nepal for US retailers and distributors.
-
-We eliminate intermediary trading costs and provide custom private label packaging.
+We specialize in direct factory sourcing of authentic Himalayan Singing Bowls and handcrafted metal decor from Nepal.
 
 May I courier a complimentary sample piece to {company_name} this week for evaluation?
 
@@ -158,43 +150,41 @@ Direct Manufacturer from Nepal • Wholesale • OEM • Private Label"""
     },
     {
         "id": "cadence_step2",
-        "name": "Cadence Step 2: 3-Day Follow-Up (FOB & Free Sample)",
+        "name": "Cadence Step 2: 3-Day Follow-Up (33 words)",
         "category": "Cadence",
         "recommended_mode": "text_only",
         "default_attachments": [],
-        "subject": "Quick follow-up regarding complimentary sample for {company_name}",
+        "subject": "Re: Quick question for {buyer_name}",
         "body": """Hi {buyer_name},
 
-Following up on my previous note regarding your product curation at {company_name}.
+Following up on my previous note regarding handcrafted singing bowls and metal decor for {company_name}.
 
-We have updated our export capacity for this quarter and can offer preferential FOB pricing along with direct shipping to US ports.
+Should I email over our 1-page price list and sample request form?
 
-Can I send over our 2-page wholesale price list and sample request form?
-
-Best regards,
+Best,
 
 Ramesh Kumar Thakur
-Export Sales Executive | OM Enterprise
+OM Enterprise
 📧 rameshkrthakur1816@gmail.com | 📱 +91 80577 10065
 Direct Manufacturer from Nepal • Wholesale • OEM • Private Label"""
     },
     {
         "id": "cadence_step3",
-        "name": "Cadence Step 3: 7-Day Follow-Up (OEM / Private Label)",
+        "name": "Cadence Step 3: 7-Day Follow-Up (37 words)",
         "category": "Cadence",
         "recommended_mode": "text_only",
         "default_attachments": [],
-        "subject": "Private label & custom packaging options for {company_name}",
+        "subject": "Quick check-in regarding {company_name}",
         "body": """Hi {buyer_name},
 
-I understand you have a demanding procurement schedule. As a direct manufacturer, we also provide complete OEM customization, laser logo engraving, and custom barcode packaging tailored for US retail shelves.
+I know you're busy with seasonal buying. We manufacture directly in Nepal with factory FOB pricing and custom OEM packaging.
 
-Would you be open to a brief 5-minute phone or WhatsApp call this week?
+Would you be open to a quick 2-minute chat or WhatsApp connection this week?
 
 Warm regards,
 
 Ramesh Kumar Thakur
-Export Sales Executive | OM Enterprise
+OM Enterprise
 📧 rameshkrthakur1816@gmail.com | 📱 +91 80577 10065
 Direct Manufacturer from Nepal • Wholesale • OEM • Private Label"""
     },
@@ -204,17 +194,17 @@ Direct Manufacturer from Nepal • Wholesale • OEM • Private Label"""
         "category": "Custom",
         "recommended_mode": "text_only",
         "default_attachments": [],
-        "subject": "Export Supply & Direct Factory Partnership – OM Enterprise",
-        "body": """Dear {buyer_name},
+        "subject": "Direct sourcing inquiry for {company_name}",
+        "body": """Hi {buyer_name},
 
-I hope this message finds you well at {company_name}.
+We are reaching out from OM Enterprise, a direct manufacturer and exporter based in Nepal.
 
-We are reaching out from OM Enterprise, direct manufacturer and exporter based in Nepal. We would be pleased to share our latest product specifications, FOB wholesale price list, and arrange sample delivery to your office.
+Would you be open to reviewing our wholesale price list or receiving a sample piece at {company_name}?
 
 Best regards,
 
 Ramesh Kumar Thakur
-Export Sales Executive | OM Enterprise
+OM Enterprise
 📧 rameshkrthakur1816@gmail.com | 📱 +91 80577 10065
 Direct Manufacturer from Nepal • Wholesale • OEM • Private Label"""
     }
@@ -224,7 +214,8 @@ SPAM_KEYWORDS = [
     "100% free", "guaranteed", "risk-free", "buy now", "urgent",
     "make money", "winner", "cash bonus", "congratulations", "click here",
     "exclusive offer", "act now", "order now", "no cost", "pure profit",
-    "double your", "earn $$$", "miracle", "hidden assets"
+    "double your", "earn $$$", "miracle", "hidden assets", "special offer",
+    "halloween special", "discount", "discounts", "sale", "limited time"
 ]
 
 def analyze_spam_risk(subject: str, body: str, has_attachments: bool) -> Dict[str, Any]:
@@ -242,9 +233,9 @@ def analyze_spam_risk(subject: str, body: str, has_attachments: bool) -> Dict[st
     if subject.count("!") >= 2:
         score -= 10
         
-    # Penalty for large attachments on cold outreach
+    # Heavy penalty for image attachments on cold outreach (forces Promotions or Spam tab)
     if has_attachments:
-        score -= 12
+        score -= 22
         
     score = max(35, min(99, score))
     
@@ -260,14 +251,14 @@ def analyze_spam_risk(subject: str, body: str, has_attachments: bool) -> Dict[st
         
     tips = []
     if has_attachments:
-        tips.append("Both Halloween attachments are included. If testing reveals this lands in Promotions, switch to Text-Only mode for higher Primary Inbox rates.")
+        tips.append("⚠️ Image attachments (.jpg) detected: Gmail automatically routes cold emails with image flyers into the Promotions tab or Spam folder. Switch to Text-Only Safe Mode for 98%+ Primary Inbox delivery.")
     else:
-        tips.append("Text-Only Safe Mode active: Zero image attachments ensures maximum 98%+ Primary Inbox placement.")
+        tips.append("✅ Text-Only Safe Mode active: Zero image attachments ensures maximum Primary Inbox placement.")
         
     if found_triggers:
-        tips.append(f"Spam filter keywords detected: {', '.join(found_triggers[:3])}. Replace with neutral B2B sourcing phrasing.")
+        tips.append(f"⚠️ Promotional trigger words detected: {', '.join(found_triggers[:3])}. Commercial buzzwords push cold emails to the Promotions tab. Keep copy conversational and consultative.")
         
-    tips.append("Reply-To header is strictly locked to rameshkrthakur1816@gmail.com. When a buyer replies once, future emails land directly in the Primary Inbox.")
+    tips.append("💡 Domain Tip: Sending from @gmail.com via Brevo triggers SPF/DMARC mismatch in receiving filters. For 100% Primary Inbox reliability, consider getting a business domain (e.g., @omenterprise.com) with Brevo SPF/DKIM DNS records, or send ultra-short text-only messages.")
     
     return {
         "spam_score": score,

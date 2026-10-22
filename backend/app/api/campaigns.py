@@ -124,10 +124,7 @@ def test_single_dispatch(campaign_id: int, current_user: User = Depends(get_curr
                     })
             att_names = [a.original_name for a in atts if a.original_name]
 
-        if not attachment_list:
-            from ..services.email_service import get_default_poster_items
-            attachment_list = get_default_poster_items()
-            att_names = [item["name"] for item in attachment_list]
+        # Safe cold outreach mode: keep text-only if zero attachments were selected
 
         first_path = attachment_list[0]["path"] if attachment_list else None
         first_name = attachment_list[0]["name"] if attachment_list else None

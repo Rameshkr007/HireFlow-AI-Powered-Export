@@ -23,13 +23,58 @@ export default function CampaignsPage() {
 
   return (
     <div className="space-y-6">
-      <div className="flex items-center justify-between">
+      <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
         <div>
           <h2 className="text-2xl font-bold text-dark-50">Email Campaigns</h2>
           <p className="text-dark-400 mt-1">Manage and track your automated outreach campaigns.</p>
         </div>
-        <button onClick={() => navigate('/campaigns/new')} className="btn-primary">
-          <Plus className="w-4 h-4" /> New Campaign
+        <div className="flex flex-wrap items-center gap-2">
+          <button
+            onClick={async () => {
+              try {
+                const res = await api.post('/api/campaigns/create-batch-followup');
+                navigate(`/campaigns/${res.data.id}`);
+              } catch (e: any) {
+                navigate('/campaigns/new');
+              }
+            }}
+            className="px-4 py-2 rounded-lg bg-amber-500 hover:bg-amber-400 text-dark-950 font-bold text-xs sm:text-sm flex items-center gap-1.5 shadow-lg shadow-amber-500/20 transition-all"
+            title="Create and launch follow-up for all previously emailed buyers"
+          >
+            <span>⚡ 1-Click Batch Follow-Up (सभी को फॉलो-अप भेजें)</span>
+          </button>
+          <button onClick={() => navigate('/campaigns/new')} className="btn-primary">
+            <Plus className="w-4 h-4" /> New Campaign
+          </button>
+        </div>
+      </div>
+
+      <div className="p-4 rounded-xl bg-gradient-to-r from-amber-500/10 via-amber-500/5 to-transparent border border-amber-500/30 flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
+        <div className="flex items-start gap-3">
+          <div className="w-8 h-8 rounded-lg bg-amber-500/20 text-amber-400 flex items-center justify-center font-bold shrink-0 mt-0.5">
+            ⚡
+          </div>
+          <div>
+            <h4 className="text-sm font-bold text-amber-300">
+              सभी Contacted Buyers को एक साथ Follow-Up भेजना चाहते हैं?
+            </h4>
+            <p className="text-xs text-dark-300 mt-0.5">
+              80% US बायर्स पहली ईमेल पर नहीं, बल्कि 2nd या 3rd फॉलो-अप पर रिस्पॉन्स देते हैं। "1-Click Batch Follow-Up" बटन दबाते ही पिछले सभी संपर्क किए गए बायर्स के लिए Free Sample Offer वाला फॉलो-अप कैंपेन तुरंत तैयार हो जाता है।
+            </p>
+          </div>
+        </div>
+        <button
+          onClick={async () => {
+            try {
+              const res = await api.post('/api/campaigns/create-batch-followup');
+              navigate(`/campaigns/${res.data.id}`);
+            } catch (e: any) {
+              navigate('/campaigns/new');
+            }
+          }}
+          className="btn-primary bg-amber-500 hover:bg-amber-400 text-dark-950 font-bold text-xs whitespace-nowrap px-4 py-2"
+        >
+          🚀 Launch Follow-Up Now
         </button>
       </div>
 

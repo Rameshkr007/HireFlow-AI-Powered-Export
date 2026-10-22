@@ -220,6 +220,21 @@ export default function EmailActivityPage() {
           </button>
 
           <button
+            onClick={async () => {
+              try {
+                const res = await api.post('/api/campaigns/create-batch-followup');
+                window.location.href = `/campaigns/${res.data.id}`;
+              } catch (e) {
+                window.location.href = '/campaigns/new';
+              }
+            }}
+            className="px-3.5 py-2 rounded-lg bg-amber-500 hover:bg-amber-400 text-dark-950 font-bold text-xs flex items-center gap-1.5 transition-all shadow-md shadow-amber-500/20"
+            title="Create and run batch follow-up campaign for all contacted buyers"
+          >
+            <span>⚡ 1-Click Follow-Up</span>
+          </button>
+
+          <button
             onClick={handleCopyGoogleSheets}
             disabled={copyingSheet}
             className="btn-primary text-xs px-3.5 py-2 flex items-center gap-1.5 bg-emerald-600 hover:bg-emerald-500 text-white font-semibold shadow-md shadow-emerald-600/20"

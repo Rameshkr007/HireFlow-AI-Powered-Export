@@ -661,8 +661,21 @@ def get_campaign_eligible_buyers(db: Session, campaign: Campaign):
         if country_query.count() > 0:
             query = country_query
 
+    # Smart follow-up targeting: if campaign is a follow-up, prioritize previously contacted buyers
+    is_followup = "follow" in (campaign.name or "").lower() or "follow" in (campaign.target_audience or "").lower()
+    if is_followup:
+        from ..models.email_send_log import EmailSendLog
+        past_contacted_emails = [r[0] for r in db.query(EmailSendLog.recipient_email).filter(
+            EmailSendLog.user_id.in_([campaign.user_id, 2]),
+            EmailSendLog.status == 'SENT'
+        ).all() if r[0]]
+        if past_contacted_emails:
+            followup_q = query.filter(Buyer.email.in_(past_contacted_emails))
+            if followup_q.count() > 0:
+                query = followup_q
+
     # Smart audience matching with graceful fallback
-    if campaign.target_audience and campaign.target_audience.lower() not in ["all", "any", "all commercial prospects"]:
+    if not is_followup and campaign.target_audience and campaign.target_audience.lower() not in ["all", "any", "all commercial prospects"]:
         aud_lower = campaign.target_audience.lower()
         matched_types = []
         for btype in ["importer", "distributor", "wholesaler", "retailer", "buyer"]:
@@ -716,3 +729,74 @@ def run_campaign_background(campaign_id: int, user_id: int):
         db.commit()
     finally:
         db.close()
+
+
+def create_or_get_batch_followup_campaign(db: Session, user_id: int) -> Campaign:
+    """
+    Creates or returns a high-impact Batch Follow-Up Campaign targeting
+    all unique buyers who were contacted in previous campaigns.
+    """
+    from ..models.email_send_log import EmailSendLog
+    camp_name = "Batch Follow-Up Sequence – All Contacted US Buyers"
+    existing = db.query(Campaign).filter(
+        Campaign.user_id == user_id,
+        Campaign.name == camp_name
+    ).first()
+
+    followup_body = """Hi {buyer_name},
+
+Following up on my note from earlier regarding {company_name}.
+
+I know you receive dozens of supplier inquiries every week, so I will keep this very brief:
+
+Would it be helpful if I courier a complimentary physical sample piece (handcrafted solid brass lantern or 432Hz Himalayan singing bowl) directly to {company_name}'s office this week?
+
+Alternatively, I can share our 1-page 2026 FOB wholesale price sheet & short craft showcase video.
+
+Simply reply "SAMPLE" or "PRICELIST" and I will arrange it immediately.
+
+Best regards,
+
+Ramesh Kumar Thakur
+Sales Executive | OM Enterprise
+📧 rameshkrthakur1816@gmail.com
+📱 WhatsApp: +91 80577 10065
+Direct Manufacturer from Nepal • Wholesale • OEM • Private Label"""
+
+    sent_emails = set(r[0] for r in db.query(EmailSendLog.recipient_email).filter(
+        EmailSendLog.user_id.in_([user_id, 2]),
+        EmailSendLog.status == 'SENT'
+    ).all() if r[0])
+    total_leads = len(sent_emails) if sent_emails else 50
+
+    if existing:
+        existing.status = "READY"
+        existing.email_body = followup_body
+        existing.email_subject = "Re: Quick question regarding {company_name}'s metalware & decor sourcing"
+        existing.total_leads = total_leads
+        existing.sending_limit = total_leads
+        db.commit()
+        db.refresh(existing)
+        return existing
+
+    new_camp = Campaign(
+        user_id=user_id,
+        name=camp_name,
+        product="Handcrafted Brass Lanterns & Himalayan Singing Bowls",
+        target_country="USA (All Contacted Buyers)",
+        target_audience="Contacted Leads (Follow-Up)",
+        email_subject="Re: Quick question regarding {company_name}'s metalware & decor sourcing",
+        email_body=followup_body,
+        sending_limit=total_leads,
+        delay_seconds=15,
+        status="READY",
+        sent_count=0,
+        failed_count=0,
+        skipped_count=0,
+        total_leads=total_leads,
+        is_demo=False
+    )
+    db.add(new_camp)
+    db.commit()
+    db.refresh(new_camp)
+    return new_camp

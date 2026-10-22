@@ -19,6 +19,12 @@ def list_campaigns(current_user: User = Depends(get_current_user), db: Session =
 def create_campaign(data: CampaignCreate, current_user: User = Depends(get_current_user), db: Session = Depends(get_db)):
     return campaign_service.create_campaign(db, current_user.id, data)
 
+
+@router.post("/create-batch-followup", response_model=CampaignResponse)
+def create_batch_followup(current_user: User = Depends(get_current_user), db: Session = Depends(get_db)):
+    """Creates or resets an automated batch follow-up campaign targeting all previously contacted buyers."""
+    return campaign_service.create_or_get_batch_followup_campaign(db, current_user.id)
+
 @router.get("/{campaign_id}", response_model=CampaignResponse)
 def get_campaign(campaign_id: int, current_user: User = Depends(get_current_user), db: Session = Depends(get_db)):
     return campaign_service.get_campaign(db, current_user.id, campaign_id)

@@ -23,7 +23,6 @@ def get_campaign_cadence_status(db: Session, campaign_id: int, user_id: int) -> 
     steps = campaign.sequence_steps or []
     if not steps:
         # Default fallback to 3-step cadence
-        from .campaign_service import DEFAULT_STEPS
         steps = [
             {
                 "id": "step-1",

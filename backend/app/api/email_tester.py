@@ -13,9 +13,7 @@ from ..services.auth_service import get_current_user
 from ..services.email_service import (
     dispatch_email_universal,
     get_effective_smtp_config,
-    format_html_email,
-    DEFAULT_POSTER_PATH,
-    DEFAULT_POSTER_BADGE_PATH
+    format_html_email
 )
 
 router = APIRouter(prefix="/api/email-tester", tags=["email-tester"])
@@ -24,16 +22,71 @@ TEST_HISTORY_FILE = os.path.abspath(
     os.path.join(os.path.dirname(__file__), "../services/email_test_history.json")
 )
 
-CATALOG_PDF_PATH = os.path.abspath(
-    os.path.join(os.path.dirname(__file__), "../../../attachments/OM_Enterprise_Metal_Candle_Holder_Catalog.pdf")
+ATTACHMENTS_DIR = os.path.abspath(
+    os.path.join(os.path.dirname(__file__), "../../../attachments")
 )
+
+# Halloween and default asset paths
+HALLOWEEN_POSTER_PATH = os.path.join(ATTACHMENTS_DIR, "OM_Enterprise_Halloween_Special_Offer_Poster.jpg")
+HALLOWEEN_BADGE_PATH = os.path.join(ATTACHMENTS_DIR, "OM_Enterprise_Halloween_Special_Offer_Badge.jpg")
+HANDCRAFTED_POSTER_PATH = os.path.join(ATTACHMENTS_DIR, "OM_Enterprise_Handcrafted_Pieces_Poster.jpg")
+SPECIAL_BADGE_PATH = os.path.join(ATTACHMENTS_DIR, "OM_Enterprise_Special_Offer_Badge.jpg")
+CATALOG_PDF_PATH = os.path.join(ATTACHMENTS_DIR, "OM_Enterprise_Metal_Candle_Holder_Catalog.pdf")
+
+def resolve_poster_path() -> str:
+    if os.path.exists(HALLOWEEN_POSTER_PATH):
+        return HALLOWEEN_POSTER_PATH
+    return HANDCRAFTED_POSTER_PATH
+
+def resolve_badge_path() -> str:
+    if os.path.exists(HALLOWEEN_BADGE_PATH):
+        return HALLOWEEN_BADGE_PATH
+    return SPECIAL_BADGE_PATH
 
 AVAILABLE_TEMPLATES = [
     {
+        "id": "halloween_special_offer",
+        "name": "Halloween Special Offer – Handcrafted Decor & Singing Bowls (Active Campaign)",
+        "category": "Active Campaign",
+        "recommended_mode": "with_attachments",
+        "default_attachments": ["halloween_poster", "halloween_badge"],
+        "subject": "Halloween Special Offer - Handcrafted Decor & Singing Bowls Wholesale",
+        "body": """Halloween Special Offer – Handcrafted Pieces & Singing Bowls
+Direct Manufacturer from Nepal • Wholesale • OEM • Private Label
+
+Dear {buyer_name},
+
+I hope this email finds you well.
+
+I am reaching out on behalf of OM Enterprise regarding our handcrafted export collection for {company_name}. We are a direct manufacturer specializing in authentic Himalayan Singing Bowls, home décor, lanterns, and metal candle holders.
+
+For the upcoming festive season, we have launched exclusive Halloween & Fall wholesale discounts on our most popular handcrafted pieces.
+
+Our Exclusive Offer:
+✔ Direct Factory FOB Pricing (Save 20-30% on Wholesale Orders)
+✔ Certified Acoustic Tuning (432Hz / 528Hz) for Singing Bowls
+✔ Premium Matte Black, Antique Brass & Hammered Metal Finishes
+✔ OEM Custom Engraving & Private Label Packaging
+✔ Door-to-Door Air (DHL/FedEx) & Ocean Freight Delivery to California
+
+Our latest Halloween Special Offer catalogue is attached for your review.
+
+Would you be open to receiving our wholesale price list or a complimentary sample piece for quality evaluation?
+
+Kind Regards,
+
+Ramesh Kumar Thakur
+Sales Executive | OM Enterprise
+📧 rameshkrthakur1816@gmail.com
+📱 WhatsApp: +91 80577 10065
+Direct Manufacturer from Nepal • Wholesale • OEM • Private Label"""
+    },
+    {
         "id": "california_outreach",
-        "name": "California Statewide Outreach 2026",
+        "name": "California Statewide Outreach 2026 (Decor & Bowls)",
         "category": "Cold Outreach",
         "recommended_mode": "text_only",
+        "default_attachments": ["halloween_poster", "halloween_badge"],
         "subject": "Quick question regarding {company_name}'s decor & singing bowls sourcing",
         "body": """Hi {buyer_name},
 
@@ -63,6 +116,7 @@ Direct Manufacturer from Nepal • Wholesale • OEM • Private Label"""
         "name": "Authentic Nepal Himalayan Singing Bowls (Direct FOB)",
         "category": "Cold Outreach",
         "recommended_mode": "text_only",
+        "default_attachments": ["halloween_poster", "halloween_badge"],
         "subject": "Authentic Handmade Himalayan Singing Bowls – Direct Manufacturer | Wholesale & OEM",
         "body": """Authentic Handmade Himalayan Singing Bowls
 Direct Manufacturer from Nepal • Wholesale • OEM • Private Label
@@ -103,6 +157,7 @@ Direct Manufacturer from Nepal • Wholesale • OEM • Private Label"""
         "name": "Metal Candle Holders & Lanterns Lookbook Pitch",
         "category": "Cold Outreach",
         "recommended_mode": "text_only",
+        "default_attachments": ["catalog"],
         "subject": "Direct factory sourcing for {company_name} – Handcrafted metal candle holders & lanterns",
         "body": """Hi {buyer_name},
 
@@ -129,8 +184,9 @@ Direct Manufacturer from Nepal • Wholesale • OEM • Private Label"""
     {
         "id": "cadence_step1",
         "name": "Cadence Step 1: Initial Cold Introduction",
-        "category": "Automated Cadence",
+        "category": "Cadence",
         "recommended_mode": "text_only",
+        "default_attachments": [],
         "subject": "Wholesale Himalayan Singing Bowls & Metalware – Direct Nepal Workshop",
         "body": """Hi {buyer_name},
 
@@ -149,8 +205,9 @@ Direct Manufacturer from Nepal • Wholesale • OEM • Private Label"""
     {
         "id": "cadence_step2",
         "name": "Cadence Step 2: 3-Day Follow-Up (FOB & Free Sample)",
-        "category": "Automated Cadence",
+        "category": "Cadence",
         "recommended_mode": "text_only",
+        "default_attachments": [],
         "subject": "Quick follow-up regarding complimentary sample for {company_name}",
         "body": """Hi {buyer_name},
 
@@ -170,8 +227,9 @@ Direct Manufacturer from Nepal • Wholesale • OEM • Private Label"""
     {
         "id": "cadence_step3",
         "name": "Cadence Step 3: 7-Day Follow-Up (OEM / Private Label)",
-        "category": "Automated Cadence",
+        "category": "Cadence",
         "recommended_mode": "text_only",
+        "default_attachments": [],
         "subject": "Private label & custom packaging options for {company_name}",
         "body": """Hi {buyer_name},
 
@@ -190,9 +248,10 @@ Direct Manufacturer from Nepal • Wholesale • OEM • Private Label"""
     },
     {
         "id": "custom",
-        "name": "Custom Email Pitch (अपनी पसंद का ईमेल लिखें)",
-        "category": "Custom Pitch",
+        "name": "Custom Email Pitch (Write your own)",
+        "category": "Custom",
         "recommended_mode": "text_only",
+        "default_attachments": [],
         "subject": "Export Supply & Direct Factory Partnership – OM Enterprise",
         "body": """Dear {buyer_name},
 
@@ -240,25 +299,25 @@ def analyze_spam_risk(subject: str, body: str, has_attachments: bool) -> Dict[st
     score = max(35, min(99, score))
     
     if score >= 90:
-        placement_prob = "Primary Inbox (95%+ संभावना)"
+        placement_prob = "Primary Inbox (95%+ Probability)"
         status_color = "emerald"
     elif score >= 75:
-        placement_prob = "Promotions / Updates (संभवतः प्रमोशन टैब)"
+        placement_prob = "Promotions / Updates Tab"
         status_color = "amber"
     else:
-        placement_prob = "Junk / Spam Risk (स्पैम फ़ोल्डर का जोखिम)"
+        placement_prob = "Spam / Junk Risk"
         status_color = "rose"
         
     tips = []
     if has_attachments:
-        tips.append("कोल्ड ईमेल में अटैचमेंट हटाने पर 98%+ ईमेल प्राइमरी इनबॉक्स में जाते हैं (Text-Only Mode सबसे सुरक्षित है)।")
+        tips.append("Both Halloween attachments are included. If testing reveals this lands in Promotions, switch to Text-Only mode for higher Primary Inbox rates.")
     else:
-        tips.append("टेक्स्ट-ओनली (Text-Only) मोड सक्रिय है। यह बायर के प्राइमरी इनबॉक्स में डिलीवरी की सबसे अधिक गारंटी देता है।")
+        tips.append("Text-Only Safe Mode active: Zero image attachments ensures maximum 98%+ Primary Inbox placement.")
         
     if found_triggers:
-        tips.append(f"सब्जेक्ट या बॉडी में ट्रिगर शब्द मिले: {', '.join(found_triggers[:3])}। इन्हें हटाकर पेशेवर भाषा रखें।")
+        tips.append(f"Spam filter keywords detected: {', '.join(found_triggers[:3])}. Replace with neutral B2B sourcing phrasing.")
         
-    tips.append("रिप्लाई हेडर 'rameshkrthakur1816@gmail.com' सेट है। बायर द्वारा 1 रिप्लाई आने पर भविष्य के सभी ईमेल स्वतः इनबॉक्स में जाएंगे।")
+    tips.append("Reply-To header is strictly locked to rameshkrthakur1816@gmail.com. When a buyer replies once, future emails land directly in the Primary Inbox.")
     
     return {
         "spam_score": score,
@@ -286,17 +345,17 @@ def save_test_history(history: List[Dict[str, Any]]):
 
 class TestPitchDispatchSchema(BaseModel):
     to_email: str
-    template_id: Optional[str] = "california_outreach"
-    template_name: Optional[str] = "California Statewide Outreach 2026"
+    template_id: Optional[str] = "halloween_special_offer"
+    template_name: Optional[str] = "Halloween Special Offer – Handcrafted Decor & Singing Bowls"
     subject: str
     body_text: str
-    include_attachments: bool = False
-    attachment_keys: Optional[List[str]] = []
+    include_attachments: bool = True
+    attachment_keys: Optional[List[str]] = ["halloween_poster", "halloween_badge"]
     buyer_name: Optional[str] = "Marcus Vance"
     company_name: Optional[str] = "Pacific Trade & Living LLC"
     country: Optional[str] = "USA"
     city: Optional[str] = "Los Angeles"
-    product: Optional[str] = "Handmade Himalayan Singing Bowls"
+    product: Optional[str] = "Handcrafted Pieces & Singing Bowls"
 
 class PlacementFeedbackSchema(BaseModel):
     test_id: str
@@ -306,20 +365,22 @@ class PlacementFeedbackSchema(BaseModel):
 
 @router.get("/templates")
 def get_templates():
+    poster_path = resolve_poster_path()
+    badge_path = resolve_badge_path()
     return {
         "templates": AVAILABLE_TEMPLATES,
         "available_attachments": [
             {
-                "key": "poster",
-                "filename": "OM_Enterprise_Handcrafted_Pieces_Poster.jpg",
-                "label": "Handcrafted Beautiful Pieces Poster (JPG - 286 KB)",
-                "exists": os.path.exists(DEFAULT_POSTER_PATH)
+                "key": "halloween_poster",
+                "filename": "OM_Enterprise_Halloween_Special_Offer_Poster.jpg",
+                "label": "Halloween Special Offer Poster (JPG - 286 KB)",
+                "exists": os.path.exists(poster_path)
             },
             {
-                "key": "badge",
-                "filename": "OM_Enterprise_Special_Offer_Badge.jpg",
-                "label": "Special Offer Quality Badge (JPG - 167 KB)",
-                "exists": os.path.exists(DEFAULT_POSTER_BADGE_PATH)
+                "key": "halloween_badge",
+                "filename": "OM_Enterprise_Halloween_Special_Offer_Badge.jpg",
+                "label": "Halloween Special Offer Badge (JPG - 167 KB)",
+                "exists": os.path.exists(badge_path)
             },
             {
                 "key": "catalog",
@@ -333,7 +394,6 @@ def get_templates():
 @router.get("/history")
 def get_history(current_user: User = Depends(get_current_user)):
     history = load_test_history()
-    # Filter by user_id or return recent 25
     user_tests = [item for item in history if item.get("user_id") == current_user.id or not item.get("user_id")]
     return {
         "tests": sorted(user_tests, key=lambda x: x.get("dispatched_at", ""), reverse=True)[:30],
@@ -348,9 +408,8 @@ def dispatch_test_pitch(
 ):
     target_email = payload.to_email.strip().lower()
     if not target_email or "@" not in target_email or "." not in target_email:
-        raise HTTPException(status_code=400, detail="कृपया एक वैध ईमेल पता दर्ज करें (Valid recipient email required).")
+        raise HTTPException(status_code=400, detail="Please enter a valid recipient email address.")
     
-    # Fix common typos
     if target_email.endswith("@gmail."):
         target_email += "com"
     elif target_email.endswith("@gmail"):
@@ -360,7 +419,7 @@ def dispatch_test_pitch(
     if not smtp_config:
         raise HTTPException(
             status_code=400,
-            detail="ईमेल भेजने के लिए ईमेल क्रेडेंशियल्स उपलब्ध नहीं हैं। कृपया Settings/Email Integration में जाकर Brevo API Key या Gmail सेटिंग्स चेक करें।"
+            detail="No email credentials found. Please verify your Brevo API key or Gmail configuration in Settings."
         )
 
     # 1. Personalize placeholders
@@ -375,8 +434,8 @@ def dispatch_test_pitch(
         "{Country}": payload.country or "USA",
         "{city}": payload.city or "Los Angeles",
         "{City}": payload.city or "Los Angeles",
-        "{product}": payload.product or "Handmade Himalayan Singing Bowls",
-        "{Product}": payload.product or "Handmade Himalayan Singing Bowls",
+        "{product}": payload.product or "Handcrafted Pieces & Singing Bowls",
+        "{Product}": payload.product or "Handcrafted Pieces & Singing Bowls",
         "{state_or_country}": payload.city or "California"
     }
 
@@ -386,19 +445,22 @@ def dispatch_test_pitch(
         personalized_subject = personalized_subject.replace(placeholder, val)
         personalized_body = personalized_body.replace(placeholder, val)
 
-    # 2. Build attachments list
+    # 2. Build attachments list with Halloween assets
     attachment_list = []
     if payload.include_attachments:
-        keys = payload.attachment_keys or ["poster", "badge"]
-        if "poster" in keys and os.path.exists(DEFAULT_POSTER_PATH):
+        keys = payload.attachment_keys or ["halloween_poster", "halloween_badge"]
+        poster_p = resolve_poster_path()
+        badge_p = resolve_badge_path()
+
+        if ("halloween_poster" in keys or "poster" in keys) and os.path.exists(poster_p):
             attachment_list.append({
-                "path": DEFAULT_POSTER_PATH,
-                "name": "OM_Enterprise_Handcrafted_Pieces_Poster.jpg"
+                "path": poster_p,
+                "name": "OM_Enterprise_Halloween_Special_Offer_Poster.jpg"
             })
-        if "badge" in keys and os.path.exists(DEFAULT_POSTER_BADGE_PATH):
+        if ("halloween_badge" in keys or "badge" in keys) and os.path.exists(badge_p):
             attachment_list.append({
-                "path": DEFAULT_POSTER_BADGE_PATH,
-                "name": "OM_Enterprise_Special_Offer_Badge.jpg"
+                "path": badge_p,
+                "name": "OM_Enterprise_Halloween_Special_Offer_Badge.jpg"
             })
         if "catalog" in keys and os.path.exists(CATALOG_PDF_PATH):
             attachment_list.append({
@@ -441,7 +503,7 @@ def dispatch_test_pitch(
         "dispatched_at": now_iso,
         "to_email": target_email,
         "template_id": payload.template_id,
-        "template_name": payload.template_name or "Custom Pitch",
+        "template_name": payload.template_name or "Halloween Special Offer",
         "subject": personalized_subject,
         "body_preview": personalized_body[:180] + ("..." if len(personalized_body) > 180 else ""),
         "sender_name": from_name,
@@ -457,7 +519,6 @@ def dispatch_test_pitch(
         "placement_probability": spam_analysis["placement_probability"]
     }
 
-    # Save to history file
     history = load_test_history()
     history.insert(0, test_record)
     save_test_history(history[:50])
@@ -465,12 +526,12 @@ def dispatch_test_pitch(
     if not success:
         raise HTTPException(
             status_code=500,
-            detail=f"ईमेल भेजने में विफल (Dispatch Error): {error}"
+            detail=f"Email dispatch error: {error}"
         )
 
     return {
         "success": True,
-        "message": f"असली टेस्ट ईमेल सफलतापूर्वक '{target_email}' पर भेज दिया गया है!",
+        "message": f"Real test email successfully dispatched to '{target_email}'!",
         "test_id": test_id,
         "target_email": target_email,
         "subject": personalized_subject,
@@ -499,26 +560,25 @@ def record_placement_feedback(
     if target_item:
         save_test_history(history)
 
-    # Return intelligent feedback advice
     advice = {}
     if payload.folder_placed == "inbox":
         advice = {
-            "title": "शानदार! ईमेल प्राइमरी इनबॉक्स में पहुंचा 🎉",
-            "message": "आपका यह ईमेल टेम्पलेट और हेडर फॉर्मेट बायर के इनबॉक्स के लिए पूरी तरह अनुकूलित है। आप इस प्रारूप के साथ अपनी कोल्ड आउटरीच बेझिझक भेज सकते हैं।",
-            "grade": "A+ Primary Placement",
+            "title": "Success: Email Landed in Primary Inbox 🎉",
+            "message": "Your email pitch, headers, and authentication are delivering cleanly to the Primary Inbox. This template is ready for your buyer outreach sequences.",
+            "grade": "A+ Primary Inbox Placement",
             "color": "emerald"
         }
     elif payload.folder_placed == "promotions":
         advice = {
-            "title": "ईमेल प्रमोशन्स (Promotions / Updates) टैब में गया 📂",
-            "message": "ईमेल स्पैम में नहीं गया, लेकिन गूगल ने इसे प्रमोशनल माना। समाधान: भारी इमेज/पोस्टर्स हटाकर 'Text-Only Mode' का उपयोग करें और बायर से सिर्फ 1 रिप्लाई मांगें। रिप्लाई मिलते ही भविष्य के ईमेल 100% प्राइमरी इनबॉक्स में आएंगे।",
-            "grade": "B Promotional Tab",
+            "title": "Categorized in Promotions / Updates Tab 📂",
+            "message": "The email bypassed the spam filter, but Google flagged it as commercial marketing. Advice: Remove heavy image posters and send in Text-Only Safe Mode to land directly in the Primary Inbox.",
+            "grade": "B Commercial Tab Placement",
             "color": "amber"
         }
     elif payload.folder_placed == "spam":
         advice = {
-            "title": "सावधानी: ईमेल जंक / स्पैम (Junk / Spam) फोल्डर में गया ⚠️",
-            "message": "कारण एवं समाधान: (1) इमेज या पीडीएफ अटैचमेंट तुरंत हटाएं और टेक्स्ट-ओनली मोड इस्तेमाल करें। (2) सब्जेक्ट लाइन को छोटा और स्वाभाविक रखें (जैसे: 'Quick question regarding {company_name}'). (3) कोई भी प्रमोशनल डिस्काउंट या गारंटी शब्द न लिखें।",
+            "title": "Caution: Email Landed in Spam / Junk Folder ⚠️",
+            "message": "Key Action Items: (1) Remove image attachments immediately and use Text-Only mode. (2) Keep the subject line conversational and avoid commercial buzzwords. (3) Reply to this test email to establish direct whitelisting.",
             "grade": "C Spam Filter Triggered",
             "color": "rose"
         }

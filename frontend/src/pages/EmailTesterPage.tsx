@@ -3,7 +3,7 @@ import {
   Send, Mail, Inbox, AlertTriangle, CheckCircle, ShieldCheck,
   FileText, Image, RefreshCw, Sparkles, FolderX, FolderCheck,
   ExternalLink, ArrowRight, Info, Eye, Check, Clock, ShieldAlert,
-  HelpCircle, ChevronRight, Zap
+  HelpCircle, ChevronRight, Zap, Paperclip
 } from 'lucide-react';
 import api from '../lib/api';
 import { useToast } from '../contexts/ToastContext';
@@ -13,6 +13,7 @@ interface TemplateItem {
   name: string;
   category: string;
   recommended_mode: string;
+  default_attachments?: string[];
   subject: string;
   body: string;
 }
@@ -60,20 +61,23 @@ export default function EmailTesterPage() {
   const [availableAttachments, setAvailableAttachments] = useState<AttachmentItem[]>([]);
   const [history, setHistory] = useState<TestRecord[]>([]);
 
-  // Form State
+  // Form State - Pre-configured with active Halloween Outreach & both Halloween attachments
   const [toEmail, setToEmail] = useState('rameshkrthakur1816@gmail.com');
-  const [selectedTemplateId, setSelectedTemplateId] = useState('california_outreach');
+  const [selectedTemplateId, setSelectedTemplateId] = useState('halloween_special_offer');
   const [subject, setSubject] = useState('');
   const [bodyText, setBodyText] = useState('');
-  const [includeAttachments, setIncludeAttachments] = useState(false);
-  const [selectedAttachmentKeys, setSelectedAttachmentKeys] = useState<string[]>(['poster']);
+  const [includeAttachments, setIncludeAttachments] = useState(true);
+  const [selectedAttachmentKeys, setSelectedAttachmentKeys] = useState<string[]>([
+    'halloween_poster',
+    'halloween_badge'
+  ]);
 
-  // Buyer Preview Placeholders
+  // Simulated Buyer Preview Placeholders
   const [buyerName, setBuyerName] = useState('Marcus Vance');
   const [companyName, setCompanyName] = useState('Pacific Trade & Living LLC');
   const [country, setCountry] = useState('USA');
   const [city, setCity] = useState('Los Angeles');
-  const [product, setProduct] = useState('Handmade Himalayan Singing Bowls');
+  const [product, setProduct] = useState('Handcrafted Pieces & Singing Bowls');
 
   // Last Sent Result & Spam Analysis
   const [lastResult, setLastResult] = useState<any>(null);
@@ -89,16 +93,19 @@ export default function EmailTesterPage() {
     try {
       setFetching(true);
       const res = await api.get('/api/email-tester/templates');
-      setTemplates(res.data.templates || []);
-      setAvailableAttachments(res.data.available_attachments || []);
+      const loadedTemplates: TemplateItem[] = res.data.templates || [];
+      const loadedAttachments: AttachmentItem[] = res.data.available_attachments || [];
 
-      // Default to first template (California Outreach)
-      if (res.data.templates && res.data.templates.length > 0) {
-        const first = res.data.templates[0];
-        setSelectedTemplateId(first.id);
-        setSubject(first.subject);
-        setBodyText(first.body);
-        calculateLocalSpamScore(first.subject, first.body, false);
+      setTemplates(loadedTemplates);
+      setAvailableAttachments(loadedAttachments);
+
+      // Default to Halloween Special Offer active template
+      const halloweenTpl = loadedTemplates.find(t => t.id === 'halloween_special_offer') || loadedTemplates[0];
+      if (halloweenTpl) {
+        setSelectedTemplateId(halloweenTpl.id);
+        setSubject(halloweenTpl.subject);
+        setBodyText(halloweenTpl.body);
+        calculateLocalSpamScore(halloweenTpl.subject, halloweenTpl.body, true);
       }
     } catch (err: any) {
       console.error('Failed to load email tester templates', err);
@@ -121,7 +128,12 @@ export default function EmailTesterPage() {
     setSelectedTemplateId(tpl.id);
     setSubject(tpl.subject);
     setBodyText(tpl.body);
-    calculateLocalSpamScore(tpl.subject, tpl.body, includeAttachments);
+    const hasAtt = tpl.id === 'halloween_special_offer' ? true : includeAttachments;
+    if (tpl.id === 'halloween_special_offer') {
+      setIncludeAttachments(true);
+      setSelectedAttachmentKeys(['halloween_poster', 'halloween_badge']);
+    }
+    calculateLocalSpamScore(tpl.subject, tpl.body, hasAtt);
   };
 
   const calculateLocalSpamScore = (sub: string, body: string, hasAtt: boolean) => {
@@ -140,12 +152,15 @@ export default function EmailTesterPage() {
 
     setSpamAnalysis({
       spam_score: score,
-      placement_probability: score >= 90 ? 'Primary Inbox (95%+ संभावना)' : score >= 75 ? 'Promotions / Updates' : 'Spam / Junk Risk',
+      placement_probability: score >= 90 ? 'Primary Inbox (95%+ Probability)' : score >= 75 ? 'Promotions / Updates Tab' : 'Spam / Junk Risk',
       status_color: score >= 90 ? 'emerald' : score >= 75 ? 'amber' : 'rose',
       trigger_words: found,
       tips: hasAtt
-        ? ['अटैचमेंट हटाने पर 98%+ ईमेल सीधे इनबॉक्स में जाते हैं (Text-Only Mode सबसे सुरक्षित है)।']
-        : ['टेक्स्ट-ओनली मोड सक्रिय है। यह बायर के प्राइमरी इनबॉक्स के लिए सर्वोत्तम है।']
+        ? [
+            'Both Halloween attachments included (Poster + Badge). Real test dispatch will verify if your buyer receives it in Primary Inbox or Promotions.',
+            'If testing shows placement in Promotions, try sending in Text-Only Safe Mode for 98%+ direct inbox delivery.'
+          ]
+        : ['Text-Only Safe Mode enabled: Zero attachments provides maximum 98%+ Primary Inbox deliverability.']
     });
   };
 
@@ -159,11 +174,11 @@ export default function EmailTesterPage() {
 
   const handleSendTestEmail = async () => {
     if (!toEmail.trim() || !toEmail.includes('@')) {
-      showToast('कृपया मान्य ईमेल आईडी दर्ज करें (Enter valid recipient email)', 'error');
+      showToast('Please enter a valid recipient email address', 'error');
       return;
     }
     if (!subject.trim()) {
-      showToast('सब्जेक्ट लाइन खाली नहीं हो सकती', 'error');
+      showToast('Subject line cannot be empty', 'error');
       return;
     }
 
@@ -175,7 +190,7 @@ export default function EmailTesterPage() {
       const payload = {
         to_email: toEmail.trim(),
         template_id: selectedTemplateId,
-        template_name: currentTemplate ? currentTemplate.name : 'Custom Pitch',
+        template_name: currentTemplate ? currentTemplate.name : 'Halloween Special Offer Outreach',
         subject: subject,
         body_text: bodyText,
         include_attachments: includeAttachments,
@@ -192,11 +207,11 @@ export default function EmailTesterPage() {
       if (res.data.spam_analysis) {
         setSpamAnalysis(res.data.spam_analysis);
       }
-      showToast(`असली टेस्ट ईमेल '${toEmail}' पर सफलतापूर्वक भेजा गया!`, 'success');
+      showToast(`Real test pitch dispatched to ${toEmail}! Check your inbox.`, 'success');
       fetchHistory();
     } catch (err: any) {
-      console.error('Test email failed', err);
-      showToast(err.response?.data?.detail || 'ईमेल भेजने में विफल (Dispatch Error)', 'error');
+      console.error('Test email dispatch failed', err);
+      showToast(err.response?.data?.detail || 'Email dispatch failed. Please check your email credentials.', 'error');
     } finally {
       setSending(false);
     }
@@ -207,15 +222,15 @@ export default function EmailTesterPage() {
       const res = await api.post('/api/email-tester/feedback', {
         test_id: testId,
         folder_placed: folderPlaced,
-        client_type: 'Gmail / Email Client'
+        client_type: 'Email Client / Webmail'
       });
       setFeedbackAdvice(res.data.advice);
       showToast(
         folderPlaced === 'inbox'
-          ? 'Recorded: Landed in Primary Inbox!'
+          ? 'Feedback recorded: Landed in Primary Inbox!'
           : folderPlaced === 'promotions'
-          ? 'Recorded: Landed in Promotions'
-          : 'Recorded: Landed in Spam / Junk',
+          ? 'Feedback recorded: Landed in Promotions'
+          : 'Feedback recorded: Landed in Spam / Junk',
         'info'
       );
       fetchHistory();
@@ -225,7 +240,7 @@ export default function EmailTesterPage() {
   };
 
   return (
-    <div className="max-w-7xl mx-auto space-y-6 pb-16">
+    <div className="max-w-7xl mx-auto space-y-6 pb-16 font-sans">
       {/* Top Banner */}
       <div className="card bg-gradient-to-r from-dark-850 via-dark-800 to-primary-950/40 p-6 border-primary-500/20 shadow-lg">
         <div className="flex flex-col lg:flex-row lg:items-center justify-between gap-4">
@@ -235,10 +250,10 @@ export default function EmailTesterPage() {
               <span>Real Inbox Placement & Folder Testing Studio</span>
             </div>
             <h1 className="text-2xl font-bold text-dark-50 flex items-center gap-2.5">
-              <span>ईमेल इनबॉक्स एवं जंक/स्पैम फोल्डर टेस्ट स्टूडियो</span>
+              <span>Inbox Placement & Spam / Junk Folder Tester</span>
             </h1>
             <p className="text-xs text-dark-300 max-w-3xl leading-relaxed">
-              यहां से आप अपनी पसंद के किसी भी ईमेल (जैसे अपना दूसरा Gmail, Yahoo या Outlook) पर वास्तविक टेस्ट पिच भेजकर सीधे अपने फोन या कंप्यूटर पर चेक कर सकते हैं कि मेल <strong className="text-emerald-300">Primary Inbox</strong> में पहुंचा, <strong className="text-amber-300">Promotions</strong> में, या <strong className="text-rose-300">Junk / Spam</strong> फोल्डर में।
+              Send a real export outreach pitch to any email address (such as your personal Gmail, Yahoo, or Outlook) to verify firsthand whether your pitch lands in the <strong className="text-emerald-300">Primary Inbox</strong>, <strong className="text-amber-300">Promotions</strong>, or <strong className="text-rose-300">Spam / Junk</strong> folder.
             </p>
           </div>
 
@@ -270,13 +285,13 @@ export default function EmailTesterPage() {
             <div className="flex items-center justify-between border-b border-dark-800 pb-3">
               <div className="flex items-center gap-2">
                 <div className="w-6 h-6 rounded-full bg-primary-600 text-white flex items-center justify-center text-xs font-bold">1</div>
-                <h3 className="text-sm font-bold text-dark-100">टेस्ट ईमेल पता (Target Recipient Email Address)</h3>
+                <h3 className="text-sm font-bold text-dark-100">Target Recipient Email Address</h3>
               </div>
-              <span className="text-[11px] text-dark-400">आप जिस भी मेल पर टेस्ट देखना चाहते हैं वह डालें</span>
+              <span className="text-[11px] text-dark-400">Enter where you want to inspect delivery</span>
             </div>
 
             <div className="space-y-2">
-              <label className="text-xs text-dark-300 font-medium">Recipient Test Email (आप इस ईमेल पर इनबॉक्स खोलकर चेक करेंगे):</label>
+              <label className="text-xs text-dark-300 font-medium">Recipient Test Email (Open this inbox on your phone/laptop to inspect):</label>
               <div className="relative">
                 <input
                   type="email"
@@ -289,7 +304,7 @@ export default function EmailTesterPage() {
               </div>
             </div>
 
-            {/* Quick Email Suggestions */}
+            {/* Quick Email Fill */}
             <div className="flex flex-wrap items-center gap-2 pt-1">
               <span className="text-[11px] text-dark-400">Quick fill:</span>
               <button
@@ -307,14 +322,15 @@ export default function EmailTesterPage() {
             <div className="flex items-center justify-between border-b border-dark-800 pb-3">
               <div className="flex items-center gap-2">
                 <div className="w-6 h-6 rounded-full bg-primary-600 text-white flex items-center justify-center text-xs font-bold">2</div>
-                <h3 className="text-sm font-bold text-dark-100">ईमेल टेम्पलेट चुनें (Select Outreach Pitch Template)</h3>
+                <h3 className="text-sm font-bold text-dark-100">Select Outreach Pitch Template</h3>
               </div>
-              <span className="text-[11px] text-dark-400">वह टेम्पलेट चुनें जिसे आप बायर के पास भेजते हैं</span>
+              <span className="text-[11px] text-emerald-400 font-semibold">Active Halloween Pitch Pre-Selected</span>
             </div>
 
             <div className="grid grid-cols-1 sm:grid-cols-2 gap-2.5">
               {templates.map(tpl => {
                 const isSelected = selectedTemplateId === tpl.id;
+                const isHalloween = tpl.id === 'halloween_special_offer';
                 return (
                   <button
                     key={tpl.id}
@@ -327,17 +343,24 @@ export default function EmailTesterPage() {
                     }`}
                   >
                     <div className="flex items-center justify-between gap-1 mb-1">
-                      <span className="text-xs font-bold text-dark-100 truncate">{tpl.name}</span>
+                      <span className="text-xs font-bold text-dark-100 truncate flex items-center gap-1.5">
+                        {isHalloween && <span>🎃</span>}
+                        <span>{tpl.name}</span>
+                      </span>
                       {isSelected && <Check className="w-3.5 h-3.5 text-primary-400 shrink-0" />}
                     </div>
                     <div className="text-[11px] text-dark-400 truncate">{tpl.subject}</div>
                     <div className="mt-2 flex items-center gap-1.5">
-                      <span className="text-[9px] px-1.5 py-0.5 rounded bg-dark-800 text-dark-300 font-medium">
+                      <span className={`text-[9px] px-1.5 py-0.5 rounded font-medium ${
+                        isHalloween ? 'bg-amber-500/20 text-amber-300 border border-amber-500/30' : 'bg-dark-800 text-dark-300'
+                      }`}>
                         {tpl.category}
                       </span>
-                      <span className="text-[9px] px-1.5 py-0.5 rounded bg-emerald-500/10 text-emerald-400 font-medium">
-                        Safe Text
-                      </span>
+                      {isHalloween && (
+                        <span className="text-[9px] px-1.5 py-0.5 rounded bg-emerald-500/10 text-emerald-400 font-medium">
+                          Active Dispatch Template
+                        </span>
+                      )}
                     </div>
                   </button>
                 );
@@ -350,9 +373,9 @@ export default function EmailTesterPage() {
             <div className="flex items-center justify-between border-b border-dark-800 pb-3">
               <div className="flex items-center gap-2">
                 <div className="w-6 h-6 rounded-full bg-primary-600 text-white flex items-center justify-center text-xs font-bold">3</div>
-                <h3 className="text-sm font-bold text-dark-100">सब्जेक्ट एवं ईमेल टेक्स्ट (Subject Line & Content)</h3>
+                <h3 className="text-sm font-bold text-dark-100">Subject Line & Outreach Pitch Content</h3>
               </div>
-              <span className="text-[11px] text-dark-400 font-mono">Character Count: {subject.length}</span>
+              <span className="text-[11px] text-dark-400 font-mono">Length: {subject.length} chars</span>
             </div>
 
             <div className="space-y-1.5">
@@ -369,9 +392,9 @@ export default function EmailTesterPage() {
             </div>
 
             <div className="space-y-1.5">
-              <label className="text-xs text-dark-300 font-medium">Email Body Text (Exact Export Pitch):</label>
+              <label className="text-xs text-dark-300 font-medium">Email Body Text (Exact Outreach Message):</label>
               <textarea
-                rows={9}
+                rows={10}
                 value={bodyText}
                 onChange={e => {
                   setBodyText(e.target.value);
@@ -381,10 +404,10 @@ export default function EmailTesterPage() {
               />
             </div>
 
-            {/* Test Buyer Personalization Tokens */}
+            {/* Simulated Buyer Personalization Tokens */}
             <div className="p-3 rounded-lg bg-dark-900/80 border border-dark-800 space-y-2">
               <span className="text-[11px] font-semibold text-dark-300 block">
-                सिम्युलेटेड बायर डेटा (Preview Placeholders):
+                Simulated Buyer Personalization Placeholders:
               </span>
               <div className="grid grid-cols-2 sm:grid-cols-4 gap-2 text-[11px]">
                 <div>
@@ -412,12 +435,40 @@ export default function EmailTesterPage() {
             <div className="flex items-center justify-between border-b border-dark-800 pb-3">
               <div className="flex items-center gap-2">
                 <div className="w-6 h-6 rounded-full bg-primary-600 text-white flex items-center justify-center text-xs font-bold">4</div>
-                <h3 className="text-sm font-bold text-dark-100">अटैचमेंट मोड (Attachments vs Text-Only Safe Mode)</h3>
+                <h3 className="text-sm font-bold text-dark-100">Attachment Mode (Halloween Posters vs Text-Only)</h3>
               </div>
             </div>
 
             <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
-              {/* Option A: Text-Only Safe Mode */}
+              {/* Option A: With Halloween Attachments */}
+              <button
+                type="button"
+                onClick={() => {
+                  setIncludeAttachments(true);
+                  if (selectedAttachmentKeys.length === 0) {
+                    setSelectedAttachmentKeys(['halloween_poster', 'halloween_badge']);
+                  }
+                  calculateLocalSpamScore(subject, bodyText, true);
+                }}
+                className={`p-4 rounded-xl border text-left transition-all ${
+                  includeAttachments
+                    ? 'bg-primary-950/30 border-primary-500 ring-1 ring-primary-500/40 shadow-sm'
+                    : 'bg-dark-900 border-dark-800 hover:border-dark-700'
+                }`}
+              >
+                <div className="flex items-center justify-between gap-2 mb-1.5">
+                  <div className="flex items-center gap-2">
+                    <Paperclip className="w-4 h-4 text-primary-400" />
+                    <span className="text-xs font-bold text-dark-100">🎃 Both Halloween Attachments (Active)</span>
+                  </div>
+                  {includeAttachments && <CheckCircle className="w-4 h-4 text-primary-400" />}
+                </div>
+                <p className="text-[11px] text-dark-400 leading-relaxed">
+                  Attaches both Halloween Special Offer Poster and Offer Badge so you can test real attachment deliverability.
+                </p>
+              </button>
+
+              {/* Option B: Text-Only Safe Mode */}
               <button
                 type="button"
                 onClick={() => {
@@ -433,37 +484,12 @@ export default function EmailTesterPage() {
                 <div className="flex items-center justify-between gap-2 mb-1.5">
                   <div className="flex items-center gap-2">
                     <ShieldCheck className="w-4 h-4 text-emerald-400" />
-                    <span className="text-xs font-bold text-dark-100">Text-Only Mode (Zero Attachments)</span>
+                    <span className="text-xs font-bold text-dark-100">Text-Only Safe Mode (Zero Attachments)</span>
                   </div>
                   {!includeAttachments && <CheckCircle className="w-4 h-4 text-emerald-400" />}
                 </div>
                 <p className="text-[11px] text-dark-400 leading-relaxed">
-                  ⭐ <strong className="text-emerald-300">98%+ इनबॉक्स गारंटी:</strong> कोई इमेज या पीडीएफ अटैच नहीं होगी। कोल्ड ईमेल में यह तकनीक स्पैम फिल्टर को 100% बाईपास करती है।
-                </p>
-              </button>
-
-              {/* Option B: With Attachments */}
-              <button
-                type="button"
-                onClick={() => {
-                  setIncludeAttachments(true);
-                  calculateLocalSpamScore(subject, bodyText, true);
-                }}
-                className={`p-4 rounded-xl border text-left transition-all ${
-                  includeAttachments
-                    ? 'bg-primary-950/30 border-primary-500 ring-1 ring-primary-500/40 shadow-sm'
-                    : 'bg-dark-900 border-dark-800 hover:border-dark-700'
-                }`}
-              >
-                <div className="flex items-center justify-between gap-2 mb-1.5">
-                  <div className="flex items-center gap-2">
-                    <Image className="w-4 h-4 text-primary-400" />
-                    <span className="text-xs font-bold text-dark-100">अटैचमेंट के साथ टेस्ट करें</span>
-                  </div>
-                  {includeAttachments && <CheckCircle className="w-4 h-4 text-primary-400" />}
-                </div>
-                <p className="text-[11px] text-dark-400 leading-relaxed">
-                  पोस्टर या कैटलॉग पीडीएफ जोड़कर टेस्ट करें कि क्या अटैचमेंट की वजह से मेल प्रमोशन्स या जंक फोल्डर में जा रहा है।
+                  ⭐ <strong className="text-emerald-300">98%+ Primary Inbox Guarantee:</strong> Strips all attachments to avoid aggressive spam/promotional tab filtering.
                 </p>
               </button>
             </div>
@@ -471,7 +497,7 @@ export default function EmailTesterPage() {
             {/* Attachment checkboxes if enabled */}
             {includeAttachments && (
               <div className="pt-2 border-t border-dark-800 space-y-2">
-                <span className="text-[11px] font-semibold text-dark-300 block">Select Attachments to Send:</span>
+                <span className="text-[11px] font-semibold text-dark-300 block">Select Attachments to Include:</span>
                 <div className="space-y-1.5">
                   {availableAttachments.map(att => {
                     const isChecked = selectedAttachmentKeys.includes(att.key);
@@ -493,7 +519,7 @@ export default function EmailTesterPage() {
                           </span>
                         ) : (
                           <span className="text-[9px] px-1.5 py-0.5 rounded bg-amber-500/10 text-amber-400 font-semibold">
-                            FILE ON SERVER
+                            VERIFIED
                           </span>
                         )}
                       </label>
@@ -515,17 +541,17 @@ export default function EmailTesterPage() {
               {sending ? (
                 <>
                   <RefreshCw className="w-4 h-4 animate-spin" />
-                  <span>Sending Real Test Pitch to {toEmail}...</span>
+                  <span>Dispatching Real Test Pitch to {toEmail}...</span>
                 </>
               ) : (
                 <>
                   <Send className="w-4 h-4" />
-                  <span>🚀 Send Real Test Email Now (टेस्ट ईमेल अभी भेजें)</span>
+                  <span>🚀 Send Real Test Email Now (Dispatch via Brevo Port 443)</span>
                 </>
               )}
             </button>
             <p className="text-center text-[11px] text-dark-400 mt-2">
-              Brevo REST API (Port 443) के माध्यम से असली ईमेल तुरंत डिस्पैच होगा।
+              Dispatches immediately via authenticated Brevo HTTP REST API (Port 443) with Reply-To locked to rameshkrthakur1816@gmail.com.
             </p>
           </div>
 
@@ -542,13 +568,13 @@ export default function EmailTesterPage() {
                 </span>
               </div>
               <p className="text-xs text-dark-300 leading-relaxed">
-                👉 अब अपने मोबाइल या लैपटॉप में <strong>{lastResult.target_email}</strong> खोलें। चेक करें कि ईमेल <strong className="text-emerald-400">Primary Inbox</strong> में आया है या <strong className="text-rose-400">Spam/Junk</strong> में। फिर नीचे फीडबैक बटन दबाएं।
+                👉 Now open <strong>{lastResult.target_email}</strong> on your phone or laptop. Check whether this test arrived in your <strong className="text-emerald-400">Primary Inbox</strong>, <strong className="text-amber-400">Promotions</strong>, or <strong className="text-rose-400">Spam / Junk</strong> folder, then click the corresponding button below.
               </p>
             </div>
           )}
         </div>
 
-        {/* Right Column: Real-Time Deliverability & Placement Feed (5 cols) */}
+        {/* Right Column: Deliverability & Placement Feed (5 cols) */}
         <div className="lg:col-span-5 space-y-6">
           {/* Deliverability & Spam Analysis Gauge */}
           {spamAnalysis && (
@@ -565,13 +591,13 @@ export default function EmailTesterPage() {
 
               <div className="p-3 rounded-xl bg-dark-900 border border-dark-800 flex items-center justify-between">
                 <div>
-                  <span className="text-[10px] text-dark-500 uppercase font-bold block">संभावित डिलीवरी स्थान</span>
+                  <span className="text-[10px] text-dark-500 uppercase font-bold block">Estimated Placement</span>
                   <span className="text-sm font-bold text-emerald-400">{spamAnalysis.placement_probability}</span>
                 </div>
                 <div className="text-right">
-                  <span className="text-[10px] text-dark-500 uppercase font-bold block">मोड</span>
+                  <span className="text-[10px] text-dark-500 uppercase font-bold block">Dispatch Mode</span>
                   <span className="text-xs font-semibold text-dark-200">
-                    {includeAttachments ? '📎 With Attachments' : '🛡️ Text-Only Safe'}
+                    {includeAttachments ? '🎃 Both Halloween Attachments' : '🛡️ Text-Only Safe'}
                   </span>
                 </div>
               </div>
@@ -605,38 +631,38 @@ export default function EmailTesterPage() {
             </div>
           )}
 
-          {/* How to Test: Step-by-Step Guide Card */}
+          {/* Step-by-Step Testing Protocol Guide */}
           <div className="card p-5 space-y-3 bg-dark-900/60 border-dark-800">
             <h4 className="text-xs font-bold text-dark-200 uppercase tracking-wider flex items-center gap-1.5">
               <HelpCircle className="w-4 h-4 text-primary-400" />
-              <span>ईमेल डिलीवरी कैसे टेस्ट करें? (Testing Protocol)</span>
+              <span>How to Test Real Inbox Placement</span>
             </h4>
             <div className="space-y-2.5 text-xs text-dark-300 leading-relaxed">
               <div className="flex items-start gap-2">
                 <span className="w-5 h-5 rounded-full bg-dark-800 text-primary-400 flex items-center justify-center font-bold text-[11px] shrink-0 mt-0.5">1</span>
-                <span>ऊपर अपना कोई भी ईमेल आईडी दर्ज करें (Gmail, Outlook, Yahoo) और <strong>Send Real Test Email</strong> बटन दबाएं।</span>
+                <span>Enter any destination email address above (e.g. your secondary Gmail, Outlook, or Yahoo) and click <strong>Send Real Test Email Now</strong>.</span>
               </div>
               <div className="flex items-start gap-2">
                 <span className="w-5 h-5 rounded-full bg-dark-800 text-primary-400 flex items-center justify-center font-bold text-[11px] shrink-0 mt-0.5">2</span>
-                <span>अपने फोन या लैपटॉप पर उस ईमेल का इनबॉक्स खोलें और देखें कि ईमेल कहां आया:</span>
+                <span>Open that email account on your phone or computer and check where the email landed:</span>
               </div>
               <div className="pl-7 space-y-1 text-[11px]">
                 <div className="flex items-center gap-1.5 text-emerald-400">
                   <CheckCircle className="w-3.5 h-3.5" />
-                  <span><strong>Primary Inbox:</strong> सर्वोत्तम डिलीवरी। बायर को सीधे दिखेगा।</span>
+                  <span><strong>Primary Inbox:</strong> Best possible placement. Seen directly by procurement managers.</span>
                 </div>
                 <div className="flex items-center gap-1.5 text-amber-400">
                   <FolderCheck className="w-3.5 h-3.5" />
-                  <span><strong>Promotions:</strong> ईमेल फिल्टर हुआ, टेक्स्ट-ओनली मोड ट्राई करें।</span>
+                  <span><strong>Promotions:</strong> Filtered by Google algorithms. Switch to Text-Only Safe Mode to land in Primary.</span>
                 </div>
                 <div className="flex items-center gap-1.5 text-rose-400">
                   <FolderX className="w-3.5 h-3.5" />
-                  <span><strong>Junk / Spam:</strong> इमेज हटाएं और सामान्य पेशेवर भाषा रखें।</span>
+                  <span><strong>Spam / Junk:</strong> Flagged by spam filters. Remove attachments and keep phrasing concise.</span>
                 </div>
               </div>
               <div className="flex items-start gap-2">
                 <span className="w-5 h-5 rounded-full bg-dark-800 text-primary-400 flex items-center justify-center font-bold text-[11px] shrink-0 mt-0.5">3</span>
-                <span>उस ईमेल के <strong>Reply</strong> बटन को दबाकर देखें — रिप्लाई का पता सीधे <strong>rameshkrthakur1816@gmail.com</strong> ही दिखाई देगा।</span>
+                <span>Click the <strong>Reply</strong> button in the received email to confirm that replies route directly to <strong>rameshkrthakur1816@gmail.com</strong>.</span>
               </div>
             </div>
           </div>
@@ -646,7 +672,7 @@ export default function EmailTesterPage() {
             <div className="flex items-center justify-between border-b border-dark-800 pb-3">
               <div className="flex items-center gap-2">
                 <Clock className="w-4 h-4 text-primary-400" />
-                <h3 className="text-sm font-bold text-dark-100">हालिया टेस्ट इतिहास (Recent Test History)</h3>
+                <h3 className="text-sm font-bold text-dark-100">Recent Test Dispatches</h3>
               </div>
               <button
                 type="button"
@@ -660,8 +686,8 @@ export default function EmailTesterPage() {
             {history.length === 0 ? (
               <div className="text-center py-8 text-xs text-dark-500 space-y-1">
                 <Inbox className="w-8 h-8 mx-auto text-dark-600 mb-2 opacity-50" />
-                <p>अभी तक कोई टेस्ट ईमेल नहीं भेजा गया है।</p>
-                <p className="text-[11px] text-dark-600">ऊपर बटन दबाकर अपना पहला टेस्ट मेल भेजें।</p>
+                <p>No test emails dispatched yet.</p>
+                <p className="text-[11px] text-dark-600">Click the button on the left to send your first live test pitch.</p>
               </div>
             ) : (
               <div className="space-y-3 max-h-[500px] overflow-y-auto pr-1">
@@ -692,7 +718,7 @@ export default function EmailTesterPage() {
 
                       <div className="flex items-center justify-between text-[11px] text-dark-400 pt-1 border-t border-dark-800/60">
                         <span>
-                          {test.mode === 'text_only' ? '🛡️ Text-Only' : `📎 ${test.attachments_count} Attachments`}
+                          {test.mode === 'text_only' ? '🛡️ Text-Only' : `🎃 ${test.attachments_count} Attachments`}
                         </span>
                         <span className="text-emerald-400 font-mono">
                           Score: {test.spam_score}/100
@@ -702,7 +728,7 @@ export default function EmailTesterPage() {
                       {/* Interactive Placement Feedback Buttons */}
                       <div className="pt-2 border-t border-dark-800 space-y-1.5">
                         <span className="text-[10px] text-dark-400 block font-semibold">
-                          यह ईमेल आपके कौन से फोल्डर में आया? (Click to verify):
+                          Where did this email arrive? (Click to verify):
                         </span>
                         <div className="grid grid-cols-3 gap-1.5">
                           <button
@@ -715,7 +741,7 @@ export default function EmailTesterPage() {
                             }`}
                           >
                             <CheckCircle className="w-3 h-3" />
-                            <span>Inbox</span>
+                            <span>Primary Inbox</span>
                           </button>
 
                           <button

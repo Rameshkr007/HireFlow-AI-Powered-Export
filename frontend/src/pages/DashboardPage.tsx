@@ -304,7 +304,7 @@ export default function DashboardPage() {
             title="Test real email dispatch and verify Inbox vs Spam folder placement"
           >
             <Send className="w-3.5 h-3.5 text-emerald-400" />
-            <span>Test Inbox & Spam (टेस्ट मेल)</span>
+            <span>Test Inbox & Spam Placement</span>
           </button>
 
           <button
@@ -1009,7 +1009,7 @@ export default function DashboardPage() {
                   className="px-4 py-2 rounded-lg bg-emerald-600/25 hover:bg-emerald-600/35 border border-emerald-500/50 text-emerald-300 text-xs font-bold flex items-center gap-1.5 shadow-sm transition-colors"
                 >
                   <Send className="w-3.5 h-3.5 text-emerald-400" />
-                  <span>🧪 Test Inbox vs Spam Placement (इनबॉक्स टेस्ट करें)</span>
+                  <span>🧪 Test Inbox vs Spam Placement</span>
                 </button>
 
                 <button

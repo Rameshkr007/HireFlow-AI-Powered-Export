@@ -202,19 +202,19 @@ def startup():
         try:
             from .models.attachment import Attachment
             upload_dir = os.path.abspath(settings.UPLOAD_DIR)
-            # 1. Purge old posters
+            # 1. Purge obsolete non-Halloween posters
             db.query(Attachment).filter(
                 (Attachment.filename.ilike("%Handcrafted_Collection_Poster%")) |
                 (Attachment.original_name.ilike("%Himalayan Singing Bowls Poster%")) |
                 (Attachment.filename.ilike("%Home_Decor%")) |
-                (Attachment.original_name.ilike("%Home_Decor%")) |
-                (Attachment.filename.ilike("%Halloween%")) |
-                (Attachment.original_name.ilike("%Halloween%"))
+                (Attachment.original_name.ilike("%Home_Decor%"))
             ).delete(synchronize_session=False)
             db.commit()
 
-            # 2. Add both new posters for each user
+            # 2. Add both Halloween posters and catalog for each user
             new_posters = [
+                ("OM_Enterprise_Halloween_Special_Offer_Poster.jpg", "OM Enterprise – Halloween Special Offer Poster.jpg", "image/jpeg"),
+                ("OM_Enterprise_Halloween_Special_Offer_Badge.jpg", "OM Enterprise – Halloween Special Offer Badge.jpg", "image/jpeg"),
                 ("OM_Enterprise_Handcrafted_Pieces_Poster.jpg", "OM Enterprise – Handcrafted Beautiful Pieces Poster.jpg", "image/jpeg"),
                 ("OM_Enterprise_Special_Offer_Badge.jpg", "OM Enterprise – Special Offer Badge.jpg", "image/jpeg"),
                 ("OM_Enterprise_Metal_Candle_Holder_Catalog.pdf", "OM Enterprise – Metal Candle Holders & Lanterns Catalog.pdf", "application/pdf")
@@ -371,7 +371,8 @@ async def test_tradewind():
 @app.get("/api/build-info")
 def build_info():
     return {
-        "version": "1.3.1",
+        "version": "1.3.2",
+        "halloween_attachments": True,
         "email_tester_enabled": True,
         "brevo_safe": True,
         "master_records_count": 621,

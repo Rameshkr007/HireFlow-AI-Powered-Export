@@ -15,8 +15,8 @@ DEFAULT_PROFILE = {
     "company_email": "exportindia2026us@gmail.com",
     "phone": "+91 80577 10065",
     "website": "",
-    "country": "India",
-    "address": "Moradabad, Uttar Pradesh, India",
+    "country": "Nepal",
+    "address": "Direct Manufacturer from Nepal • Wholesale • OEM • Private Label",
     "product_categories": [
         "Handmade Himalayan Singing Bowls",
         "Metal Candle Holders & Lanterns",
@@ -41,6 +41,8 @@ def get_profile(current_user: User = Depends(get_current_user), db: Session = De
             profile.company_email != "exportindia2026us@gmail.com" or
             profile.sender_name != "Ramesh Kumar Thakur" or
             profile.website != "" or
+            profile.country != "Nepal" or
+            profile.address != DEFAULT_PROFILE["address"] or
             profile.company_name in ["Himalayan Exports Pvt Ltd", "Raj Kumar Exports", "", None]
         ):
             for k, v in DEFAULT_PROFILE.items():

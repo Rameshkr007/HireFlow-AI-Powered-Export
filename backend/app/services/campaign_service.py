@@ -174,11 +174,11 @@ def ensure_campaign_9(db: Session, user_id: int):
 
 I came across {company_name} while reviewing leading US home accents and tabletop showrooms.
 
-We are a direct manufacturing and export unit (OM Enterprise) based in Moradabad, India & Nepal, specializing in:
+We are a direct manufacturing and export unit (OM Enterprise) based in Nepal, specializing in:
 • Handcrafted Solid Brass & Wrought Iron Lanterns, Candle Holders & Table Candelabras
 • Authentic Hand-Hammered Himalayan Singing Bowls (Acoustic 432Hz/528Hz Tuned)
 
-Because we manufacture directly in our Moradabad facility:
+Because we manufacture directly in our facility:
 1. Pricing is strictly factory-direct FOB (eliminating 20-30% middleman trading margins).
 2. Low minimum test orders (from 50 pcs) with custom finishes (matte black, antique brass, raw brass) and private label retail packaging.
 3. Direct consolidated ocean shipments to Los Angeles, Long Beach, and Savannah ports.
@@ -191,7 +191,7 @@ Ramesh Kumar Thakur
 Sales Executive | OM Enterprise
 📧 rameshkrthakur1816@gmail.com
 📱 WhatsApp: +91 80577 10065
-Moradabad, Uttar Pradesh, India"""
+Direct Manufacturer from Nepal • Wholesale • OEM • Private Label"""
         },
         {
             "step_number": 2,
@@ -333,7 +333,7 @@ Ramesh Kumar Thakur
 Sales Executive | OM Enterprise
 📧 rameshkrthakur1816@gmail.com
 📱 WhatsApp: +91 80577 10065
-Moradabad, Uttar Pradesh, India"""
+Direct Manufacturer from Nepal • Wholesale • OEM • Private Label"""
 
     if not c10:
         c10 = Campaign(
@@ -410,7 +410,7 @@ Ramesh Kumar Thakur
 Sales Executive | OM Enterprise
 📧 rameshkrthakur1816@gmail.com
 📱 WhatsApp: +91 80577 10065
-Moradabad, Uttar Pradesh, India"""
+Direct Manufacturer from Nepal • Wholesale • OEM • Private Label"""
 
     if not c11:
         c11 = Campaign(

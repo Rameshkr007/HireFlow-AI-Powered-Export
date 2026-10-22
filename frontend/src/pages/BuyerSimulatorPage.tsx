@@ -77,7 +77,7 @@ const BUYER_PERSONAS: BuyerPersona[] = [
       },
       {
         triggerKeywords: ['compliance', 'audit', 'sedex', 'bsci', 'social', 'factory', 'worker'],
-        reply: "Our corporate compliance team requires an unannounced SMETA/Sedex 4-Pillar social audit before we can cut any purchase order. Is your Moradabad/Jaipur factory fully certified?",
+        reply: "Our corporate compliance team requires an unannounced SMETA/Sedex 4-Pillar social audit before we can cut any purchase order. Is your workshop/factory fully certified?",
         objectionType: 'Social Compliance Audit Requirement'
       },
       {

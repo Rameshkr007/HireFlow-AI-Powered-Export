@@ -85,8 +85,8 @@ export default function ComplianceAuditPage() {
   const [checkedIds, setCheckedIds] = useState<string[]>([
     'prop65', 'lacey', 'cpsc_flam', 'ista_drop'
   ]);
-  const [exporterName, setExporterName] = useState('Himalayan Artisans & Exports Pvt Ltd');
-  const [factoryLocation, setFactoryLocation] = useState('Jaipur & Moradabad Industrial Zone, India');
+  const [exporterName, setExporterName] = useState('OM Enterprise');
+  const [factoryLocation, setFactoryLocation] = useState('Nepal Manufacturing Workshop');
   const [iecNumber, setIecNumber] = useState('IEC: 0518099231');
 
   // Toggle item

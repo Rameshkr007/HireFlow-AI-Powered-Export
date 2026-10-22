@@ -376,7 +376,7 @@ def ensure_ramesh_user(db: Session) -> User:
             phone="+91 80577 10065",
             website="",
             country="Nepal",
-            address="Kathmandu, Nepal",
+            address="Direct Manufacturer from Nepal • Wholesale • OEM • Private Label",
             product_categories=[
                 "Handmade Himalayan Singing Bowls",
                 "Full Moon Healing Singing Bowls",
@@ -395,7 +395,7 @@ def ensure_ramesh_user(db: Session) -> User:
         profile.company_email = "exportindia2026us@gmail.com"
         profile.phone = "+91 80577 10065"
         profile.country = "Nepal"
-        profile.address = "Kathmandu, Nepal"
+        profile.address = "Direct Manufacturer from Nepal • Wholesale • OEM • Private Label"
         profile.company_description = "Direct manufacturer and exporter based in Nepal of authentic handmade Himalayan Singing Bowls, Full Moon Healing Sets, 7-Chakra tuned sets, and handcrafted Tibetan sound healing instruments."
         profile.sender_name = "Ramesh Kumar Thakur"
         db.commit()
@@ -602,7 +602,7 @@ We came across <Company Name> while researching prominent importers and wholesal
 
 We would like to introduce OM Enterprise and explore potential export supply opportunities with your esteemed organization.
 
-We are direct manufacturers and exporters based in Moradabad, India, specializing in:
+We are direct manufacturers and exporters based in Nepal, specializing in:
 1. Authentic Handcrafted Himalayan Singing Bowls & Full Moon Healing Sets
 2. Metal Candle Holders, Wrought Iron Lanterns & Banquet Candelabras
 
@@ -619,7 +619,7 @@ Ramesh Kumar Thakur
 Export Sales Executive | OM Enterprise
 exportindia2026us@gmail.com
 Phone: +91 80577 10065
-Moradabad, Uttar Pradesh, India""",
+Direct Manufacturer from Nepal • Wholesale • OEM • Private Label""",
                 sending_limit=25,
                 delay_seconds=5,
                 status="COMPLETED",
@@ -651,11 +651,11 @@ Moradabad, Uttar Pradesh, India""",
 
 I came across <Company Name> while reviewing leading home decor showrooms and wellness businesses across California.
 
-We are a direct manufacturing and export unit based in Moradabad, India (the traditional handcrafted brass and metalware center), specializing in:
+We are a direct manufacturing and export unit based in Nepal, specializing in:
 • Handcrafted Metal Candle Stands, Lanterns & Table Candelabras
 • Authentic Hand-Hammered Himalayan Singing Bowls & Meditation Sets
 
-Because we produce directly in our Moradabad facility:
+Because we produce directly in our manufacturing facility:
 1. Pricing is strictly factory-direct FOB (eliminating 20-30% middleman trading margins).
 2. We provide custom finishes (matte black, antique bronze, raw brass), laser engraving & private label packaging.
 3. Direct consolidated ocean shipments to Los Angeles & Long Beach ports.
@@ -668,7 +668,7 @@ Ramesh Kumar Thakur
 Export Sales Executive | OM Enterprise
 📧 exportindia2026us@gmail.com
 📱 WhatsApp / Phone: +91 80577 10065
-Moradabad, Uttar Pradesh, India""",
+Direct Manufacturer from Nepal • Wholesale • OEM • Private Label""",
                 sending_limit=50,
                 delay_seconds=5,
                 status="READY",
@@ -686,11 +686,11 @@ Moradabad, Uttar Pradesh, India""",
 
 I came across <Company Name> while reviewing leading home decor showrooms and wellness businesses across California.
 
-We are a direct manufacturing and export unit based in Moradabad, India (the traditional handcrafted brass and metalware center), specializing in:
+We are a direct manufacturing and export unit based in Nepal, specializing in:
 • Handcrafted Metal Candle Stands, Lanterns & Table Candelabras
 • Authentic Hand-Hammered Himalayan Singing Bowls & Meditation Sets
 
-Because we produce directly in our Moradabad facility:
+Because we produce directly in our manufacturing facility:
 1. Pricing is strictly factory-direct FOB (eliminating 20-30% middleman trading margins).
 2. We provide custom finishes (matte black, antique bronze, raw brass), laser engraving & private label packaging.
 3. Direct consolidated ocean shipments to Los Angeles & Long Beach ports.
@@ -703,7 +703,7 @@ Ramesh Kumar Thakur
 Export Sales Executive | OM Enterprise
 📧 exportindia2026us@gmail.com
 📱 WhatsApp / Phone: +91 80577 10065
-Moradabad, Uttar Pradesh, India"""
+Direct Manufacturer from Nepal • Wholesale • OEM • Private Label"""
             db.commit()
 
         # Ensure Official Assigned Singing Bowls Campaign is ready for Ramesh

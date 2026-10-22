@@ -79,11 +79,11 @@ export const HIGH_CONVERTING_DUAL_TEMPLATE = {
 
 I came across {company_name} while reviewing leading home decor showrooms and wellness businesses across {country}.
 
-We are a direct manufacturing and export unit based in Moradabad, India (the traditional handcrafted brass and metalware center), specializing in:
+We are a direct manufacturing and export unit based in Nepal, specializing in:
 • Handcrafted Metal Candle Stands, Lanterns & Table Candelabras
 • Authentic Hand-Hammered Himalayan Singing Bowls & Meditation Sets
 
-Because we produce directly in our Moradabad facility:
+Because we produce directly in our manufacturing facility:
 1. Pricing is strictly factory-direct FOB (eliminating 20-30% middleman trading margins).
 2. We provide custom finishes (matte black, antique bronze, raw brass), laser engraving & private label packaging.
 3. Direct consolidated ocean shipments to Los Angeles & Long Beach ports.
@@ -96,7 +96,7 @@ Ramesh Kumar Thakur
 Export Sales Executive | OM Enterprise
 📧 exportindia2026us@gmail.com
 📱 +91 80577 10065
-Moradabad, Uttar Pradesh, India`
+Direct Manufacturer from Nepal • Wholesale • OEM • Private Label`
 };
 
 export const CANDLE_STANDS_TEMPLATE = {
@@ -105,7 +105,7 @@ export const CANDLE_STANDS_TEMPLATE = {
 
 I noticed {company_name}'s impressive collection of premium home accents and tabletop accessories.
 
-We are OM Enterprise, a direct manufacturer and exporter of handcrafted metal candle holders, candelabras, and wrought iron lanterns based in Moradabad, India.
+We are OM Enterprise, a direct manufacturer and exporter of handcrafted metal candle holders, candelabras, and wrought iron lanterns based in Nepal.
 
 How we support US wholesalers & design showrooms:
 • Custom OEM designs, private label packaging & barcode retail tagging
@@ -121,7 +121,7 @@ Ramesh Kumar Thakur
 Export Sales Executive | OM Enterprise
 📧 exportindia2026us@gmail.com
 📱 +91 80577 10065
-Moradabad, Uttar Pradesh, India`
+Direct Manufacturer from Nepal • Wholesale • OEM • Private Label`
 };
 
 export const SINGING_BOWLS_TEMPLATE = {
@@ -146,7 +146,7 @@ Ramesh Kumar Thakur
 Export Sales Executive | OM Enterprise
 📧 exportindia2026us@gmail.com
 📱 +91 80577 10065
-Moradabad, Uttar Pradesh, India`
+Direct Manufacturer from Nepal • Wholesale • OEM • Private Label`
 };
 
 const DEFAULT_STEPS: SequenceStep[] = [

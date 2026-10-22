@@ -307,7 +307,7 @@ def generate_whatsapp_pitch(buyer_name: str, company_name: str, phone: str) -> D
 
     text = (
         f"Hello {buyer_name}, this is Ramesh Kumar Thakur from OM Enterprise "
-        f"(Direct Manufacturer of Handcrafted Brass Lanterns, Candelabras & Himalayan Singing Bowls in Moradabad, India).\n\n"
+        f"(Direct Manufacturer from Nepal • Wholesale • OEM • Private Label).\n\n"
         f"We work directly with commercial event designers and wholesale retailers across California. "
         f"We offer direct factory FOB pricing (saving 25-30% on middleman margins) and complimentary sample delivery to your US showroom.\n\n"
         f"Would you be open to receiving our wholesale price sheet and a short craft video for {company_name}?"

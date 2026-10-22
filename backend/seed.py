@@ -28,8 +28,8 @@ def seed():
             company_email="exportindia2026us@gmail.com",
             phone="+91 80577 10065",
             website="",
-            country="India",
-            address="Moradabad, Uttar Pradesh, India",
+            country="Nepal",
+            address="Direct Manufacturer from Nepal • Wholesale • OEM • Private Label",
             product_categories=[
                 "Handmade Himalayan Singing Bowls",
                 "Metal Candle Holders & Lanterns",
@@ -51,8 +51,8 @@ def seed():
             existing_profile.company_email = "exportindia2026us@gmail.com"
             existing_profile.phone = "+91 80577 10065"
             existing_profile.website = ""
-            existing_profile.country = "India"
-            existing_profile.address = "Moradabad, Uttar Pradesh, India"
+            existing_profile.country = "Nepal"
+            existing_profile.address = "Direct Manufacturer from Nepal • Wholesale • OEM • Private Label"
             db.commit()
 
     buyers_data = [

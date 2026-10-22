@@ -96,7 +96,7 @@ export default function BuyersPage() {
     const cleanPhone = (buyer.phone || '').replace(/[^\d+]/g, '');
     const phone = cleanPhone.startsWith('1') ? cleanPhone : `1${cleanPhone}`;
     const text = encodeURIComponent(
-      `Hello ${buyer.buyer_name || 'Purchasing Manager'}, this is Ramesh Kumar Thakur from OM Enterprise (Direct Manufacturer of Handcrafted Solid Brass Lanterns, Candelabras & Singing Bowls in Moradabad, India).\n\nWe offer direct factory FOB pricing and complimentary sample delivery to your US showroom for ${buyer.company_name}.\n\nWould you like me to send over our wholesale catalog and craft showcase video?`
+      `Hello ${buyer.buyer_name || 'Purchasing Manager'}, this is Ramesh Kumar Thakur from OM Enterprise (Direct Manufacturer from Nepal • Wholesale • OEM • Private Label).\n\nWe offer direct factory FOB pricing and complimentary sample delivery to your US showroom for ${buyer.company_name}.\n\nWould you like me to send over our wholesale catalog and craft showcase video?`
     );
     window.open(`https://wa.me/${phone.replace('+', '')}?text=${text}`, '_blank');
   };

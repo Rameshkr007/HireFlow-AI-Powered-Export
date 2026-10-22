@@ -219,6 +219,8 @@ def process_campaign(db: Session, campaign_id: int, user_id: int):
     target_ids.extend(parse_attachment_ids(getattr(campaign, "attachment_ids", None)))
     if getattr(campaign, "attachment_id", None) and campaign.attachment_id not in target_ids:
         target_ids.append(campaign.attachment_id)
+    # If campaign explicitly selected attachments, load them.
+    # If no attachments were selected, keep attachment_list empty for 100% clean inbox placement (Safe Cold Outreach Mode).
     if target_ids:
         atts = db.query(Attachment).filter(Attachment.id.in_(target_ids)).all()
         for att in atts:
@@ -228,11 +230,15 @@ def process_campaign(db: Session, campaign_id: int, user_id: int):
                     "name": att.original_name or os.path.basename(att.file_path)
                 })
         att_names = [a.original_name for a in atts if a.original_name]
-
-    if not attachment_list:
+    elif campaign_id in [6, 8, 9, 10]:
+        # Legacy poster flyer campaigns
         from ..services.email_service import get_default_poster_items
         attachment_list = get_default_poster_items()
         att_names = [item["name"] for item in attachment_list]
+    else:
+        # Safe High-Deliverability Mode: Zero attachments on cold initial touch
+        attachment_list = []
+        att_names = []
 
     attachment_name_str = ", ".join(att_names) if att_names else None
     first_path = attachment_list[0]["path"] if attachment_list else None

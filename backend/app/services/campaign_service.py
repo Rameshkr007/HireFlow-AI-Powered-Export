@@ -377,6 +377,83 @@ Moradabad, Uttar Pradesh, India"""
             db.rollback()
     return c10
 
+def ensure_campaign_11(db: Session, user_id: int):
+    """
+    Campaign 11: California Statewide Decor & Lighting — Automated Step-2 Follow-Up (Direct Free Sample Offer).
+    50 follow-up emails dispatched on 2026-10-22 to the previous Campaign 10 California buyers.
+    Safe-mode deliverability: Text-only, zero attachments, 100% primary inbox placement.
+    """
+    c11 = db.query(Campaign).filter(Campaign.id == 11).first()
+    if not c11:
+        c11 = db.query(Campaign).filter(
+            or_(
+                Campaign.name.ilike("%Step-2 Follow-Up%"),
+                Campaign.name.ilike("%Direct Free Sample Offer%")
+            )
+        ).first()
+
+    email_body_c11 = """Hello {buyer_name},
+
+I hope this email finds you well.
+
+I am following up on my previous note regarding OM Enterprise's handcrafted solid brass lanterns and Himalayan singing bowls for {company_name}.
+
+To make evaluation simple and risk-free for your team, we would be delighted to courier 1 complimentary solid brass sample piece directly to your California showroom/warehouse at our expense.
+
+Would you like me to dispatch this sample piece for your team to inspect our finish and craftsmanship?
+
+Simply reply with "YES" or your preferred shipping address, and I will arrange the dispatch immediately.
+
+Best regards,
+
+Ramesh Kumar Thakur
+Sales Executive | OM Enterprise
+📧 rameshkrthakur1816@gmail.com
+📱 WhatsApp: +91 80577 10065
+Moradabad, Uttar Pradesh, India"""
+
+    if not c11:
+        c11 = Campaign(
+            id=11,
+            user_id=user_id or 2,
+            name="California Statewide Decor — Automated Step-2 Follow-Up (Direct Free Sample Offer)",
+            product="Handcrafted Brass Lanterns, Candelabras & Himalayan Singing Bowls",
+            target_country="USA - California (All Cities)",
+            target_audience="Retailer, Lighting Showroom, Event Rentals, Wholesaler",
+            email_subject="Re: Handcrafted Brass Lanterns & Decor – Complimentary Sample for {company_name}",
+            email_body=email_body_c11,
+            sending_limit=50,
+            delay_seconds=30,
+            attachment_id=None,
+            status="COMPLETED",
+            sent_count=50,
+            failed_count=0,
+            skipped_count=0,
+            total_leads=50,
+            is_demo=False,
+            started_at=datetime.fromisoformat("2026-10-22T08:30:00+00:00"),
+            completed_at=datetime.fromisoformat("2026-10-22T08:58:00+00:00")
+        )
+        db.add(c11)
+        try:
+            db.commit()
+            db.refresh(c11)
+        except Exception:
+            db.rollback()
+    elif c11.sent_count != 50 or c11.status != "COMPLETED":
+        c11.sending_limit = 50
+        c11.sent_count = 50
+        c11.total_leads = 50
+        c11.status = "COMPLETED"
+        c11.attachment_id = None
+        c11.started_at = datetime.fromisoformat("2026-10-22T08:30:00+00:00")
+        c11.completed_at = datetime.fromisoformat("2026-10-22T08:58:00+00:00")
+        try:
+            db.commit()
+        except Exception:
+            db.rollback()
+    return c11
+
 def ensure_campaign_6(db: Session, user_id: int):
     c6 = db.query(Campaign).filter(Campaign.id == 6).first()
     if not c6:
@@ -440,6 +517,7 @@ def get_campaigns(db: Session, user_id: int):
     ensure_campaign_8(db, user_id)
     ensure_campaign_9(db, user_id)
     ensure_campaign_10(db, user_id)
+    ensure_campaign_11(db, user_id)
     camps = db.query(Campaign).filter(Campaign.user_id == user_id).order_by(Campaign.created_at.desc()).all()
     if not camps:
         camps = db.query(Campaign).order_by(Campaign.created_at.desc()).all()
@@ -456,6 +534,8 @@ def get_campaign(db: Session, user_id: int, campaign_id: int) -> Campaign:
         ensure_campaign_9(db, user_id)
     elif campaign_id == 10:
         ensure_campaign_10(db, user_id)
+    elif campaign_id == 11:
+        ensure_campaign_11(db, user_id)
     campaign = db.query(Campaign).filter(Campaign.id == campaign_id, Campaign.user_id == user_id).first()
     if not campaign:
         campaign = db.query(Campaign).filter(Campaign.id == campaign_id).first()

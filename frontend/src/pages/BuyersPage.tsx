@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 import { useQuery } from '@tanstack/react-query';
 import { useNavigate, Link } from 'react-router-dom';
-import { Search, Plus, Download, Upload, Filter, MoreHorizontal, Brain, Mail, Trash2 } from 'lucide-react';
+import { Search, Plus, Download, Upload, Filter, MoreHorizontal, Brain, Mail, Trash2, MessageSquare, Linkedin, Sparkles, CheckCircle2 } from 'lucide-react';
 import api from '../lib/api';
 import { Buyer, BuyerListResponse } from '../lib/types';
 import StatusBadge from '../components/ui/StatusBadge';
@@ -16,6 +16,8 @@ export default function BuyersPage() {
   const [search, setSearch] = useState('');
   const [selectedIds, setSelectedIds] = useState<number[]>([]);
   const [deleteId, setDeleteId] = useState<number | null>(null);
+  const [enriching, setEnriching] = useState(false);
+  const [simulatingReply, setSimulatingReply] = useState(false);
 
   const { data, isLoading, refetch } = useQuery<BuyerListResponse>({
     queryKey: ['buyers', page, search],
@@ -64,6 +66,50 @@ export default function BuyersPage() {
     }
   };
 
+  const handleEnrichDecisionMakers = async () => {
+    setEnriching(true);
+    try {
+      const res = await api.post('/api/buyers/bulk-enrich-decision-makers');
+      showToast(res.data.message || 'Decision Makers enriched successfully!', 'success');
+      refetch();
+    } catch {
+      showToast('Enrichment failed', 'error');
+    } finally {
+      setEnriching(false);
+    }
+  };
+
+  const handleSimulateReply = async () => {
+    setSimulatingReply(true);
+    try {
+      const res = await api.post('/api/email-activity/simulate-reply');
+      showToast(res.data.message || 'Positive reply simulated & recorded!', 'success');
+      refetch();
+    } catch {
+      showToast('Failed to simulate reply', 'error');
+    } finally {
+      setSimulatingReply(false);
+    }
+  };
+
+  const openWhatsApp = (buyer: any) => {
+    const cleanPhone = (buyer.phone || '').replace(/[^\d+]/g, '');
+    const phone = cleanPhone.startsWith('1') ? cleanPhone : `1${cleanPhone}`;
+    const text = encodeURIComponent(
+      `Hello ${buyer.buyer_name || 'Purchasing Manager'}, this is Ramesh Kumar Thakur from OM Enterprise (Direct Manufacturer of Handcrafted Solid Brass Lanterns, Candelabras & Singing Bowls in Moradabad, India).\n\nWe offer direct factory FOB pricing and complimentary sample delivery to your US showroom for ${buyer.company_name}.\n\nWould you like me to send over our wholesale catalog and craft showcase video?`
+    );
+    window.open(`https://wa.me/${phone.replace('+', '')}?text=${text}`, '_blank');
+  };
+
+  const openLinkedIn = (buyer: any) => {
+    if (buyer.linkedin_url && !buyer.linkedin_url.includes('search')) {
+      window.open(buyer.linkedin_url, '_blank');
+    } else {
+      const query = encodeURIComponent(`${buyer.company_name} ${buyer.job_title || 'sourcing buyer'}`);
+      window.open(`https://www.linkedin.com/search/results/people/?keywords=${query}`, '_blank');
+    }
+  };
+
   return (
     <div className="space-y-6">
       <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
@@ -73,12 +119,28 @@ export default function BuyersPage() {
         </div>
         <div className="flex flex-wrap gap-2">
           <button
+            onClick={handleEnrichDecisionMakers}
+            disabled={enriching}
+            className="px-3 py-1.5 rounded-lg bg-emerald-600 hover:bg-emerald-500 text-white font-semibold text-xs flex items-center gap-1.5 shadow-md transition-all cursor-pointer"
+          >
+            <Sparkles className="w-3.5 h-3.5" />
+            <span>{enriching ? 'Enriching Contacts...' : '🎯 Enrich Decision Makers (Owners & Sourcing Heads)'}</span>
+          </button>
+          <button
+            onClick={handleSimulateReply}
+            disabled={simulatingReply}
+            className="px-3 py-1.5 rounded-lg bg-amber-500 hover:bg-amber-400 text-dark-950 font-bold text-xs flex items-center gap-1.5 shadow-md transition-all cursor-pointer"
+          >
+            <span>🔥</span>
+            <span>{simulatingReply ? 'Recording...' : 'Simulate Buyer Reply'}</span>
+          </button>
+          <button
             onClick={handleSeedCandleBuyers}
             disabled={seedingCandles}
-            className="px-3.5 py-2 rounded-lg bg-amber-500 hover:bg-amber-400 text-dark-950 font-bold text-xs flex items-center gap-1.5 shadow-lg shadow-amber-500/20 transition-all cursor-pointer"
+            className="btn-secondary text-xs flex items-center gap-1.5 cursor-pointer"
           >
             <span>✨</span>
-            <span>{seedingCandles ? 'Syncing Directory...' : 'Sync 320+ Verified Buyers (100+ California Buyers Included)'}</span>
+            <span>Sync 320+ Buyers</span>
           </button>
           <button onClick={() => navigate('/discovery')} className="btn-secondary text-xs">
             Search More
@@ -144,8 +206,19 @@ export default function BuyersPage() {
                       <input type="checkbox" className="rounded border-dark-600 bg-dark-700 text-primary-500" checked={selectedIds.includes(buyer.id)} onChange={() => toggleSelect(buyer.id)} />
                     </td>
                     <td className="px-4 py-3">
-                      <Link to={`/buyers/${buyer.id}`} className="font-medium text-dark-100 hover:text-primary-400 block">{buyer.company_name}</Link>
-                      <div className="text-xs text-dark-400">{buyer.buyer_name || 'Procurement Executive'} • {buyer.email}</div>
+                      <div className="flex items-center gap-2">
+                        <Link to={`/buyers/${buyer.id}`} className="font-medium text-dark-100 hover:text-primary-400 block">{buyer.company_name}</Link>
+                        {buyer.lead_quality === 'VERIFIED_EXECUTIVE' ? (
+                          <span className="text-[10px] px-1.5 py-0.5 rounded bg-emerald-500/20 text-emerald-300 border border-emerald-500/30 font-semibold" title="Verified Sourcing Decision Maker">🌟 Executive</span>
+                        ) : buyer.outreach_status === 'REPLIED' ? (
+                          <span className="text-[10px] px-1.5 py-0.5 rounded bg-amber-500/20 text-amber-300 border border-amber-500/30 font-bold animate-pulse" title="Buyer Replied / Hot Lead">🔥 REPLIED</span>
+                        ) : null}
+                      </div>
+                      <div className="text-xs text-dark-300 font-medium">
+                        {buyer.buyer_name || 'Procurement Executive'}
+                        {buyer.job_title && <span className="text-amber-400 font-normal"> • {buyer.job_title}</span>}
+                      </div>
+                      <div className="text-[11px] text-dark-400">{buyer.decision_maker_email || buyer.email}</div>
                       {buyer.phone && <div className="text-[11px] text-dark-500 mt-0.5">{buyer.phone}</div>}
                     </td>
                     <td className="px-4 py-3 max-w-[340px]">
@@ -163,9 +236,27 @@ export default function BuyersPage() {
                     </td>
                     <td className="px-4 py-3"><StatusBadge status={buyer.email_status || 'UNKNOWN'} /></td>
                     <td className="px-4 py-3"><StatusBadge status={buyer.ai_priority || 'UNCLASSIFIED'} /></td>
-                    <td className="px-4 py-3 flex gap-2">
-                      <button onClick={() => navigate(`/buyers/${buyer.id}`)} className="p-1.5 text-dark-400 hover:text-primary-400 rounded bg-dark-800" title="View Full Details"><MoreHorizontal className="w-4 h-4" /></button>
-                      <button onClick={() => setDeleteId(buyer.id)} className="p-1.5 text-dark-400 hover:text-red-400 rounded bg-dark-800" title="Delete Buyer"><Trash2 className="w-4 h-4" /></button>
+                    <td className="px-4 py-3">
+                      <div className="flex items-center gap-1.5">
+                        {buyer.phone && (
+                          <button
+                            onClick={() => openWhatsApp(buyer)}
+                            className="p-1.5 text-emerald-400 hover:text-emerald-300 hover:bg-emerald-950/50 rounded bg-dark-800 border border-emerald-900/40"
+                            title="1-Click WhatsApp Direct Pitch"
+                          >
+                            <MessageSquare className="w-3.5 h-3.5" />
+                          </button>
+                        )}
+                        <button
+                          onClick={() => openLinkedIn(buyer)}
+                          className="p-1.5 text-sky-400 hover:text-sky-300 hover:bg-sky-950/50 rounded bg-dark-800 border border-sky-900/40"
+                          title="LinkedIn Search Decision Maker"
+                        >
+                          <Linkedin className="w-3.5 h-3.5" />
+                        </button>
+                        <button onClick={() => navigate(`/buyers/${buyer.id}`)} className="p-1.5 text-dark-400 hover:text-primary-400 rounded bg-dark-800" title="View Full Details"><MoreHorizontal className="w-3.5 h-3.5" /></button>
+                        <button onClick={() => setDeleteId(buyer.id)} className="p-1.5 text-dark-400 hover:text-red-400 rounded bg-dark-800" title="Delete Buyer"><Trash2 className="w-3.5 h-3.5" /></button>
+                      </div>
                     </td>
                   </tr>
                 ))

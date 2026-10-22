@@ -199,3 +199,38 @@ def seed_candle_buyers(
         "total": len(MASTER_EXPORT_BUYERS),
         "message": f"Successfully loaded & synced {added + updated} verified buyers with physical addresses!"
     }
+
+@router.post("/{buyer_id}/enrich-decision-maker", response_model=BuyerResponse)
+def enrich_buyer_dm(
+    buyer_id: int,
+    current_user: User = Depends(get_current_user),
+    db: Session = Depends(get_db)
+):
+    from ..services.lead_enrichment_service import enrich_single_buyer
+    buyer = buyer_service.get_buyer(db, current_user.id, buyer_id)
+    enrich_single_buyer(buyer)
+    db.commit()
+    db.refresh(buyer)
+    return buyer
+
+@router.post("/bulk-enrich-decision-makers")
+def bulk_enrich_dms(
+    current_user: User = Depends(get_current_user),
+    db: Session = Depends(get_db)
+):
+    from ..services.lead_enrichment_service import bulk_enrich_buyers
+    return bulk_enrich_buyers(db, current_user.id)
+
+@router.get("/{buyer_id}/whatsapp-script")
+def get_buyer_whatsapp(
+    buyer_id: int,
+    current_user: User = Depends(get_current_user),
+    db: Session = Depends(get_db)
+):
+    from ..services.lead_enrichment_service import generate_whatsapp_pitch
+    buyer = buyer_service.get_buyer(db, current_user.id, buyer_id)
+    return generate_whatsapp_pitch(
+        buyer_name=buyer.buyer_name or "Procurement Manager",
+        company_name=buyer.company_name or "your company",
+        phone=buyer.phone or ""
+    )

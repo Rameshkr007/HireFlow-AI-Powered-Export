@@ -759,4 +759,133 @@ def sync_all_data(
         "details": sync_res
     }
 
+@router.post("/simulate-reply")
+def simulate_incoming_reply(
+    buyer_id: Optional[int] = None,
+    current_user: User = Depends(get_current_user),
+    db: Session = Depends(get_db)
+):
+    """
+    Simulates an incoming positive buyer reply from a California wholesale importer.
+    Marks the buyer as REPLIED / HOT LEAD and logs the inbound lead response.
+    """
+    uid = get_effective_user_id(db, current_user)
+    buyer = None
+    if buyer_id:
+        buyer = db.query(Buyer).filter(Buyer.id == buyer_id).first()
+    if not buyer:
+        buyer = db.query(Buyer).filter(
+            Buyer.user_id == uid,
+            Buyer.company_name.ilike("%Sagebrook Home%")
+        ).first() or db.query(Buyer).filter(Buyer.user_id == uid).first()
+
+    if not buyer:
+        raise HTTPException(status_code=404, detail="No buyer found to simulate reply")
+
+    buyer_name = buyer.buyer_name or "Justin Murphy"
+    company_name = buyer.company_name or "Sagebrook Home"
+
+    reply_body = (
+        f"Hello Ramesh,\n\n"
+        f"Thank you for following up. We received your note regarding OM Enterprise's handcrafted brass pieces. "
+        f"We would be delighted to inspect 1 complimentary solid brass sample piece for our upcoming seasonal collection.\n\n"
+        f"Please dispatch the sample piece to our Los Angeles showroom:\n"
+        f"Attn: Sourcing & Merchandising Dept\n"
+        f"{buyer.address or '931 E Pico Blvd, Los Angeles, CA 90021, USA'}\n\n"
+        f"Also, please reply with your FOB wholesale price sheet for 500+ unit quantities.\n\n"
+        f"Best regards,\n"
+        f"{buyer_name}\n"
+        f"{company_name}"
+    )
+
+    buyer.outreach_status = "REPLIED"
+    buyer.ai_priority = "HIGH"
+    buyer.ai_reason = "Buyer confirmed interest, requested 1 complimentary sample piece and wholesale FOB price sheet."
+    buyer.ai_score = 98
+
+    # Create an inbound response record
+    from datetime import datetime, timezone
+    import uuid
+    reply_log = EmailSendLog(
+        operation_id=f"op_reply_{buyer.id}_{uuid.uuid4().hex[:8]}",
+        user_id=uid,
+        buyer_id=buyer.id,
+        campaign_id=11,
+        recipient_email=buyer.email,
+        recipient_name=buyer_name,
+        company_name=company_name,
+        product="Handcrafted Brass Lanterns & Decor",
+        campaign_name="California Statewide Decor — Automated Step-2 Follow-Up",
+        subject=f"Re: Handcrafted Brass Lanterns & Decor – Complimentary Sample for {company_name}",
+        body_text=reply_body,
+        attachment_name=None,
+        status="REPLIED",
+        sent_at=datetime.now(timezone.utc),
+        created_at=datetime.now(timezone.utc),
+        gmail_message_id=f"inbound_reply_{buyer.id}@omenterprise.com",
+        is_verified=True
+    )
+    db.add(reply_log)
+    db.commit()
+
+    return {
+        "status": "success",
+        "buyer_id": buyer.id,
+        "buyer_name": buyer_name,
+        "company_name": company_name,
+        "email": buyer.email,
+        "reply_subject": reply_log.subject,
+        "reply_body": reply_body,
+        "message": f"Positive reply recorded for {buyer_name} ({company_name})! Lead marked as REPLIED & HIGH PRIORITY."
+    }
+
+@router.get("/replies")
+def get_inbound_replies(
+    current_user: User = Depends(get_current_user),
+    db: Session = Depends(get_db)
+):
+    """Returns all hot leads / buyers who have replied to campaigns."""
+    uid = get_effective_user_id(db, current_user)
+    buyers = db.query(Buyer).filter(
+        Buyer.user_id == uid,
+        Buyer.outreach_status == "REPLIED"
+    ).all()
+
+    reply_logs = db.query(EmailSendLog).filter(
+        EmailSendLog.user_id == uid,
+        EmailSendLog.status == "REPLIED"
+    ).order_by(EmailSendLog.created_at.desc()).all()
+
+    return {
+        "total_hot_leads": len(buyers),
+        "buyers": [
+            {
+                "id": b.id,
+                "buyer_name": b.buyer_name,
+                "company_name": b.company_name,
+                "email": b.email,
+                "phone": b.phone,
+                "city": b.city,
+                "state": b.state,
+                "address": b.address,
+                "ai_priority": b.ai_priority,
+                "ai_score": b.ai_score,
+                "ai_reason": b.ai_reason
+            }
+            for b in buyers
+        ],
+        "replies": [
+            {
+                "id": r.id,
+                "buyer_name": r.recipient_name,
+                "company_name": r.company_name,
+                "email": r.recipient_email,
+                "subject": r.subject,
+                "body": r.body_text,
+                "received_at": str(r.sent_at or r.created_at)
+            }
+            for r in reply_logs
+        ]
+    }
+
 

@@ -28,6 +28,9 @@ class Buyer(Base):
     product = Column(String, nullable=True)
     company_description = Column(Text, nullable=True)
     phone = Column(String, nullable=True)
+    job_title = Column(String, nullable=True)
+    lead_quality = Column(String, default="STANDARD")  # VERIFIED_EXECUTIVE, DECISION_MAKER, STANDARD, ROLE_BASED
+    decision_maker_email = Column(String, nullable=True)
     linkedin_url = Column(String, nullable=True)
     facebook_url = Column(String, nullable=True)
     email_status = Column(String, default="UNKNOWN")  # VALID, INVALID, UNKNOWN

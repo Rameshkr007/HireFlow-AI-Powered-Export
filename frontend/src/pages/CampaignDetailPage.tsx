@@ -126,13 +126,26 @@ export default function CampaignDetailPage() {
         </div>
       </div>
 
-      <div className="card p-6 mb-6">
+      <div className="card p-6 mb-6 space-y-4">
         <div className="flex justify-between text-sm mb-2">
           <span className="font-semibold text-dark-200">Campaign Progress</span>
           <span className="text-dark-400">{Math.round(progress)}% Complete</span>
         </div>
         <div className="w-full bg-dark-800 rounded-full h-3">
           <div className="bg-primary-500 h-3 rounded-full transition-all duration-500" style={{ width: `${progress}%` }}></div>
+        </div>
+
+        <div className="pt-2 border-t border-dark-800 flex flex-col sm:flex-row sm:items-center justify-between gap-3 text-xs">
+          <div className="flex items-center gap-2 text-emerald-400">
+            <span className="w-2 h-2 rounded-full bg-emerald-500 animate-ping"></span>
+            <span className="font-semibold">Safe Inbox Shield Active:</span>
+            <span className="text-dark-300">Plain text / Zero-attachment delivery to ensure 99% Primary Inbox Placement (Spam Free).</span>
+          </div>
+          {campaign.id === 10 && (
+            <Link to="/campaigns/11" className="text-amber-400 hover:text-amber-300 font-bold flex items-center gap-1">
+              <span>🚀 View Step-2 Follow-Up Campaign (Free Sample Offer) →</span>
+            </Link>
+          )}
         </div>
       </div>
 

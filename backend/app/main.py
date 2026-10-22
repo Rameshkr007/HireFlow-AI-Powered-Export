@@ -114,7 +114,7 @@ def startup():
         try:
             from .models.email_send_log import EmailSendLog
             from .models.email_log import EmailLog
-            from .services.sync_master_activity import sync_master_email_activity, ensure_campaign_6_logs, ensure_campaign_7_logs, ensure_campaign_8_logs, ensure_campaign_9_logs, ensure_campaign_10_logs
+            from .services.sync_master_activity import sync_master_email_activity, ensure_campaign_6_logs, ensure_campaign_7_logs, ensure_campaign_8_logs, ensure_campaign_9_logs, ensure_campaign_10_logs, ensure_campaign_11_logs
             ramesh = db.query(User).filter(User.email == "rameshkrthakur1816@gmail.com").first()
             r_id = ramesh.id if ramesh else 2
             sl_c = db.query(EmailSendLog).filter(EmailSendLog.user_id == r_id).count()
@@ -124,20 +124,22 @@ def startup():
                 sync_master_email_activity(db, target_user_id=r_id, force_clean=False)
                 print("[STARTUP] Master email logs baseline verified.")
             
-            # Guarantee Campaign 6, 7, 8, 9, and 10 exist
-            from .services.campaign_service import ensure_campaign_6, ensure_campaign_7, ensure_campaign_8, ensure_campaign_9, ensure_campaign_10
+            # Guarantee Campaign 6, 7, 8, 9, 10, and 11 exist
+            from .services.campaign_service import ensure_campaign_6, ensure_campaign_7, ensure_campaign_8, ensure_campaign_9, ensure_campaign_10, ensure_campaign_11
             ensure_campaign_6(db, r_id)
             ensure_campaign_7(db, r_id)
             ensure_campaign_8(db, r_id)
             ensure_campaign_9(db, r_id)
             ensure_campaign_10(db, r_id)
+            ensure_campaign_11(db, r_id)
 
-            # Permanently ensure Campaign 6, 7, 8, 9, and 10 logs are present
+            # Permanently ensure Campaign 6, 7, 8, 9, 10, and 11 logs are present
             ensure_campaign_6_logs(db, target_user_id=r_id)
             ensure_campaign_7_logs(db, target_user_id=r_id)
             ensure_campaign_8_logs(db, target_user_id=r_id)
             ensure_campaign_9_logs(db, target_user_id=r_id)
             ensure_campaign_10_logs(db, target_user_id=r_id)
+            ensure_campaign_11_logs(db, target_user_id=r_id)
         except Exception as e_sync:
             print(f"[STARTUP] Master logs enforcement notice: {e_sync}")
 
@@ -350,9 +352,10 @@ async def test_tradewind():
 @app.get("/api/build-info")
 def build_info():
     return {
-        "version": "1.2.3",
+        "version": "1.2.4",
         "brevo_safe": True,
-        "master_records_count": 621,
+        "master_records_count": 671,
         "attachments": ["OM_Enterprise_Handcrafted_Pieces_Poster.jpg", "OM_Enterprise_Special_Offer_Badge.jpg"],
-        "updated": "2026-10-21T19:00:00Z"
+        "safe_delivery_mode": "Text-Only (Zero Attachments) enabled for Cold Outreach & Follow-ups",
+        "updated": "2026-10-22T04:00:00Z"
     }

@@ -17,6 +17,9 @@ class BuyerCreate(BaseModel):
     product: Optional[str] = None
     company_description: Optional[str] = None
     phone: Optional[str] = None
+    job_title: Optional[str] = None
+    lead_quality: Optional[str] = "STANDARD"
+    decision_maker_email: Optional[str] = None
     linkedin_url: Optional[str] = None
     facebook_url: Optional[str] = None
 
@@ -42,6 +45,9 @@ class BuyerResponse(BaseModel):
     product: Optional[str] = None
     company_description: Optional[str] = None
     phone: Optional[str] = None
+    job_title: Optional[str] = None
+    lead_quality: Optional[str] = "STANDARD"
+    decision_maker_email: Optional[str] = None
     linkedin_url: Optional[str] = None
     facebook_url: Optional[str] = None
     email_status: Optional[str] = None

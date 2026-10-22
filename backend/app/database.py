@@ -47,6 +47,9 @@ def run_schema_migrations(eng):
         "ALTER TABLE email_settings ADD COLUMN IF NOT EXISTS provider VARCHAR;",
         "ALTER TABLE email_settings ADD COLUMN IF NOT EXISTS from_email VARCHAR;",
         "ALTER TABLE attachments ADD COLUMN IF NOT EXISTS file_path VARCHAR;",
+        "ALTER TABLE buyers ADD COLUMN IF NOT EXISTS job_title VARCHAR;",
+        "ALTER TABLE buyers ADD COLUMN IF NOT EXISTS lead_quality VARCHAR DEFAULT 'STANDARD';",
+        "ALTER TABLE buyers ADD COLUMN IF NOT EXISTS decision_maker_email VARCHAR;",
         """CREATE TABLE IF NOT EXISTS email_send_logs (
             id SERIAL PRIMARY KEY,
             operation_id VARCHAR(64) UNIQUE NOT NULL,

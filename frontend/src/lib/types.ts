@@ -37,10 +37,13 @@ export interface Buyer {
   product?: string;
   company_description?: string;
   phone?: string;
+  job_title?: string;
+  lead_quality?: string;
+  decision_maker_email?: string;
   linkedin_url?: string;
   facebook_url?: string;
   email_status?: 'VALID' | 'INVALID' | 'UNKNOWN';
-  outreach_status?: 'PENDING' | 'CONTACTED' | 'SKIPPED';
+  outreach_status?: 'PENDING' | 'CONTACTED' | 'SKIPPED' | 'REPLIED';
   ai_priority?: 'HIGH' | 'MEDIUM' | 'LOW' | 'UNCLASSIFIED';
   ai_score?: number;
   ai_confidence?: number;

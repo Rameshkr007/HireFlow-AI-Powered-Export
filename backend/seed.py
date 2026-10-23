@@ -25,7 +25,7 @@ def seed():
             user_id=admin_user.id,
             exporter_name="Ramesh Kumar Thakur",
             company_name="OM Enterprise",
-            company_email="rameshkrthakur1816@gmail.com",
+            company_email="prt241961@gmail.com",
             phone="+91 80577 10065",
             website="",
             country="Nepal",
@@ -48,7 +48,7 @@ def seed():
             existing_profile.exporter_name = "Ramesh Kumar Thakur"
             existing_profile.sender_name = "Ramesh Kumar Thakur"
             existing_profile.company_name = "OM Enterprise"
-            existing_profile.company_email = "rameshkrthakur1816@gmail.com"
+            existing_profile.company_email = "prt241961@gmail.com"
             existing_profile.phone = "+91 80577 10065"
             existing_profile.website = ""
             existing_profile.country = "Nepal"
@@ -196,10 +196,10 @@ exports@himalayanexports.com
         db.commit()
 
     # Also ensure Ramesh's OM Enterprise account exists
-    ramesh_user = db.query(User).filter(User.email == "rameshkrthakur1816@gmail.com").first()
+    ramesh_user = db.query(User).filter(User.email == "prt241961@gmail.com").first()
     if not ramesh_user:
         ramesh_user = User(
-            email="rameshkrthakur1816@gmail.com",
+            email="prt241961@gmail.com",
             hashed_password=hash_password("admin123"),
             is_active=True
         )
@@ -210,7 +210,7 @@ exports@himalayanexports.com
             user_id=ramesh_user.id,
             exporter_name="Ramesh Kumar Thakur",
             company_name="OM Enterprise",
-            company_email="rameshkrthakur1816@gmail.com",
+            company_email="prt241961@gmail.com",
             phone="+91 80577 10065",
             country="India",
             product_categories=["Singing Bowls", "Metal Candle Holders", "Handicrafts"],
@@ -250,10 +250,10 @@ exports@himalayanexports.com
             provider="brevo",
             smtp_host="api.brevo.com",
             smtp_port=443,
-            smtp_user="rameshkrthakur1816@gmail.com",
+            smtp_user="prt241961@gmail.com",
             api_key=getattr(settings, "BREVO_API_KEY", None),
             from_name="Ramesh Kumar Thakur | OM Enterprise",
-            from_email="rameshkrthakur1816@gmail.com",
+            from_email="prt241961@gmail.com",
             use_tls=True,
             use_ssl=False,
             is_verified=True
@@ -265,7 +265,7 @@ exports@himalayanexports.com
 
     print("[SUCCESS] Database seeded successfully!")
     print("[ADMIN] Admin user: admin@hireflow.com / admin123")
-    print("[RAMESH] Ramesh user: rameshkrthakur1816@gmail.com / admin123")
+    print("[RAMESH] Ramesh user: prt241961@gmail.com / admin123")
     print(f"[DATA] Created {len(buyers_data)} demo buyers")
     print("[CAMPAIGN] Created 1 sample campaign with 20 email logs")
     db.close()

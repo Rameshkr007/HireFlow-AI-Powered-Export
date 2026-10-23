@@ -15,7 +15,7 @@ def fetch_with_retry(req, retries=5, delay=3):
             print(f"Request attempt {i+1} failed: {e}. Retrying in {delay}s...")
             time.sleep(delay)
 
-login_data = json.dumps({'email': 'rameshkrthakur1816@gmail.com', 'password': 'admin'}).encode('utf-8')
+login_data = json.dumps({'email': 'prt241961@gmail.com', 'password': 'admin'}).encode('utf-8')
 req_login = urllib.request.Request(f'{base}/api/auth/login', data=login_data, headers={'Content-Type': 'application/json'})
 token_res = fetch_with_retry(req_login)
 token = token_res['access_token']

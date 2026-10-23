@@ -19,7 +19,7 @@ INDIA_TZ = ZoneInfo("Asia/Kolkata")
 
 @router.get("/stats")
 def get_stats(current_user: User = Depends(get_current_user), db: Session = Depends(get_db)):
-    ramesh = db.query(User).filter(User.email == "rameshkrthakur1816@gmail.com").first()
+    ramesh = db.query(User).filter(User.email == "prt241961@gmail.com").first()
     uid = ramesh.id if ramesh else current_user.id
 
     b_cnt = db.query(Buyer).filter(Buyer.user_id == uid).count()

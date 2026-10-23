@@ -17,7 +17,7 @@ Warm regards,
 
 Ramesh Kumar Thakur
 Sales Executive | OM Enterprise (Nepal)
-📧 rameshkrthakur1816@gmail.com
+📧 prt241961@gmail.com
 📱 WhatsApp: +91 80577 10065"""
 
 nepal_followup_body = """Hi {{name}},
@@ -30,7 +30,7 @@ Best regards,
 
 Ramesh Kumar Thakur
 Sales Executive | OM Enterprise (Nepal)
-📧 rameshkrthakur1816@gmail.com
+📧 prt241961@gmail.com
 📱 WhatsApp: +91 80577 10065"""
 
 for path in db_paths:

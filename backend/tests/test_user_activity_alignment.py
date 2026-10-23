@@ -34,7 +34,7 @@ class TestUserActivityAlignment(unittest.TestCase):
 
     def setUp(self):
         self.db = SessionLocal()
-        self.user = self.db.query(User).filter(User.email == "rameshkrthakur1816@gmail.com").first()
+        self.user = self.db.query(User).filter(User.email == "prt241961@gmail.com").first()
 
     def tearDown(self):
         self.db.close()

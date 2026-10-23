@@ -10,8 +10,8 @@ for attempt in range(1, 45):
         with urllib.request.urlopen(req, timeout=10) as resp:
             data = json.loads(resp.read().decode())
             print(f"Attempt {attempt}: version={data.get('version')}, records={data.get('master_records_count')}, halloween={data.get('halloween_attachments')}")
-            if data.get('version') == '1.3.4':
-                print("SUCCESS: Version 1.3.4 is LIVE on Render!")
+            if data.get('version') == '1.3.5':
+                print("SUCCESS: Version 1.3.5 is LIVE on Render!")
                 print(f"Verified Records Count: {data.get('master_records_count')}")
                 print(f"Verified Address: {data.get('origin_address')}")
                 print(f"Verified Reply-To / Company Email: {data.get('reply_to_email')}")

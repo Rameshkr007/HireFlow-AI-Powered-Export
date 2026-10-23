@@ -55,7 +55,7 @@ Would you be open to reviewing our wholesale pricing and receiving a sample?
 Best regards,
 Ramesh Kumar Thakur
 Export Sales Executive | OM Enterprise
-📧 rameshkrthakur1816@gmail.com
+📧 prt241961@gmail.com
 📱 WhatsApp: +91 80577 10065"""
     
     buyer_name = (buyer.buyer_name or 'Sir/Madam').strip()
@@ -71,8 +71,8 @@ Export Sales Executive | OM Enterprise
     # Company & Sender details
     p_sender_name = (getattr(profile, 'sender_name', None) or getattr(profile, 'exporter_name', None) or "Ramesh Kumar Thakur").strip()
     p_company_name = (getattr(profile, 'company_name', None) or "OM Enterprise").strip()
-    p_company_email = "rameshkrthakur1816@gmail.com"
-    p_personal_email = "rameshkrthakur1816@gmail.com"
+    p_company_email = "prt241961@gmail.com"
+    p_personal_email = "prt241961@gmail.com"
     p_phone = (getattr(profile, 'phone', None) or "+91 80577 10065").strip()
     p_website = ""  # No company website per user instruction
 
@@ -205,7 +205,7 @@ def process_campaign(db: Session, campaign_id: int, user_id: int):
 
     # Fetch user & profile for personalizations
     user = db.query(User).filter(User.id == user_id).first()
-    user_email_str = user.email if user else "rameshkrthakur1816@gmail.com"
+    user_email_str = user.email if user else "prt241961@gmail.com"
     profile = db.query(ExporterProfile).filter(ExporterProfile.user_id == user_id).first()
 
     # Get eligible buyers with smart US matching and quota fallback

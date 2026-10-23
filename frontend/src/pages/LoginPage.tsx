@@ -5,7 +5,7 @@ import { useAuth } from '../contexts/AuthContext';
 import { useToast } from '../contexts/ToastContext';
 
 export default function LoginPage() {
-  const [email, setEmail] = useState('rameshkrthakur1816@gmail.com');
+  const [email, setEmail] = useState('prt241961@gmail.com');
   const [password, setPassword] = useState('admin123');
   const [showPass, setShowPass] = useState(false);
   const [loading, setLoading] = useState(false);
@@ -41,7 +41,7 @@ export default function LoginPage() {
   const handleInstantLoginRamesh = async () => {
     setQuickLoading(true);
     try {
-      await login('rameshkrthakur1816@gmail.com', 'admin123');
+      await login('prt241961@gmail.com', 'admin123');
       showToast('Welcome Ramesh! Logged in to OM Enterprise workspace.', 'success');
       navigate('/');
     } catch {

@@ -17,11 +17,11 @@ def save_persistent_email_credentials(data: Dict[str, Any]) -> bool:
             "provider": data.get("provider") or "gmail",
             "smtp_host": data.get("smtp_host") or "smtp.gmail.com",
             "smtp_port": int(data.get("smtp_port") or 587),
-            "smtp_user": (data.get("smtp_user") or "rameshkrthakur1816@gmail.com").strip(),
+            "smtp_user": (data.get("smtp_user") or "prt241961@gmail.com").strip(),
             "smtp_password": (data.get("smtp_password") or "").strip(),
             "api_key": (data.get("api_key") or "").strip() or None,
             "from_name": (data.get("from_name") or "Ramesh Kumar Thakur | OM Enterprise").strip(),
-            "from_email": (data.get("from_email") or data.get("smtp_user") or "rameshkrthakur1816@gmail.com").strip(),
+            "from_email": (data.get("from_email") or data.get("smtp_user") or "prt241961@gmail.com").strip(),
             "use_tls": data.get("use_tls", True),
             "use_ssl": data.get("use_ssl", False),
             "is_verified": True

@@ -63,7 +63,7 @@ Best regards,
 
 Ramesh Kumar Thakur
 OM Enterprise
-📧 rameshkrthakur1816@gmail.com | 📱 +91 80577 10065
+📧 prt241961@gmail.com | 📱 +91 80577 10065
 Direct Manufacturer from Nepal • Wholesale • OEM • Private Label"""
     },
     {
@@ -83,7 +83,7 @@ Kind regards,
 
 Ramesh Kumar Thakur
 Sales Executive | OM Enterprise
-📧 rameshkrthakur1816@gmail.com | 📱 +91 80577 10065
+📧 prt241961@gmail.com | 📱 +91 80577 10065
 Direct Manufacturer from Nepal • Wholesale • OEM • Private Label"""
     },
     {
@@ -103,7 +103,7 @@ Best regards,
 
 Ramesh Kumar Thakur
 Export Sales Executive | OM Enterprise
-📧 rameshkrthakur1816@gmail.com | 📱 +91 80577 10065
+📧 prt241961@gmail.com | 📱 +91 80577 10065
 Direct Manufacturer from Nepal • Wholesale • OEM • Private Label"""
     },
     {
@@ -125,7 +125,7 @@ Best regards,
 
 Ramesh Kumar Thakur
 OM Enterprise
-📧 rameshkrthakur1816@gmail.com | 📱 +91 80577 10065
+📧 prt241961@gmail.com | 📱 +91 80577 10065
 Direct Manufacturer from Nepal • Wholesale • OEM • Private Label"""
     },
     {
@@ -145,7 +145,7 @@ Kind Regards,
 
 Ramesh Kumar Thakur
 OM Enterprise
-📧 rameshkrthakur1816@gmail.com | 📱 +91 80577 10065
+📧 prt241961@gmail.com | 📱 +91 80577 10065
 Direct Manufacturer from Nepal • Wholesale • OEM • Private Label"""
     },
     {
@@ -165,7 +165,7 @@ Best,
 
 Ramesh Kumar Thakur
 OM Enterprise
-📧 rameshkrthakur1816@gmail.com | 📱 +91 80577 10065
+📧 prt241961@gmail.com | 📱 +91 80577 10065
 Direct Manufacturer from Nepal • Wholesale • OEM • Private Label"""
     },
     {
@@ -185,7 +185,7 @@ Warm regards,
 
 Ramesh Kumar Thakur
 OM Enterprise
-📧 rameshkrthakur1816@gmail.com | 📱 +91 80577 10065
+📧 prt241961@gmail.com | 📱 +91 80577 10065
 Direct Manufacturer from Nepal • Wholesale • OEM • Private Label"""
     },
     {
@@ -205,7 +205,7 @@ Best regards,
 
 Ramesh Kumar Thakur
 OM Enterprise
-📧 rameshkrthakur1816@gmail.com | 📱 +91 80577 10065
+📧 prt241961@gmail.com | 📱 +91 80577 10065
 Direct Manufacturer from Nepal • Wholesale • OEM • Private Label"""
     }
 ]
@@ -421,8 +421,8 @@ def dispatch_test_pitch(
 
     # 4. Universal Dispatch via Brevo HTTP / SMTP
     from_name = smtp_config.get("from_name") or "Ramesh Kumar Thakur | OM Enterprise"
-    from_email = smtp_config.get("from_email") or "rameshkrthakur1816@gmail.com"
-    reply_to = "rameshkrthakur1816@gmail.com"
+    from_email = smtp_config.get("from_email") or "prt241961@gmail.com"
+    reply_to = "prt241961@gmail.com"
 
     success, error = dispatch_email_universal(
         smtp_config=smtp_config,

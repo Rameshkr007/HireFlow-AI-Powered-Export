@@ -41,7 +41,7 @@ class Settings(BaseSettings):
     # ── Brevo HTTP API Settings (Port 443 — 100% Cloud-Safe, Bypasses Render Firewall) ────
     BREVO_API_KEY: Optional[str] = _load_default_brevo_key()
     BREVO_SENDER_NAME: str = "Ramesh Kumar Thakur | OM Enterprise"
-    BREVO_SENDER_EMAIL: str = "rameshkrthakur1816@gmail.com"
+    BREVO_SENDER_EMAIL: str = "prt241961@gmail.com"
 
     # ── Buyer Discovery API Keys ──────────────────────────────────────────────
     # Apollo.io  →  https://app.apollo.io/#/settings/integrations/api

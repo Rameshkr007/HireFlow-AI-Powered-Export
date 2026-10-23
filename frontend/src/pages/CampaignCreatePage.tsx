@@ -30,9 +30,7 @@ Interested? We'd love to connect.
 
 Best regards,  
 Name: Ramesh Kumar Thakur
-OM Enterprise
-📧 rameshkrthakur1816@gmail.com | 📱 +91 80577 10065
-Direct Manufacturer from Nepal • Wholesale • OEM • Private Label`
+OM Enterprise`
 };
 
 export const NEPAL_MANUFACTURER_SAMPLE_TEMPLATE = OFFICIAL_HALLOWEEN_TEMPLATE;
@@ -67,9 +65,7 @@ Would you like us to email over our complete wholesale price list and sample req
 
 Best regards,  
 Name: Ramesh Kumar Thakur
-OM Enterprise
-📧 rameshkrthakur1816@gmail.com | 📱 +91 80577 10065
-Direct Manufacturer from Nepal • Wholesale • OEM • Private Label`,
+OM Enterprise`,
   },
   {
     id: 'step-3',
@@ -86,9 +82,7 @@ Would you be open to a quick 2-minute chat or WhatsApp connection this week?
 
 Best regards,  
 Name: Ramesh Kumar Thakur
-OM Enterprise
-📧 rameshkrthakur1816@gmail.com | 📱 +91 80577 10065
-Direct Manufacturer from Nepal • Wholesale • OEM • Private Label`,
+OM Enterprise`,
   },
 ];
 

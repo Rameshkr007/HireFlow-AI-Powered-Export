@@ -187,11 +187,8 @@ We are dispatching sample boxes to US importers this week. May I courier a compl
 
 Best regards,
 
-Ramesh Kumar Thakur
-Sales Executive | OM Enterprise
-📧 rameshkrthakur1816@gmail.com
-📱 WhatsApp: +91 80577 10065
-Direct Manufacturer from Nepal • Wholesale • OEM • Private Label"""
+Name: Ramesh Kumar Thakur
+OM Enterprise"""
         },
         {
             "step_number": 2,
@@ -207,7 +204,7 @@ Or if you prefer, I am happy to courier a complimentary physical sample piece di
 
 Best regards,
 Ramesh Kumar Thakur
-OM Enterprise | WhatsApp: +91 80577 10065"""
+OM Enterprise"""
         },
         {
             "step_number": 3,
@@ -221,7 +218,7 @@ Would you like me to share our quick 1-page FOB Los Angeles price comparison she
 
 Best regards,
 Ramesh Kumar Thakur
-OM Enterprise | WhatsApp: +91 80577 10065"""
+OM Enterprise"""
         },
         {
             "step_number": 4,
@@ -235,7 +232,7 @@ Should I close your file for now, or would you like us to reconnect in early 202
 
 Thanks,
 Ramesh Kumar Thakur
-OM Enterprise | WhatsApp: +91 80577 10065"""
+OM Enterprise"""
         }
     ]
 
@@ -329,11 +326,8 @@ Would you be open to reviewing our wholesale price sheet or receiving a complime
 
 Best regards,
 
-Ramesh Kumar Thakur
-Sales Executive | OM Enterprise
-📧 rameshkrthakur1816@gmail.com
-📱 WhatsApp: +91 80577 10065
-Direct Manufacturer from Nepal • Wholesale • OEM • Private Label"""
+Name: Ramesh Kumar Thakur
+OM Enterprise"""
 
     if not c10:
         c10 = Campaign(
@@ -406,11 +400,8 @@ Simply reply with "YES" or your preferred shipping address, and I will arrange t
 
 Best regards,
 
-Ramesh Kumar Thakur
-Sales Executive | OM Enterprise
-📧 rameshkrthakur1816@gmail.com
-📱 WhatsApp: +91 80577 10065
-Direct Manufacturer from Nepal • Wholesale • OEM • Private Label"""
+Name: Ramesh Kumar Thakur
+OM Enterprise"""
 
     if not c11:
         c11 = Campaign(
@@ -758,11 +749,8 @@ Simply reply "SAMPLE" or "PRICELIST" and I will arrange it immediately.
 
 Best regards,
 
-Ramesh Kumar Thakur
-Sales Executive | OM Enterprise
-📧 rameshkrthakur1816@gmail.com
-📱 WhatsApp: +91 80577 10065
-Direct Manufacturer from Nepal • Wholesale • OEM • Private Label"""
+Name: Ramesh Kumar Thakur
+OM Enterprise"""
 
     sent_emails = set(r[0] for r in db.query(EmailSendLog.recipient_email).filter(
         EmailSendLog.user_id.in_([user_id, 2]),

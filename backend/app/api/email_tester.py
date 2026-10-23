@@ -61,9 +61,7 @@ Interested? We'd love to connect.
 
 Best regards,  
 Name: Ramesh Kumar Thakur
-OM Enterprise
-📧 rameshkrthakur1816@gmail.com | 📱 +91 80577 10065
-Direct Manufacturer from Nepal • Wholesale • OEM • Private Label"""
+OM Enterprise"""
     }
 ]
 

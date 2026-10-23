@@ -166,11 +166,8 @@ Alternatively, I can share our 1-page FOB wholesale price list.
 
 Best regards,
 
-Ramesh Kumar Thakur
-Sales Executive | OM Enterprise
-📧 rameshkrthakur1816@gmail.com
-📱 WhatsApp: +91 80577 10065
-Direct Manufacturer from Nepal • Wholesale • OEM • Private Label"""
+Name: Ramesh Kumar Thakur
+OM Enterprise"""
             }
         elif step_number == 3:
             target_step = {
@@ -187,11 +184,8 @@ Would you be open to reviewing sample finishes or receiving 1 piece at your offi
 
 Best regards,
 
-Ramesh Kumar Thakur
-Sales Executive | OM Enterprise
-📧 rameshkrthakur1816@gmail.com
-📱 WhatsApp: +91 80577 10065
-Direct Manufacturer from Nepal • Wholesale • OEM • Private Label"""
+Name: Ramesh Kumar Thakur
+OM Enterprise"""
             }
 
     if not target_step:

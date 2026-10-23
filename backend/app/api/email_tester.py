@@ -227,11 +227,11 @@ def dispatch_test_pitch(
         db_s.provider = "gmail"
         db_s.smtp_host = "smtp.gmail.com"
         db_s.smtp_port = 587
-        db_s.smtp_user = "rameshkrthakur1816@gmail.com"
+        db_s.smtp_user = "prt241961@gmail.com"
         db_s.smtp_password = cleaned_p
         db_s.api_key = None
         db_s.from_name = "Ramesh Kumar Thakur | OM Enterprise"
-        db_s.from_email = "rameshkrthakur1816@gmail.com"
+        db_s.from_email = "prt241961@gmail.com"
         db_s.is_verified = True
         db.commit()
         db.refresh(db_s)
@@ -239,11 +239,11 @@ def dispatch_test_pitch(
             "provider": "gmail",
             "smtp_host": "smtp.gmail.com",
             "smtp_port": 587,
-            "smtp_user": "rameshkrthakur1816@gmail.com",
+            "smtp_user": "prt241961@gmail.com",
             "smtp_password": cleaned_p,
             "api_key": None,
             "from_name": "Ramesh Kumar Thakur | OM Enterprise",
-            "from_email": "rameshkrthakur1816@gmail.com",
+            "from_email": "prt241961@gmail.com",
             "is_verified": True
         })
 
@@ -327,8 +327,8 @@ def dispatch_test_pitch(
 
     # 4. Universal Dispatch via Brevo HTTP / SMTP
     from_name = smtp_config.get("from_name") or "Ramesh Kumar Thakur | OM Enterprise"
-    from_email = smtp_config.get("from_email") or "rameshkrthakur1816@gmail.com"
-    reply_to = "rameshkrthakur1816@gmail.com"
+    from_email = smtp_config.get("from_email") or "prt241961@gmail.com"
+    reply_to = "prt241961@gmail.com"
 
     success, error = dispatch_email_universal(
         smtp_config=smtp_config,

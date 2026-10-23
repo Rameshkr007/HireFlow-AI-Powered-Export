@@ -112,13 +112,13 @@ def startup():
         # Always guarantee Ramesh Kumar Thakur's account exists
         ensure_ramesh_user(db)
 
-        # Guarantee all ExporterProfiles have company_email set to rameshkrthakur1816@gmail.com
+        # Guarantee all ExporterProfiles have company_email set to prt241961@gmail.com
         try:
             from .models.exporter_profile import ExporterProfile
             db.query(ExporterProfile).filter(
-                (ExporterProfile.company_email != "rameshkrthakur1816@gmail.com") |
+                (ExporterProfile.company_email != "prt241961@gmail.com") |
                 (ExporterProfile.company_email.is_(None))
-            ).update({"company_email": "rameshkrthakur1816@gmail.com"}, synchronize_session=False)
+            ).update({"company_email": "prt241961@gmail.com"}, synchronize_session=False)
             db.commit()
         except Exception as e_prof:
             print(f"[STARTUP] ExporterProfile email update notice: {e_prof}")
@@ -128,7 +128,7 @@ def startup():
             from .models.email_send_log import EmailSendLog
             from .models.email_log import EmailLog
             from .services.sync_master_activity import sync_master_email_activity, ensure_campaign_6_logs, ensure_campaign_7_logs, ensure_campaign_8_logs, ensure_campaign_9_logs, ensure_campaign_10_logs, ensure_campaign_11_logs
-            ramesh = db.query(User).filter(User.email == "rameshkrthakur1816@gmail.com").first()
+            ramesh = db.query(User).filter(User.email == "prt241961@gmail.com").first()
             r_id = ramesh.id if ramesh else 2
             sl_c = db.query(EmailSendLog).filter(EmailSendLog.user_id == r_id).count()
             el_c = db.query(EmailLog).filter(EmailLog.user_id == r_id).count()
@@ -177,10 +177,10 @@ def startup():
                     ues.provider = "brevo"
                     ues.smtp_host = "api.brevo.com"
                     ues.smtp_port = 443
-                    ues.smtp_user = u.email or "rameshkrthakur1816@gmail.com"
+                    ues.smtp_user = u.email or "prt241961@gmail.com"
                     ues.api_key = getattr(settings, "BREVO_API_KEY", None)
                     ues.from_name = getattr(settings, "BREVO_SENDER_NAME", None) or "Ramesh Kumar Thakur | OM Enterprise"
-                    ues.from_email = getattr(settings, "BREVO_SENDER_EMAIL", None) or u.email or "rameshkrthakur1816@gmail.com"
+                    ues.from_email = getattr(settings, "BREVO_SENDER_EMAIL", None) or u.email or "prt241961@gmail.com"
                     ues.use_tls = True
                     ues.use_ssl = False
                     ues.is_verified = True
@@ -189,10 +189,10 @@ def startup():
                 "provider": "brevo",
                 "smtp_host": "api.brevo.com",
                 "smtp_port": 443,
-                "smtp_user": "rameshkrthakur1816@gmail.com",
+                "smtp_user": "prt241961@gmail.com",
                 "api_key": getattr(settings, "BREVO_API_KEY", None),
                 "from_name": "Ramesh Kumar Thakur | OM Enterprise",
-                "from_email": "rameshkrthakur1816@gmail.com",
+                "from_email": "prt241961@gmail.com",
                 "use_tls": True,
                 "use_ssl": False,
                 "is_verified": True
@@ -267,7 +267,7 @@ def root():
     index_file = os.path.join(STATIC_DIR, "index.html")
     if os.path.exists(index_file):
         return FileResponse(index_file)
-    return {"message": "HireFlow API is running", "docs": "/docs", "version": "1.4.0"}
+    return {"message": "HireFlow API is running", "docs": "/docs", "version": "1.4.1"}
 
 @app.get("/health")
 def health():
@@ -378,14 +378,14 @@ async def test_tradewind():
 @app.get("/api/build-info")
 def build_info():
     return {
-        "version": "1.4.0",
+        "version": "1.4.1",
         "halloween_attachments": True,
         "email_tester_enabled": True,
         "brevo_safe": True,
         "master_records_count": 621,
         "origin_address": "Direct Manufacturer from Nepal • Wholesale • OEM • Private Label",
-        "reply_to_email": "rameshkrthakur1816@gmail.com",
-        "company_email": "rameshkrthakur1816@gmail.com",
+        "reply_to_email": "prt241961@gmail.com",
+        "company_email": "prt241961@gmail.com",
         "batch_followup_enabled": True,
         "automated_cadence_engine": True,
         "attachments": ["OM_Enterprise_Handcrafted_Pieces_Poster.jpg", "OM_Enterprise_Special_Offer_Badge.jpg"],

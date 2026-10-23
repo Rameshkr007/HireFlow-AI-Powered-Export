@@ -103,7 +103,7 @@ def test_single_dispatch(campaign_id: int, current_user: User = Depends(get_curr
             return {"error": "No eligible buyers found"}
         buyer = buyers[0]
         profile = db.query(ExporterProfile).filter(ExporterProfile.user_id == current_user.id).first()
-        user_email_str = current_user.email or "rameshkrthakur1816@gmail.com"
+        user_email_str = current_user.email or "prt241961@gmail.com"
 
         personalized_subject = personalize_email_simple(campaign.email_subject or "Export Partnership Opportunity", buyer, campaign.product or "", profile=profile, user_email=user_email_str)
         personalized_body = personalize_email_simple(campaign.email_body or "", buyer, campaign.product or "", profile=profile, user_email=user_email_str)

@@ -12,7 +12,7 @@ DEFAULT_PROFILE = {
     "exporter_name": "Ramesh Kumar Thakur",
     "sender_name": "Ramesh Kumar Thakur",
     "company_name": "OM Enterprise",
-    "company_email": "rameshkrthakur1816@gmail.com",
+    "company_email": "prt241961@gmail.com",
     "phone": "+91 80577 10065",
     "website": "",
     "country": "Nepal",
@@ -38,7 +38,7 @@ def get_profile(current_user: User = Depends(get_current_user), db: Session = De
         # Guarantee permanent profile data for OM Enterprise
         if (
             profile.company_name != "OM Enterprise" or
-            profile.company_email != "rameshkrthakur1816@gmail.com" or
+            profile.company_email != "prt241961@gmail.com" or
             profile.sender_name != "Ramesh Kumar Thakur" or
             profile.website != "" or
             profile.country != "Nepal" or

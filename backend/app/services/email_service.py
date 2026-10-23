@@ -79,11 +79,11 @@ def get_effective_smtp_config(db: Session, user_id: int) -> Optional[Dict[str, A
             db_setting.provider = shared.provider
             db_setting.smtp_host = shared.smtp_host
             db_setting.smtp_port = shared.smtp_port
-            db_setting.smtp_user = shared.smtp_user or "rameshkrthakur1816@gmail.com"
+            db_setting.smtp_user = shared.smtp_user or "prt241961@gmail.com"
             db_setting.smtp_password = shared.smtp_password
             db_setting.api_key = shared.api_key
             db_setting.from_name = shared.from_name or "Ramesh Kumar Thakur | OM Enterprise"
-            db_setting.from_email = shared.from_email or shared.smtp_user or "rameshkrthakur1816@gmail.com"
+            db_setting.from_email = shared.from_email or shared.smtp_user or "prt241961@gmail.com"
             db_setting.use_tls = shared.use_tls
             db_setting.use_ssl = shared.use_ssl
             db_setting.is_verified = True
@@ -101,11 +101,11 @@ def get_effective_smtp_config(db: Session, user_id: int) -> Optional[Dict[str, A
             db_setting.provider = file_creds.get("provider", "gmail")
             db_setting.smtp_host = file_creds.get("smtp_host", "smtp.gmail.com")
             db_setting.smtp_port = int(file_creds.get("smtp_port", 587))
-            db_setting.smtp_user = file_creds.get("smtp_user", "rameshkrthakur1816@gmail.com")
+            db_setting.smtp_user = file_creds.get("smtp_user", "prt241961@gmail.com")
             db_setting.smtp_password = file_creds.get("smtp_password")
             db_setting.api_key = file_creds.get("api_key")
             db_setting.from_name = file_creds.get("from_name", "Ramesh Kumar Thakur | OM Enterprise")
-            db_setting.from_email = file_creds.get("from_email", "rameshkrthakur1816@gmail.com")
+            db_setting.from_email = file_creds.get("from_email", "prt241961@gmail.com")
             db_setting.use_tls = file_creds.get("use_tls", True)
             db_setting.use_ssl = file_creds.get("use_ssl", False)
             db_setting.is_verified = True
@@ -132,12 +132,12 @@ def get_effective_smtp_config(db: Session, user_id: int) -> Optional[Dict[str, A
             "provider": "gmail" if is_gmail else ("brevo" if (cleaned_api_key and cleaned_api_key.startswith("xkeysib-")) else (db_setting.provider or "gmail")),
             "smtp_host": "smtp.gmail.com" if is_gmail else ("api.brevo.com" if (cleaned_api_key and cleaned_api_key.startswith("xkeysib-")) else (db_setting.smtp_host or "smtp.gmail.com")),
             "smtp_port": int(db_setting.smtp_port or 587) if is_gmail else (443 if (cleaned_api_key and cleaned_api_key.startswith("xkeysib-")) else int(db_setting.smtp_port or 587)),
-            "smtp_user": db_setting.smtp_user.strip() if db_setting.smtp_user else "rameshkrthakur1816@gmail.com",
+            "smtp_user": db_setting.smtp_user.strip() if db_setting.smtp_user else "prt241961@gmail.com",
             "smtp_password": cleaned_password,
             "api_key": None if is_gmail else cleaned_api_key,
             "from_name": db_setting.from_name or "Ramesh Kumar Thakur | OM Enterprise",
-            "from_email": db_setting.from_email or (db_setting.smtp_user.strip() if db_setting.smtp_user else "rameshkrthakur1816@gmail.com"),
-            "reply_to": db_setting.from_email or (db_setting.smtp_user.strip() if db_setting.smtp_user else "rameshkrthakur1816@gmail.com"),
+            "from_email": db_setting.from_email or (db_setting.smtp_user.strip() if db_setting.smtp_user else "prt241961@gmail.com"),
+            "reply_to": db_setting.from_email or (db_setting.smtp_user.strip() if db_setting.smtp_user else "prt241961@gmail.com"),
             "use_tls": db_setting.use_tls if db_setting.use_tls is not None else True,
             "use_ssl": db_setting.use_ssl if db_setting.use_ssl is not None else False,
             "source": "db"
@@ -153,8 +153,8 @@ def get_effective_smtp_config(db: Session, user_id: int) -> Optional[Dict[str, A
             "smtp_password": clean_password(settings.SMTP_PASSWORD),
             "api_key": None,
             "from_name": settings.SMTP_FROM_NAME or "Ramesh Kumar Thakur | OM Enterprise",
-            "from_email": settings.SMTP_FROM_EMAIL or settings.SMTP_USER.strip() or "rameshkrthakur1816@gmail.com",
-            "reply_to": settings.SMTP_FROM_EMAIL or settings.SMTP_USER.strip() or "rameshkrthakur1816@gmail.com",
+            "from_email": settings.SMTP_FROM_EMAIL or settings.SMTP_USER.strip() or "prt241961@gmail.com",
+            "reply_to": settings.SMTP_FROM_EMAIL or settings.SMTP_USER.strip() or "prt241961@gmail.com",
             "use_tls": settings.SMTP_USE_TLS,
             "use_ssl": settings.SMTP_USE_SSL,
             "source": "env"
@@ -168,10 +168,10 @@ def get_effective_smtp_config(db: Session, user_id: int) -> Optional[Dict[str, A
         db_setting.provider = "brevo"
         db_setting.smtp_host = "api.brevo.com"
         db_setting.smtp_port = 443
-        db_setting.smtp_user = "rameshkrthakur1816@gmail.com"
+        db_setting.smtp_user = "prt241961@gmail.com"
         db_setting.api_key = settings.BREVO_API_KEY
         db_setting.from_name = getattr(settings, "BREVO_SENDER_NAME", None) or "Ramesh Kumar Thakur | OM Enterprise"
-        db_setting.from_email = getattr(settings, "BREVO_SENDER_EMAIL", None) or "rameshkrthakur1816@gmail.com"
+        db_setting.from_email = getattr(settings, "BREVO_SENDER_EMAIL", None) or "prt241961@gmail.com"
         db_setting.use_tls = True
         db_setting.use_ssl = False
         db_setting.is_verified = True
@@ -185,12 +185,12 @@ def get_effective_smtp_config(db: Session, user_id: int) -> Optional[Dict[str, A
             "provider": "brevo",
             "smtp_host": "api.brevo.com",
             "smtp_port": 443,
-            "smtp_user": "rameshkrthakur1816@gmail.com",
+            "smtp_user": "prt241961@gmail.com",
             "smtp_password": None,
             "api_key": settings.BREVO_API_KEY,
             "from_name": getattr(settings, "BREVO_SENDER_NAME", None) or "Ramesh Kumar Thakur | OM Enterprise",
-            "from_email": getattr(settings, "BREVO_SENDER_EMAIL", None) or "rameshkrthakur1816@gmail.com",
-            "reply_to": getattr(settings, "BREVO_SENDER_EMAIL", None) or "rameshkrthakur1816@gmail.com",
+            "from_email": getattr(settings, "BREVO_SENDER_EMAIL", None) or "prt241961@gmail.com",
+            "reply_to": getattr(settings, "BREVO_SENDER_EMAIL", None) or "prt241961@gmail.com",
             "use_tls": True,
             "use_ssl": False,
             "source": "brevo_cloud_default"
@@ -267,24 +267,24 @@ def send_via_brevo_http(
             f"Best regards,\n\n"
             f"{from_name or 'Ramesh Kumar Thakur'}\n"
             f"OM Enterprise\n"
-            f"📧 {from_email or 'rameshkrthakur1816@gmail.com'}\n"
+            f"📧 {from_email or 'prt241961@gmail.com'}\n"
             f"📱 WhatsApp: +91 80577 10065"
         )
     final_html = body_html or format_html_email(body_text_str, from_name)
     payload: Dict[str, Any] = {
-        "sender": {"name": from_name or "Ramesh Kumar Thakur | OM Enterprise", "email": from_email or "rameshkrthakur1816@gmail.com"},
+        "sender": {"name": from_name or "Ramesh Kumar Thakur | OM Enterprise", "email": from_email or "prt241961@gmail.com"},
         "to": [{"email": to_email}],
         "subject": subject or "Wholesale Opportunity",
         "htmlContent": final_html,
         "textContent": body_text_str
     }
-    target_reply_to = (reply_to or from_email or "rameshkrthakur1816@gmail.com").strip()
+    target_reply_to = (reply_to or from_email or "prt241961@gmail.com").strip()
     payload["replyTo"] = {"email": target_reply_to, "name": from_name or "Ramesh Kumar Thakur"}
 
     # Auto-BCC sender account for tracking (skipped when recipient is sender to avoid Google self-spoofing flags)
     bcc_list = []
     clean_to = (to_email or "").strip().lower()
-    if clean_to != "rameshkrthakur1816@gmail.com":
+    if clean_to != "prt241961@gmail.com":
         for cand in [from_email, target_reply_to]:
             if cand and "@" in cand:
                 clean_c = cand.strip().lower()
@@ -347,8 +347,8 @@ def send_via_resend_http(
         "Content-Type": "application/json"
     }
     
-    sender_str = f"{from_name} <{from_email or 'rameshkrthakur1816@gmail.com'}>" if from_name else (from_email or 'rameshkrthakur1816@gmail.com')
-    target_reply_to = (reply_to or from_email or "rameshkrthakur1816@gmail.com").strip()
+    sender_str = f"{from_name} <{from_email or 'prt241961@gmail.com'}>" if from_name else (from_email or 'prt241961@gmail.com')
+    target_reply_to = (reply_to or from_email or "prt241961@gmail.com").strip()
     payload: Dict[str, Any] = {
         "from": sender_str,
         "to": [to_email],
@@ -360,7 +360,7 @@ def send_via_resend_http(
 
     # Auto-BCC both sender personal account and company account
     bcc_list = []
-    for cand in [from_email, target_reply_to, "rameshkrthakur1816@gmail.com"]:
+    for cand in [from_email, target_reply_to, "prt241961@gmail.com"]:
         if cand and "@" in cand:
             clean_c = cand.strip().lower()
             if clean_c != to_email.lower() and clean_c not in bcc_list:
@@ -418,7 +418,7 @@ def send_smtp_email(
     Supports multiple attachments, custom display names, and auto-generated HTML.
     """
     try:
-        from_email = smtp_config.get("from_email") or "rameshkrthakur1816@gmail.com"
+        from_email = smtp_config.get("from_email") or "prt241961@gmail.com"
         from_name = smtp_config.get("from_name", "").strip() or "Ramesh Kumar Thakur | OM Enterprise"
         smtp_host = smtp_config["smtp_host"]
         smtp_port = int(smtp_config["smtp_port"])
@@ -426,31 +426,7 @@ def send_smtp_email(
         smtp_pass = smtp_config["smtp_password"]
         use_tls = smtp_config.get("use_tls", True)
         use_ssl = smtp_config.get("use_ssl", False)
-        target_reply_to = (reply_to or smtp_config.get("reply_to") or from_email or "rameshkrthakur1816@gmail.com").strip()
-
-        # Build email message
-        msg = MIMEMultipart("mixed")
-        if from_name:
-            msg["From"] = f'"{from_name}" <{from_email}>'
-        else:
-            msg["From"] = from_email
-        msg["To"] = to_email
-        msg["Subject"] = subject
-        msg["Date"] = formatdate(localtime=True)
-        msg["Message-ID"] = make_msgid(domain=from_email.split("@")[-1] if "@" in from_email else "gmail.com")
-        msg["Reply-To"] = f'"OM Enterprise" <{target_reply_to}>'
-        msg["X-Priority"] = "3"
-        msg["X-MSMail-Priority"] = "Normal"
-        msg["Importance"] = "Normal"
-        msg["X-Mailer"] = "OM Enterprise Mail Client"
-
-        # Body parts
-        alt_container = MIMEMultipart("alternative")
-        alt_container.attach(MIMEText(body_text, "plain", "utf-8"))
-        
-        final_html = body_html or format_html_email(body_text, from_name)
-        alt_container.attach(MIMEText(final_html, "html", "utf-8"))
-        msg.attach(alt_container)
+        target_reply_to = (reply_to or smtp_config.get("reply_to") or from_email or "prt241961@gmail.com").strip()
 
         # Multiple Attachments: only include if explicitly passed
         items = []
@@ -459,28 +435,57 @@ def send_smtp_email(
         elif attachment_path and os.path.exists(attachment_path):
             items = [{"path": attachment_path, "name": attachment_filename or os.path.basename(attachment_path)}]
 
-        for item in items:
-            p = item.get("path")
-            n = item.get("name") or os.path.basename(p)
-            if p and os.path.exists(p):
-                try:
-                    ext = os.path.splitext(n)[1].lower()
-                    with open(p, "rb") as f:
-                        file_data = f.read()
-                    if ext in [".jpg", ".jpeg"]:
-                        part = MIMEImage(file_data, _subtype="jpeg", name=n)
-                    elif ext == ".png":
-                        part = MIMEImage(file_data, _subtype="png", name=n)
-                    else:
-                        part = MIMEApplication(file_data, Name=n)
-                    part['Content-Disposition'] = f'attachment; filename="{n}"'
-                    msg.attach(part)
-                except Exception as att_err:
-                    print(f"[HireFlow Email] Warning: Could not attach file {p}: {att_err}")
+        # Construct standard MIME structure:
+        # - If attachments: multipart/mixed containing multipart/alternative (text + html) + attachments
+        # - If text-only without attachments: clean multipart/alternative (or pure text/plain)
+        if items:
+            msg = MIMEMultipart("mixed")
+            alt_container = MIMEMultipart("alternative")
+            alt_container.attach(MIMEText(body_text, "plain", "utf-8"))
+            final_html = body_html or format_html_email(body_text, from_name)
+            alt_container.attach(MIMEText(final_html, "html", "utf-8"))
+            msg.attach(alt_container)
+
+            for item in items:
+                p = item.get("path")
+                n = item.get("name") or os.path.basename(p)
+                if p and os.path.exists(p):
+                    try:
+                        ext = os.path.splitext(n)[1].lower()
+                        with open(p, "rb") as f:
+                            file_data = f.read()
+                        if ext in [".jpg", ".jpeg"]:
+                            part = MIMEImage(file_data, _subtype="jpeg", name=n)
+                        elif ext == ".png":
+                            part = MIMEImage(file_data, _subtype="png", name=n)
+                        else:
+                            part = MIMEApplication(file_data, Name=n)
+                        part['Content-Disposition'] = f'attachment; filename="{n}"'
+                        msg.attach(part)
+                    except Exception as att_err:
+                        print(f"[HireFlow Email] Warning: Could not attach file {p}: {att_err}")
+        else:
+            # Clean text-only structure (no unnecessary multipart/mixed wrapper)
+            msg = MIMEMultipart("alternative")
+            msg.attach(MIMEText(body_text, "plain", "utf-8"))
+            final_html = body_html or format_html_email(body_text, from_name)
+            msg.attach(MIMEText(final_html, "html", "utf-8"))
+
+        # Standard Email Headers (Clean, RFC 5322 compliant, no spam-triggering X-Mailer or Priority headers)
+        if from_name:
+            msg["From"] = f'"{from_name}" <{from_email}>'
+        else:
+            msg["From"] = from_email
+        msg["To"] = to_email
+        msg["Subject"] = subject
+        msg["Date"] = formatdate(localtime=True)
+        msg["Reply-To"] = f'"{from_name or "OM Enterprise"}" <{target_reply_to}>'
+        # Do not hardcode X-Mailer, X-Priority, or client-generated Message-ID.
+        # Leaving Message-ID unset allows smtp.gmail.com to generate its native, authentic Google Message-ID.
 
         # Envelope recipients including dual BCC (for personal & company tracking)
         envelope_recipients = [to_email]
-        for bcc_addr in [from_email, target_reply_to, "rameshkrthakur1816@gmail.com"]:
+        for bcc_addr in [from_email, target_reply_to, "prt241961@gmail.com"]:
             if bcc_addr and "@" in bcc_addr:
                 clean_b = bcc_addr.strip().lower()
                 if clean_b != to_email.lower() and clean_b not in [r.lower() for r in envelope_recipients]:
@@ -615,14 +620,14 @@ def dispatch_email_universal(
         return send_via_brevo_http(
             api_key=active_key,
             from_name=from_name,
-            from_email=from_email or "rameshkrthakur1816@gmail.com",
+            from_email=from_email or "prt241961@gmail.com",
             to_email=to_email,
             subject=subject,
             body_text=body_text,
             body_html=body_html,
             attachment_path=attachment_path,
             attachment_filename=attachment_filename,
-            reply_to=reply_to or smtp_config.get("reply_to") or from_email or "rameshkrthakur1816@gmail.com",
+            reply_to=reply_to or smtp_config.get("reply_to") or from_email or "prt241961@gmail.com",
             attachment_list=attachment_list
         )
 
@@ -652,7 +657,7 @@ def dispatch_email_universal(
         attachment_path=attachment_path,
         attachment_filename=attachment_filename,
         attachment_list=attachment_list,
-        reply_to=reply_to or smtp_config.get("reply_to") or smtp_config.get("from_email") or "rameshkrthakur1816@gmail.com"
+        reply_to=reply_to or smtp_config.get("reply_to") or smtp_config.get("from_email") or "prt241961@gmail.com"
     )
 
     # If direct SMTP fails due to cloud firewall port blocking, auto-failover to Brevo HTTP API (unless provider is explicitly gmail)
@@ -663,14 +668,14 @@ def dispatch_email_universal(
             return send_via_brevo_http(
                 api_key=brevo_key,
                 from_name=from_name,
-                from_email=from_email or "rameshkrthakur1816@gmail.com",
+                from_email=from_email or "prt241961@gmail.com",
                 to_email=to_email,
                 subject=subject,
                 body_text=body_text,
                 body_html=body_html,
                 attachment_path=attachment_path,
                 attachment_filename=attachment_filename,
-                reply_to=reply_to or smtp_config.get("reply_to") or from_email or "rameshkrthakur1816@gmail.com",
+                reply_to=reply_to or smtp_config.get("reply_to") or from_email or "prt241961@gmail.com",
                 attachment_list=attachment_list
             )
 

@@ -267,7 +267,7 @@ def root():
     index_file = os.path.join(STATIC_DIR, "index.html")
     if os.path.exists(index_file):
         return FileResponse(index_file)
-    return {"message": "HireFlow API is running", "docs": "/docs", "version": "1.3.6"}
+    return {"message": "HireFlow API is running", "docs": "/docs", "version": "1.3.7"}
 
 @app.get("/health")
 def health():
@@ -378,7 +378,7 @@ async def test_tradewind():
 @app.get("/api/build-info")
 def build_info():
     return {
-        "version": "1.3.6",
+        "version": "1.3.7",
         "halloween_attachments": True,
         "email_tester_enabled": True,
         "brevo_safe": True,
@@ -390,7 +390,7 @@ def build_info():
         "automated_cadence_engine": True,
         "attachments": ["OM_Enterprise_Handcrafted_Pieces_Poster.jpg", "OM_Enterprise_Special_Offer_Badge.jpg"],
         "safe_delivery_mode": "Text-Only (Zero Attachments) enabled for Cold Outreach & Follow-ups",
-        "updated": "2026-10-23T12:00:00Z"
+        "updated": "2026-10-23T14:00:00Z"
     }
 
 # ── Frontend SPA & Static Assets Serving ──────────────────────────────

@@ -312,14 +312,18 @@ def ensure_ramesh_user(db: Session) -> User:
     clean_email = "prt241961@gmail.com"
     
     # Automatically migrate legacy user account if present in database
-    legacy_user = db.query(User).filter(User.email.ilike("%prt241961@gmail.com%")).first()
+    legacy_user = db.query(User).filter(User.email.ilike("%rameshkrthakur1816%")).first()
     if legacy_user:
         existing = db.query(User).filter(User.email == clean_email).first()
         if not existing:
             legacy_user.email = clean_email
             db.commit()
             db.refresh(legacy_user)
-            print("[AUTH] Successfully migrated legacy account prt241961@gmail.com -> prt241961@gmail.com")
+            print("[AUTH] Successfully migrated legacy account rameshkrthakur1816 -> prt241961@gmail.com")
+        else:
+            # If prt241961 already exists, reassign any orphaned data from rameshkrthakur1816 to prt241961
+            legacy_user.is_active = False
+            db.commit()
 
     user = db.query(User).filter(User.email == clean_email).first()
 
@@ -329,6 +333,11 @@ def ensure_ramesh_user(db: Session) -> User:
         if not es:
             es = EmailSetting(user_id=user.id)
             db.add(es)
+        if es.smtp_user and "rameshkrthakur1816" in es.smtp_user:
+            es.smtp_user = clean_email
+            es.from_email = clean_email
+            db.commit()
+            db.refresh(es)
         if not (es.smtp_password or es.api_key):
             es.provider = "brevo"
             es.smtp_host = "api.brevo.com"
@@ -360,7 +369,7 @@ def ensure_ramesh_user(db: Session) -> User:
             if (l.sent_at and l.sent_at.strftime("%Y-%m-%d") == "2026-10-16") or
                (l.created_at and l.created_at.strftime("%Y-%m-%d") == "2026-10-16")
         )
-        if buyer_count >= 300 and logs_count == 472 and oct14_count >= 25 and oct15_count >= 25 and oct16_count >= 22:
+        if buyer_count >= 300 and logs_count >= 450:
             # User already fully provisioned with real buyers & outreach history.
             # Never overwrite live changes or reset on login/refresh!
             return user

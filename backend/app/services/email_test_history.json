@@ -1,5 +1,26 @@
 [
   {
+    "id": "test_1792764234",
+    "user_id": 2,
+    "dispatched_at": "2026-10-23T19:33:54+05:30",
+    "to_email": "putulkumari1618@gmail.com",
+    "template_id": "decor_lanterns_b2b",
+    "template_name": "OM Enterprise – Handcrafted Home Decor & Lanterns (B2B Formal)",
+    "subject": "Handcrafted Home Decor & Lanterns – OM Enterprise",
+    "body_preview": "Hello,\n\nGreetings from OM Enterprise!\n\nWe manufacture handcrafted home décor, metal lanterns, candle holders, and decorative jars.\n\nAre you open to reviewing our product catalog an...",
+    "sender_name": "Ramesh Kumar Thakur | OM Enterprise",
+    "reply_to": "rameshkrthakur1816@gmail.com",
+    "mode": "text_only",
+    "attachments_count": 0,
+    "attachments": [],
+    "provider": "gmail",
+    "status": "FAILED",
+    "error": "Failed to deliver email: Connection unexpectedly closed (Fallback port 465 error: Connection unexpectedly closed)",
+    "folder_placed": "pending_verification",
+    "spam_score": 92,
+    "placement_probability": "Primary Inbox (95%+ Probability)"
+  },
+  {
     "id": "test_1792735431",
     "user_id": 2,
     "dispatched_at": "2026-10-23T11:33:51+05:30",

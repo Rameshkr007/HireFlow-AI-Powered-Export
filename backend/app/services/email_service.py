@@ -128,16 +128,34 @@ def get_effective_smtp_config(db: Session, user_id: int) -> Optional[Dict[str, A
                 pass
 
         is_gmail = (db_setting.provider == "gmail")
+        smtp_user_val = db_setting.smtp_user.strip() if db_setting.smtp_user else "prt241961@gmail.com"
+        if "rameshkrthakur1816" in smtp_user_val:
+            smtp_user_val = "prt241961@gmail.com"
+            db_setting.smtp_user = "prt241961@gmail.com"
+            try:
+                db.commit()
+            except Exception:
+                pass
+
+        from_email_val = db_setting.from_email.strip() if db_setting.from_email else smtp_user_val
+        if "rameshkrthakur1816" in from_email_val:
+            from_email_val = "prt241961@gmail.com"
+            db_setting.from_email = "prt241961@gmail.com"
+            try:
+                db.commit()
+            except Exception:
+                pass
+
         return {
             "provider": "gmail" if is_gmail else ("brevo" if (cleaned_api_key and cleaned_api_key.startswith("xkeysib-")) else (db_setting.provider or "gmail")),
             "smtp_host": "smtp.gmail.com" if is_gmail else ("api.brevo.com" if (cleaned_api_key and cleaned_api_key.startswith("xkeysib-")) else (db_setting.smtp_host or "smtp.gmail.com")),
             "smtp_port": int(db_setting.smtp_port or 587) if is_gmail else (443 if (cleaned_api_key and cleaned_api_key.startswith("xkeysib-")) else int(db_setting.smtp_port or 587)),
-            "smtp_user": db_setting.smtp_user.strip() if db_setting.smtp_user else "prt241961@gmail.com",
+            "smtp_user": smtp_user_val,
             "smtp_password": cleaned_password,
             "api_key": None if is_gmail else cleaned_api_key,
             "from_name": db_setting.from_name or "Ramesh Kumar Thakur | OM Enterprise",
-            "from_email": db_setting.from_email or (db_setting.smtp_user.strip() if db_setting.smtp_user else "prt241961@gmail.com"),
-            "reply_to": db_setting.from_email or (db_setting.smtp_user.strip() if db_setting.smtp_user else "prt241961@gmail.com"),
+            "from_email": from_email_val,
+            "reply_to": from_email_val,
             "use_tls": db_setting.use_tls if db_setting.use_tls is not None else True,
             "use_ssl": db_setting.use_ssl if db_setting.use_ssl is not None else False,
             "source": "db"
@@ -526,12 +544,19 @@ def send_smtp_email(
                 return True, None
             except Exception as second_err:
                 err_text = str(second_err)
-                if "timed out" in err_text.lower():
-                    return False, (
-                        "SMTP timed out. NOTE: Render's Free Cloud Tier blocks raw outbound SMTP ports 587 and 465. "
-                        "To send emails without blocks on Render, select 'Brevo HTTP API (Port 443)' in Email Integration, "
-                        "or run HireFlow locally on your computer (http://localhost:5173) where direct Gmail SMTP works unrestricted."
-                    )
+                if "timed out" in err_text.lower() or "unexpectedly closed" in err_text.lower():
+                    if is_on_render:
+                        return False, (
+                            "SMTP connection blocked. NOTE: Render's Free Cloud Tier blocks raw outbound SMTP ports 587 and 465. "
+                            "To send emails without blocks on Render, select 'Brevo HTTP API (Port 443)' in Email Integration, "
+                            "or run HireFlow locally on your computer (http://localhost:5173) where direct Gmail SMTP works unrestricted."
+                        )
+                    else:
+                        return False, (
+                            f"Gmail SMTP connection closed during authentication for '{smtp_user}'. "
+                            "Please ensure: 1) You are using the 16-character Google App Password generated specifically for "
+                            f"{smtp_user} (from https://myaccount.google.com/apppasswords), and 2) 2-Step Verification is turned ON for that Google account."
+                        )
                 return False, f"Failed to deliver email: {str(first_err)} (Fallback port {alt_port} error: {str(second_err)})"
 
     except smtplib.SMTPAuthenticationError as auth_err:

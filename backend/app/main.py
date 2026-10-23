@@ -154,12 +154,8 @@ def startup():
             ensure_campaign_10_logs(db, target_user_id=r_id)
             ensure_campaign_11_logs(db, target_user_id=r_id)
             
-            # Check and execute due cadence follow-ups (Step 2 after 3 days, Step 3 after 7 days)
-            try:
-                from .services.cadence_service import check_and_run_due_cadences
-                check_and_run_due_cadences(db)
-            except Exception as e_cad:
-                print(f"[STARTUP] Cadence check notice: {e_cad}")
+            # Cadence check is handled via background tasks/endpoints, not synchronous startup
+            pass
         except Exception as e_sync:
             print(f"[STARTUP] Master logs enforcement notice: {e_sync}")
 
@@ -185,35 +181,28 @@ def startup():
                     ues.use_ssl = False
                     ues.is_verified = True
             db.commit()
-            save_persistent_email_credentials({
-                "provider": "brevo",
-                "smtp_host": "api.brevo.com",
-                "smtp_port": 443,
-                "smtp_user": "prt241961@gmail.com",
-                "api_key": getattr(settings, "BREVO_API_KEY", None),
-                "from_name": "Ramesh Kumar Thakur | OM Enterprise",
-                "from_email": "prt241961@gmail.com",
-                "use_tls": True,
-                "use_ssl": False,
-                "is_verified": True
-            })
+            from .services.credential_store import load_persistent_email_credentials
+            existing_fc = load_persistent_email_credentials()
+            if not existing_fc or not (existing_fc.get("smtp_password") or existing_fc.get("api_key")):
+                save_persistent_email_credentials({
+                    "provider": "brevo",
+                    "smtp_host": "api.brevo.com",
+                    "smtp_port": 443,
+                    "smtp_user": "prt241961@gmail.com",
+                    "api_key": getattr(settings, "BREVO_API_KEY", None),
+                    "from_name": "Ramesh Kumar Thakur | OM Enterprise",
+                    "from_email": "prt241961@gmail.com",
+                    "use_tls": True,
+                    "use_ssl": False,
+                    "is_verified": True
+                })
         except Exception as e_init:
             print(f"[STARTUP] Brevo email initialization notice: {e_init}")
 
-        # Ensure new poster attachments and purge old ones
+        # Ensure new poster attachments
         try:
             from .models.attachment import Attachment
             upload_dir = os.path.abspath(settings.UPLOAD_DIR)
-            # 1. Purge obsolete non-Halloween posters
-            db.query(Attachment).filter(
-                (Attachment.filename.ilike("%Handcrafted_Collection_Poster%")) |
-                (Attachment.original_name.ilike("%Himalayan Singing Bowls Poster%")) |
-                (Attachment.filename.ilike("%Home_Decor%")) |
-                (Attachment.original_name.ilike("%Home_Decor%"))
-            ).delete(synchronize_session=False)
-            db.commit()
-
-            # 2. Add both Halloween posters and catalog for each user
             new_posters = [
                 ("OM_Enterprise_Halloween_Special_Offer_Poster.jpg", "OM Enterprise – Halloween Special Offer Poster.jpg", "image/jpeg"),
                 ("OM_Enterprise_Halloween_Special_Offer_Badge.jpg", "OM Enterprise – Halloween Special Offer Badge.jpg", "image/jpeg"),
@@ -241,6 +230,7 @@ def startup():
                             ))
             db.commit()
         except Exception as e_att:
+            db.rollback()
             print(f"[STARTUP] Poster attachment sync notice: {e_att}")
 
         db.close()
@@ -267,7 +257,7 @@ def root():
     index_file = os.path.join(STATIC_DIR, "index.html")
     if os.path.exists(index_file):
         return FileResponse(index_file)
-    return {"message": "HireFlow API is running", "docs": "/docs", "version": "1.4.1"}
+    return {"message": "HireFlow API is running", "docs": "/docs", "version": "1.4.2"}
 
 @app.get("/health")
 def health():
@@ -378,7 +368,7 @@ async def test_tradewind():
 @app.get("/api/build-info")
 def build_info():
     return {
-        "version": "1.4.1",
+        "version": "1.4.2",
         "halloween_attachments": True,
         "email_tester_enabled": True,
         "brevo_safe": True,

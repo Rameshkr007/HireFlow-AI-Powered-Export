@@ -19,14 +19,14 @@ interface SequenceStep {
 }
 
 export const OFFICIAL_HALLOWEEN_TEMPLATE = {
-  subject: "Greetings from OM Enterprise – Halloween Special Offer & Wholesale Opportunities",
+  subject: "Handcrafted Home Decor & Lanterns – OM Enterprise",
   body: `Hello,
 
 Greetings from OM Enterprise!
 
-We offer handcrafted home décor, lanterns, candle holders, and decorative jars. 🎃 Explore our **Halloween Special Offer** and wholesale opportunities!
+We manufacture handcrafted home décor, metal lanterns, candle holders, and decorative jars.
 
-Interested? We'd love to connect.
+Are you open to reviewing our product catalog and wholesale export pricing for your store?
 
 Best regards,  
 Name: Ramesh Kumar Thakur

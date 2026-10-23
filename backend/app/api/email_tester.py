@@ -45,19 +45,19 @@ def resolve_badge_path() -> str:
 
 AVAILABLE_TEMPLATES = [
     {
-        "id": "halloween_special_offer",
-        "name": "OM Enterprise – Halloween Special Offer & Wholesale",
+        "id": "decor_lanterns_b2b",
+        "name": "OM Enterprise – Handcrafted Home Decor & Lanterns (B2B Formal)",
         "category": "Official Outreach",
-        "recommended_mode": "with_attachments",
-        "default_attachments": ["halloween_poster", "halloween_badge"],
-        "subject": "Greetings from OM Enterprise – Halloween Special Offer & Wholesale Opportunities",
+        "recommended_mode": "text_only",
+        "default_attachments": [],
+        "subject": "Handcrafted Home Decor & Lanterns – OM Enterprise",
         "body": """Hello,
 
 Greetings from OM Enterprise!
 
-We offer handcrafted home décor, lanterns, candle holders, and decorative jars. 🎃 Explore our **Halloween Special Offer** and wholesale opportunities!
+We manufacture handcrafted home décor, metal lanterns, candle holders, and decorative jars.
 
-Interested? We'd love to connect.
+Are you open to reviewing our product catalog and wholesale export pricing for your store?
 
 Best regards,  
 Name: Ramesh Kumar Thakur
@@ -141,11 +141,13 @@ def save_test_history(history: List[Dict[str, Any]]):
 
 class TestPitchDispatchSchema(BaseModel):
     to_email: str
-    template_id: Optional[str] = "halloween_special_offer"
-    template_name: Optional[str] = "Halloween Special Offer – Handcrafted Decor & Singing Bowls"
+    template_id: Optional[str] = "decor_lanterns_b2b"
+    template_name: Optional[str] = "Handcrafted Home Decor & Lanterns – OM Enterprise"
     subject: str
     body_text: str
-    include_attachments: bool = True
+    include_attachments: bool = False
+    provider: Optional[str] = "gmail"
+    app_password: Optional[str] = None
     attachment_keys: Optional[List[str]] = ["halloween_poster", "halloween_badge"]
     buyer_name: Optional[str] = "Marcus Vance"
     company_name: Optional[str] = "Pacific Trade & Living LLC"
@@ -211,11 +213,60 @@ def dispatch_test_pitch(
     elif target_email.endswith("@gmail"):
         target_email += ".com"
 
+    from ..models.email_setting import EmailSetting
+    from ..services.email_service import clean_password
+    from ..services.credential_store import save_persistent_email_credentials
+
+    # If user passed app_password directly from testing UI, save and prioritize it immediately
+    if payload.app_password and payload.app_password.strip():
+        cleaned_p = clean_password(payload.app_password)
+        db_s = db.query(EmailSetting).filter(EmailSetting.user_id == current_user.id).first()
+        if not db_s:
+            db_s = EmailSetting(user_id=current_user.id)
+            db.add(db_s)
+        db_s.provider = "gmail"
+        db_s.smtp_host = "smtp.gmail.com"
+        db_s.smtp_port = 587
+        db_s.smtp_user = "rameshkrthakur1816@gmail.com"
+        db_s.smtp_password = cleaned_p
+        db_s.api_key = None
+        db_s.from_name = "Ramesh Kumar Thakur | OM Enterprise"
+        db_s.from_email = "rameshkrthakur1816@gmail.com"
+        db_s.is_verified = True
+        db.commit()
+        db.refresh(db_s)
+        save_persistent_email_credentials({
+            "provider": "gmail",
+            "smtp_host": "smtp.gmail.com",
+            "smtp_port": 587,
+            "smtp_user": "rameshkrthakur1816@gmail.com",
+            "smtp_password": cleaned_p,
+            "api_key": None,
+            "from_name": "Ramesh Kumar Thakur | OM Enterprise",
+            "from_email": "rameshkrthakur1816@gmail.com",
+            "is_verified": True
+        })
+
     smtp_config = get_effective_smtp_config(db, current_user.id)
+    if payload.provider == "gmail":
+        if not smtp_config or not smtp_config.get("smtp_password"):
+            raise HTTPException(
+                status_code=400,
+                detail="Google App Password is required to send via Gmail SMTP. Please enter your 16-character App Password (e.g. 'abcd efgh ijkl mnop') in the App Password field."
+            )
+        smtp_config["provider"] = "gmail"
+        smtp_config["smtp_host"] = "smtp.gmail.com"
+        smtp_config["smtp_port"] = 587
+        smtp_config["api_key"] = None
+    elif payload.provider == "brevo":
+        smtp_config["provider"] = "brevo"
+        smtp_config["smtp_host"] = "api.brevo.com"
+        smtp_config["smtp_port"] = 443
+
     if not smtp_config:
         raise HTTPException(
             status_code=400,
-            detail="No email credentials found. Please verify your Brevo API key or Gmail configuration in Settings."
+            detail="No email credentials found. Please enter your Gmail App Password or Brevo API key."
         )
 
     # 1. Personalize placeholders

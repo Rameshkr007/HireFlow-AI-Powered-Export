@@ -127,13 +127,14 @@ def get_effective_smtp_config(db: Session, user_id: int) -> Optional[Dict[str, A
             except Exception:
                 pass
 
+        is_gmail = (db_setting.provider == "gmail")
         return {
-            "provider": "brevo" if (cleaned_api_key and cleaned_api_key.startswith("xkeysib-")) else (db_setting.provider or "gmail"),
-            "smtp_host": "api.brevo.com" if (cleaned_api_key and cleaned_api_key.startswith("xkeysib-")) else (db_setting.smtp_host or "smtp.gmail.com"),
-            "smtp_port": 443 if (cleaned_api_key and cleaned_api_key.startswith("xkeysib-")) else int(db_setting.smtp_port or 587),
+            "provider": "gmail" if is_gmail else ("brevo" if (cleaned_api_key and cleaned_api_key.startswith("xkeysib-")) else (db_setting.provider or "gmail")),
+            "smtp_host": "smtp.gmail.com" if is_gmail else ("api.brevo.com" if (cleaned_api_key and cleaned_api_key.startswith("xkeysib-")) else (db_setting.smtp_host or "smtp.gmail.com")),
+            "smtp_port": int(db_setting.smtp_port or 587) if is_gmail else (443 if (cleaned_api_key and cleaned_api_key.startswith("xkeysib-")) else int(db_setting.smtp_port or 587)),
             "smtp_user": db_setting.smtp_user.strip() if db_setting.smtp_user else "rameshkrthakur1816@gmail.com",
             "smtp_password": cleaned_password,
-            "api_key": cleaned_api_key,
+            "api_key": None if is_gmail else cleaned_api_key,
             "from_name": db_setting.from_name or "Ramesh Kumar Thakur | OM Enterprise",
             "from_email": db_setting.from_email or (db_setting.smtp_user.strip() if db_setting.smtp_user else "rameshkrthakur1816@gmail.com"),
             "reply_to": db_setting.from_email or (db_setting.smtp_user.strip() if db_setting.smtp_user else "rameshkrthakur1816@gmail.com"),
@@ -586,13 +587,16 @@ def dispatch_email_universal(
     )
     is_on_render = bool(os.environ.get("RENDER") or os.environ.get("RENDER_EXTERNAL_HOSTNAME"))
 
-    is_brevo = (
-        provider == "brevo"
-        or bool(brevo_key)
-        or "brevo" in host_str
-        or port_val == 443
-        or (is_on_render and bool(brevo_key))
-    )
+    if provider in ("gmail", "smtp", "custom"):
+        is_brevo = False
+    elif provider == "brevo":
+        is_brevo = True
+    else:
+        is_brevo = (
+            "brevo" in host_str
+            or port_val == 443
+            or (bool(api_key) and str(api_key).startswith("xkeysib-"))
+        )
 
     if is_brevo:
         active_key = brevo_key or clean_brevo_key(api_key)
@@ -651,8 +655,8 @@ def dispatch_email_universal(
         reply_to=reply_to or smtp_config.get("reply_to") or smtp_config.get("from_email") or "rameshkrthakur1816@gmail.com"
     )
 
-    # If direct SMTP fails due to cloud firewall port blocking, auto-failover to Brevo HTTP API
-    if not smtp_success and brevo_key:
+    # If direct SMTP fails due to cloud firewall port blocking, auto-failover to Brevo HTTP API (unless provider is explicitly gmail)
+    if not smtp_success and brevo_key and provider != "gmail":
         err_lower = (smtp_err or "").lower()
         if "timed out" in err_lower or "connection" in err_lower or "refused" in err_lower or "network" in err_lower or is_on_render:
             print(f"[SMTP FAILOVER] Direct SMTP blocked ({smtp_err}). Seamlessly failing over to Brevo HTTP API (Port 443)...")

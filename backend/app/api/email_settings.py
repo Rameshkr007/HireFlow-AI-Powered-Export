@@ -209,7 +209,12 @@ def save_email_settings(
         else:
             setting.smtp_password = cleaned_pwd
 
-    if setting.provider == "brevo" or (setting.api_key and setting.api_key.startswith("xkeysib-")):
+    if payload.provider == "gmail":
+        setting.provider = "gmail"
+        setting.smtp_host = "smtp.gmail.com"
+        setting.smtp_port = 587
+        setting.api_key = None
+    elif setting.provider == "brevo" or (setting.api_key and setting.api_key.startswith("xkeysib-")):
         setting.provider = "brevo"
         setting.smtp_host = "api.brevo.com"
         setting.smtp_port = 443

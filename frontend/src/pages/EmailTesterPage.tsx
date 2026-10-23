@@ -61,16 +61,18 @@ export default function EmailTesterPage() {
   const [availableAttachments, setAvailableAttachments] = useState<AttachmentItem[]>([]);
   const [history, setHistory] = useState<TestRecord[]>([]);
 
-  // Form State - Pre-configured with active Halloween Outreach & both Halloween attachments
+  // Provider & App Password State
+  const [activeProvider, setActiveProvider] = useState<'gmail' | 'brevo'>('gmail');
+  const [appPassword, setAppPassword] = useState('');
+  const [savedSettings, setSavedSettings] = useState<any>(null);
+
+  // Form State - Pre-configured with active Formal B2B Outreach
   const [toEmail, setToEmail] = useState('rameshkrthakur1816@gmail.com');
-  const [selectedTemplateId, setSelectedTemplateId] = useState('halloween_special_offer');
-  const [subject, setSubject] = useState('');
-  const [bodyText, setBodyText] = useState('');
-  const [includeAttachments, setIncludeAttachments] = useState(true);
-  const [selectedAttachmentKeys, setSelectedAttachmentKeys] = useState<string[]>([
-    'halloween_poster',
-    'halloween_badge'
-  ]);
+  const [selectedTemplateId, setSelectedTemplateId] = useState('decor_lanterns_b2b');
+  const [subject, setSubject] = useState('Handcrafted Home Decor & Lanterns – OM Enterprise');
+  const [bodyText, setBodyText] = useState(`Hello,\n\nGreetings from OM Enterprise!\n\nWe manufacture handcrafted home décor, metal lanterns, candle holders, and decorative jars.\n\nAre you open to reviewing our product catalog and wholesale export pricing for your store?\n\nBest regards,  \nName: Ramesh Kumar Thakur\nOM Enterprise`);
+  const [includeAttachments, setIncludeAttachments] = useState(false);
+  const [selectedAttachmentKeys, setSelectedAttachmentKeys] = useState<string[]>([]);
 
   // Simulated Buyer Preview Placeholders
   const [buyerName, setBuyerName] = useState('Marcus Vance');
@@ -87,6 +89,12 @@ export default function EmailTesterPage() {
   useEffect(() => {
     fetchInitialData();
     fetchHistory();
+    api.get('/api/email-settings').then(res => {
+      setSavedSettings(res.data);
+      if (res.data?.provider === 'gmail' || res.data?.provider === 'brevo') {
+        setActiveProvider(res.data.provider);
+      }
+    }).catch(() => {});
   }, []);
 
   const fetchInitialData = async () => {
@@ -99,14 +107,14 @@ export default function EmailTesterPage() {
       setTemplates(loadedTemplates);
       setAvailableAttachments(loadedAttachments);
 
-      // Default to the single Official Halloween Special Offer Template
-      const tpl = loadedTemplates.find(t => t.id === 'halloween_special_offer') || loadedTemplates[0];
+      // Default to Official B2B Outreach Template in Text-Only Safe Mode
+      const tpl = loadedTemplates[0];
       if (tpl) {
         setSelectedTemplateId(tpl.id);
         setSubject(tpl.subject);
         setBodyText(tpl.body);
-        setIncludeAttachments(true);
-        calculateLocalSpamScore(tpl.subject, tpl.body, true);
+        setIncludeAttachments(false);
+        calculateLocalSpamScore(tpl.subject, tpl.body, false);
       }
     } catch (err: any) {
       console.error('Failed to load email tester templates', err);
@@ -184,10 +192,15 @@ export default function EmailTesterPage() {
       setFeedbackAdvice(null);
       const currentTemplate = templates.find(t => t.id === selectedTemplateId);
 
+      if (activeProvider === 'gmail' && !appPassword.trim() && !savedSettings?.has_password) {
+        showToast('Please enter your 16-character Google App Password below to send via Gmail SMTP', 'error');
+        return;
+      }
+
       const payload = {
         to_email: toEmail.trim(),
         template_id: selectedTemplateId,
-        template_name: currentTemplate ? currentTemplate.name : 'Halloween Special Offer Outreach',
+        template_name: currentTemplate ? currentTemplate.name : 'Handcrafted Home Decor & Lanterns – OM Enterprise',
         subject: subject,
         body_text: bodyText,
         include_attachments: includeAttachments,
@@ -196,7 +209,9 @@ export default function EmailTesterPage() {
         company_name: companyName,
         country: country,
         city: city,
-        product: product
+        product: product,
+        provider: activeProvider,
+        app_password: appPassword.trim() || undefined
       };
 
       const res = await api.post('/api/email-tester/dispatch', payload);
@@ -329,6 +344,92 @@ export default function EmailTesterPage() {
       <div className="grid grid-cols-1 lg:grid-cols-12 gap-6">
         {/* Left Column: Compose & Dispatch (7 cols) */}
         <div className="lg:col-span-7 space-y-6">
+          {/* Step 0: Dispatch Server Method */}
+          <div className="card p-5 space-y-4 border-emerald-500/30 bg-dark-850">
+            <div className="flex items-center justify-between border-b border-dark-800 pb-3">
+              <div className="flex items-center gap-2">
+                <div className="w-6 h-6 rounded-full bg-emerald-600 text-white flex items-center justify-center text-xs font-bold">✓</div>
+                <h3 className="text-sm font-bold text-dark-100">Outreach Sending Method & Server</h3>
+              </div>
+              <span className="text-[10px] px-2 py-0.5 rounded bg-emerald-500/20 text-emerald-300 font-bold uppercase">
+                {activeProvider === 'gmail' ? 'Google Direct SMTP' : 'Brevo REST API'}
+              </span>
+            </div>
+
+            <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+              <button
+                type="button"
+                onClick={() => setActiveProvider('gmail')}
+                className={`p-3.5 rounded-xl border text-left transition-all ${
+                  activeProvider === 'gmail'
+                    ? 'bg-emerald-950/40 border-emerald-500 ring-1 ring-emerald-500/50 shadow-md'
+                    : 'bg-dark-900 border-dark-800 hover:border-dark-700'
+                }`}
+              >
+                <div className="flex items-center justify-between mb-1">
+                  <div className="flex items-center gap-2 font-bold text-xs text-emerald-400">
+                    <CheckCircle className="w-4 h-4" />
+                    <span>Google Gmail SMTP (Port 587)</span>
+                  </div>
+                  {activeProvider === 'gmail' && <span className="text-[9px] px-1.5 py-0.5 rounded bg-emerald-500/20 text-emerald-300 font-bold">PRIMARY INBOX</span>}
+                </div>
+                <p className="text-[11px] text-dark-300">
+                  ⭐ <strong>No "via brevo" flag:</strong> Direct person-to-person delivery with 100% Google SPF & DKIM auth.
+                </p>
+              </button>
+
+              <button
+                type="button"
+                onClick={() => setActiveProvider('brevo')}
+                className={`p-3.5 rounded-xl border text-left transition-all ${
+                  activeProvider === 'brevo'
+                    ? 'bg-primary-950/40 border-primary-500 ring-1 ring-primary-500/50 shadow-md'
+                    : 'bg-dark-900 border-dark-800 hover:border-dark-700'
+                }`}
+              >
+                <div className="flex items-center justify-between mb-1">
+                  <div className="flex items-center gap-2 font-bold text-xs text-primary-400">
+                    <Zap className="w-4 h-4" />
+                    <span>Brevo REST API (Port 443)</span>
+                  </div>
+                </div>
+                <p className="text-[11px] text-dark-400">
+                  Cloud REST API. Free @gmail.com senders may land in Promotions due to Brevo ESP headers.
+                </p>
+              </button>
+            </div>
+
+            {/* App Password input if Gmail is selected */}
+            {activeProvider === 'gmail' && (
+              <div className="p-3.5 rounded-xl bg-dark-900 border border-emerald-500/30 space-y-2">
+                <div className="flex items-center justify-between">
+                  <label className="text-xs text-emerald-300 font-semibold flex items-center gap-1.5">
+                    <span>Google App Password (16 Letters for rameshkrthakur1816@gmail.com):</span>
+                  </label>
+                  <a
+                    href="https://myaccount.google.com/apppasswords"
+                    target="_blank"
+                    rel="noreferrer"
+                    className="text-[11px] text-primary-400 hover:underline flex items-center gap-1 font-medium"
+                  >
+                    <span>Generate App Password</span>
+                    <ExternalLink className="w-3 h-3" />
+                  </a>
+                </div>
+                <input
+                  type="password"
+                  value={appPassword}
+                  onChange={e => setAppPassword(e.target.value)}
+                  placeholder={savedSettings?.has_password ? "•••••••••••••••• (Saved & Active — Type to update)" : "Enter 16-character App Password (e.g. abcd efgh ijkl mnop)"}
+                  className="w-full bg-dark-950 border border-dark-700 rounded-lg px-3 py-2 text-xs text-dark-100 font-mono focus:outline-none focus:border-emerald-500"
+                />
+                <p className="text-[11px] text-dark-400">
+                  Open <a href="https://myaccount.google.com/apppasswords" target="_blank" rel="noreferrer" className="text-primary-400 underline">myaccount.google.com/apppasswords</a>, select App name "HireFlow", and paste the 16 letters here.
+                </p>
+              </div>
+            )}
+          </div>
+
           {/* Step 1: Destination Email */}
           <div className="card p-5 space-y-4">
             <div className="flex items-center justify-between border-b border-dark-800 pb-3">
@@ -363,6 +464,13 @@ export default function EmailTesterPage() {
               >
                 rameshkrthakur1816@gmail.com
               </button>
+              <button
+                type="button"
+                onClick={() => setToEmail('prt241961@gmail.com')}
+                className="px-2.5 py-1 rounded bg-dark-800 hover:bg-dark-700 text-cyan-400 border border-cyan-500/30 text-[11px] font-mono transition-colors"
+              >
+                prt241961@gmail.com
+              </button>
             </div>
           </div>
 
@@ -383,7 +491,7 @@ export default function EmailTesterPage() {
               >
                 <div className="flex items-center justify-between gap-1">
                   <span className="text-sm font-bold text-dark-100 flex items-center gap-2">
-                    <span>🎃</span>
+                    <span>✨</span>
                     <span>{tpl.name}</span>
                   </span>
                   <span className="text-[10px] px-2 py-0.5 rounded bg-emerald-500/20 text-emerald-300 font-extrabold">
@@ -578,12 +686,14 @@ export default function EmailTesterPage() {
               ) : (
                 <>
                   <Send className="w-4 h-4" />
-                  <span>🚀 Send Real Test Email Now (Dispatch via Brevo Port 443)</span>
+                  <span>🚀 Send Real Test Email Now ({activeProvider === 'gmail' ? 'Dispatch via Google Gmail SMTP Port 587' : 'Dispatch via Brevo Port 443'})</span>
                 </>
               )}
             </button>
             <p className="text-center text-[11px] text-dark-400 mt-2">
-              Dispatches immediately via authenticated Brevo HTTP REST API (Port 443) with Reply-To locked to rameshkrthakur1816@gmail.com.
+              {activeProvider === 'gmail'
+                ? 'Dispatches directly from Google Gmail SMTP (Port 587) with Reply-To locked to rameshkrthakur1816@gmail.com (Primary Inbox optimized).'
+                : 'Dispatches via authenticated Brevo HTTP REST API (Port 443) with Reply-To locked to rameshkrthakur1816@gmail.com.'}
             </p>
           </div>
 

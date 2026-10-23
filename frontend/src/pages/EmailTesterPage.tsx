@@ -63,10 +63,10 @@ export default function EmailTesterPage() {
 
   // Form State - Pre-configured with active Halloween Outreach & both Halloween attachments
   const [toEmail, setToEmail] = useState('rameshkrthakur1816@gmail.com');
-  const [selectedTemplateId, setSelectedTemplateId] = useState('ultra_short_outreach');
+  const [selectedTemplateId, setSelectedTemplateId] = useState('halloween_special_offer');
   const [subject, setSubject] = useState('');
   const [bodyText, setBodyText] = useState('');
-  const [includeAttachments, setIncludeAttachments] = useState(false);
+  const [includeAttachments, setIncludeAttachments] = useState(true);
   const [selectedAttachmentKeys, setSelectedAttachmentKeys] = useState<string[]>([
     'halloween_poster',
     'halloween_badge'
@@ -99,14 +99,14 @@ export default function EmailTesterPage() {
       setTemplates(loadedTemplates);
       setAvailableAttachments(loadedAttachments);
 
-      // Default to Ultra-Short Direct Outreach (Primary Inbox #1)
-      const primaryTpl = loadedTemplates.find(t => t.id === 'ultra_short_outreach') || loadedTemplates[0];
-      if (primaryTpl) {
-        setSelectedTemplateId(primaryTpl.id);
-        setSubject(primaryTpl.subject);
-        setBodyText(primaryTpl.body);
-        setIncludeAttachments(false);
-        calculateLocalSpamScore(primaryTpl.subject, primaryTpl.body, false);
+      // Default to the single Official Halloween Special Offer Template
+      const tpl = loadedTemplates.find(t => t.id === 'halloween_special_offer') || loadedTemplates[0];
+      if (tpl) {
+        setSelectedTemplateId(tpl.id);
+        setSubject(tpl.subject);
+        setBodyText(tpl.body);
+        setIncludeAttachments(true);
+        calculateLocalSpamScore(tpl.subject, tpl.body, true);
       }
     } catch (err: any) {
       console.error('Failed to load email tester templates', err);
@@ -366,55 +366,38 @@ export default function EmailTesterPage() {
             </div>
           </div>
 
-          {/* Step 2: Choose Template */}
+          {/* Step 2: Single Official Template */}
           <div className="card p-5 space-y-4">
             <div className="flex items-center justify-between border-b border-dark-800 pb-3">
               <div className="flex items-center gap-2">
                 <div className="w-6 h-6 rounded-full bg-primary-600 text-white flex items-center justify-center text-xs font-bold">2</div>
-                <h3 className="text-sm font-bold text-dark-100">Select Outreach Pitch Template</h3>
+                <h3 className="text-sm font-bold text-dark-100">Official Outreach Pitch Template</h3>
               </div>
-              <span className="text-[11px] text-emerald-400 font-semibold">Active Halloween Pitch Pre-Selected</span>
+              <span className="text-[11px] text-emerald-400 font-semibold">Single Active Outreach Template</span>
             </div>
 
-            <div className="grid grid-cols-1 sm:grid-cols-2 gap-2.5">
-              {templates.map(tpl => {
-                const isSelected = selectedTemplateId === tpl.id;
-                const isHalloween = tpl.id === 'halloween_special_offer';
-                return (
-                  <button
-                    key={tpl.id}
-                    type="button"
-                    onClick={() => handleSelectTemplate(tpl)}
-                    className={`text-left p-3 rounded-xl border transition-all ${
-                      isSelected
-                        ? 'bg-primary-950/40 border-primary-500 ring-1 ring-primary-500/50 shadow-md'
-                        : 'bg-dark-900/60 border-dark-800 hover:border-dark-700 hover:bg-dark-800/50'
-                    }`}
-                  >
-                    <div className="flex items-center justify-between gap-1 mb-1">
-                      <span className="text-xs font-bold text-dark-100 truncate flex items-center gap-1.5">
-                        {isHalloween && <span>🎃</span>}
-                        <span>{tpl.name}</span>
-                      </span>
-                      {isSelected && <Check className="w-3.5 h-3.5 text-primary-400 shrink-0" />}
-                    </div>
-                    <div className="text-[11px] text-dark-400 truncate">{tpl.subject}</div>
-                    <div className="mt-2 flex items-center gap-1.5">
-                      <span className={`text-[9px] px-1.5 py-0.5 rounded font-medium ${
-                        isHalloween ? 'bg-amber-500/20 text-amber-300 border border-amber-500/30' : 'bg-dark-800 text-dark-300'
-                      }`}>
-                        {tpl.category}
-                      </span>
-                      {isHalloween && (
-                        <span className="text-[9px] px-1.5 py-0.5 rounded bg-emerald-500/10 text-emerald-400 font-medium">
-                          Active Dispatch Template
-                        </span>
-                      )}
-                    </div>
-                  </button>
-                );
-              })}
-            </div>
+            {templates.map(tpl => (
+              <div
+                key={tpl.id}
+                className="p-4 rounded-xl border border-primary-500 bg-primary-950/40 ring-1 ring-primary-500/50 shadow-md space-y-2"
+              >
+                <div className="flex items-center justify-between gap-1">
+                  <span className="text-sm font-bold text-dark-100 flex items-center gap-2">
+                    <span>🎃</span>
+                    <span>{tpl.name}</span>
+                  </span>
+                  <span className="text-[10px] px-2 py-0.5 rounded bg-emerald-500/20 text-emerald-300 font-extrabold">
+                    ACTIVE TEMPLATE
+                  </span>
+                </div>
+                <div className="text-xs text-dark-300 font-medium">
+                  Subject: {tpl.subject}
+                </div>
+                <p className="text-[11px] text-dark-400 leading-relaxed">
+                  Official outreach pitch for handcrafted home décor, lanterns, candle holders, and decorative jars with Halloween Special Offer & wholesale opportunities.
+                </p>
+              </div>
+            ))}
           </div>
 
           {/* Step 3: Subject & Pitch Content */}

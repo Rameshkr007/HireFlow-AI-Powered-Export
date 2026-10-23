@@ -45,165 +45,22 @@ def resolve_badge_path() -> str:
 
 AVAILABLE_TEMPLATES = [
     {
-        "id": "ultra_short_outreach",
-        "name": "Ultra-Short Direct Outreach (Primary Inbox #1 – Recommended)",
-        "category": "High Deliverability",
-        "recommended_mode": "text_only",
-        "default_attachments": [],
-        "subject": "Quick question for {buyer_name}",
-        "body": """Hi {buyer_name},
-
-Are you currently sourcing handcrafted Himalayan singing bowls or metal candle holders for {company_name}?
-
-We are a direct artisan workshop in Nepal supplying US retail and wellness brands factory-direct.
-
-May I email over our 1-page catalog and FOB price list for review?
-
-Best regards,
-
-Ramesh Kumar Thakur
-OM Enterprise
-📧 rameshkrthakur1816@gmail.com | 📱 +91 80577 10065
-Direct Manufacturer from Nepal • Wholesale • OEM • Private Label"""
-    },
-    {
-        "id": "nepal_singing_bowls",
-        "name": "Singing Bowls Ultra-Short Pitch (42 words)",
-        "category": "High Deliverability",
-        "recommended_mode": "text_only",
-        "default_attachments": [],
-        "subject": "Singing bowls sourcing for {company_name}",
-        "body": """Hi {buyer_name},
-
-We handcraft authentic 7-metal Himalayan Singing Bowls (432Hz & 528Hz tuned sets) directly in Nepal.
-
-May I courier a complimentary sample bowl to {company_name} this week so your team can test the acoustic sound?
-
-Kind regards,
-
-Ramesh Kumar Thakur
-Sales Executive | OM Enterprise
-📧 rameshkrthakur1816@gmail.com | 📱 +91 80577 10065
-Direct Manufacturer from Nepal • Wholesale • OEM • Private Label"""
-    },
-    {
-        "id": "candle_holders",
-        "name": "Handcrafted Metal Candle Decor Pitch (41 words)",
-        "category": "High Deliverability",
-        "recommended_mode": "text_only",
-        "default_attachments": [],
-        "subject": "Handcrafted metal candle decor for {company_name}",
-        "body": """Hi {buyer_name},
-
-We manufacture handcrafted metal candle stands, lanterns, and brass decor directly in Nepal with factory FOB pricing.
-
-Would it make sense to courier a sample piece to your office this week for quality evaluation?
-
-Best regards,
-
-Ramesh Kumar Thakur
-Export Sales Executive | OM Enterprise
-📧 rameshkrthakur1816@gmail.com | 📱 +91 80577 10065
-Direct Manufacturer from Nepal • Wholesale • OEM • Private Label"""
-    },
-    {
         "id": "halloween_special_offer",
-        "name": "Seasonal Festive Outreach (Optional Poster Attachments)",
-        "category": "Seasonal Campaign",
-        "recommended_mode": "text_only",
+        "name": "OM Enterprise – Halloween Special Offer & Wholesale",
+        "category": "Official Outreach",
+        "recommended_mode": "with_attachments",
         "default_attachments": ["halloween_poster", "halloween_badge"],
-        "subject": "Seasonal decor & bowls sourcing for {company_name}",
-        "body": """Hi {buyer_name},
+        "subject": "Greetings from OM Enterprise – Halloween Special Offer & Wholesale Opportunities",
+        "body": """Hello,
 
-I noticed {company_name}'s collection and wanted to reach out directly.
+Greetings from OM Enterprise!
 
-We are OM Enterprise, a direct manufacturer in Nepal of handmade singing bowls and handcrafted metal candle decor.
+We offer handcrafted home décor, lanterns, candle holders, and decorative jars. 🎃 Explore our **Halloween Special Offer** and wholesale opportunities!
 
-Would you be open to receiving our wholesale price list or a complimentary sample piece for quality evaluation?
+Interested? We'd love to connect.
 
-Best regards,
-
-Ramesh Kumar Thakur
-OM Enterprise
-📧 rameshkrthakur1816@gmail.com | 📱 +91 80577 10065
-Direct Manufacturer from Nepal • Wholesale • OEM • Private Label"""
-    },
-    {
-        "id": "cadence_step1",
-        "name": "Cadence Step 1: Initial Cold Introduction (38 words)",
-        "category": "Cadence",
-        "recommended_mode": "text_only",
-        "default_attachments": [],
-        "subject": "Wholesale singing bowls & metalware for {company_name}",
-        "body": """Hi {buyer_name},
-
-We specialize in direct factory sourcing of authentic Himalayan Singing Bowls and handcrafted metal decor from Nepal.
-
-May I courier a complimentary sample piece to {company_name} this week for evaluation?
-
-Kind Regards,
-
-Ramesh Kumar Thakur
-OM Enterprise
-📧 rameshkrthakur1816@gmail.com | 📱 +91 80577 10065
-Direct Manufacturer from Nepal • Wholesale • OEM • Private Label"""
-    },
-    {
-        "id": "cadence_step2",
-        "name": "Cadence Step 2: 3-Day Follow-Up (33 words)",
-        "category": "Cadence",
-        "recommended_mode": "text_only",
-        "default_attachments": [],
-        "subject": "Re: Quick question for {buyer_name}",
-        "body": """Hi {buyer_name},
-
-Following up on my previous note regarding handcrafted singing bowls and metal decor for {company_name}.
-
-Should I email over our 1-page price list and sample request form?
-
-Best,
-
-Ramesh Kumar Thakur
-OM Enterprise
-📧 rameshkrthakur1816@gmail.com | 📱 +91 80577 10065
-Direct Manufacturer from Nepal • Wholesale • OEM • Private Label"""
-    },
-    {
-        "id": "cadence_step3",
-        "name": "Cadence Step 3: 7-Day Follow-Up (37 words)",
-        "category": "Cadence",
-        "recommended_mode": "text_only",
-        "default_attachments": [],
-        "subject": "Quick check-in regarding {company_name}",
-        "body": """Hi {buyer_name},
-
-I know you're busy with seasonal buying. We manufacture directly in Nepal with factory FOB pricing and custom OEM packaging.
-
-Would you be open to a quick 2-minute chat or WhatsApp connection this week?
-
-Warm regards,
-
-Ramesh Kumar Thakur
-OM Enterprise
-📧 rameshkrthakur1816@gmail.com | 📱 +91 80577 10065
-Direct Manufacturer from Nepal • Wholesale • OEM • Private Label"""
-    },
-    {
-        "id": "custom",
-        "name": "Custom Email Pitch (Write your own)",
-        "category": "Custom",
-        "recommended_mode": "text_only",
-        "default_attachments": [],
-        "subject": "Direct sourcing inquiry for {company_name}",
-        "body": """Hi {buyer_name},
-
-We are reaching out from OM Enterprise, a direct manufacturer and exporter based in Nepal.
-
-Would you be open to reviewing our wholesale price list or receiving a sample piece at {company_name}?
-
-Best regards,
-
-Ramesh Kumar Thakur
+Best regards,  
+Name: Ramesh Kumar Thakur
 OM Enterprise
 📧 rameshkrthakur1816@gmail.com | 📱 +91 80577 10065
 Direct Manufacturer from Nepal • Wholesale • OEM • Private Label"""

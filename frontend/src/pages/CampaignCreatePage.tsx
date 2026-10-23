@@ -18,162 +18,77 @@ interface SequenceStep {
   email_body: string;
 }
 
-export const NEPAL_MANUFACTURER_SAMPLE_TEMPLATE = {
-  subject: "Direct Nepal sourcing for {company_name} - Singing Bowls",
-  body: `Hi {buyer_name},
-
-While researching leading sound healing & wellness brands in the US, I came across {company_name} and was very impressed by your product curation.
-
-We are a direct manufacturer and exporter based in Nepal, handcrafting authentic Himalayan Singing Bowls (432Hz & 528Hz tuned sets) using traditional 7-metal alloy forging techniques.
-
-Because you are dealing directly with our Nepal workshop, we offer direct factory FOB pricing, custom laser branding, and worldwide door-to-door (DHL/FedEx) logistics.
-
-May I courier a complimentary sample bowl to your office this week for acoustic and quality evaluation?
-
-Warm regards,
-
-Ramesh Kumar Thakur
-Sales Executive | OM Enterprise (Nepal)
-📧 rameshkrthakur1816@gmail.com
-📱 WhatsApp: +91 80577 10065`
-};
-
-export const NEPAL_FOLLOWUP_TEMPLATE = {
-  subject: "Quick follow up regarding complimentary sample for {company_name}",
-  body: `Hi {buyer_name},
-
-Following up on my previous note regarding your product curation at {company_name}.
-
-Would you like me to courier a complimentary sample piece of our authentic Nepal 432Hz Himalayan Singing Bowl to your office for quality evaluation?
-
-Best regards,
-
-Ramesh Kumar Thakur
-Sales Executive | OM Enterprise (Nepal)
-📧 rameshkrthakur1816@gmail.com
-📱 WhatsApp: +91 80577 10065`
-};
-
-export const ASSIGNED_SINGING_BOWLS_TEMPLATE = {
-  subject: "Handcrafted Singing Bowls – Wholesale Opportunity",
+export const OFFICIAL_HALLOWEEN_TEMPLATE = {
+  subject: "Greetings from OM Enterprise – Halloween Special Offer & Wholesale Opportunities",
   body: `Hello,
 
-I hope you’re doing well.
+Greetings from OM Enterprise!
 
-I’m reaching out on behalf of OM Enterprise, where we specialize in handcrafted home décor and gifting products, particularly our **candle holder collection**, designed to add warmth, elegance, and charm to any space.
+We offer handcrafted home décor, lanterns, candle holders, and decorative jars. 🎃 Explore our **Halloween Special Offer** and wholesale opportunities!
 
-We would love to explore the possibility of working with your business and would be happy to share our candle holder collection for your review.
-
-Would you be interested in exploring potential wholesale opportunities with us?
-
-Looking forward to hearing from you.
+Interested? We'd love to connect.
 
 Best regards,  
-Ramesh Kumar Thakur
-OM Enterprise`
-};
-
-export const HIGH_CONVERTING_DUAL_TEMPLATE = {
-  subject: "Quick question for {buyer_name}",
-  body: `Hi {buyer_name},
-
-Are you currently sourcing handcrafted Himalayan singing bowls or metal candle holders for {company_name}?
-
-We are a direct artisan workshop in Nepal supplying US retail and wellness brands factory-direct.
-
-May I email over our 1-page catalog and FOB price list for review?
-
-Best regards,
-
-Ramesh Kumar Thakur
+Name: Ramesh Kumar Thakur
 OM Enterprise
 📧 rameshkrthakur1816@gmail.com | 📱 +91 80577 10065
 Direct Manufacturer from Nepal • Wholesale • OEM • Private Label`
 };
 
-export const CANDLE_STANDS_TEMPLATE = {
-  subject: "Handcrafted metal candle decor for {company_name}",
-  body: `Hi {buyer_name},
-
-We manufacture handcrafted metal candle stands, lanterns, and brass decor directly in Nepal with factory FOB pricing.
-
-Would it make sense to courier a sample piece to your office this week for quality evaluation?
-
-Best regards,
-
-Ramesh Kumar Thakur
-Export Sales Executive | OM Enterprise
-📧 rameshkrthakur1816@gmail.com | 📱 +91 80577 10065
-Direct Manufacturer from Nepal • Wholesale • OEM • Private Label`
-};
-
-export const SINGING_BOWLS_TEMPLATE = {
-  subject: "Singing bowls sourcing for {company_name}",
-  body: `Hi {buyer_name},
-
-We handcraft authentic 7-metal Himalayan Singing Bowls (432Hz & 528Hz tuned sets) directly in Nepal.
-
-May I courier a complimentary sample bowl to {company_name} this week so your team can test the acoustic sound?
-
-Kind Regards,
-
-Ramesh Kumar Thakur
-Sales Executive | OM Enterprise
-📧 rameshkrthakur1816@gmail.com | 📱 +91 80577 10065
-Direct Manufacturer from Nepal • Wholesale • OEM • Private Label`
-};
+export const NEPAL_MANUFACTURER_SAMPLE_TEMPLATE = OFFICIAL_HALLOWEEN_TEMPLATE;
+export const NEPAL_FOLLOWUP_TEMPLATE = OFFICIAL_HALLOWEEN_TEMPLATE;
+export const ASSIGNED_SINGING_BOWLS_TEMPLATE = OFFICIAL_HALLOWEEN_TEMPLATE;
+export const HIGH_CONVERTING_DUAL_TEMPLATE = OFFICIAL_HALLOWEEN_TEMPLATE;
+export const CANDLE_STANDS_TEMPLATE = OFFICIAL_HALLOWEEN_TEMPLATE;
+export const SINGING_BOWLS_TEMPLATE = OFFICIAL_HALLOWEEN_TEMPLATE;
 
 const DEFAULT_STEPS: SequenceStep[] = [
   {
     id: 'step-1',
     step_number: 1,
-    step_name: 'Initial Introduction: Handcrafted Singing Bowls & Candle Holder Collection (Official)',
+    step_name: 'Initial Introduction: Halloween Special Offer & Wholesale (Official)',
     delay_days: 0,
     condition: 'immediate',
-    email_subject: ASSIGNED_SINGING_BOWLS_TEMPLATE.subject,
-    email_body: ASSIGNED_SINGING_BOWLS_TEMPLATE.body,
+    email_subject: OFFICIAL_HALLOWEEN_TEMPLATE.subject,
+    email_body: OFFICIAL_HALLOWEEN_TEMPLATE.body,
   },
   {
     id: 'step-2',
     step_number: 2,
-    step_name: 'Follow-up: Wholesale FOB Price Tiers & Port Freight',
+    step_name: 'Follow-up: Wholesale FOB Pricing & Halloween Catalog Review',
     delay_days: 3,
     condition: 'if_no_reply',
-    email_subject: 'Re: Sourcing inquiry for {company_name}',
-    email_body: `Hi {buyer_name},
+    email_subject: 'Re: ' + OFFICIAL_HALLOWEEN_TEMPLATE.subject,
+    email_body: `Hello,
 
-I wanted to quickly follow up on my note regarding our handcrafted metalware and wellness collection for {company_name}.
+Following up on our Halloween Special Offer and wholesale opportunities for handcrafted home décor, lanterns, and candle holders.
 
-We have updated our export capacity for this quarter and can offer preferential FOB pricing along with direct shipping to US ports (including Los Angeles / Long Beach).
+Would you like us to email over our complete wholesale price list and sample request form?
 
-Can I send over our 2-page wholesale price list and sample request form?
-
-Best regards,
-
-Ramesh Kumar Thakur
-Export Sales Executive | OM Enterprise
-📧 rameshkrthakur1816@gmail.com | 📱 +91 80577 10065`,
+Best regards,  
+Name: Ramesh Kumar Thakur
+OM Enterprise
+📧 rameshkrthakur1816@gmail.com | 📱 +91 80577 10065
+Direct Manufacturer from Nepal • Wholesale • OEM • Private Label`,
   },
   {
     id: 'step-3',
     step_number: 3,
-    step_name: 'Value Proposition: Custom OEM, Private Label & Low MOQ',
+    step_name: 'Final Touch: Custom OEM Packaging & Sample Dispatch',
     delay_days: 7,
     condition: 'if_no_reply',
-    email_subject: 'Private label & custom packaging options for {company_name}',
-    email_body: `Hi {buyer_name},
+    email_subject: 'Quick check-in regarding OM Enterprise wholesale opportunities',
+    email_body: `Hello,
 
-I understand you have a demanding procurement schedule. As a direct manufacturer, we also provide complete OEM customization, laser logo engraving, and custom barcode packaging tailored for US retail shelves.
+I understand you have a demanding procurement schedule. As a direct manufacturer in Nepal, we provide custom finishes and OEM packaging tailored for your store shelves.
 
-If you have any upcoming seasonal purchasing requirements, please let us know how we can support {company_name}'s inventory.
+Would you be open to a quick 2-minute chat or WhatsApp connection this week?
 
-Would you be open to a brief 5-minute phone or WhatsApp call this week?
-
-Warm regards,
-
-Ramesh Kumar Thakur
-Export Sales Executive | OM Enterprise
-📧 rameshkrthakur1816@gmail.com | 📱 +91 80577 10065`,
+Best regards,  
+Name: Ramesh Kumar Thakur
+OM Enterprise
+📧 rameshkrthakur1816@gmail.com | 📱 +91 80577 10065
+Direct Manufacturer from Nepal • Wholesale • OEM • Private Label`,
   },
 ];
 
@@ -660,97 +575,31 @@ export default function CampaignCreatePage() {
               </ul>
             </div>
 
-            {/* Quick Template Switcher */}
-            <div className="p-3 rounded-xl bg-dark-900 border border-dark-800 space-y-2">
-              <div className="text-[11px] font-bold text-dark-300 uppercase tracking-wider flex items-center gap-1.5">
-                <Zap className="w-3.5 h-3.5 text-amber-400" />
-                <span>1-Click High-Converting Templates:</span>
+            {/* Single Official Outreach Template */}
+            <div className="p-3.5 rounded-xl bg-dark-900 border border-primary-500/40 space-y-2">
+              <div className="text-[11px] font-bold text-dark-200 uppercase tracking-wider flex items-center justify-between">
+                <div className="flex items-center gap-1.5 text-primary-400">
+                  <Sparkles className="w-3.5 h-3.5 text-amber-400" />
+                  <span>Official Outreach Template</span>
+                </div>
+                <span className="text-[9px] px-1.5 py-0.5 rounded bg-emerald-500/20 text-emerald-300 font-extrabold">
+                  ACTIVE TEMPLATE
+                </span>
               </div>
-              <div className="flex flex-col gap-1.5">
-                <button
-                  type="button"
-                  onClick={() => {
-                    updateCurrentStep({
-                      email_subject: NEPAL_MANUFACTURER_SAMPLE_TEMPLATE.subject,
-                      email_body: NEPAL_MANUFACTURER_SAMPLE_TEMPLATE.body,
-                    });
-                    showToast('Loaded: Direct Nepal Manufacturer (Free Sample Offer) Template', 'success');
-                  }}
-                  className="text-xs px-2.5 py-1.5 rounded-lg bg-emerald-500/20 text-emerald-300 border border-emerald-500/40 hover:bg-emerald-500/30 font-bold text-left transition-all flex items-center justify-between shadow-sm"
-                >
-                  <span>🇳🇵 Direct Nepal Manufacturer (Free Sample)</span>
-                  <span className="text-[10px] bg-emerald-400 text-dark-950 px-1.5 py-0.5 rounded font-extrabold">HIGH RESPONSE</span>
-                </button>
-                <button
-                  type="button"
-                  onClick={() => {
-                    updateCurrentStep({
-                      email_subject: NEPAL_FOLLOWUP_TEMPLATE.subject,
-                      email_body: NEPAL_FOLLOWUP_TEMPLATE.body,
-                    });
-                    showToast('Loaded: Nepal Quick Follow-up Template', 'success');
-                  }}
-                  className="text-xs px-2.5 py-1.5 rounded-lg bg-sky-500/20 text-sky-300 border border-sky-500/40 hover:bg-sky-500/30 font-bold text-left transition-all flex items-center justify-between shadow-sm"
-                >
-                  <span>🔄 Nepal Quick Follow-up (Reply for Sample)</span>
-                  <span className="text-[10px] bg-sky-400 text-dark-950 px-1.5 py-0.5 rounded font-extrabold">FOLLOW-UP</span>
-                </button>
-                <button
-                  type="button"
-                  onClick={() => {
-                    updateCurrentStep({
-                      email_subject: ASSIGNED_SINGING_BOWLS_TEMPLATE.subject,
-                      email_body: ASSIGNED_SINGING_BOWLS_TEMPLATE.body,
-                    });
-                    showToast('Loaded: Official Assigned Himalayan Singing Bowls Template', 'success');
-                  }}
-                  className="text-xs px-2.5 py-1.5 rounded-lg bg-amber-500/20 text-amber-300 border border-amber-500/40 hover:bg-amber-500/30 font-bold text-left transition-all flex items-center justify-between shadow-sm"
-                >
-                  <span>⭐ Official Assigned Singing Bowls (Nepal)</span>
-                  <span className="text-[10px] bg-amber-400 text-dark-950 px-1.5 py-0.5 rounded font-extrabold">OFFICIAL</span>
-                </button>
-                <button
-                  type="button"
-                  onClick={() => {
-                    setSteps([
-                      { ...DEFAULT_STEPS[0] },
-                      { ...DEFAULT_STEPS[1] },
-                      { ...DEFAULT_STEPS[2] },
-                    ]);
-                    showToast('Loaded: Direct Manufacturer + Free Sample Offer Template', 'success');
-                  }}
-                  className="text-xs px-2.5 py-1.5 rounded-lg bg-emerald-500/15 text-emerald-300 border border-emerald-500/30 hover:bg-emerald-500/25 font-medium text-left transition-all flex items-center justify-between"
-                >
-                  <span>🎯 High-Response Sample Offer (Dual)</span>
-                  <span className="text-[10px] text-emerald-400 font-bold">BEST</span>
-                </button>
-                <button
-                  type="button"
-                  onClick={() => {
-                    updateCurrentStep({
-                      email_subject: CANDLE_STANDS_TEMPLATE.subject,
-                      email_body: CANDLE_STANDS_TEMPLATE.body,
-                    });
-                    showToast('Loaded: Metal Candle Stands & Lanterns Template', 'success');
-                  }}
-                  className="text-xs px-2.5 py-1.5 rounded-lg bg-dark-800 text-dark-200 border border-dark-700 hover:border-dark-600 font-medium text-left transition-all"
-                >
-                  🪔 Candle Holders & Lanterns Direct
-                </button>
-                <button
-                  type="button"
-                  onClick={() => {
-                    updateCurrentStep({
-                      email_subject: SINGING_BOWLS_TEMPLATE.subject,
-                      email_body: SINGING_BOWLS_TEMPLATE.body,
-                    });
-                    showToast('Loaded: Himalayan Singing Bowls Template', 'success');
-                  }}
-                  className="text-xs px-2.5 py-1.5 rounded-lg bg-dark-800 text-dark-200 border border-dark-700 hover:border-dark-600 font-medium text-left transition-all"
-                >
-                  🥣 Himalayan Singing Bowls Direct
-                </button>
-              </div>
+              <button
+                type="button"
+                onClick={() => {
+                  updateCurrentStep({
+                    email_subject: OFFICIAL_HALLOWEEN_TEMPLATE.subject,
+                    email_body: OFFICIAL_HALLOWEEN_TEMPLATE.body,
+                  });
+                  showToast('Loaded Official OM Enterprise Halloween Template', 'success');
+                }}
+                className="w-full text-xs p-2.5 rounded-lg bg-primary-950/40 border border-primary-500/50 hover:bg-primary-900/50 text-dark-100 font-semibold text-left transition-all flex items-center justify-between"
+              >
+                <span>🎃 OM Enterprise – Halloween Special Offer & Wholesale Pitch</span>
+                <span className="text-[10px] text-primary-400 font-mono">1-Click Reset</span>
+              </button>
             </div>
 
             <div className="flex items-center justify-between pb-1 pt-1">
@@ -896,68 +745,24 @@ export default function CampaignCreatePage() {
                 ))}
               </div>
 
-              {/* Quick 1-Click Template Switcher for OM Enterprise */}
-              <div className="p-3 bg-dark-900 border border-primary-500/30 rounded-xl space-y-2">
-                <div className="flex items-center justify-between">
-                  <span className="text-xs font-bold text-dark-200 flex items-center gap-1.5">
-                    <Sparkles className="w-3.5 h-3.5 text-primary-400" /> 1-Click Professional OM Enterprise Templates:
-                  </span>
-                  <span className="text-[10px] text-dark-400">Click to fill subject & body</span>
-                </div>
-                <div className="flex flex-wrap gap-2">
-                  <button
-                    type="button"
-                    onClick={() => {
-                      updateCurrentStep({
-                        email_subject: NEPAL_MANUFACTURER_SAMPLE_TEMPLATE.subject,
-                        email_body: NEPAL_MANUFACTURER_SAMPLE_TEMPLATE.body,
-                      });
-                      showToast('Loaded Direct Nepal Manufacturer Template!', 'success');
-                    }}
-                    className="btn-secondary text-xs py-1.5 px-3 flex items-center gap-1.5 text-emerald-300 hover:text-emerald-200 border-emerald-500/40 bg-emerald-500/10 font-bold"
-                  >
-                    🇳🇵 Nepal Direct Manufacturer
-                  </button>
-                  <button
-                    type="button"
-                    onClick={() => {
-                      updateCurrentStep({
-                        email_subject: NEPAL_FOLLOWUP_TEMPLATE.subject,
-                        email_body: NEPAL_FOLLOWUP_TEMPLATE.body,
-                      });
-                      showToast('Loaded Nepal Follow-up Template!', 'success');
-                    }}
-                    className="btn-secondary text-xs py-1.5 px-3 flex items-center gap-1.5 text-sky-300 hover:text-sky-200 border-sky-500/40 bg-sky-500/10 font-bold"
-                  >
-                    🔄 Nepal Quick Follow-up
-                  </button>
-                  <button
-                    type="button"
-                    onClick={() => {
-                      updateCurrentStep({
-                        email_subject: SINGING_BOWLS_TEMPLATE.subject,
-                        email_body: SINGING_BOWLS_TEMPLATE.body,
-                      });
-                      showToast('Loaded Authentic Himalayan Singing Bowls Template!', 'success');
-                    }}
-                    className="btn-secondary text-xs py-1.5 px-3 flex items-center gap-1.5 text-primary-300 hover:text-primary-200 border-primary-500/40 bg-primary-500/10"
-                  >
-                    🔮 Load Singing Bowls Template
-                  </button>
-                  <button
-                    type="button"
-                    onClick={() => {
-                      updateCurrentStep({
-                        email_subject: CANDLE_STANDS_TEMPLATE.subject,
-                        email_body: CANDLE_STANDS_TEMPLATE.body,
-                      });
-                      showToast('Loaded Candle Stands & Lanterns Template!', 'success');
-                    }}
-                    className="btn-secondary text-xs py-1.5 px-3 flex items-center gap-1.5 text-amber-300 hover:text-amber-200 border-amber-500/40 bg-amber-500/10"
-                  >
-                    🕯️ Load Candle Stands & Lanterns Template
-                  </button>
-                </div>
+              {/* Quick 1-Click Template Reset */}
+              <div className="p-3 bg-dark-900 border border-primary-500/30 rounded-xl flex items-center justify-between">
+                <span className="text-xs font-bold text-dark-200 flex items-center gap-1.5">
+                  <Sparkles className="w-3.5 h-3.5 text-primary-400" /> Official OM Enterprise Pitch:
+                </span>
+                <button
+                  type="button"
+                  onClick={() => {
+                    updateCurrentStep({
+                      email_subject: OFFICIAL_HALLOWEEN_TEMPLATE.subject,
+                      email_body: OFFICIAL_HALLOWEEN_TEMPLATE.body,
+                    });
+                    showToast('Loaded Official Halloween Template!', 'success');
+                  }}
+                  className="btn-secondary text-xs py-1.5 px-3 flex items-center gap-1.5 text-amber-300 hover:text-amber-200 border-amber-500/40 bg-amber-500/10 font-bold"
+                >
+                  🎃 Reset to Official Halloween Template
+                </button>
               </div>
 
               {/* Email Subject */}

@@ -1,4 +1,6 @@
-from fastapi import FastAPI, Depends
+from fastapi import FastAPI, Depends, HTTPException
+from fastapi.staticfiles import StaticFiles
+from fastapi.responses import FileResponse
 from fastapi.middleware.cors import CORSMiddleware
 from sqlalchemy.orm import Session
 import os
@@ -258,9 +260,14 @@ app.include_router(attachments.router)
 app.include_router(dashboard.router)
 app.include_router(email_tester.router)
 
-@app.get("/")
+STATIC_DIR = os.path.abspath(os.path.join(os.path.dirname(__file__), "static"))
+
+@app.get("/", include_in_schema=False)
 def root():
-    return {"message": "HireFlow API is running", "docs": "/docs", "version": "1.0.0"}
+    index_file = os.path.join(STATIC_DIR, "index.html")
+    if os.path.exists(index_file):
+        return FileResponse(index_file)
+    return {"message": "HireFlow API is running", "docs": "/docs", "version": "1.3.6"}
 
 @app.get("/health")
 def health():
@@ -371,7 +378,7 @@ async def test_tradewind():
 @app.get("/api/build-info")
 def build_info():
     return {
-        "version": "1.3.5",
+        "version": "1.3.6",
         "halloween_attachments": True,
         "email_tester_enabled": True,
         "brevo_safe": True,
@@ -383,5 +390,30 @@ def build_info():
         "automated_cadence_engine": True,
         "attachments": ["OM_Enterprise_Handcrafted_Pieces_Poster.jpg", "OM_Enterprise_Special_Offer_Badge.jpg"],
         "safe_delivery_mode": "Text-Only (Zero Attachments) enabled for Cold Outreach & Follow-ups",
-        "updated": "2026-10-23T10:55:00Z"
+        "updated": "2026-10-23T12:00:00Z"
     }
+
+# ── Frontend SPA & Static Assets Serving ──────────────────────────────
+if os.path.exists(STATIC_DIR):
+    assets_dir = os.path.join(STATIC_DIR, "assets")
+    if os.path.exists(assets_dir):
+        app.mount("/assets", StaticFiles(directory=assets_dir), name="assets")
+
+@app.get("/{full_path:path}", include_in_schema=False)
+async def serve_spa_frontend(full_path: str):
+    clean_path = full_path.strip("/")
+    if (
+        clean_path.startswith("api")
+        or clean_path in ("docs", "redoc", "openapi.json", "health")
+    ):
+        raise HTTPException(status_code=404, detail="Not Found")
+    
+    target_file = os.path.join(STATIC_DIR, full_path)
+    if full_path and os.path.isfile(target_file):
+        return FileResponse(target_file)
+        
+    index_file = os.path.join(STATIC_DIR, "index.html")
+    if os.path.exists(index_file):
+        return FileResponse(index_file)
+        
+    raise HTTPException(status_code=404, detail="Frontend index.html not found")

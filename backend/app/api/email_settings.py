@@ -60,11 +60,11 @@ def get_email_settings(
             setting.provider = shared.provider
             setting.smtp_host = shared.smtp_host
             setting.smtp_port = shared.smtp_port
-            setting.smtp_user = shared.smtp_user or current_user.email or "prt241961@gmail.com"
+            setting.smtp_user = shared.smtp_user or current_user.email or "rameshkrthakur1816@gmail.com"
             setting.smtp_password = shared.smtp_password
             setting.api_key = shared.api_key
             setting.from_name = shared.from_name or "Ramesh Kumar Thakur | OM Enterprise"
-            setting.from_email = shared.from_email or shared.smtp_user or current_user.email or "prt241961@gmail.com"
+            setting.from_email = shared.from_email or shared.smtp_user or current_user.email or "rameshkrthakur1816@gmail.com"
             setting.use_tls = shared.use_tls
             setting.use_ssl = shared.use_ssl
             setting.is_verified = True
@@ -82,11 +82,11 @@ def get_email_settings(
             setting.provider = file_creds.get("provider", "gmail")
             setting.smtp_host = file_creds.get("smtp_host", "smtp.gmail.com")
             setting.smtp_port = int(file_creds.get("smtp_port", 587))
-            setting.smtp_user = file_creds.get("smtp_user") or current_user.email or "prt241961@gmail.com"
+            setting.smtp_user = file_creds.get("smtp_user") or current_user.email or "rameshkrthakur1816@gmail.com"
             setting.smtp_password = file_creds.get("smtp_password")
             setting.api_key = file_creds.get("api_key")
             setting.from_name = file_creds.get("from_name", "Ramesh Kumar Thakur | OM Enterprise")
-            setting.from_email = file_creds.get("from_email") or current_user.email or "prt241961@gmail.com"
+            setting.from_email = file_creds.get("from_email") or current_user.email or "rameshkrthakur1816@gmail.com"
             setting.use_tls = file_creds.get("use_tls", True)
             setting.use_ssl = file_creds.get("use_ssl", False)
             setting.is_verified = True
@@ -121,10 +121,10 @@ def get_email_settings(
         setting.provider = "brevo"
         setting.smtp_host = "api.brevo.com"
         setting.smtp_port = 443
-        setting.smtp_user = current_user.email or "prt241961@gmail.com"
+        setting.smtp_user = current_user.email or "rameshkrthakur1816@gmail.com"
         setting.api_key = settings.BREVO_API_KEY
         setting.from_name = getattr(settings, "BREVO_SENDER_NAME", None) or "Ramesh Kumar Thakur | OM Enterprise"
-        setting.from_email = getattr(settings, "BREVO_SENDER_EMAIL", None) or current_user.email or "prt241961@gmail.com"
+        setting.from_email = getattr(settings, "BREVO_SENDER_EMAIL", None) or current_user.email or "rameshkrthakur1816@gmail.com"
         setting.use_tls = True
         setting.use_ssl = False
         setting.is_verified = True
@@ -135,7 +135,7 @@ def get_email_settings(
             db.rollback()
         has_creds = True
 
-    default_email = current_user.email or "prt241961@gmail.com"
+    default_email = current_user.email or "rameshkrthakur1816@gmail.com"
     if setting:
         return EmailSettingResponse(
             id=setting.id,
@@ -186,7 +186,7 @@ def save_email_settings(
         setting = EmailSetting(user_id=current_user.id)
         db.add(setting)
 
-    default_personal_email = current_user.email or "prt241961@gmail.com"
+    default_personal_email = current_user.email or "rameshkrthakur1816@gmail.com"
     setting.provider = payload.provider or "gmail"
     setting.smtp_host = payload.smtp_host or "smtp.gmail.com"
     setting.smtp_port = payload.smtp_port or 587
@@ -287,7 +287,7 @@ def test_connection(
     current_user: User = Depends(get_current_user),
     db: Session = Depends(get_db)
 ):
-    target = (payload.to_email if payload and payload.to_email else current_user.email or "prt241961@gmail.com").strip().lower()
+    target = (payload.to_email if payload and payload.to_email else current_user.email or "rameshkrthakur1816@gmail.com").strip().lower()
     if target.endswith("@gmail."):
         target += "com"
     elif target.endswith("@gmail"):

@@ -21,7 +21,7 @@ from ..utils.duplicate_utils import normalize_email
 INDIA_TZ = ZoneInfo("Asia/Kolkata")
 
 def get_effective_user_id(db: Session, current_user: User) -> int:
-    ramesh = db.query(User).filter(User.email == "prt241961@gmail.com").first()
+    ramesh = db.query(User).filter(User.email == "rameshkrthakur1816@gmail.com").first()
     ramesh_id = ramesh.id if ramesh else 2
     if current_user.id == ramesh_id:
         return ramesh_id
@@ -31,7 +31,7 @@ def get_effective_user_id(db: Session, current_user: User) -> int:
     return ramesh_id
 
 def get_effective_buyer_user_id(db: Session, current_user: User) -> int:
-    ramesh = db.query(User).filter(User.email == "prt241961@gmail.com").first()
+    ramesh = db.query(User).filter(User.email == "rameshkrthakur1816@gmail.com").first()
     ramesh_id = ramesh.id if ramesh else 2
     if current_user.id == ramesh_id:
         return ramesh_id

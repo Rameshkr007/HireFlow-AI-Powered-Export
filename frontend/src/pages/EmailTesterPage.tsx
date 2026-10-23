@@ -62,7 +62,7 @@ export default function EmailTesterPage() {
   const [history, setHistory] = useState<TestRecord[]>([]);
 
   // Form State - Pre-configured with active Halloween Outreach & both Halloween attachments
-  const [toEmail, setToEmail] = useState('prt241961@gmail.com');
+  const [toEmail, setToEmail] = useState('rameshkrthakur1816@gmail.com');
   const [selectedTemplateId, setSelectedTemplateId] = useState('ultra_short_outreach');
   const [subject, setSubject] = useState('');
   const [bodyText, setBodyText] = useState('');
@@ -259,7 +259,7 @@ export default function EmailTesterPage() {
               <div className="text-[10px] text-dark-400 uppercase font-semibold">Active Reply-To Routing</div>
               <div className="text-xs font-bold text-emerald-400 font-mono flex items-center gap-1.5">
                 <CheckCircle className="w-3.5 h-3.5 text-emerald-400" />
-                <span>prt241961@gmail.com</span>
+                <span>rameshkrthakur1816@gmail.com</span>
               </div>
             </div>
 
@@ -346,7 +346,7 @@ export default function EmailTesterPage() {
                   type="email"
                   value={toEmail}
                   onChange={e => setToEmail(e.target.value)}
-                  placeholder="e.g. prt241961@gmail.com, yourname@yahoo.com"
+                  placeholder="e.g. rameshkrthakur1816@gmail.com, yourname@yahoo.com"
                   className="w-full bg-dark-900 border border-dark-700 rounded-lg pl-9 pr-3 py-2.5 text-xs text-dark-100 focus:outline-none focus:border-primary-500 font-mono"
                 />
                 <Mail className="w-4 h-4 text-dark-400 absolute left-3 top-3" />
@@ -358,10 +358,10 @@ export default function EmailTesterPage() {
               <span className="text-[11px] text-dark-400">Quick fill:</span>
               <button
                 type="button"
-                onClick={() => setToEmail('prt241961@gmail.com')}
+                onClick={() => setToEmail('rameshkrthakur1816@gmail.com')}
                 className="px-2.5 py-1 rounded bg-dark-800 hover:bg-dark-700 text-emerald-400 border border-emerald-500/30 text-[11px] font-mono transition-colors"
               >
-                prt241961@gmail.com
+                rameshkrthakur1816@gmail.com
               </button>
             </div>
           </div>
@@ -600,7 +600,7 @@ export default function EmailTesterPage() {
               )}
             </button>
             <p className="text-center text-[11px] text-dark-400 mt-2">
-              Dispatches immediately via authenticated Brevo HTTP REST API (Port 443) with Reply-To locked to prt241961@gmail.com.
+              Dispatches immediately via authenticated Brevo HTTP REST API (Port 443) with Reply-To locked to rameshkrthakur1816@gmail.com.
             </p>
           </div>
 
@@ -711,7 +711,7 @@ export default function EmailTesterPage() {
               </div>
               <div className="flex items-start gap-2">
                 <span className="w-5 h-5 rounded-full bg-dark-800 text-primary-400 flex items-center justify-center font-bold text-[11px] shrink-0 mt-0.5">3</span>
-                <span>Click the <strong>Reply</strong> button in the received email to confirm that replies route directly to <strong>prt241961@gmail.com</strong>.</span>
+                <span>Click the <strong>Reply</strong> button in the received email to confirm that replies route directly to <strong>rameshkrthakur1816@gmail.com</strong>.</span>
               </div>
             </div>
           </div>

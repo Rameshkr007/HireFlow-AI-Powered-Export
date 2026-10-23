@@ -34,7 +34,7 @@ Warm regards,
 
 Ramesh Kumar Thakur
 Sales Executive | OM Enterprise (Nepal)
-📧 prt241961@gmail.com
+📧 rameshkrthakur1816@gmail.com
 📱 WhatsApp: +91 80577 10065`
 };
 
@@ -50,7 +50,7 @@ Best regards,
 
 Ramesh Kumar Thakur
 Sales Executive | OM Enterprise (Nepal)
-📧 prt241961@gmail.com
+📧 rameshkrthakur1816@gmail.com
 📱 WhatsApp: +91 80577 10065`
 };
 
@@ -87,7 +87,7 @@ Best regards,
 
 Ramesh Kumar Thakur
 OM Enterprise
-📧 prt241961@gmail.com | 📱 +91 80577 10065
+📧 rameshkrthakur1816@gmail.com | 📱 +91 80577 10065
 Direct Manufacturer from Nepal • Wholesale • OEM • Private Label`
 };
 
@@ -103,7 +103,7 @@ Best regards,
 
 Ramesh Kumar Thakur
 Export Sales Executive | OM Enterprise
-📧 prt241961@gmail.com | 📱 +91 80577 10065
+📧 rameshkrthakur1816@gmail.com | 📱 +91 80577 10065
 Direct Manufacturer from Nepal • Wholesale • OEM • Private Label`
 };
 
@@ -119,7 +119,7 @@ Kind Regards,
 
 Ramesh Kumar Thakur
 Sales Executive | OM Enterprise
-📧 prt241961@gmail.com | 📱 +91 80577 10065
+📧 rameshkrthakur1816@gmail.com | 📱 +91 80577 10065
 Direct Manufacturer from Nepal • Wholesale • OEM • Private Label`
 };
 
@@ -152,7 +152,7 @@ Best regards,
 
 Ramesh Kumar Thakur
 Export Sales Executive | OM Enterprise
-📧 prt241961@gmail.com | 📱 +91 80577 10065`,
+📧 rameshkrthakur1816@gmail.com | 📱 +91 80577 10065`,
   },
   {
     id: 'step-3',
@@ -173,7 +173,7 @@ Warm regards,
 
 Ramesh Kumar Thakur
 Export Sales Executive | OM Enterprise
-📧 prt241961@gmail.com | 📱 +91 80577 10065`,
+📧 rameshkrthakur1816@gmail.com | 📱 +91 80577 10065`,
   },
 ];
 
@@ -437,14 +437,14 @@ export default function CampaignCreatePage() {
         <div className="flex items-center gap-2.5">
           <div className="w-2.5 h-2.5 rounded-full bg-emerald-400 animate-pulse shrink-0" />
           <div className="text-xs text-dark-200">
-            Authenticated Sender: <strong className="text-emerald-400 font-mono">prt241961@gmail.com</strong>
+            Authenticated Sender: <strong className="text-emerald-400 font-mono">rameshkrthakur1816@gmail.com</strong>
           </div>
           <span className="text-[10px] px-2 py-0.5 rounded-full bg-emerald-500/20 text-emerald-400 border border-emerald-500/30 font-semibold tracking-wider">
             CONNECTED & ACTIVE
           </span>
         </div>
         <div className="text-[11px] text-dark-400">
-          Official Signature: <span className="text-dark-200 font-medium">OM Enterprise (prt241961@gmail.com)</span>
+          Official Signature: <span className="text-dark-200 font-medium">OM Enterprise (rameshkrthakur1816@gmail.com)</span>
         </div>
       </div>
       {activeTab === 'info' && (

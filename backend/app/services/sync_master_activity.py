@@ -83,7 +83,7 @@ Kind Regards,
 
 Ramesh Kumar Thakur
 Sales Executive | OM Enterprise
-📧 prt241961@gmail.com
+📧 rameshkrthakur1816@gmail.com
 📱 WhatsApp: +91 80577 10065
 
 Thank you for your valuable time. We look forward to building a successful and long-term partnership with {company_name}."""
@@ -106,7 +106,7 @@ Looking forward to hearing from you.
 Best regards,
 Ramesh Kumar Thakur
 Sales Executive | OM Enterprise
-📧 prt241961@gmail.com
+📧 rameshkrthakur1816@gmail.com
 📱 WhatsApp: +91 80577 10065"""
 
 def sync_master_email_activity(db: Session, target_user_id: int = 2, force_clean: bool = True) -> Dict[str, Any]:
@@ -281,8 +281,8 @@ def sync_master_email_activity(db: Session, target_user_id: int = 2, force_clean
                 created_at=dt_utc,
                 gmail_message_id=msg_id,
                 gmail_thread_id=f"thrd_{clean_dt}_{global_idx:04d}" if status == "SENT" else None,
-                sender_email="prt241961@gmail.com",
-                sender_account_id="prt241961@gmail.com",
+                sender_email="rameshkrthakur1816@gmail.com",
+                sender_account_id="rameshkrthakur1816@gmail.com",
                 error_message=error_msg,
                 is_verified=True
             )
@@ -509,8 +509,8 @@ def ensure_campaign_6_logs(db: Session, target_user_id: int = 2) -> Dict[str, An
             created_at=dt,
             gmail_message_id=msg_id,
             gmail_thread_id=thrd_id,
-            sender_email="prt241961@gmail.com",
-            sender_account_id="prt241961@gmail.com",
+            sender_email="rameshkrthakur1816@gmail.com",
+            sender_account_id="rameshkrthakur1816@gmail.com",
             is_verified=True
         )
         db.add(sl)
@@ -677,8 +677,8 @@ def ensure_campaign_7_logs(db: Session, target_user_id: int = 2) -> Dict[str, An
             created_at=dt,
             gmail_message_id=msg_id,
             gmail_thread_id=thrd_id,
-            sender_email="prt241961@gmail.com",
-            sender_account_id="prt241961@gmail.com",
+            sender_email="rameshkrthakur1816@gmail.com",
+            sender_account_id="rameshkrthakur1816@gmail.com",
             is_verified=True
         )
         db.add(sl)
@@ -851,7 +851,7 @@ Kind Regards,
 
 Ramesh Kumar Thakur
 Sales Executive | OM Enterprise
-📧 prt241961@gmail.com
+📧 rameshkrthakur1816@gmail.com
 📱 WhatsApp: +91 80577 10065"""
 
     # Delete existing logs for campaign 8 or target IDs 503..536
@@ -902,8 +902,8 @@ Sales Executive | OM Enterprise
             created_at=dt,
             gmail_message_id=msg_id,
             gmail_thread_id=thrd_id,
-            sender_email="prt241961@gmail.com",
-            sender_account_id="prt241961@gmail.com",
+            sender_email="rameshkrthakur1816@gmail.com",
+            sender_account_id="rameshkrthakur1816@gmail.com",
             is_verified=True
         )
         db.add(sl)
@@ -1076,7 +1076,7 @@ Best regards,
 
 Ramesh Kumar Thakur
 Sales Executive | OM Enterprise
-📧 prt241961@gmail.com
+📧 rameshkrthakur1816@gmail.com
 📱 WhatsApp: +91 80577 10065
 Direct Manufacturer from Nepal • Wholesale • OEM • Private Label"""
 
@@ -1128,8 +1128,8 @@ Direct Manufacturer from Nepal • Wholesale • OEM • Private Label"""
             created_at=dt,
             gmail_message_id=msg_id,
             gmail_thread_id=thrd_id,
-            sender_email="prt241961@gmail.com",
-            sender_account_id="prt241961@gmail.com",
+            sender_email="rameshkrthakur1816@gmail.com",
+            sender_account_id="rameshkrthakur1816@gmail.com",
             is_verified=True
         )
         db.add(sl)
@@ -1317,7 +1317,7 @@ Best regards,
 
 Ramesh Kumar Thakur
 Sales Executive | OM Enterprise
-📧 prt241961@gmail.com
+📧 rameshkrthakur1816@gmail.com
 📱 WhatsApp: +91 80577 10065
 Direct Manufacturer from Nepal • Wholesale • OEM • Private Label"""
 
@@ -1385,8 +1385,8 @@ Direct Manufacturer from Nepal • Wholesale • OEM • Private Label"""
             created_at=dt,
             gmail_message_id=msg_id,
             gmail_thread_id=thrd_id,
-            sender_email="prt241961@gmail.com",
-            sender_account_id="prt241961@gmail.com",
+            sender_email="rameshkrthakur1816@gmail.com",
+            sender_account_id="rameshkrthakur1816@gmail.com",
             is_verified=True
         )
         db.add(sl)

@@ -216,7 +216,7 @@ export default function DashboardPage() {
   const handleOpenReplyModal = (resp: any) => {
     setReplyModalBuyer(resp);
     setReplyText(
-      `Dear ${resp.buyer_name},\n\nThank you for your prompt response regarding OM Enterprise's ${resp.product}.\n\nWe would be delighted to supply your team with our direct factory quotation and courier a sample pack to your ${resp.city} office.\n\nPlease find attached our latest export specification sheet with FOB pricing for your review.\n\nBest regards,\nRamesh Kumar Thakur\nExport Sales Executive | OM Enterprise\n📧 prt241961@gmail.com\n📱 +91 80577 10065`
+      `Dear ${resp.buyer_name},\n\nThank you for your prompt response regarding OM Enterprise's ${resp.product}.\n\nWe would be delighted to supply your team with our direct factory quotation and courier a sample pack to your ${resp.city} office.\n\nPlease find attached our latest export specification sheet with FOB pricing for your review.\n\nBest regards,\nRamesh Kumar Thakur\nExport Sales Executive | OM Enterprise\n📧 rameshkrthakur1816@gmail.com\n📱 +91 80577 10065`
     );
   };
 
@@ -993,7 +993,7 @@ export default function DashboardPage() {
               <div className="space-y-1.5 max-w-lg mx-auto">
                 <h4 className="text-base font-bold text-dark-100">Live Response Listener Active (0 Real Buyer Replies Yet)</h4>
                 <p className="text-xs text-dark-400 leading-relaxed">
-                  Your export pitches are actively dispatched to verified California and US buyers. When an importer or procurement manager replies to your email (<strong className="text-emerald-300">prt241961@gmail.com</strong>), their incoming message, commercial quotation request, and AI next actions will appear here in real time.
+                  Your export pitches are actively dispatched to verified California and US buyers. When an importer or procurement manager replies to your email (<strong className="text-emerald-300">rameshkrthakur1816@gmail.com</strong>), their incoming message, commercial quotation request, and AI next actions will appear here in real time.
                 </p>
               </div>
               <div className="pt-2 flex items-center justify-center gap-3">
@@ -1117,7 +1117,7 @@ export default function DashboardPage() {
             <div className="flex items-center justify-between pt-2">
               <div className="flex items-center gap-2 text-xs text-dark-400">
                 <span className="w-2 h-2 rounded-full bg-emerald-400"></span>
-                <span>Sender: Ramesh Kumar Thakur &lt;prt241961@gmail.com&gt;</span>
+                <span>Sender: Ramesh Kumar Thakur &lt;rameshkrthakur1816@gmail.com&gt;</span>
               </div>
 
               <div className="flex items-center gap-2.5">

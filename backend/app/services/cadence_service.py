@@ -168,7 +168,7 @@ Best regards,
 
 Ramesh Kumar Thakur
 Sales Executive | OM Enterprise
-📧 prt241961@gmail.com
+📧 rameshkrthakur1816@gmail.com
 📱 WhatsApp: +91 80577 10065
 Direct Manufacturer from Nepal • Wholesale • OEM • Private Label"""
             }
@@ -189,7 +189,7 @@ Best regards,
 
 Ramesh Kumar Thakur
 Sales Executive | OM Enterprise
-📧 prt241961@gmail.com
+📧 rameshkrthakur1816@gmail.com
 📱 WhatsApp: +91 80577 10065
 Direct Manufacturer from Nepal • Wholesale • OEM • Private Label"""
             }
@@ -213,7 +213,7 @@ Direct Manufacturer from Nepal • Wholesale • OEM • Private Label"""
 
     user = db.query(User).filter(User.id == user_id).first()
     profile = db.query(ExporterProfile).filter(ExporterProfile.user_id == user_id).first()
-    user_email_str = user.email if user else "prt241961@gmail.com"
+    user_email_str = user.email if user else "rameshkrthakur1816@gmail.com"
 
     dispatched = 0
     skipped_replied = 0

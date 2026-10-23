@@ -267,7 +267,7 @@ def record_and_dispatch_email(
                 attachment_path=attachment_path,
                 attachment_filename=attachment_name,
                 attachment_list=attachment_list,
-                reply_to=smtp_config.get("reply_to") or smtp_config.get("from_email") or "prt241961@gmail.com"
+                reply_to=smtp_config.get("reply_to") or smtp_config.get("from_email") or "rameshkrthakur1816@gmail.com"
             )
             if success:
                 send_success = True
@@ -372,7 +372,7 @@ def get_daily_email_ledger_report(
     all_logs = db.query(EmailSendLog).filter(EmailSendLog.user_id == user_id).order_by(EmailSendLog.created_at.desc()).all()
     if not all_logs:
         from ..models.user import User
-        ramesh = db.query(User).filter(User.email == "prt241961@gmail.com").first()
+        ramesh = db.query(User).filter(User.email == "rameshkrthakur1816@gmail.com").first()
         fallback_uid = ramesh.id if ramesh else 1
         all_logs = db.query(EmailSendLog).filter(EmailSendLog.user_id == fallback_uid).order_by(EmailSendLog.created_at.desc()).all()
 

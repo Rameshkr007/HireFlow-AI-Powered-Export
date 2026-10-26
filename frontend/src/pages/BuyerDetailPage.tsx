@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useState } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { ArrowLeft, Building2, Mail, Globe, MapPin, Brain, Activity, Clock, CheckCircle } from 'lucide-react';
@@ -7,8 +7,10 @@ import { Buyer, EmailLog } from '../lib/types';
 import StatusBadge from '../components/ui/StatusBadge';
 import LoadingSpinner from '../components/ui/LoadingSpinner';
 import { useToast } from '../contexts/ToastContext';
+import { DirectEmailModal } from '../components/DirectEmailModal';
 
 export default function BuyerDetailPage() {
+  const [emailModalOpen, setEmailModalOpen] = useState(false);
   const { id } = useParams();
   const navigate = useNavigate();
   const { showToast } = useToast();
@@ -51,20 +53,34 @@ export default function BuyerDetailPage() {
         <button onClick={() => navigate('/buyers')} className="p-2 rounded-lg bg-dark-800 hover:bg-dark-700 text-dark-300 transition-colors">
           <ArrowLeft className="w-5 h-5" />
         </button>
-        <div>
+        <div className="flex-1">
           <h2 className="text-2xl font-bold text-dark-50">{buyer.company_name}</h2>
           <div className="flex items-center gap-3 text-sm text-dark-400 mt-1">
             <span className="flex items-center gap-1"><MapPin className="w-4 h-4" /> {buyer.country}</span>
             <StatusBadge status={buyer.email_status || 'UNKNOWN'} />
           </div>
         </div>
+        <button
+          onClick={() => setEmailModalOpen(true)}
+          className="btn-primary py-2 px-4 text-xs flex items-center gap-2 bg-emerald-600 hover:bg-emerald-500 font-semibold shadow-md whitespace-nowrap ml-auto"
+        >
+          <Mail className="w-4 h-4" /> Send Direct Email Pitch
+        </button>
       </div>
 
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
         <div className="card p-6 space-y-6">
           <div className="flex items-center justify-between">
             <h3 className="section-title flex items-center gap-2"><Building2 className="w-5 h-5 text-primary-400" /> Buyer Info</h3>
-            <button className="btn-secondary text-xs py-1 px-3">Edit</button>
+            <div className="flex items-center gap-2">
+              <button
+                onClick={() => setEmailModalOpen(true)}
+                className="btn-primary text-xs py-1 px-3 flex items-center gap-1.5 bg-emerald-600 hover:bg-emerald-500"
+              >
+                <Mail className="w-3.5 h-3.5" /> Pitch Buyer
+              </button>
+              <button className="btn-secondary text-xs py-1 px-3">Edit</button>
+            </div>
           </div>
           <div className="space-y-4 text-sm">
             <div><div className="text-dark-500 mb-1">Contact Name</div><div className="text-dark-100 font-medium">{buyer.buyer_name || 'N/A'}</div></div>
@@ -129,6 +145,20 @@ export default function BuyerDetailPage() {
           )}
         </div>
       </div>
+      <DirectEmailModal
+        isOpen={emailModalOpen}
+        onClose={() => setEmailModalOpen(false)}
+        initialData={{
+          buyerId: buyer.id,
+          toEmail: buyer.email || '',
+          recipientName: buyer.buyer_name || '',
+          companyName: buyer.company_name || '',
+          product: buyer.product || '',
+          city: buyer.city || '',
+          country: buyer.country || ''
+        }}
+        onSuccess={() => { queryClient.invalidateQueries({ queryKey: ['buyer', id] }); queryClient.invalidateQueries({ queryKey: ['buyer-logs', id] }); }}
+      />
     </div>
   );
 }

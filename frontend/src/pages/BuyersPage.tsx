@@ -8,6 +8,9 @@ import StatusBadge from '../components/ui/StatusBadge';
 import LoadingSpinner from '../components/ui/LoadingSpinner';
 import ConfirmDialog from '../components/ui/ConfirmDialog';
 import { useToast } from '../contexts/ToastContext';
+import { DirectEmailModal } from '../components/DirectEmailModal';
+import { ManualBuyerModal } from '../components/ManualBuyerModal';
+
 
 export default function BuyersPage() {
   const navigate = useNavigate();
@@ -18,6 +21,27 @@ export default function BuyersPage() {
   const [deleteId, setDeleteId] = useState<number | null>(null);
   const [enriching, setEnriching] = useState(false);
   const [simulatingReply, setSimulatingReply] = useState(false);
+  const [emailModalOpen, setEmailModalOpen] = useState(false);
+  const [selectedBuyerForEmail, setSelectedBuyerForEmail] = useState<any>(undefined);
+  const [addBuyerModalOpen, setAddBuyerModalOpen] = useState(false);
+
+  const handleOpenEmailModal = (buyer?: Buyer) => {
+    if (buyer) {
+      setSelectedBuyerForEmail({
+        buyerId: buyer.id,
+        toEmail: buyer.decision_maker_email || buyer.email || '',
+        recipientName: (buyer as any).decision_maker_name || buyer.buyer_name || '',
+        companyName: buyer.company_name || '',
+        product: buyer.product || 'Handcrafted Home Decor',
+        city: buyer.city || '',
+        country: buyer.country || ''
+      });
+    } else {
+      setSelectedBuyerForEmail(undefined);
+    }
+    setEmailModalOpen(true);
+  };
+
 
   const { data, isLoading, refetch } = useQuery<BuyerListResponse>({
     queryKey: ['buyers', page, search],
@@ -118,6 +142,21 @@ export default function BuyersPage() {
           <p className="text-xs text-dark-400 mt-0.5">Verified wholesale importers for Himalayan Singing Bowls & Metal Candle Holders</p>
         </div>
         <div className="flex flex-wrap gap-2">
+          <button
+            onClick={() => setAddBuyerModalOpen(true)}
+            className="px-3 py-1.5 rounded-lg bg-emerald-600 hover:bg-emerald-500 text-white font-semibold text-xs flex items-center gap-1.5 shadow-md transition-all cursor-pointer"
+          >
+            <Plus className="w-3.5 h-3.5" />
+            <span>+ Add Buyer Manually</span>
+          </button>
+          <button
+            onClick={() => handleOpenEmailModal()}
+            className="px-3 py-1.5 rounded-lg bg-primary-600 hover:bg-primary-500 text-white font-semibold text-xs flex items-center gap-1.5 shadow-md transition-all cursor-pointer"
+          >
+            <Mail className="w-3.5 h-3.5" />
+            <span>✉️ Compose Manual Email</span>
+          </button>
+
           <button
             onClick={handleEnrichDecisionMakers}
             disabled={enriching}
@@ -238,6 +277,14 @@ export default function BuyersPage() {
                     <td className="px-4 py-3"><StatusBadge status={buyer.ai_priority || 'UNCLASSIFIED'} /></td>
                     <td className="px-4 py-3">
                       <div className="flex items-center gap-1.5">
+                        <button
+                          onClick={() => handleOpenEmailModal(buyer)}
+                          className="p-1.5 text-primary-400 hover:text-primary-300 hover:bg-primary-950/50 rounded bg-dark-800 border border-primary-900/40"
+                          title="Send Individual Email Pitch to this Buyer"
+                        >
+                          <Mail className="w-3.5 h-3.5" />
+                        </button>
+
                         {buyer.phone && (
                           <button
                             onClick={() => openWhatsApp(buyer)}
@@ -276,6 +323,18 @@ export default function BuyersPage() {
         </div>
       </div>
       
+            <DirectEmailModal
+        isOpen={emailModalOpen}
+        onClose={() => setEmailModalOpen(false)}
+        initialData={selectedBuyerForEmail}
+        onSuccess={() => refetch()}
+      />
+      <ManualBuyerModal
+        isOpen={addBuyerModalOpen}
+        onClose={() => setAddBuyerModalOpen(false)}
+        onSuccess={() => refetch()}
+      />
+
       <ConfirmDialog open={!!deleteId} title="Delete Buyer" message="Are you sure you want to delete this buyer? This action cannot be undone." danger onConfirm={handleDelete} onCancel={() => setDeleteId(null)} />
     </div>
   );

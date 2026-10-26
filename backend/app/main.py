@@ -257,7 +257,7 @@ def root():
     index_file = os.path.join(STATIC_DIR, "index.html")
     if os.path.exists(index_file):
         return FileResponse(index_file)
-    return {"message": "HireFlow API is running", "docs": "/docs", "version": "1.4.2"}
+    return {"message": "HireFlow API is running", "docs": "/docs", "version": "1.4.3"}
 
 @app.get("/health")
 def health():
@@ -368,7 +368,7 @@ async def test_tradewind():
 @app.get("/api/build-info")
 def build_info():
     return {
-        "version": "1.4.2",
+        "version": "1.4.3",
         "halloween_attachments": True,
         "email_tester_enabled": True,
         "brevo_safe": True,

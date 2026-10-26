@@ -234,3 +234,83 @@ def get_buyer_whatsapp(
         company_name=buyer.company_name or "your company",
         phone=buyer.phone or ""
     )
+
+from pydantic import BaseModel
+
+class IndividualEmailDispatchSchema(BaseModel):
+    buyer_id: Optional[int] = None
+    to_email: str
+    recipient_name: Optional[str] = "Buyer"
+    company_name: Optional[str] = "Company"
+    subject: str
+    body_text: str
+    body_html: Optional[str] = None
+    attachment_name: Optional[str] = None
+    attachment_path: Optional[str] = None
+    attachment_list: Optional[List[str]] = None
+    template_id: Optional[str] = "custom"
+
+@router.post("/send-individual")
+def send_individual_pitch(
+    payload: IndividualEmailDispatchSchema,
+    current_user: User = Depends(get_current_user),
+    db: Session = Depends(get_db)
+):
+    from ..services.email_ledger_service import record_and_dispatch_email
+    from ..models.buyer import Buyer
+    import os
+
+    clean_to = payload.to_email.strip().lower()
+    if not clean_to or "@" not in clean_to:
+        raise HTTPException(status_code=400, detail="Please enter a valid recipient email address.")
+
+    # Locate attachment path if an attachment_name was specified
+    att_name = payload.attachment_name
+    att_path = payload.attachment_path
+    if att_name and not att_path:
+        from ..config import settings
+        upload_dir = os.path.abspath(settings.UPLOAD_DIR)
+        candidate = os.path.join(upload_dir, att_name)
+        if os.path.exists(candidate):
+            att_path = candidate
+
+    send_log, send_success, send_err = record_and_dispatch_email(
+        db=db,
+        user_id=current_user.id,
+        recipient_email=clean_to,
+        subject=payload.subject,
+        body_text=payload.body_text,
+        body_html=payload.body_html,
+        buyer_id=payload.buyer_id,
+        attachment_name=att_name,
+        attachment_path=att_path,
+        attachment_list=payload.attachment_list or ([] if not att_name else [att_name]),
+        is_demo=False
+    )
+
+    # If buyer exists, mark as CONTACTED
+    buyer = None
+    if payload.buyer_id:
+        buyer = db.query(Buyer).filter(Buyer.id == payload.buyer_id).first()
+    if not buyer:
+        buyer = db.query(Buyer).filter(Buyer.email == clean_to).first()
+    if buyer:
+        buyer.outreach_status = "CONTACTED"
+        buyer.last_contacted_at = send_log.sent_at or send_log.created_at
+        db.commit()
+
+    if not send_success:
+        return {
+            "success": False,
+            "status": "FAILED",
+            "error": send_err or "Failed to deliver email. Check provider settings.",
+            "log_id": send_log.id if send_log else None
+        }
+
+    return {
+        "success": True,
+        "status": "SENT",
+        "message": f"Individual email successfully dispatched to {clean_to}!",
+        "log_id": send_log.id if send_log else None,
+        "recipient": clean_to
+    }

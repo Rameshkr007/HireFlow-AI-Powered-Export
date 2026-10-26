@@ -7,6 +7,9 @@ import {
   Download, Filter, Phone, Award, MapPin
 } from 'lucide-react';
 import api from '../lib/api';
+import { DirectEmailModal } from '../components/DirectEmailModal';
+import { ManualBuyerModal } from '../components/ManualBuyerModal';
+import { Plus } from 'lucide-react';
 import { useToast } from '../contexts/ToastContext';
 
 // ── Types ─────────────────────────────────────────────────────────────────────
@@ -99,6 +102,26 @@ export default function BuyerDiscoveryPage() {
   const [result, setResult] = useState<DiscoveryResult | null>(null);
   const [selected, setSelected] = useState<Set<number>>(new Set());
   const [filterEmailOnly, setFilterEmailOnly] = useState(false);
+  const [emailModalOpen, setEmailModalOpen] = useState(false);
+  const [selectedBuyerForEmail, setSelectedBuyerForEmail] = useState<any>(undefined);
+  const [addBuyerModalOpen, setAddBuyerModalOpen] = useState(false);
+
+  const handleOpenEmailModal = (b?: DiscoveredBuyer) => {
+    if (b) {
+      setSelectedBuyerForEmail({
+        toEmail: b.email || '',
+        recipientName: b.buyer_name || '',
+        companyName: b.company_name || '',
+        product: b.product || product || 'Handcrafted Home Decor',
+        city: b.city || '',
+        country: b.country || ''
+      });
+    } else {
+      setSelectedBuyerForEmail(undefined);
+    }
+    setEmailModalOpen(true);
+  };
+
   const [selectedCity, setSelectedCity] = useState('All USA Cities');
   const [expandedIndex, setExpandedIndex] = useState<number | null>(null);
   const [engineSources, setEngineSources] = useState<any[]>([]);
@@ -213,6 +236,21 @@ export default function BuyerDiscoveryPage() {
           </div>
 
           <div className="flex items-center gap-3">
+            <button
+              onClick={() => setAddBuyerModalOpen(true)}
+              className="btn-secondary px-3.5 py-2.5 flex items-center gap-1.5 text-xs font-semibold cursor-pointer border-emerald-500/30 hover:border-emerald-500/60 text-emerald-300"
+            >
+              <Plus className="w-4 h-4 text-emerald-400" />
+              <span>+ Add Manual Prospect</span>
+            </button>
+            <button
+              onClick={() => handleOpenEmailModal()}
+              className="btn-secondary px-3.5 py-2.5 flex items-center gap-1.5 text-xs font-semibold cursor-pointer border-primary-500/30 hover:border-primary-500/60 text-primary-300"
+            >
+              <Mail className="w-4 h-4 text-primary-400" />
+              <span>✉️ Direct Composer</span>
+            </button>
+
             <button
               onClick={() => handleSearch(true)}
               disabled={searching}
@@ -569,6 +607,18 @@ export default function BuyerDiscoveryPage() {
 
                       {/* Source & Actions */}
                       <div className="flex items-center justify-end gap-3">
+                        <button
+                          onClick={(e) => {
+                            e.stopPropagation();
+                            handleOpenEmailModal(buyer);
+                          }}
+                          className="px-2.5 py-1 text-xs rounded-lg bg-emerald-600 hover:bg-emerald-500 text-white font-medium flex items-center gap-1 shadow-sm transition-all"
+                          title="Send Individual Email Pitch Directly to this Prospect"
+                        >
+                          <Mail className="w-3.5 h-3.5" />
+                          <span>Pitch Direct</span>
+                        </button>
+
                         <span className="text-[11px] px-2.5 py-1 rounded-full bg-primary-500/10 text-primary-300 border border-primary-500/20 font-medium">
                           {buyer.source_platform}
                         </span>
@@ -632,6 +682,18 @@ export default function BuyerDiscoveryPage() {
           </div>
         )}
       </div>
+      <DirectEmailModal
+        isOpen={emailModalOpen}
+        onClose={() => setEmailModalOpen(false)}
+        initialData={selectedBuyerForEmail}
+      />
+      <ManualBuyerModal
+        isOpen={addBuyerModalOpen}
+        onClose={() => setAddBuyerModalOpen(false)}
+        onSuccess={() => {
+          showToast('Prospect saved! Discovered list updated.', 'success');
+        }}
+      />
     </div>
   );
 }

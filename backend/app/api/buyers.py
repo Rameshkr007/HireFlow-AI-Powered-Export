@@ -274,6 +274,13 @@ def send_individual_pitch(
         if os.path.exists(candidate):
             att_path = candidate
 
+    # Build safe attachment items list (avoids raw string crashes)
+    built_items = []
+    if att_path and os.path.exists(att_path):
+        built_items.append({"path": att_path, "name": att_name or os.path.basename(att_path)})
+    elif att_name:
+        built_items.append({"name": att_name})
+
     send_log, send_success, send_err = record_and_dispatch_email(
         db=db,
         user_id=current_user.id,
@@ -284,7 +291,7 @@ def send_individual_pitch(
         buyer_id=payload.buyer_id,
         attachment_name=att_name,
         attachment_path=att_path,
-        attachment_list=payload.attachment_list or ([] if not att_name else [att_name]),
+        attachment_list=built_items,
         is_demo=False
     )
 

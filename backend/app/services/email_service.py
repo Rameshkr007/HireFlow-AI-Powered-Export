@@ -12,7 +12,7 @@ from email.mime.text import MIMEText
 from email.mime.application import MIMEApplication
 from email.mime.image import MIMEImage
 from email.utils import formatdate, make_msgid
-from typing import Optional, Tuple, Dict, Any
+from typing import Optional, Tuple, Dict, Any, List
 from sqlalchemy.orm import Session
 
 from ..config import settings
@@ -231,6 +231,55 @@ def get_default_poster_items():
         items.append({"path": DEFAULT_POSTER_BADGE_PATH, "name": "OM_Enterprise_Special_Offer_Badge.jpg"})
     return items
 
+def normalize_attachment_items(
+    attachment_list: Optional[list] = None,
+    attachment_path: Optional[str] = None,
+    attachment_filename: Optional[str] = None
+) -> List[Dict[str, str]]:
+    """
+    Safely resolves and normalizes any mix of dicts, file paths, or attachment names into
+    standard [{'path': str, 'name': str}] items with verified file existence.
+    Completely eliminates ''str' object has no attribute 'get'' errors.
+    """
+    from ..config import settings
+    upload_dir = os.path.abspath(getattr(settings, "UPLOAD_DIR", "../attachments"))
+    candidates = []
+
+    if attachment_list is not None and len(attachment_list) > 0:
+        for it in attachment_list:
+            if not it:
+                continue
+            if isinstance(it, dict):
+                p = it.get("path")
+                n = it.get("name") or (os.path.basename(p) if p else None)
+                if p and os.path.exists(p):
+                    candidates.append({"path": p, "name": n or os.path.basename(p)})
+                elif n:
+                    up_p = os.path.join(upload_dir, n)
+                    if os.path.exists(up_p):
+                        candidates.append({"path": up_p, "name": n})
+            elif isinstance(it, str):
+                s = it.strip()
+                if os.path.exists(s):
+                    candidates.append({"path": s, "name": os.path.basename(s)})
+                else:
+                    up_p = os.path.join(upload_dir, s)
+                    if os.path.exists(up_p):
+                        candidates.append({"path": up_p, "name": s})
+
+    if not candidates:
+        if attachment_path and os.path.exists(attachment_path):
+            candidates.append({
+                "path": attachment_path,
+                "name": attachment_filename or os.path.basename(attachment_path)
+            })
+        elif attachment_filename:
+            up_p = os.path.join(upload_dir, attachment_filename.strip())
+            if os.path.exists(up_p):
+                candidates.append({"path": up_p, "name": attachment_filename.strip()})
+
+    return candidates
+
 def format_html_email(body_text: Optional[str], sender_name: Optional[str] = None, company_name: Optional[str] = None) -> str:
     """Converts plain text export pitch into clean, native-looking HTML optimized for Primary Inbox deliverability (avoids newsletter/marketing triggers)."""
     raw = str(body_text or "").strip()
@@ -288,6 +337,9 @@ def send_via_brevo_http(
             f"📧 {from_email or 'prt241961@gmail.com'}\n"
             f"📱 WhatsApp: +91 80577 10065"
         )
+    # Process multiple attachments safely: supports dicts, filenames, or full paths
+    items = normalize_attachment_items(attachment_list, attachment_path, attachment_filename)
+
     payload: Dict[str, Any] = {
         "sender": {"name": from_name or "Ramesh Kumar Thakur | OM Enterprise", "email": from_email or "prt241961@gmail.com"},
         "to": [{"email": to_email}],
@@ -303,13 +355,6 @@ def send_via_brevo_http(
 
     target_reply_to = (reply_to or from_email or "prt241961@gmail.com").strip()
     payload["replyTo"] = {"email": target_reply_to, "name": from_name or "Ramesh Kumar Thakur"}
-
-    # Process multiple attachments: only include if explicitly passed (never force posters on text-only cold outreach)
-    items = []
-    if attachment_list is not None and len(attachment_list) > 0:
-        items = [it for it in attachment_list if it and it.get("path") and os.path.exists(it.get("path"))]
-    elif attachment_path and os.path.exists(attachment_path):
-        items = [{"path": attachment_path, "name": attachment_filename or os.path.basename(attachment_path)}]
 
     if items:
         payload["attachment"] = []
@@ -370,12 +415,8 @@ def send_via_resend_http(
     if body_html:
         payload["html"] = body_html
 
-    # Process multiple attachments: only include if explicitly passed
-    items = []
-    if attachment_list is not None and len(attachment_list) > 0:
-        items = [it for it in attachment_list if it and it.get("path") and os.path.exists(it.get("path"))]
-    elif attachment_path and os.path.exists(attachment_path):
-        items = [{"path": attachment_path, "name": attachment_filename or os.path.basename(attachment_path)}]
+    # Process multiple attachments safely: supports dicts, filenames, or full paths
+    items = normalize_attachment_items(attachment_list, attachment_path, attachment_filename)
 
     if items:
         payload["attachments"] = []
@@ -430,12 +471,8 @@ def send_smtp_email(
         use_ssl = smtp_config.get("use_ssl", False)
         target_reply_to = (reply_to or smtp_config.get("reply_to") or from_email or "prt241961@gmail.com").strip()
 
-        # Multiple Attachments: only include if explicitly passed
-        items = []
-        if attachment_list is not None and len(attachment_list) > 0:
-            items = [it for it in attachment_list if it and it.get("path") and os.path.exists(it.get("path"))]
-        elif attachment_path and os.path.exists(attachment_path):
-            items = [{"path": attachment_path, "name": attachment_filename or os.path.basename(attachment_path)}]
+        # Multiple Attachments: safe normalization supports dicts, filenames, or full paths
+        items = normalize_attachment_items(attachment_list, attachment_path, attachment_filename)
 
         # Construct standard MIME structure:
         # - If attachments: multipart/mixed containing multipart/alternative (text + html) + attachments

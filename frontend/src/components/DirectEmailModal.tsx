@@ -27,6 +27,24 @@ interface TemplateOption {
 
 const TEMPLATES: TemplateOption[] = [
   {
+    id: 'primary_inbox_b2b',
+    name: '⭐ Primary Inbox (Conversational Plain-Text – Highest Placement)',
+    subject: 'quick question regarding {company}\'s decor sourcing',
+    getBody: (name, company) => 
+`Hi ${name || 'there'},
+
+I came across ${company || 'your store'} while researching home décor and metalware importers.
+
+We are a direct manufacturer of handcrafted brass lanterns, candle holders, and decorative metal pieces based in India/Nepal.
+
+Would you be open to reviewing a short PDF catalog or FOB pricing for your upcoming collections?
+
+Best regards,
+Ramesh Kumar Thakur
+OM Enterprise
+prt241961@gmail.com`
+  },
+  {
     id: 'decor_b2b_formal',
     name: 'OM Enterprise – Handcrafted Home Décor & Lanterns (B2B Formal)',
     subject: 'Handcrafted Home Decor & Lanterns – OM Enterprise',
@@ -37,7 +55,7 @@ Greetings from OM Enterprise!
 
 We manufacture handcrafted home décor, metal lanterns, candle holders, and decorative jars.
 
-Are you open to reviewing our product catalog and wholesale export pricing for ${company || 'your store'}?
+Are you open to reviewing our product catalog and export pricing for ${company || 'your store'}?
 
 Best regards,
 Name: Ramesh Kumar Thakur
@@ -45,16 +63,16 @@ OM Enterprise`
   },
   {
     id: 'halloween_holiday_offer',
-    name: 'OM Enterprise – Halloween & Holiday Special Offer',
-    subject: 'Halloween Special Offer & Export Sourcing – OM Enterprise',
+    name: 'OM Enterprise – Holiday Season Sourcing Inquiry',
+    subject: 'Holiday Season Home Decor Sourcing – OM Enterprise',
     getBody: (name, company) => 
 `Hello ${name || 'Purchasing Team'},
 
 Greetings from OM Enterprise!
 
-We offer handcrafted home décor, lanterns, candle holders, and decorative jars. 🎃 Explore our Halloween Special Offer and wholesale opportunities for ${company || 'your business'}!
+We manufacture handcrafted home décor, lanterns, candle holders, and decorative jars. Explore our seasonal collections and export wholesale opportunities for ${company || 'your business'}!
 
-Interested? We'd love to connect.
+Interested in seeing our specifications? We'd love to connect.
 
 Best regards,
 Name: Ramesh Kumar Thakur
@@ -113,7 +131,7 @@ export const DirectEmailModal: React.FC<DirectEmailModalProps> = ({
   const [toEmail, setToEmail] = useState('');
   const [recipientName, setRecipientName] = useState('');
   const [companyName, setCompanyName] = useState('');
-  const [selectedTemplate, setSelectedTemplate] = useState('decor_b2b_formal');
+  const [selectedTemplate, setSelectedTemplate] = useState('primary_inbox_b2b');
   const [subject, setSubject] = useState('');
   const [bodyText, setBodyText] = useState('');
   const [selectedAttachment, setSelectedAttachment] = useState<string>('none');
@@ -360,6 +378,18 @@ export const DirectEmailModal: React.FC<DirectEmailModalProps> = ({
               className="input-field text-xs font-sans leading-relaxed py-2.5 resize-y"
               placeholder="Type your message here..."
             />
+          </div>
+
+          {/* Primary Inbox Deliverability Tip */}
+          <div className="p-3 bg-emerald-500/10 border border-emerald-500/20 rounded-xl text-xs text-emerald-200/90 flex items-start gap-2.5">
+            <span className="text-base leading-none">🎯</span>
+            <div>
+              <strong className="text-emerald-100 font-semibold">Primary Inbox Placement Formula:</strong>
+              <div className="text-[11px] text-dark-300 mt-0.5 leading-relaxed">
+                For cold outreach to land in the <strong>Primary Inbox</strong> instead of <strong>Promotions</strong>:
+                use short conversational text, keep <strong>Text-Only Safe Mode</strong> (no attachments on 1st email), and send via <strong>Gmail SMTP</strong> on localhost.
+              </div>
+            </div>
           </div>
 
           {/* Attachment Selector */}

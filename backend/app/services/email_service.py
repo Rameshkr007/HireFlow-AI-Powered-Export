@@ -288,28 +288,21 @@ def send_via_brevo_http(
             f"📧 {from_email or 'prt241961@gmail.com'}\n"
             f"📱 WhatsApp: +91 80577 10065"
         )
-    final_html = body_html or format_html_email(body_text_str, from_name)
     payload: Dict[str, Any] = {
         "sender": {"name": from_name or "Ramesh Kumar Thakur | OM Enterprise", "email": from_email or "prt241961@gmail.com"},
         "to": [{"email": to_email}],
         "subject": subject or "Wholesale Opportunity",
-        "htmlContent": final_html,
         "textContent": body_text_str
     }
+    # Only attach HTML if explicitly provided; sending pure plain text avoids commercial HTML tab categorization
+    if body_html:
+        payload["htmlContent"] = body_html
+    elif items:
+        # If attachments exist, generate clean HTML block
+        payload["htmlContent"] = format_html_email(body_text_str, from_name)
+
     target_reply_to = (reply_to or from_email or "prt241961@gmail.com").strip()
     payload["replyTo"] = {"email": target_reply_to, "name": from_name or "Ramesh Kumar Thakur"}
-
-    # Auto-BCC sender account for tracking (skipped when recipient is sender to avoid Google self-spoofing flags)
-    bcc_list = []
-    clean_to = (to_email or "").strip().lower()
-    if clean_to != "prt241961@gmail.com":
-        for cand in [from_email, target_reply_to]:
-            if cand and "@" in cand:
-                clean_c = cand.strip().lower()
-                if clean_c != clean_to and clean_c not in [x["email"].lower() for x in bcc_list]:
-                    bcc_list.append({"email": clean_c})
-    if bcc_list:
-        payload["bcc"] = bcc_list
 
     # Process multiple attachments: only include if explicitly passed (never force posters on text-only cold outreach)
     items = []
@@ -371,20 +364,11 @@ def send_via_resend_http(
         "from": sender_str,
         "to": [to_email],
         "subject": subject,
-        "html": body_html or format_html_email(body_text, from_name),
         "text": body_text,
         "reply_to": target_reply_to
     }
-
-    # Auto-BCC both sender personal account and company account
-    bcc_list = []
-    for cand in [from_email, target_reply_to, "prt241961@gmail.com"]:
-        if cand and "@" in cand:
-            clean_c = cand.strip().lower()
-            if clean_c != to_email.lower() and clean_c not in bcc_list:
-                bcc_list.append(clean_c)
-    if bcc_list:
-        payload["bcc"] = bcc_list
+    if body_html:
+        payload["html"] = body_html
 
     # Process multiple attachments: only include if explicitly passed
     items = []
@@ -483,11 +467,16 @@ def send_smtp_email(
                     except Exception as att_err:
                         print(f"[HireFlow Email] Warning: Could not attach file {p}: {att_err}")
         else:
-            # Clean text-only structure (no unnecessary multipart/mixed wrapper)
-            msg = MIMEMultipart("alternative")
-            msg.attach(MIMEText(body_text, "plain", "utf-8"))
-            final_html = body_html or format_html_email(body_text, from_name)
-            msg.attach(MIMEText(final_html, "html", "utf-8"))
+            # Clean text-only structure:
+            # If body_html is explicitly given, provide multipart/alternative.
+            # If body_html is NOT provided, emit a pure single-part RFC 5322 text/plain message.
+            # Single-part text/plain has the highest Primary Inbox placement rate because it has zero HTML/CSS tracking signatures.
+            if body_html:
+                msg = MIMEMultipart("alternative")
+                msg.attach(MIMEText(body_text, "plain", "utf-8"))
+                msg.attach(MIMEText(body_html, "html", "utf-8"))
+            else:
+                msg = MIMEText(body_text, "plain", "utf-8")
 
         # Standard Email Headers (Clean, RFC 5322 compliant, no spam-triggering X-Mailer or Priority headers)
         if from_name:
@@ -501,13 +490,10 @@ def send_smtp_email(
         # Do not hardcode X-Mailer, X-Priority, or client-generated Message-ID.
         # Leaving Message-ID unset allows smtp.gmail.com to generate its native, authentic Google Message-ID.
 
-        # Envelope recipients including dual BCC (for personal & company tracking)
+        # Envelope recipients: dispatch directly to to_email.
+        # Avoid forcing auto-BCC to prt241961@gmail.com on every dispatch, which clutters the user's personal inbox
+        # and triggers Google's self-sent automated message categorization (Promotions/Updates tab).
         envelope_recipients = [to_email]
-        for bcc_addr in [from_email, target_reply_to, "prt241961@gmail.com"]:
-            if bcc_addr and "@" in bcc_addr:
-                clean_b = bcc_addr.strip().lower()
-                if clean_b != to_email.lower() and clean_b not in [r.lower() for r in envelope_recipients]:
-                    envelope_recipients.append(clean_b)
 
         def _dispatch_attempt(host: str, port: int, is_ssl: bool, is_tls: bool):
             with force_ipv4():

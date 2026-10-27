@@ -33,7 +33,31 @@ def validate_email_address(email: str) -> Dict[str, str]:
     domain_parts = domain.split('.')
     if len(domain_parts) < 2 or not all(domain_parts):
         return {"status": "INVALID", "reason": "Invalid domain format"}
-    
+
+    # Live MX verification: verify the recipient domain actually exists and accepts mail
+    clean_domain = domain.lower().strip()
+    try:
+        import dns.resolver
+        answers = dns.resolver.resolve(clean_domain, 'MX', lifetime=2.5)
+        if not answers:
+            return {
+                "status": "INVALID",
+                "reason": f"Domain '{clean_domain}' has no active mail server (no MX records)."
+            }
+    except dns.resolver.NXDOMAIN:
+        return {
+            "status": "INVALID",
+            "reason": f"Domain '{clean_domain}' does not exist on the internet (NXDOMAIN). Please enter a real recipient email address."
+        }
+    except (dns.resolver.NoAnswer, dns.resolver.NoNameservers):
+        return {
+            "status": "INVALID",
+            "reason": f"Domain '{clean_domain}' cannot receive emails (no MX records configured)."
+        }
+    except Exception:
+        # Network/DNS timeout - fall through without blocking
+        pass
+
     # Use email_validator for strict check
     try:
         from email_validator import validate_email, EmailNotValidError

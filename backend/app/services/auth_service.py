@@ -47,21 +47,6 @@ OCTOBER_12_CALIFORNIA_BUYERS = [
         "outreach_status": "CONTACTED"
     },
     {
-        "company_name": "Maple Party & Craft",
-        "buyer_name": "Purchasing Manager",
-        "email": "contact@maplepartycraft.com",
-        "address": "925 Maple Ave, Los Angeles, CA 90015, USA",
-        "city": "Los Angeles",
-        "state": "CA",
-        "country": "USA",
-        "product": "Handcrafted Metal Candle Holders & Lanterns",
-        "business_type": "Wholesaler",
-        "ai_priority": "HIGH",
-        "ai_score": 90,
-        "email_status": "VALID",
-        "outreach_status": "CONTACTED"
-    },
-    {
         "company_name": "Imperial Party Rentals Inc.",
         "buyer_name": "Purchasing Manager",
         "email": "contact@theimperialpartyrentals.com",
@@ -152,21 +137,6 @@ OCTOBER_12_CALIFORNIA_BUYERS = [
         "outreach_status": "CONTACTED"
     },
     {
-        "company_name": "SoNice Party Inc.",
-        "buyer_name": "Purchasing Manager",
-        "email": "contact@soniceparty.com",
-        "address": "4159 Bandini Blvd, Vernon, CA 90058, USA",
-        "city": "Vernon",
-        "state": "CA",
-        "country": "USA",
-        "product": "Handcrafted Metal Candle Holders & Lanterns",
-        "business_type": "Wholesaler",
-        "ai_priority": "HIGH",
-        "ai_score": 89,
-        "email_status": "VALID",
-        "outreach_status": "CONTACTED"
-    },
-    {
         "company_name": "Elegance Party Rentals",
         "buyer_name": "Purchasing Manager",
         "email": "contact@elegancepartyrentals.com",
@@ -182,36 +152,6 @@ OCTOBER_12_CALIFORNIA_BUYERS = [
         "outreach_status": "CONTACTED"
     },
     {
-        "company_name": "Exclusive Decorations & Party Supplies",
-        "buyer_name": "Purchasing Manager",
-        "email": "contact@exclusive-company.square.site",
-        "address": "15706 Pioneer Blvd, Norwalk, CA 90650, USA",
-        "city": "Norwalk",
-        "state": "CA",
-        "country": "USA",
-        "product": "Handcrafted Metal Candle Holders & Lanterns",
-        "business_type": "Wholesaler",
-        "ai_priority": "HIGH",
-        "ai_score": 88,
-        "email_status": "VALID",
-        "outreach_status": "CONTACTED"
-    },
-    {
-        "company_name": "Good Floral & Wedding Decor Supply",
-        "buyer_name": "Purchasing Manager",
-        "email": "contact@goodfloral.com",
-        "address": "709 Wall St, Los Angeles, CA 90014, USA",
-        "city": "Los Angeles",
-        "state": "CA",
-        "country": "USA",
-        "product": "Handcrafted Metal Candle Holders & Lanterns",
-        "business_type": "Wholesaler",
-        "ai_priority": "HIGH",
-        "ai_score": 94,
-        "email_status": "VALID",
-        "outreach_status": "CONTACTED"
-    },
-    {
         "company_name": "Ivan's Party Rental & Decoration",
         "buyer_name": "Purchasing Manager",
         "email": "contact@ivanspartyrentals.com",
@@ -223,36 +163,6 @@ OCTOBER_12_CALIFORNIA_BUYERS = [
         "business_type": "Importer",
         "ai_priority": "HIGH",
         "ai_score": 91,
-        "email_status": "VALID",
-        "outreach_status": "CONTACTED"
-    },
-    {
-        "company_name": "Event & Party Supply",
-        "buyer_name": "Purchasing Manager",
-        "email": "contact@eventpartysupply.com",
-        "address": "770 San Pedro St, Los Angeles, CA 90014, USA",
-        "city": "Los Angeles",
-        "state": "CA",
-        "country": "USA",
-        "product": "Handcrafted Metal Candle Holders & Lanterns",
-        "business_type": "Wholesaler",
-        "ai_priority": "HIGH",
-        "ai_score": 89,
-        "email_status": "VALID",
-        "outreach_status": "CONTACTED"
-    },
-    {
-        "company_name": "Event Wholesale Supply",
-        "buyer_name": "Purchasing Manager",
-        "email": "contact@eventwholesalesupply.com",
-        "address": "12224 Montague St, Pacoima, CA 91331, USA",
-        "city": "Pacoima",
-        "state": "CA",
-        "country": "USA",
-        "product": "Handcrafted Metal Candle Holders & Lanterns",
-        "business_type": "Wholesaler",
-        "ai_priority": "HIGH",
-        "ai_score": 92,
         "email_status": "VALID",
         "outreach_status": "CONTACTED"
     },

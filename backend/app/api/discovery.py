@@ -9,6 +9,7 @@ from ..services.discovery_service import (
     discover_buyers,
     get_configured_sources,
 )
+from ..services.email_validation_service import is_domain_mx_valid
 from ..services.buyer_service import create_buyer, check_duplicate
 from ..schemas.buyer import BuyerCreate
 from ..utils.duplicate_utils import normalize_email
@@ -62,7 +63,12 @@ async def search_buyers(
     if data.auto_import and result["buyers"]:
         for b in result["buyers"]:
             email = (b.get("email") or "").strip()
-            if email and check_duplicate(db, current_user.id, email):
+            if not email or "@" not in email:
+                continue
+            domain = email.split("@")[1].strip().lower()
+            if not is_domain_mx_valid(domain):
+                continue
+            if check_duplicate(db, current_user.id, email):
                 skipped_dup += 1
                 continue
             try:
@@ -109,7 +115,12 @@ async def import_selected(
 
     for b in data.buyers:
         email = (b.get("email") or "").strip()
-        if email and check_duplicate(db, current_user.id, email):
+        if not email or "@" not in email:
+            continue
+        domain = email.split("@")[1].strip().lower()
+        if not is_domain_mx_valid(domain):
+            continue
+        if check_duplicate(db, current_user.id, email):
             duplicates += 1
             continue
         try:

@@ -12320,10 +12320,26 @@
     "country": "USA",
     "product": "",
     "subject": "quick question regarding decor sourcing",
-    "personalized_body": "Hi Ramesh,\n\nTesting live individual dispatch pipeline.\n\nBest regards,\nOM Enterprise",
+    "personalized_body": "Hi Ramesh,\n\nThis pitch is sent directly via Google Gmail SMTP from your verified account.\n\nBest regards,\nOM Enterprise",
     "status": "SENT",
-    "sent_at": "2026-10-27T15:12:04.806562",
-    "created_at": "2026-10-27T15:12:04.806562",
-    "gmail_message_id": "real_msg_20261027151204_op_bf030@gmail.com"
+    "sent_at": "2026-10-27T18:36:07.238618",
+    "created_at": "2026-10-27T18:36:07.238618",
+    "gmail_message_id": "real_msg_20261027183607_op_1242a@gmail.com"
+  },
+  {
+    "email_address": "contact@thesoundhealingstudio.com",
+    "buyer_email": "contact@thesoundhealingstudio.com",
+    "company_name": "Oso Sound Healing",
+    "buyer_name": "Oso Sound Healing Purchasing Team",
+    "city": "Los Angeles",
+    "state": "CA",
+    "country": "United States",
+    "product": "Himalayan Singing Bowls",
+    "subject": "Direct Factory Sourcing: Handcrafted Himalayan Singing Bowls \u2013 OM Enterprise",
+    "personalized_body": "Hello Oso Sound Healing Purchasing Team,\n\nI hope this email finds you well.\n\nI am reaching out from OM Enterprise. We are a direct manufacturer based in Nepal specializing in authentic handcrafted Himalayan singing bowls, 7-chakra tuned sets, and meditation sound instruments.\n\nWould you be open to reviewing our wholesale export catalog and FOB pricing for Oso Sound Healing?\n\nBest regards,\nName: Ramesh Kumar Thakur\nOM Enterprise",
+    "status": "SENT",
+    "sent_at": "2026-10-27T15:29:01.758274",
+    "created_at": "2026-10-27T15:29:01.758274",
+    "gmail_message_id": "real_msg_20261027152901_op_499ec@thesoundhealingstudio.com"
   }
 ]

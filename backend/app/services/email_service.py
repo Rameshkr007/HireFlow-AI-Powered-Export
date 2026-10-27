@@ -129,7 +129,7 @@ def get_effective_smtp_config(db: Session, user_id: int) -> Optional[Dict[str, A
 
         is_gmail = (db_setting.provider == "gmail")
         smtp_user_val = db_setting.smtp_user.strip() if db_setting.smtp_user else "prt241961@gmail.com"
-        if "rameshkrthakur1816" in smtp_user_val:
+        if "rameshkrthakur1816" in smtp_user_val or "gamil" in smtp_user_val:
             smtp_user_val = "prt241961@gmail.com"
             db_setting.smtp_user = "prt241961@gmail.com"
             try:
@@ -138,7 +138,7 @@ def get_effective_smtp_config(db: Session, user_id: int) -> Optional[Dict[str, A
                 pass
 
         from_email_val = db_setting.from_email.strip() if db_setting.from_email else smtp_user_val
-        if "rameshkrthakur1816" in from_email_val:
+        if "rameshkrthakur1816" in from_email_val or "gamil" in from_email_val:
             from_email_val = "prt241961@gmail.com"
             db_setting.from_email = "prt241961@gmail.com"
             try:
@@ -532,16 +532,18 @@ def send_smtp_email(
         # and triggers Google's self-sent automated message categorization (Promotions/Updates tab).
         envelope_recipients = [to_email]
 
+        is_on_render = bool(os.environ.get("RENDER") or os.environ.get("RENDER_EXTERNAL_HOSTNAME"))
+
         def _dispatch_attempt(host: str, port: int, is_ssl: bool, is_tls: bool):
             with force_ipv4():
                 if is_ssl or port == 465:
                     context = ssl.create_default_context()
-                    server = smtplib.SMTP_SSL(host, port, context=context, timeout=5)
+                    server = smtplib.SMTP_SSL(host, port, context=context, timeout=15)
                     server.login(smtp_user, smtp_pass)
                     server.sendmail(from_email, envelope_recipients, msg.as_string())
                     server.quit()
                 else:
-                    server = smtplib.SMTP(host, port, timeout=5)
+                    server = smtplib.SMTP(host, port, timeout=15)
                     server.ehlo()
                     if is_tls:
                         context = ssl.create_default_context()
@@ -834,6 +836,8 @@ def test_smtp_dispatch(
         recipient += "com"
     elif recipient.endswith("@gmail"):
         recipient += ".com"
+    elif "@gamil." in recipient or recipient.endswith("@gamil.com") or "@gamil" in recipient:
+        recipient = recipient.replace("@gamil.com", "@gmail.com").replace("@gamil.", "@gmail.").replace("@gamil", "@gmail.com")
     sender_name = smtp_config.get("from_name") or "HireFlow Export System"
     
     subject = "✅ [HireFlow] Real Email Dispatch Connection Verified!"

@@ -297,6 +297,8 @@ def test_connection(
         target += "com"
     elif target.endswith("@gmail"):
         target += ".com"
+    elif "@gamil." in target or target.endswith("@gamil.com") or "@gamil" in target:
+        target = target.replace("@gamil.com", "@gmail.com").replace("@gamil.", "@gmail.").replace("@gamil", "@gmail.com")
     result = test_smtp_dispatch(db, current_user.id, target_email=target)
     if not result.get("success"):
         raise HTTPException(status_code=400, detail=result.get("error", "Email dispatch test failed"))

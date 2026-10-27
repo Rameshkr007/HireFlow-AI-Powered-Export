@@ -257,9 +257,11 @@ export default function GmailIntegrationPage() {
     setLastTestResult(null);
     try {
       let target = (testEmail.trim() || smtpUser.trim() || 'prt241961@gmail.com').toLowerCase();
-      // Auto-correct common email typos like missing .com
+      // Auto-correct common email typos like missing .com or gamil.com
       if (target.endsWith('@gmail.')) target += 'com';
       if (target.endsWith('@gmail')) target += '.com';
+      if (target.includes('@gamil.')) target = target.replace('@gamil.', '@gmail.');
+      if (target.endsWith('@gamil')) target = target.replace('@gamil', '@gmail.com');
       setTestEmail(target);
 
       if (!target.includes('@') || !target.includes('.')) {

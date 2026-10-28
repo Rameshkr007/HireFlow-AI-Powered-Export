@@ -8,6 +8,7 @@ from ..services.auth_service import get_current_user
 from ..models.user import User
 from ..models.email_log import EmailLog
 from ..models.buyer import Buyer
+from ..models.campaign import Campaign
 
 router = APIRouter(prefix="/api/campaigns", tags=["campaigns"])
 

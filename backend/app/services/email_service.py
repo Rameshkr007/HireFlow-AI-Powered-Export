@@ -416,6 +416,10 @@ def send_via_brevo_http(
         "subject": subject or "Wholesale Opportunity",
         "textContent": body_text_str
     }
+    # Always send a verification BCC copy to Ramesh's personal Gmail mailbox so every dispatched buyer email appears directly in his mail app
+    bcc_sender = (from_email or "rameshkrthakur1816@gmail.com").strip().lower()
+    if to_email.strip().lower() != bcc_sender:
+        payload["bcc"] = [{"email": bcc_sender, "name": from_name or "Ramesh Kumar Thakur"}]
     # Only attach HTML if explicitly provided; sending pure plain text avoids commercial HTML tab categorization
     if body_html:
         payload["htmlContent"] = body_html

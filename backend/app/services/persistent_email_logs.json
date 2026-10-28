@@ -9024,12 +9024,12 @@
     "state": "CA",
     "country": "United States",
     "product": "Architectural Lanterns & Monumental Candelabras",
-    "subject": "Holiday Season Home Decor Sourcing \u2013 OM Enterprise",
-    "personalized_body": "Hello Procurement Department,\n\nGreetings from OM Enterprise!\n\nWe manufacture handcrafted home d\u00e9cor, lanterns, candle holders, and decorative jars. Explore our seasonal collections and export wholesale opportunities for Restoration Hardware (RH)!\n\nInterested in seeing our specifications? We'd love to connect.\n\nBest regards,\nName: Ramesh Kumar Thakur\nOM Enterprise",
+    "subject": "Handcrafted Home Decor & Lanterns \u2013 OM Enterprise",
+    "personalized_body": "Hello,\n\nGreetings from OM Enterprise!\n\nWe manufacture handcrafted home d\u00e9cor, metal lanterns, candle holders, and decorative jars.\n\nAre you open to reviewing our product catalog and wholesale export pricing for your store?\n\nBest regards,  \nName: Ramesh Kumar Thakur\nOM Enterprise",
     "status": "SENT",
-    "sent_at": "2026-10-28T05:47:46.498912",
-    "created_at": "2026-10-28T05:47:46.498912",
-    "gmail_message_id": "real_msg_20261028054746_op_f03d5@rh.com"
+    "sent_at": "2026-10-28T06:52:58.481496",
+    "created_at": "2026-10-28T06:52:58.481496",
+    "gmail_message_id": "real_msg_20261028065258_op_camp_@rh.com"
   },
   {
     "email_address": "purchasing@palecek.com",
@@ -9059,8 +9059,40 @@
     "subject": "Handcrafted Home Decor & Lanterns \u2013 OM Enterprise",
     "personalized_body": "Hello,\n\nGreetings from OM Enterprise!\n\nWe manufacture handcrafted home d\u00e9cor, metal lanterns, candle holders, and decorative jars.\n\nAre you open to reviewing our product catalog and wholesale export pricing for your store?\n\nBest regards,  \nName: Ramesh Kumar Thakur\nOM Enterprise",
     "status": "SENT",
-    "sent_at": "2026-10-28T05:48:37.142756",
-    "created_at": "2026-10-28T05:48:37.142756",
-    "gmail_message_id": "real_msg_20261028054837_op_camp_@worldmarket.com"
+    "sent_at": "2026-10-28T06:52:44.147811",
+    "created_at": "2026-10-28T06:52:44.147811",
+    "gmail_message_id": "real_msg_20261028065244_op_camp_@worldmarket.com"
+  },
+  {
+    "email_address": "info@himalayanbowls.com",
+    "buyer_email": "info@himalayanbowls.com",
+    "company_name": "Himalayan Bowls LLC",
+    "buyer_name": "Joseph Feinstein",
+    "city": "San Francisco",
+    "state": "CA",
+    "country": "United States",
+    "product": "Master-Quality Hand-Hammered Bronze Singing Bowls",
+    "subject": "Holiday Season Home Decor Sourcing \u2013 OM Enterprise",
+    "personalized_body": "Hello Joseph Feinstein,\n\nGreetings from OM Enterprise!\n\nWe manufacture handcrafted home d\u00e9cor, lanterns, candle holders, and decorative jars. Explore our seasonal collections and export wholesale opportunities for Himalayan Bowls LLC!\n\nInterested in seeing our specifications? We'd love to connect.\n\nBest regards,\nName: Ramesh Kumar Thakur\nOM Enterprise",
+    "status": "SENT",
+    "sent_at": "2026-10-28T06:51:25.587217",
+    "created_at": "2026-10-28T06:51:25.587217",
+    "gmail_message_id": "real_msg_20261028065125_op_1d35c@himalayanbowls.com"
+  },
+  {
+    "email_address": "magic@sagegoddess.com",
+    "buyer_email": "magic@sagegoddess.com",
+    "company_name": "Sage Goddess Inc",
+    "buyer_name": "Athena Perrakis",
+    "city": "Los Angeles",
+    "state": "CA",
+    "country": "United States",
+    "product": "Sacred Sound Singing Bowls & Ritual Instruments",
+    "subject": "Handcrafted Home Decor & Lanterns \u2013 OM Enterprise",
+    "personalized_body": "Hello,\n\nGreetings from OM Enterprise!\n\nWe manufacture handcrafted home d\u00e9cor, metal lanterns, candle holders, and decorative jars.\n\nAre you open to reviewing our product catalog and wholesale export pricing for your store?\n\nBest regards,  \nName: Ramesh Kumar Thakur\nOM Enterprise",
+    "status": "SENT",
+    "sent_at": "2026-10-28T19:21:26.233701",
+    "created_at": "2026-10-28T19:21:26.233701",
+    "gmail_message_id": "real_msg_20261028192126_op_test_@sagegoddess.com"
   }
 ]

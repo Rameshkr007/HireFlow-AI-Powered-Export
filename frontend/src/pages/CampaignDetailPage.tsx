@@ -56,7 +56,7 @@ export default function CampaignDetailPage() {
       const res = await api.get(`/api/campaigns/${id}/logs`);
       return res.data;
     },
-    refetchInterval: () => campaign?.status === 'RUNNING' ? 2000 : false
+    refetchInterval: (query: any) => (campaign?.status === 'RUNNING' || query.state.data?.some((l: any) => l.status === 'PENDING')) ? 2000 : false
   });
 
   const actionMutation = useMutation({

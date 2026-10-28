@@ -219,19 +219,19 @@ def ensure_ramesh_user(db: Session) -> User:
     with full exporter profile, email settings, and verified candle holder + singing bowl buyers.
     This guarantees 100% login success on any fresh deployment or database restart.
     """
-    clean_email = "prt241961@gmail.com"
+    clean_email = "rameshkrthakur1816@gmail.com"
     
     # Automatically migrate legacy user account if present in database
-    legacy_user = db.query(User).filter(User.email.ilike("%rameshkrthakur1816%")).first()
+    legacy_user = db.query(User).filter(User.email.ilike("%prt241961%")).first()
     if legacy_user:
         existing = db.query(User).filter(User.email == clean_email).first()
         if not existing:
             legacy_user.email = clean_email
             db.commit()
             db.refresh(legacy_user)
-            print("[AUTH] Successfully migrated legacy account rameshkrthakur1816 -> prt241961@gmail.com")
+            print("[AUTH] Successfully migrated legacy account prt241961 -> rameshkrthakur1816@gmail.com")
         else:
-            # If prt241961 already exists, reassign any orphaned data from rameshkrthakur1816 to prt241961
+            # If rameshkrthakur1816 already exists, reassign any orphaned data from prt241961 to rameshkrthakur1816
             legacy_user.is_active = False
             db.commit()
 
@@ -243,7 +243,7 @@ def ensure_ramesh_user(db: Session) -> User:
         if not es:
             es = EmailSetting(user_id=user.id)
             db.add(es)
-        if es.smtp_user and "rameshkrthakur1816" in es.smtp_user:
+        if es.smtp_user and "prt241961" in es.smtp_user:
             es.smtp_user = clean_email
             es.from_email = clean_email
             db.commit()
@@ -302,7 +302,7 @@ def ensure_ramesh_user(db: Session) -> User:
             user_id=user.id,
             exporter_name="Ramesh Kumar Thakur",
             company_name="OM Enterprise",
-            company_email="prt241961@gmail.com",
+            company_email="rameshkrthakur1816@gmail.com",
             phone="+91 80577 10065",
             website="",
             country="Nepal",
@@ -322,7 +322,7 @@ def ensure_ramesh_user(db: Session) -> User:
     else:
         profile.exporter_name = "Ramesh Kumar Thakur"
         profile.company_name = "OM Enterprise"
-        profile.company_email = "prt241961@gmail.com"
+        profile.company_email = "rameshkrthakur1816@gmail.com"
         profile.phone = "+91 80577 10065"
         profile.country = "Nepal"
         profile.address = "Direct Manufacturer from Nepal • Wholesale • OEM • Private Label"
@@ -349,11 +349,11 @@ def ensure_ramesh_user(db: Session) -> User:
             email_setting.provider = shared_creds.provider
             email_setting.smtp_host = shared_creds.smtp_host
             email_setting.smtp_port = shared_creds.smtp_port
-            email_setting.smtp_user = shared_creds.smtp_user or "prt241961@gmail.com"
+            email_setting.smtp_user = shared_creds.smtp_user or "rameshkrthakur1816@gmail.com"
             email_setting.smtp_password = shared_creds.smtp_password
             email_setting.api_key = shared_creds.api_key
             email_setting.from_name = shared_creds.from_name or "Ramesh Kumar Thakur | OM Enterprise"
-            email_setting.from_email = shared_creds.from_email or shared_creds.smtp_user or "prt241961@gmail.com"
+            email_setting.from_email = shared_creds.from_email or shared_creds.smtp_user or "rameshkrthakur1816@gmail.com"
             email_setting.use_tls = shared_creds.use_tls
             email_setting.use_ssl = shared_creds.use_ssl
             email_setting.is_verified = True
@@ -361,11 +361,11 @@ def ensure_ramesh_user(db: Session) -> User:
             email_setting.provider = file_creds.get("provider", "gmail")
             email_setting.smtp_host = file_creds.get("smtp_host", "smtp.gmail.com")
             email_setting.smtp_port = int(file_creds.get("smtp_port", 587))
-            email_setting.smtp_user = file_creds.get("smtp_user", "prt241961@gmail.com")
+            email_setting.smtp_user = file_creds.get("smtp_user", "rameshkrthakur1816@gmail.com")
             email_setting.smtp_password = file_creds.get("smtp_password")
             email_setting.api_key = file_creds.get("api_key")
             email_setting.from_name = file_creds.get("from_name", "Ramesh Kumar Thakur | OM Enterprise")
-            email_setting.from_email = file_creds.get("from_email", "prt241961@gmail.com")
+            email_setting.from_email = file_creds.get("from_email", "rameshkrthakur1816@gmail.com")
             email_setting.use_tls = file_creds.get("use_tls", True)
             email_setting.use_ssl = file_creds.get("use_ssl", False)
             email_setting.is_verified = True
@@ -373,10 +373,10 @@ def ensure_ramesh_user(db: Session) -> User:
             email_setting.provider = "brevo"
             email_setting.smtp_host = "api.brevo.com"
             email_setting.smtp_port = 443
-            email_setting.smtp_user = "prt241961@gmail.com"
+            email_setting.smtp_user = "rameshkrthakur1816@gmail.com"
             email_setting.api_key = getattr(settings, "BREVO_API_KEY", None)
             email_setting.from_name = getattr(settings, "BREVO_SENDER_NAME", None) or "Ramesh Kumar Thakur | OM Enterprise"
-            email_setting.from_email = getattr(settings, "BREVO_SENDER_EMAIL", None) or "prt241961@gmail.com"
+            email_setting.from_email = getattr(settings, "BREVO_SENDER_EMAIL", None) or "rameshkrthakur1816@gmail.com"
             email_setting.use_tls = True
             email_setting.use_ssl = False
             email_setting.is_verified = True
@@ -547,7 +547,7 @@ We would be delighted to share our 2026 Digital Catalog and discuss sample shipm
 Best regards,
 Ramesh Kumar Thakur
 Export Sales Executive | OM Enterprise
-prt241961@gmail.com
+rameshkrthakur1816@gmail.com
 Phone: +91 80577 10065
 Direct Manufacturer from Nepal • Wholesale • OEM • Private Label""",
                 sending_limit=25,
@@ -596,7 +596,7 @@ Best regards,
 
 Ramesh Kumar Thakur
 Export Sales Executive | OM Enterprise
-📧 prt241961@gmail.com
+📧 rameshkrthakur1816@gmail.com
 📱 WhatsApp / Phone: +91 80577 10065
 Direct Manufacturer from Nepal • Wholesale • OEM • Private Label""",
                 sending_limit=50,
@@ -631,7 +631,7 @@ Best regards,
 
 Ramesh Kumar Thakur
 Export Sales Executive | OM Enterprise
-📧 prt241961@gmail.com
+📧 rameshkrthakur1816@gmail.com
 📱 WhatsApp / Phone: +91 80577 10065
 Direct Manufacturer from Nepal • Wholesale • OEM • Private Label"""
             db.commit()
@@ -707,7 +707,7 @@ Warm regards,
 
 Ramesh Kumar Thakur
 Sales Executive | OM Enterprise (Nepal)
-📧 prt241961@gmail.com
+📧 rameshkrthakur1816@gmail.com
 📱 WhatsApp: +91 80577 10065"""
 
         if not nepal_sample_camp:
@@ -746,7 +746,7 @@ Best regards,
 
 Ramesh Kumar Thakur
 Sales Executive | OM Enterprise (Nepal)
-📧 prt241961@gmail.com
+📧 rameshkrthakur1816@gmail.com
 📱 WhatsApp: +91 80577 10065"""
 
         if not nepal_followup_camp:
@@ -861,9 +861,9 @@ def authenticate_user(db: Session, email: str, password: str) -> Optional[User]:
     clean_email = email.lower().strip()
 
     # 1. Self-healing & Multi-email login for Ramesh (both personal & export business email)
-    if clean_email in ("prt241961@gmail.com", "exportindia2026us@gmail.com"):
+    if clean_email in ("rameshkrthakur1816@gmail.com", "exportindia2026us@gmail.com"):
         user = db.query(User).filter(
-            (User.email == "prt241961@gmail.com") | (User.email == "exportindia2026us@gmail.com")
+            (User.email == "rameshkrthakur1816@gmail.com") | (User.email == "exportindia2026us@gmail.com")
         ).first()
         if not user:
             print(f"[AUTH] Auto-provisioning Ramesh ({clean_email})...")
@@ -914,12 +914,12 @@ def get_current_user(token: str = Depends(oauth2_scheme), db: Session = Depends(
         user = db.query(User).filter(User.email == email.lower().strip()).first()
 
     # If DB was restarted on Render and user is Ramesh or Admin, auto-heal immediately!
-    if not user and (email in ("prt241961@gmail.com", "exportindia2026us@gmail.com") or user_id in ("1", "2")):
+    if not user and (email in ("rameshkrthakur1816@gmail.com", "exportindia2026us@gmail.com") or user_id in ("1", "2")):
         print(f"[AUTH] Auto-healing user session for {email or user_id}...")
         user = ensure_ramesh_user(db)
 
     # Ensure Ramesh has baseline dataset if database was fresh/empty
-    if user and user.email in ("prt241961@gmail.com", "exportindia2026us@gmail.com"):
+    if user and user.email in ("rameshkrthakur1816@gmail.com", "exportindia2026us@gmail.com"):
         buyer_cnt = db.query(Buyer).filter(Buyer.user_id == user.id).count()
         if buyer_cnt == 0:
             user = ensure_ramesh_user(db)

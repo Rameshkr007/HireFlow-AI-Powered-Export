@@ -119,7 +119,7 @@ Kind Regards,
 
 Ramesh Kumar Thakur
 Sales Executive | OM Enterprise
-📧 prt241961@gmail.com
+📧 rameshkrthakur1816@gmail.com
 📱 WhatsApp: +91 80577 10065""",
             sending_limit=34,
             delay_seconds=45,

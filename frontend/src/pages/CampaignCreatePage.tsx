@@ -346,14 +346,14 @@ export default function CampaignCreatePage() {
         <div className="flex items-center gap-2.5">
           <div className="w-2.5 h-2.5 rounded-full bg-emerald-400 animate-pulse shrink-0" />
           <div className="text-xs text-dark-200">
-            Authenticated Sender: <strong className="text-emerald-400 font-mono">prt241961@gmail.com</strong>
+            Authenticated Sender: <strong className="text-emerald-400 font-mono">rameshkrthakur1816@gmail.com</strong>
           </div>
           <span className="text-[10px] px-2 py-0.5 rounded-full bg-emerald-500/20 text-emerald-400 border border-emerald-500/30 font-semibold tracking-wider">
             CONNECTED & ACTIVE
           </span>
         </div>
         <div className="text-[11px] text-dark-400">
-          Official Signature: <span className="text-dark-200 font-medium">OM Enterprise (prt241961@gmail.com)</span>
+          Official Signature: <span className="text-dark-200 font-medium">OM Enterprise (rameshkrthakur1816@gmail.com)</span>
         </div>
       </div>
       {activeTab === 'info' && (

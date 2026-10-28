@@ -33,7 +33,7 @@ const PROVIDER_PRESETS: Record<string, { name: string; host: string; port: numbe
     port: 587,
     tls: true,
     ssl: false,
-    tip: 'Requires 16-character Google App Password from prt241961@gmail.com. (Best on Localhost)'
+    tip: 'Requires 16-character Google App Password from rameshkrthakur1816@gmail.com. (Best on Localhost)'
   },
   brevo: {
     name: 'Brevo HTTP API (Port 443 - Cloud Safe)',
@@ -105,8 +105,8 @@ export default function GmailIntegrationPage() {
       const res = await api.get('/api/email-settings');
       const data: EmailSettings = res.data;
       
-      const defaultPersonal = 'prt241961@gmail.com';
-      const defaultCompany = 'prt241961@gmail.com';
+      const defaultPersonal = 'rameshkrthakur1816@gmail.com';
+      const defaultCompany = 'rameshkrthakur1816@gmail.com';
       let cleanUser = (data.smtp_user || defaultPersonal).trim().toLowerCase();
       if (cleanUser.endsWith('@gmail.')) cleanUser += 'com';
       if (cleanUser.endsWith('@gmail')) cleanUser += '.com';
@@ -256,7 +256,7 @@ export default function GmailIntegrationPage() {
     setTesting(true);
     setLastTestResult(null);
     try {
-      let target = (testEmail.trim() || smtpUser.trim() || 'prt241961@gmail.com').toLowerCase();
+      let target = (testEmail.trim() || smtpUser.trim() || 'rameshkrthakur1816@gmail.com').toLowerCase();
       // Auto-correct common email typos like missing .com or gamil.com
       if (target.endsWith('@gmail.')) target += 'com';
       if (target.endsWith('@gmail')) target += '.com';
@@ -265,7 +265,7 @@ export default function GmailIntegrationPage() {
       setTestEmail(target);
 
       if (!target.includes('@') || !target.includes('.')) {
-        showToast('Please enter a complete email address (e.g. prt241961@gmail.com)', 'error');
+        showToast('Please enter a complete email address (e.g. rameshkrthakur1816@gmail.com)', 'error');
         setTesting(false);
         return;
       }
@@ -444,7 +444,7 @@ export default function GmailIntegrationPage() {
             </div>
             
             <ol className="list-decimal list-inside space-y-1.5 text-xs text-dark-300 leading-relaxed pl-1">
-              <li>Aapka Personal Google Account (<strong className="text-dark-100">prt241961@gmail.com</strong>) me login karein aur <strong className="text-dark-100">2-Step Verification</strong> ON karein.</li>
+              <li>Aapka Personal Google Account (<strong className="text-dark-100">rameshkrthakur1816@gmail.com</strong>) me login karein aur <strong className="text-dark-100">2-Step Verification</strong> ON karein.</li>
               <li>
                 <a href="https://myaccount.google.com/apppasswords" target="_blank" rel="noreferrer" className="text-primary-400 hover:underline">
                   myaccount.google.com/apppasswords
@@ -534,7 +534,7 @@ export default function GmailIntegrationPage() {
             </label>
             <input
               type="email"
-              placeholder="prt241961@gmail.com"
+              placeholder="rameshkrthakur1816@gmail.com"
               value={smtpUser}
               onChange={(e) => setSmtpUser(e.target.value)}
               required
@@ -590,13 +590,13 @@ export default function GmailIntegrationPage() {
             </label>
             <input
               type="email"
-              placeholder="prt241961@gmail.com"
+              placeholder="rameshkrthakur1816@gmail.com"
               value={fromEmail}
               onChange={(e) => setFromEmail(e.target.value)}
               className="input-field font-mono"
             />
             <p className="text-[11px] text-dark-400 mt-1">
-              📥 Buyer ka har ek reply direct aapke personal email (<strong className="text-dark-200">prt241961@gmail.com</strong>) par aayega.
+              📥 Buyer ka har ek reply direct aapke personal email (<strong className="text-dark-200">rameshkrthakur1816@gmail.com</strong>) par aayega.
             </p>
           </div>
         </div>
@@ -700,7 +700,7 @@ export default function GmailIntegrationPage() {
           <div className="flex-1">
             <input
               type="email"
-              placeholder="Send test email to (e.g. prt241961@gmail.com)"
+              placeholder="Send test email to (e.g. rameshkrthakur1816@gmail.com)"
               value={testEmail}
               onChange={(e) => setTestEmail(e.target.value)}
               className="input-field"

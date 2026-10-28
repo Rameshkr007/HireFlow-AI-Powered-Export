@@ -42,7 +42,7 @@ Would you be open to reviewing a short PDF catalog or FOB pricing for your upcom
 Best regards,
 Ramesh Kumar Thakur
 OM Enterprise
-prt241961@gmail.com`
+rameshkrthakur1816@gmail.com`
   },
   {
     id: 'decor_b2b_formal',
@@ -270,7 +270,7 @@ export const DirectEmailModal: React.FC<DirectEmailModalProps> = ({
           <div className="p-2.5 rounded-lg bg-dark-800/80 border border-dark-700 flex items-center justify-between text-dark-300">
             <span className="flex items-center gap-1.5">
               <ShieldCheck className="w-4 h-4 text-emerald-400" />
-              <strong>Sending From:</strong> prt241961@gmail.com (OM Enterprise)
+              <strong>Sending From:</strong> rameshkrthakur1816@gmail.com (OM Enterprise)
             </span>
             <span className="text-[11px] text-dark-400">Live Delivery</span>
           </div>

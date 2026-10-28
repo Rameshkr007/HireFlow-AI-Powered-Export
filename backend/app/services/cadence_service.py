@@ -207,7 +207,7 @@ OM Enterprise"""
 
     user = db.query(User).filter(User.id == user_id).first()
     profile = db.query(ExporterProfile).filter(ExporterProfile.user_id == user_id).first()
-    user_email_str = user.email if user else "prt241961@gmail.com"
+    user_email_str = user.email if user else "rameshkrthakur1816@gmail.com"
 
     dispatched = 0
     skipped_replied = 0

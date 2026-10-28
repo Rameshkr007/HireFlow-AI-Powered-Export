@@ -28,7 +28,7 @@ class TestEmailLedgerSystem(unittest.TestCase):
     def setUp(self):
         self.db = SessionLocal()
         # Find or create Ramesh test user
-        self.user = self.db.query(User).filter(User.email == "prt241961@gmail.com").first()
+        self.user = self.db.query(User).filter(User.email == "rameshkrthakur1816@gmail.com").first()
         if not self.user:
             self.user = self.db.query(User).first()
         self.assertIsNotNone(self.user, "User must exist in database")

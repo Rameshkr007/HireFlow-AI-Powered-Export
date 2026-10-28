@@ -84,9 +84,19 @@ def record_and_dispatch_email(
             error_message=f"Validation failed: {val.get('reason', 'Invalid email address')}",
             created_at=datetime.utcnow()
         )
-        db.add(failed_log)
-        db.commit()
-        db.refresh(failed_log)
+        try:
+            db.add(failed_log)
+            db.commit()
+            db.refresh(failed_log)
+        except Exception as ef:
+            db.rollback()
+            try:
+                max_id = db.query(func.max(EmailSendLog.id)).scalar() or 10000
+                failed_log.id = max_id + 1
+                db.add(failed_log)
+                db.commit()
+            except Exception:
+                db.rollback()
         return failed_log, False, failed_log.error_message
 
     # 2. Strict Exact Buyer Matching (Prevent any buyer-recipient mismatch)
@@ -129,13 +139,7 @@ def record_and_dispatch_email(
     # 3. Create or fetch PENDING record in EmailSendLog
     send_log = db.query(EmailSendLog).filter(EmailSendLog.operation_id == op_id).first()
     if not send_log:
-        try:
-            max_id = db.query(func.max(EmailSendLog.id)).scalar() or 0
-        except Exception:
-            max_id = int(time.time() * 1000) % 1000000000
-
         send_log = EmailSendLog(
-            id=max_id + 1,
             operation_id=op_id,
             user_id=user_id,
             buyer_id=buyer.id if buyer else None,
@@ -158,14 +162,8 @@ def record_and_dispatch_email(
         except Exception as e1:
             print(f"[EmailSendLog Initial Commit Warning] {e1}")
             db.rollback()
-            # If unique constraint or FK failed, use fresh op_id and next max_id without FKs
             op_retry = f"{op_id[:50]}_{uuid.uuid4().hex[:10]}"
-            try:
-                max_id = db.query(func.max(EmailSendLog.id)).scalar() or 1000
-            except Exception:
-                max_id = 1000
             send_log = EmailSendLog(
-                id=max_id + 1,
                 operation_id=op_retry,
                 user_id=user_id,
                 buyer_id=None,
@@ -200,12 +198,7 @@ def record_and_dispatch_email(
                 EmailLog.created_at >= datetime.utcnow() - timedelta(minutes=2)
             ).first()
             if not legacy_log:
-                try:
-                    max_el_id = db.query(func.max(EmailLog.id)).scalar() or 0
-                except Exception:
-                    max_el_id = 0
                 legacy_log = EmailLog(
-                    id=max_el_id + 1,
                     campaign_id=valid_cid,
                     buyer_id=buyer.id if buyer else None,
                     user_id=user_id,

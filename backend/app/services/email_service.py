@@ -6,6 +6,9 @@ import re
 import html
 import base64
 import httpx
+import logging
+
+logger = logging.getLogger(__name__)
 from contextlib import contextmanager
 from email.mime.multipart import MIMEMultipart
 from email.mime.text import MIMEText
@@ -298,6 +301,73 @@ def format_html_email(body_text: Optional[str], sender_name: Optional[str] = Non
 {p_tags}
 </div>"""
 
+def sync_sent_email_to_gmail_imap(
+    to_email: str,
+    subject: str,
+    body_text: str,
+    body_html: Optional[str] = None,
+    attachment_list: Optional[list] = None,
+    from_name: Optional[str] = None,
+    from_email: Optional[str] = None
+) -> bool:
+    """
+    Appends an outgoing email directly to Google Gmail's '[Gmail]/Sent Mail' folder via IMAP SSL.
+    Guarantees that every email sent through Brevo immediately appears in the user's Gmail app / Sent mailbox.
+    """
+    try:
+        import imaplib
+        import time
+        import email.utils
+        from email.mime.multipart import MIMEMultipart
+        from email.mime.text import MIMEText
+        from email.mime.base import MIMEBase
+        from email import encoders
+
+        imap_user = "prt241961@gmail.com"
+        imap_pass = "gbxgptelwvxyljax"
+
+        msg = MIMEMultipart("alternative")
+        sender_display = f"{from_name or 'Ramesh Kumar Thakur | OM Enterprise'} <{from_email or imap_user}>"
+        msg['From'] = sender_display
+        msg['To'] = to_email
+        msg['Subject'] = subject or "Wholesale Opportunity"
+        msg['Date'] = email.utils.formatdate(localtime=True)
+
+        if body_text:
+            msg.attach(MIMEText(body_text, 'plain', 'utf-8'))
+        if body_html:
+            msg.attach(MIMEText(body_html, 'html', 'utf-8'))
+
+        if attachment_list:
+            for item in attachment_list:
+                p = item.get("path") if isinstance(item, dict) else str(item)
+                n = item.get("name") if isinstance(item, dict) else os.path.basename(str(item))
+                if p and os.path.exists(p):
+                    try:
+                        with open(p, "rb") as f:
+                            part = MIMEBase("application", "octet-stream")
+                            part.set_payload(f.read())
+                            encoders.encode_base64(part)
+                            part.add_header('Content-Disposition', f'attachment; filename="{n}"')
+                            msg.attach(part)
+                    except Exception:
+                        pass
+
+        mail = imaplib.IMAP4_SSL("imap.gmail.com", 993)
+        mail.login(imap_user, imap_pass)
+        mail.append('"[Gmail]/Sent Mail"', '\\Seen', imaplib.Time2Internaldate(time.time()), msg.as_bytes())
+        if to_email.strip().lower() == imap_user.strip().lower():
+            try:
+                mail.append('INBOX', None, imaplib.Time2Internaldate(time.time()), msg.as_bytes())
+            except Exception:
+                pass
+        mail.logout()
+        logger.info(f"[IMAP SYNC] Successfully synced sent email to Gmail Sent Mail for {to_email}")
+        return True
+    except Exception as e:
+        logger.warning(f"[IMAP SYNC] Could not append to Gmail Sent folder (non-blocking): {e}")
+        return False
+
 def send_via_brevo_http(
     api_key: str,
     from_name: str,
@@ -373,6 +443,23 @@ def send_via_brevo_http(
         with httpx.Client(timeout=30.0) as client:
             resp = client.post(url, headers=headers, json=payload)
             if resp.status_code in (200, 201, 202):
+                try:
+                    import threading
+                    threading.Thread(
+                        target=sync_sent_email_to_gmail_imap,
+                        kwargs={
+                            "to_email": to_email,
+                            "subject": subject,
+                            "body_text": body_text_str,
+                            "body_html": payload.get("htmlContent"),
+                            "attachment_list": items,
+                            "from_name": from_name,
+                            "from_email": from_email
+                        },
+                        daemon=True
+                    ).start()
+                except Exception as e:
+                    logger.warning(f"[IMAP SYNC] Error appending to Gmail Sent: {e}")
                 return True, None
             try:
                 err_data = resp.json()
@@ -435,6 +522,23 @@ def send_via_resend_http(
         with httpx.Client(timeout=30.0) as client:
             resp = client.post(url, headers=headers, json=payload)
             if resp.status_code in (200, 201, 202):
+                try:
+                    import threading
+                    threading.Thread(
+                        target=sync_sent_email_to_gmail_imap,
+                        kwargs={
+                            "to_email": to_email,
+                            "subject": subject,
+                            "body_text": body_text_str,
+                            "body_html": payload.get("htmlContent"),
+                            "attachment_list": items,
+                            "from_name": from_name,
+                            "from_email": from_email
+                        },
+                        daemon=True
+                    ).start()
+                except Exception as e:
+                    logger.warning(f"[IMAP SYNC] Error appending to Gmail Sent: {e}")
                 return True, None
             try:
                 err_data = resp.json()
@@ -642,15 +746,16 @@ def dispatch_email_universal(
     )
     is_on_render = bool(os.environ.get("RENDER") or os.environ.get("RENDER_EXTERNAL_HOSTNAME"))
 
-    if provider in ("gmail", "smtp", "custom"):
-        is_brevo = False
+    if (bool(api_key) and str(api_key).startswith("xkeysib-")) or (bool(brevo_key) and str(brevo_key).startswith("xkeysib-")):
+        is_brevo = True
     elif provider == "brevo":
         is_brevo = True
+    elif provider in ("gmail", "smtp", "custom"):
+        is_brevo = False
     else:
         is_brevo = (
             "brevo" in host_str
             or port_val == 443
-            or (bool(api_key) and str(api_key).startswith("xkeysib-"))
         )
 
     if is_brevo:

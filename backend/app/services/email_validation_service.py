@@ -10,6 +10,12 @@ DISPOSABLE_DOMAINS = {
     'mailnull.com', 'mailscrap.com', 'spamgourmet.com'
 }
 
+MAJOR_PROVIDERS = {
+    'gmail.com', 'googlemail.com', 'yahoo.com', 'yahoo.co.in', 'yahoo.co.uk',
+    'outlook.com', 'hotmail.com', 'live.com', 'msn.com', 'icloud.com',
+    'me.com', 'mac.com', 'aol.com', 'zoho.com', 'proton.me', 'protonmail.com'
+}
+
 # In-memory cache for fast domain MX lookups
 _MX_CACHE: Dict[str, bool] = {}
 
@@ -19,21 +25,33 @@ def is_domain_mx_valid(domain: str) -> bool:
     clean_domain = (domain or "").strip().lower()
     if not clean_domain or '.' not in clean_domain:
         return False
+
+    if clean_domain in MAJOR_PROVIDERS:
+        _MX_CACHE[clean_domain] = True
+        return True
     
     if clean_domain in _MX_CACHE:
         return _MX_CACHE[clean_domain]
     
+    has_mx = False
     try:
         import dns.resolver
         resolver = dns.resolver.Resolver()
-        resolver.timeout = 2.5
-        resolver.lifetime = 2.5
-        answers = resolver.resolve(clean_domain, 'MX')
-        has_mx = len(answers) > 0
+        resolver.timeout = 3.0
+        resolver.lifetime = 3.0
+        try:
+            answers = resolver.resolve(clean_domain, 'MX')
+            has_mx = len(answers) > 0
+        except Exception:
+            # Fallback to Google / Cloudflare public DNS
+            resolver.nameservers = ['8.8.8.8', '1.1.1.1']
+            answers = resolver.resolve(clean_domain, 'MX')
+            has_mx = len(answers) > 0
     except Exception:
         has_mx = False
         
-    _MX_CACHE[clean_domain] = has_mx
+    if has_mx:
+        _MX_CACHE[clean_domain] = True
     return has_mx
 
 

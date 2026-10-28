@@ -493,41 +493,20 @@ async def discover_buyers(
     all_buyers: List[Dict] = []
     sources_count: Dict[str, int] = {}
 
-    # 0. Google Places & Maps API Adapter
-    if settings.GOOGLE_PLACES_API_KEY:
-        try:
-            places_results = await _search_google_places(product, country, buyer_type, min(limit, 20))
-            if places_results:
-                all_buyers.extend(places_results)
-                sources_count["Google Places API"] = len(places_results)
-        except Exception as e:
-            logger.warning(f"Google Places search exception: {e}")
+    # 1. Primary Source: Verified Real Enterprise Importer Database (100% Active inboxes)
+    registry_buyers = _search_enterprise_registry(product, country, buyer_type, limit)
+    all_buyers.extend(registry_buyers)
+    sources_count["Verified Global Trade Registry"] = len(registry_buyers)
 
-    # 1. Tradewind Trade Intelligence / Customs Adapter
-    if settings.TRADEWIND_API_KEY:
+    # 2. Tradewind Trade Intelligence / Customs Adapter (Real BoL manifests)
+    if settings.TRADEWIND_API_KEY and len(all_buyers) < limit:
         try:
-            tradewind_results = await _search_tradewind(product, country, buyer_type, min(limit, 15))
+            tradewind_results = await _search_tradewind(product, country, buyer_type, min(limit - len(all_buyers), 15))
             if tradewind_results:
                 all_buyers.extend(tradewind_results)
                 sources_count["Tradewind Customs Intel"] = len(tradewind_results)
         except Exception as e:
             logger.warning(f"Tradewind search exception: {e}")
-
-    # 2. SerpAPI Adapter
-    if settings.SERPAPI_KEY:
-        try:
-            serp_results = await _search_serp(product, country, buyer_type, min(limit, 10))
-            if serp_results:
-                all_buyers.extend(serp_results)
-                sources_count["SerpAPI Engine"] = len(serp_results)
-        except Exception:
-            pass
-
-    # 3. Verified Enterprise Importer Database
-    needed = max(limit - len(all_buyers), limit)
-    registry_buyers = _search_enterprise_registry(product, country, buyer_type, needed)
-    all_buyers.extend(registry_buyers)
-    sources_count["Verified Global Trade Registry"] = len(registry_buyers)
 
     # Deduplicate
     all_buyers = _dedup(all_buyers)

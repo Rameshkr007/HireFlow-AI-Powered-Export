@@ -515,3 +515,33 @@ CALIFORNIA_ALL_BUYERS: List[Dict] = [
     }
 ]
 CALIFORNIA_BUYERS: List[Dict] = CALIFORNIA_ALL_BUYERS
+
+CALIFORNIA_CITIES: List[str] = [
+    "Los Angeles", "San Francisco", "San Diego", "San Jose", "Sacramento",
+    "Oakland", "Long Beach", "Bakersfield", "Anaheim", "Fresno",
+    "Santa Ana", "Riverside", "Stockton", "Irvine", "Fremont",
+    "San Bernardino", "Modesto", "Fontana", "Oxnard", "Moreno Valley",
+    "Huntington Beach", "Glendale", "Santa Clarita", "Garden Grove", "Oceanside",
+    "Rancho Cucamonga", "Santa Rosa", "Ontario", "Lancaster", "Elk Grove",
+    "Corona", "Palmdale", "Salinas", "Pomona", "Hayward",
+    "Escondido", "Sunnyvale", "Torrance", "Pasadena", "Orange",
+    "Fullerton", "Thousand Oaks", "Visalia", "Roseville", "Concord",
+    "Simi Valley", "Santa Clara", "Victorville", "Vallejo", "Berkeley",
+    "El Monte", "Downey", "Costa Mesa", "Inglewood", "Carlsbad",
+    "San Buenaventura", "Fairfield", "West Covina", "Murrieta", "Richmond",
+    "Norwalk", "Antioch", "Temecula", "Burbank", "Daly City",
+    "Rialto", "Santa Maria", "El Cajon", "San Mateo", "Clovis",
+    "Jurupa Valley", "Compton", "Vista", "South Gate", "Mission Viejo",
+    "Vacaville", "Carson", "Hesperia", "Santa Monica", "Westminster",
+    "Redding", "Santa Barbara", "Chico", "Newport Beach", "San Leandro",
+    "San Marcos", "Whittier", "Hawthorne", "Citrus Heights", "Alhambra",
+    "Tracy", "Livermore", "Buena Park", "Lakewood", "Hemet",
+    "Chino", "Menifee", "Lake Forest", "Napa", "Redwood City",
+    "Bellflower", "Indio", "Tustin", "Baldwin Park", "Chino Hills",
+    "Mountain View", "Alameda", "Upland", "Folsom", "San Ramon",
+    "Pleasanton", "Lynwood", "Union City", "Perris", "Manteca",
+    "Redlands", "Turlock", "Apple Valley", "Camarillo", "Redondo Beach",
+    "Yorba Linda", "Yuba City", "Walnut Creek", "Castro Valley", "Morgan Hill",
+    "City of Industry", "Sausalito", "Gardena", "Beverly Hills", "Culver City",
+    "Encinitas", "Solana Beach", "Laguna Beach", "Calabasas", "Malibu"
+]

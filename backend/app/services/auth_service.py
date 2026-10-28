@@ -921,24 +921,7 @@ def get_current_user(token: str = Depends(oauth2_scheme), db: Session = Depends(
     # Ensure Ramesh has baseline dataset if database was fresh/empty
     if user and user.email in ("prt241961@gmail.com", "exportindia2026us@gmail.com"):
         buyer_cnt = db.query(Buyer).filter(Buyer.user_id == user.id).count()
-        logs_cnt = db.query(EmailLog).filter(EmailLog.user_id == user.id).count()
-        oct14_cnt = sum(
-            1 for l in db.query(EmailLog).filter(EmailLog.user_id == user.id).all()
-            if (l.sent_at and l.sent_at.strftime("%Y-%m-%d") == "2026-10-14") or
-               (l.created_at and l.created_at.strftime("%Y-%m-%d") == "2026-10-14")
-        )
-        oct15_cnt = sum(
-            1 for l in db.query(EmailLog).filter(EmailLog.user_id == user.id).all()
-            if (l.sent_at and l.sent_at.strftime("%Y-%m-%d") == "2026-10-15") or
-               (l.created_at and l.created_at.strftime("%Y-%m-%d") == "2026-10-15")
-        )
-        oct16_cnt = sum(
-            1 for l in db.query(EmailLog).filter(EmailLog.user_id == user.id).all()
-            if (l.sent_at and l.sent_at.strftime("%Y-%m-%d") == "2026-10-16") or
-               (l.created_at and l.created_at.strftime("%Y-%m-%d") == "2026-10-16")
-        )
-        if buyer_cnt < 300 or logs_cnt != 472 or oct14_cnt < 25 or oct15_cnt < 25 or oct16_cnt < 22:
-            print(f"[AUTH] Ensuring baseline dataset for Ramesh (buyers: {buyer_cnt}, logs: {logs_cnt}, oct14: {oct14_cnt}, oct15: {oct15_cnt}, oct16: {oct16_cnt})...")
+        if buyer_cnt == 0:
             user = ensure_ramesh_user(db)
 
     if not user:

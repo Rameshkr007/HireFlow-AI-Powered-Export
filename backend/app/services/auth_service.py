@@ -221,20 +221,6 @@ def ensure_ramesh_user(db: Session) -> User:
     """
     clean_email = "rameshkrthakur1816@gmail.com"
     
-    # Automatically migrate legacy user account if present in database
-    legacy_user = db.query(User).filter(User.email.ilike("%prt241961%")).first()
-    if legacy_user:
-        existing = db.query(User).filter(User.email == clean_email).first()
-        if not existing:
-            legacy_user.email = clean_email
-            db.commit()
-            db.refresh(legacy_user)
-            print("[AUTH] Successfully migrated legacy account prt241961 -> rameshkrthakur1816@gmail.com")
-        else:
-            # If rameshkrthakur1816 already exists, reassign any orphaned data from prt241961 to rameshkrthakur1816
-            legacy_user.is_active = False
-            db.commit()
-
     user = db.query(User).filter(User.email == clean_email).first()
 
     if user:
@@ -243,11 +229,6 @@ def ensure_ramesh_user(db: Session) -> User:
         if not es:
             es = EmailSetting(user_id=user.id)
             db.add(es)
-        if es.smtp_user and "prt241961" in es.smtp_user:
-            es.smtp_user = clean_email
-            es.from_email = clean_email
-            db.commit()
-            db.refresh(es)
         if not (es.smtp_password or es.api_key):
             es.provider = "brevo"
             es.smtp_host = "api.brevo.com"

@@ -324,7 +324,22 @@ def sync_sent_email_to_gmail_imap(
         from email import encoders
 
         imap_user = "rameshkrthakur1816@gmail.com"
-        imap_pass = "gbxgptelwvxyljax"
+        imap_pass = None
+        try:
+            from ..database import SessionLocal
+            from ..models.email_setting import EmailSetting
+            from ..models.user import User
+            s_db = SessionLocal()
+            u = s_db.query(User).filter(User.email == imap_user).first()
+            if u:
+                es = s_db.query(EmailSetting).filter(EmailSetting.user_id == u.id).first()
+                if es and es.smtp_password and not str(es.smtp_password).startswith("xkeysib-"):
+                    imap_pass = es.smtp_password.replace(" ", "")
+            s_db.close()
+        except Exception:
+            pass
+        if not imap_pass:
+            return False
 
         msg = MIMEMultipart("alternative")
         sender_display = f"{from_name or 'Ramesh Kumar Thakur | OM Enterprise'} <{from_email or imap_user}>"

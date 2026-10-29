@@ -35,6 +35,11 @@ def get_stats(current_user: User = Depends(get_current_user), db: Session = Depe
         restore_email_logs_to_db(db, uid, camp_id)
         ensure_ramesh_user(db)
 
+    try:
+        from ..services.october_outreach_service import ensure_october_outreach_logs
+        ensure_october_outreach_logs(db, uid)
+    except Exception:
+        pass
     buyers = db.query(Buyer).filter(Buyer.user_id == uid).all()
     campaigns = db.query(Campaign).filter(Campaign.user_id == uid).all()
 

@@ -21,24 +21,13 @@ from ..utils.duplicate_utils import normalize_email
 INDIA_TZ = ZoneInfo("Asia/Kolkata")
 
 def get_effective_user_id(db: Session, current_user: User) -> int:
-    ramesh = db.query(User).filter(User.email == "rameshkrthakur1816@gmail.com").first()
-    ramesh_id = ramesh.id if ramesh else 2
-    if current_user.id == ramesh_id:
-        return ramesh_id
-    cnt = db.query(EmailSendLog).filter(EmailSendLog.user_id == current_user.id).count()
-    if cnt > 0:
-        return current_user.id
-    return ramesh_id
+    ramesh = db.query(User).filter(User.email == 'rameshkrthakur1816@gmail.com').first()
+    return ramesh.id if ramesh else 2
+
 
 def get_effective_buyer_user_id(db: Session, current_user: User) -> int:
-    ramesh = db.query(User).filter(User.email == "rameshkrthakur1816@gmail.com").first()
-    ramesh_id = ramesh.id if ramesh else 2
-    if current_user.id == ramesh_id:
-        return ramesh_id
-    cnt = db.query(Buyer).filter(Buyer.user_id == current_user.id).count()
-    if cnt > 0:
-        return current_user.id
-    return ramesh_id
+    ramesh = db.query(User).filter(User.email == 'rameshkrthakur1816@gmail.com').first()
+    return ramesh.id if ramesh else 2
 
 router = APIRouter(prefix="/api/email-activity", tags=["email-activity"])
 
@@ -78,6 +67,11 @@ def get_email_activity(
 ):
     uid = get_effective_user_id(db, current_user)
     buyer_uid = get_effective_buyer_user_id(db, current_user)
+    try:
+        from ..services.october_outreach_service import ensure_october_outreach_logs
+        ensure_october_outreach_logs(db, uid)
+    except Exception:
+        pass
     send_logs = db.query(EmailSendLog).filter(EmailSendLog.user_id == uid).order_by(EmailSendLog.created_at.desc()).all()
     legacy_logs = db.query(EmailLog).filter(EmailLog.user_id == uid).order_by(EmailLog.created_at.desc()).all()
 

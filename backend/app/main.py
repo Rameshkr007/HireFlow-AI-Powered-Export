@@ -153,6 +153,10 @@ def startup():
             ensure_campaign_9_logs(db, target_user_id=r_id)
             ensure_campaign_10_logs(db, target_user_id=r_id)
             ensure_campaign_11_logs(db, target_user_id=r_id)
+
+            # Permanently ensure October 22, 26, 27, and 28 outreach logs (107 emails)
+            from .services.october_outreach_service import ensure_october_outreach_logs
+            ensure_october_outreach_logs(db, target_user_id=r_id)
             
             # Cadence check is handled via background tasks/endpoints, not synchronous startup
             pass

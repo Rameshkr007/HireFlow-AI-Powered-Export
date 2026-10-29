@@ -10728,5 +10728,21 @@
     "campaign_id": 5,
     "campaign_name": "OM Enterprise - Handcrafted Home D\u00e9cor & Candle Holders",
     "operation_id": "op_send_20261028_0020_3aca53"
+  },
+  {
+    "email_address": "contact@behindthelids.com",
+    "buyer_email": "contact@behindthelids.com",
+    "company_name": "Behind The Lids Healing Collective",
+    "buyer_name": "Contact",
+    "city": "Costa Mesa",
+    "state": "CA",
+    "country": "USA",
+    "product": "Authentic Handmade Himalayan Singing Bowls",
+    "subject": "Handcrafted Home Decor & Lanterns \u2013 OM Enterprise",
+    "personalized_body": "Hello Contact,\n\nGreetings from OM Enterprise!\n\nWe manufacture handcrafted home d\u00e9cor, metal lanterns, candle holders, and decorative jars.\n\nAre you open to reviewing our product catalog and export pricing for Behind The Lids Healing Collective?\n\nBest regards,\nName: Ramesh Kumar Thakur\nOM Enterprise",
+    "status": "SENT",
+    "sent_at": "2026-10-28T20:43:06.221108",
+    "created_at": "2026-10-28T20:43:06.221108",
+    "gmail_message_id": "real_msg_20261028204306_op_052cd@behindthelids.com"
   }
 ]

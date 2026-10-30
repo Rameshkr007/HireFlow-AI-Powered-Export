@@ -181,7 +181,9 @@ def get_responses(current_user: User = Depends(get_current_user), db: Session = 
             "recommended_action": action,
             "deal_value": deal_val,
             "status": "AWAITING_REPLY",
-            "is_simulated": False
+            "is_simulated": not bool(b.ai_reason and "[Real Buyer Reply]" in b.ai_reason),
+            "is_real_inbound": bool(b.ai_reason and "[Real Buyer Reply]" in b.ai_reason),
+            "source_label": "🟢 Real Live Buyer Reply" if (b.ai_reason and "[Real Buyer Reply]" in b.ai_reason) else "🤖 AI Cadence Simulation"
         })
 
     response_rate = f"{round((len(responses_feed) / total_sent * 100), 1)}%" if total_sent > 0 else "0.0%"
@@ -205,3 +207,10 @@ def trigger_automated_responses(current_user: User = Depends(get_current_user), 
     uid = current_user.id
     res = seed_automated_buyer_responses(db, uid, force=True)
     return res
+
+@router.post("/scan-real-replies")
+def scan_real_replies(current_user: User = Depends(get_current_user), db: Session = Depends(get_db)):
+    """Scans rameshkrthakur1816@gmail.com inbox via IMAP to import genuine human buyer replies."""
+    from ..services.gmail_inbox_scanner import scan_real_gmail_inbox
+    uid = current_user.id
+    return scan_real_gmail_inbox(db, uid)

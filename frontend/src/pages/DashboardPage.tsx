@@ -43,6 +43,27 @@ export default function DashboardPage() {
   const [sendingReply, setSendingReply] = useState(false);
   const [isManualSyncing, setIsManualSyncing] = useState(false);
   const [isTriggeringResponses, setIsTriggeringResponses] = useState(false);
+  const [isScanningReal, setIsScanningReal] = useState(false);
+
+  const handleScanRealReplies = async () => {
+    try {
+      setIsScanningReal(true);
+      const res = await api.post('/api/dashboard/scan-real-replies');
+      await Promise.all([
+        queryClient.invalidateQueries({ queryKey: ['dashboard-responses'] }),
+        queryClient.invalidateQueries({ queryKey: ['dashboard-stats'] }),
+      ]);
+      if (res.data.real_replies_found > 0) {
+        showToast(`🎉 ${res.data.real_replies_found} Real Buyer Replies imported from Gmail inbox!`, 'success');
+      } else {
+        showToast(res.data.message || '0 real buyer replies in Gmail inbox yet. Real buyers typically reply in 2-4 business days.', 'info');
+      }
+    } catch (err: any) {
+      showToast('Error scanning Gmail: ' + (err.response?.data?.detail || err.message), 'error');
+    } finally {
+      setIsScanningReal(false);
+    }
+  };
 
   const handleTriggerAutomatedResponses = async () => {
     try {
@@ -995,6 +1016,16 @@ export default function DashboardPage() {
 
             <div className="flex items-center gap-2">
               <button
+                onClick={handleScanRealReplies}
+                disabled={isScanningReal}
+                className="px-3 py-1.5 rounded-lg bg-blue-600/20 hover:bg-blue-600/30 border border-blue-500/40 text-blue-300 text-xs font-semibold flex items-center gap-1.5 transition-all shadow-sm"
+                title="Scan rameshkrthakur1816@gmail.com inbox for live replies from US buyers"
+              >
+                <Mail className="w-3.5 h-3.5 text-blue-400" />
+                <span>{isScanningReal ? 'Scanning Gmail...' : '📥 Scan Gmail for Real Replies'}</span>
+              </button>
+
+              <button
                 onClick={handleTriggerAutomatedResponses}
                 disabled={isTriggeringResponses}
                 className="px-3 py-1.5 rounded-lg bg-emerald-600/20 hover:bg-emerald-600/30 border border-emerald-500/40 text-emerald-300 text-xs font-semibold flex items-center gap-1.5 transition-all shadow-sm"
@@ -1077,6 +1108,15 @@ export default function DashboardPage() {
                       <span className="text-[11px] font-bold px-2 py-0.5 rounded-md bg-emerald-500/10 text-emerald-400 border border-emerald-500/20">
                         {resp.intent}
                       </span>
+                      {resp.is_real_inbound ? (
+                        <span className="text-[10px] font-bold px-2 py-0.5 rounded-md bg-emerald-500/20 text-emerald-300 border border-emerald-500/30 flex items-center gap-1">
+                          🟢 Real Buyer Reply
+                        </span>
+                      ) : (
+                        <span className="text-[10px] font-medium px-2 py-0.5 rounded-md bg-purple-500/15 text-purple-300 border border-purple-500/25 flex items-center gap-1">
+                          🤖 AI Cadence Simulation
+                        </span>
+                      )}
                       <span className="text-xs text-dark-500 ml-auto flex items-center gap-1">
                         <Clock className="w-3 h-3" /> {resp.received_at}
                       </span>

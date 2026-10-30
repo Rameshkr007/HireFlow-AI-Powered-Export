@@ -37,7 +37,9 @@ def record_and_dispatch_email(
     attachment_name: Optional[str] = None,
     attachment_path: Optional[str] = None,
     attachment_list: Optional[list] = None,
-    is_demo: bool = False
+    is_demo: bool = False,
+    recipient_name: Optional[str] = None,
+    company_name: Optional[str] = None
 ) -> Tuple[EmailSendLog, bool, Optional[str]]:
     """
     Permanent Email Dispatch & Ledger Execution:
@@ -112,6 +114,33 @@ def record_and_dispatch_email(
             Buyer.user_id == user_id,
             Buyer.normalized_email == normalize_email(clean_rec_email)
         ).first()
+
+    if not buyer and clean_rec_email:
+        try:
+            c_comp = (company_name or "").strip() or clean_rec_email.split('@')[-1].split('.')[0].replace('-', ' ').title()
+            b_buyer = (recipient_name or "").strip() or f"{c_comp} Sourcing Lead"
+            buyer = Buyer(
+                user_id=user_id,
+                buyer_name=b_buyer,
+                company_name=c_comp,
+                email=clean_rec_email,
+                normalized_email=normalize_email(clean_rec_email),
+                country="USA",
+                state="CA",
+                city="Los Angeles",
+                product="Handcrafted Export Products",
+                business_type="Importer",
+                email_status="VALID",
+                outreach_status="CONTACTED",
+                last_contacted=datetime.utcnow(),
+                is_demo=False
+            )
+            db.add(buyer)
+            db.commit()
+            db.refresh(buyer)
+        except Exception as e_bcreate:
+            print(f"[Buyer Auto-create notice] {e_bcreate}")
+            db.rollback()
 
     # Ensure campaign exists in database to avoid foreign key violation
     campaign = db.query(Campaign).filter(Campaign.id == campaign_id).first() if campaign_id else None
@@ -299,32 +328,49 @@ def record_and_dispatch_email(
             legacy_log.status = "SENT"
             legacy_log.sent_at = now_utc
             legacy_log.error_message = None
+        else:
+            try:
+                legacy_log = EmailLog(
+                    campaign_id=valid_cid or 1,
+                    buyer_id=buyer.id if buyer else None,
+                    user_id=user_id,
+                    email_address=clean_rec_email,
+                    subject=clean_subject,
+                    personalized_body=clean_body,
+                    status="SENT",
+                    attachment_name=attachment_name,
+                    sent_at=now_utc,
+                    created_at=now_utc
+                )
+                db.add(legacy_log)
+            except Exception:
+                pass
 
         if buyer:
             buyer.outreach_status = "CONTACTED"
             buyer.last_contacted = now_utc
 
-        # Backup to persistent disk store
+        # Backup to persistent disk store (Store A & Store B)
         try:
-            from .email_log_store import append_persistent_email_log
-            append_persistent_email_log({
-                "email_address": clean_rec_email,
-                "buyer_email": clean_rec_email,
-                "company_name": buyer.company_name if buyer else "",
-                "buyer_name": buyer.buyer_name if buyer else "",
-                "city": getattr(buyer, "city", "") or "",
-                "state": getattr(buyer, "state", "CA") or "CA",
-                "country": getattr(buyer, "country", "USA") or "USA",
-                "product": getattr(buyer, "product", "") or (campaign.product if campaign else ""),
-                "subject": subject,
-                "personalized_body": body_text,
-                "status": "SENT",
-                "sent_at": now_utc.isoformat(),
-                "created_at": now_utc.isoformat(),
-                "gmail_message_id": msg_id
-            })
-        except Exception:
-            pass
+            from .permanent_store_service import save_sent_email_permanently
+            save_sent_email_permanently(
+                email=clean_rec_email,
+                company_name=buyer.company_name if buyer else (company_name or "Enterprise Buyer"),
+                buyer_name=buyer.buyer_name if buyer else (recipient_name or "Purchasing Lead"),
+                city=getattr(buyer, "city", "") or "Los Angeles",
+                state=getattr(buyer, "state", "CA") or "CA",
+                country=getattr(buyer, "country", "USA") or "USA",
+                product=getattr(buyer, "product", "") or (campaign.product if campaign else "Handcrafted Export Products"),
+                subject=subject,
+                body_text=body_text,
+                status="SENT",
+                sent_at=now_utc,
+                msg_id=msg_id,
+                user_id=user_id,
+                campaign_id=valid_cid
+            )
+        except Exception as e_save_perm:
+            print(f"[Permanent store notice] {e_save_perm}")
     else:
         send_log.status = "FAILED"
         send_log.sent_at = None

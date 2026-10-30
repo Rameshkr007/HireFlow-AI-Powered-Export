@@ -292,7 +292,9 @@ def send_individual_pitch(
         attachment_name=att_name,
         attachment_path=att_path,
         attachment_list=built_items,
-        is_demo=False
+        is_demo=False,
+        recipient_name=payload.recipient_name,
+        company_name=payload.company_name
     )
 
     # If buyer exists, mark as CONTACTED

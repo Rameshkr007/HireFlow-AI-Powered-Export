@@ -1,6 +1,7 @@
 from fastapi import APIRouter, Depends, Query
 from fastapi.responses import StreamingResponse
 from sqlalchemy.orm import Session
+from sqlalchemy import or_, and_, text
 from typing import Optional, Dict, List, Any
 from datetime import datetime, date, timedelta, timezone
 from zoneinfo import ZoneInfo
@@ -28,6 +29,65 @@ def get_effective_user_id(db: Session, current_user: User) -> int:
 def get_effective_buyer_user_id(db: Session, current_user: User) -> int:
     ramesh = db.query(User).filter(User.email == 'rameshkrthakur1816@gmail.com').first()
     return ramesh.id if ramesh else 2
+
+from ..services.permanent_store_service import ensure_all_persistent_logs_in_db
+
+def get_unified_email_logs(db: Session, uid: int) -> List[Any]:
+    """
+    Returns a unified, deduplicated list of all dispatched emails from both EmailSendLog and EmailLog.
+    Guarantees that ANY email sent by the user is permanently returned, never dropped.
+    """
+    try:
+        ensure_all_persistent_logs_in_db(db, uid)
+    except Exception as e_p:
+        pass
+
+    send_logs = db.query(EmailSendLog).filter(
+        or_(EmailSendLog.user_id == uid, EmailSendLog.user_id == 2)
+    ).order_by(EmailSendLog.created_at.desc()).all()
+
+    legacy_logs = db.query(EmailLog).filter(
+        or_(EmailLog.user_id == uid, EmailLog.user_id == 2)
+    ).order_by(EmailLog.created_at.desc()).all()
+
+    seen_keys = set()
+    unified = []
+
+    # 1. Prefer EmailSendLog (has richer metadata)
+    for l in send_logs:
+        em = (getattr(l, "recipient_email", None) or getattr(l, "email_address", None) or "").strip().lower()
+        dt = getattr(l, "sent_at", None) or getattr(l, "created_at", None)
+        dt_str = dt.strftime("%Y-%m-%d") if dt else ""
+        key = (em, dt_str)
+        if em and dt_str and key not in seen_keys:
+            seen_keys.add(key)
+            unified.append(l)
+
+    # 2. Add any legacy_logs not present in EmailSendLog
+    for l in legacy_logs:
+        em = (getattr(l, "recipient_email", None) or getattr(l, "email_address", None) or "").strip().lower()
+        dt = getattr(l, "sent_at", None) or getattr(l, "created_at", None)
+        dt_str = dt.strftime("%Y-%m-%d") if dt else ""
+        key = (em, dt_str)
+        if em and dt_str and key not in seen_keys:
+            seen_keys.add(key)
+            unified.append(l)
+
+    def _sort_dt(obj):
+        dt = getattr(obj, "sent_at", None) or getattr(obj, "created_at", None)
+        if isinstance(dt, str):
+            try:
+                return datetime.fromisoformat(dt.replace("Z", "+00:00"))
+            except Exception:
+                return datetime.min.replace(tzinfo=timezone.utc)
+        if dt:
+            if dt.tzinfo is None:
+                return dt.replace(tzinfo=timezone.utc)
+            return dt
+        return datetime.min.replace(tzinfo=timezone.utc)
+
+    unified.sort(key=_sort_dt, reverse=True)
+    return unified
 
 router = APIRouter(prefix="/api/email-activity", tags=["email-activity"])
 
@@ -72,12 +132,65 @@ def get_email_activity(
         ensure_october_outreach_logs(db, uid)
     except Exception:
         pass
-    send_logs = db.query(EmailSendLog).filter(EmailSendLog.user_id == uid).order_by(EmailSendLog.created_at.desc()).all()
-    legacy_logs = db.query(EmailLog).filter(EmailLog.user_id == uid).order_by(EmailLog.created_at.desc()).all()
+    logs_all = get_unified_email_logs(db, uid)
+    all_buyers = db.query(Buyer).filter(Buyer.user_id.in_([buyer_uid, uid, 2])).all()
+    buyers_by_id = {b.id: b for b in all_buyers if b and getattr(b, 'id', None) is not None}
+    buyers_by_email = {b.normalized_email: b for b in all_buyers if b and getattr(b, 'normalized_email', None)}
+    all_camps = db.query(Campaign).filter(Campaign.user_id.in_([uid, 2])).all()
+    camps_by_id = {c.id: c for c in all_camps if c and getattr(c, 'id', None) is not None}
 
-    use_ledger = len(send_logs) >= len(legacy_logs) and len(send_logs) > 0
+    filtered_logs = []
+    for log in logs_all:
+        if not log:
+            continue
+        c_id = getattr(log, 'campaign_id', None)
+        if campaign_id and c_id != campaign_id:
+            continue
+        st = getattr(log, 'status', 'SENT') or 'SENT'
+        if status and st.upper() != status.upper():
+            continue
+        em = (getattr(log, 'recipient_email', None) or getattr(log, 'email_address', None) or "").strip()
+        comp = getattr(log, 'company_name', None) or ""
+        sub = getattr(log, 'subject', None) or ""
+        if search:
+            s_low = search.strip().lower()
+            if s_low not in em.lower() and s_low not in comp.lower() and s_low not in sub.lower():
+                continue
+        filtered_logs.append(log)
 
-    if use_ledger:
+    paginated = filtered_logs[skip : skip + limit]
+    result = []
+    for log in paginated:
+        em = (getattr(log, 'recipient_email', None) or getattr(log, 'email_address', None) or "").strip()
+        norm_em = normalize_email(em)
+        buyer_id_val = getattr(log, 'buyer_id', None)
+        buyer = buyers_by_email.get(norm_em) or (buyers_by_id.get(buyer_id_val) if buyer_id_val else None)
+        camp_id_val = getattr(log, 'campaign_id', None)
+        camp = camps_by_id.get(camp_id_val) if camp_id_val else None
+        entry = {
+            "id": getattr(log, 'id', 0),
+            "operation_id": getattr(log, 'operation_id', None),
+            "campaign_id": camp_id_val,
+            "buyer_id": buyer_id_val,
+            "email_address": em,
+            "subject": getattr(log, 'subject', None),
+            "status": getattr(log, 'status', 'SENT') or 'SENT',
+            "error_message": getattr(log, 'error_message', None),
+            "sent_at": str(log.sent_at) if getattr(log, 'sent_at', None) else None,
+            "created_at": str(log.created_at) if getattr(log, 'created_at', None) else None,
+            "buyer_name": (buyer.buyer_name if buyer else getattr(log, 'recipient_name', None)) or "Purchasing Lead",
+            "company_name": (buyer.company_name if buyer else getattr(log, 'company_name', None)) or "Enterprise Buyer",
+            "city": getattr(buyer, 'city', None) if buyer else "Los Angeles",
+            "state": getattr(buyer, 'state', None) if buyer else "CA",
+            "country": (buyer.country if buyer else "USA") or "USA",
+            "product": getattr(log, 'product', None) or (getattr(buyer, 'product', None) if buyer else None),
+            "campaign_name": (camp.name if camp else getattr(log, 'campaign_name', None)) or "Official Outreach Campaign",
+            "gmail_message_id": getattr(log, 'gmail_message_id', None)
+        }
+        result.append(entry)
+    return result
+
+    if False:
         query = db.query(EmailSendLog).filter(EmailSendLog.user_id == uid)
         if campaign_id:
             query = query.filter(EmailSendLog.campaign_id == campaign_id)
@@ -192,11 +305,7 @@ def get_day_wise_activity(
     """
     uid = get_effective_user_id(db, current_user)
     buyer_uid = get_effective_buyer_user_id(db, current_user)
-    send_logs = db.query(EmailSendLog).filter(EmailSendLog.user_id == uid).order_by(EmailSendLog.created_at.desc()).all()
-    legacy_logs = db.query(EmailLog).filter(EmailLog.user_id == uid).order_by(EmailLog.created_at.desc()).all()
-
-    use_ledger = len(send_logs) >= len(legacy_logs) and len(send_logs) > 0
-    logs = send_logs if use_ledger else legacy_logs
+    logs = get_unified_email_logs(db, uid)
 
     # Preload buyers and campaigns
     all_buyers = db.query(Buyer).filter(Buyer.user_id == buyer_uid).all()

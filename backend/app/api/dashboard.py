@@ -43,10 +43,9 @@ def get_stats(current_user: User = Depends(get_current_user), db: Session = Depe
     buyers = db.query(Buyer).filter(Buyer.user_id == uid).all()
     campaigns = db.query(Campaign).filter(Campaign.user_id == uid).all()
 
-    # Source of truth: EmailSendLog primary, fallback to EmailLog
-    send_logs = db.query(EmailSendLog).filter(EmailSendLog.user_id == uid).all()
-    legacy_logs = db.query(EmailLog).filter(EmailLog.user_id == uid).all()
-    active_logs = send_logs if len(send_logs) >= len(legacy_logs) and len(send_logs) > 0 else legacy_logs
+    # Source of truth: unified deduplicated logs
+    from .email_activity import get_unified_email_logs
+    active_logs = get_unified_email_logs(db, uid)
 
     emails_sent = sum(1 for l in active_logs if l.status == 'SENT')
     emails_failed = sum(1 for l in active_logs if l.status == 'FAILED')
@@ -124,9 +123,10 @@ def get_responses(current_user: User = Depends(get_current_user), db: Session = 
     """Returns real-time buyer responses calculated strictly from genuine inbound replies (0 dummy responses)."""
     uid = current_user.id
     buyers = db.query(Buyer).filter(Buyer.user_id == uid).all()
-    logs = db.query(EmailLog).filter(EmailLog.user_id == uid).all()
+    from .email_activity import get_unified_email_logs
+    logs = get_unified_email_logs(db, uid)
     
-    total_sent = sum(1 for l in logs if l.status == 'SENT')
+    total_sent = sum(1 for l in logs if getattr(l, 'status', None) == 'SENT')
     # Real buyer responses (only if genuine reply received)
     replied_buyers = [b for b in buyers if b.outreach_status in ['REPLIED', 'INTERESTED', 'SAMPLE_REQUESTED', 'FOB_REQUESTED'] and not getattr(b, 'is_demo', False)]
     

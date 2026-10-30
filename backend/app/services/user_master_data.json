@@ -4998,5 +4998,13 @@
     "address": "18700 Pioneer Blvd, Artesia, CA 90701, USA",
     "status": "SENT",
     "response": "Delivered - Awaiting Reply"
+  },
+  {
+    "date": "2026-10-30",
+    "company_name": "Pacific Decor California Imports",
+    "email": "test.export.buyer.om@gmail.com",
+    "address": "Los Angeles, CA, USA",
+    "status": "SENT",
+    "response": "Delivered - Awaiting Reply"
   }
 ]

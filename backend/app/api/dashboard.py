@@ -62,18 +62,24 @@ def get_stats(current_user: User = Depends(get_current_user), db: Session = Depe
         if l.status == 'SENT':
             dt = l.sent_at or l.created_at
             if dt:
-                if dt.tzinfo is None:
-                    dt_local = dt.replace(tzinfo=timezone.utc).astimezone(INDIA_TZ)
-                else:
-                    dt_local = dt.astimezone(INDIA_TZ)
-                if dt_local.date() == today_date:
-                    today_sent += 1
-                    em = getattr(l, 'recipient_email', None) or getattr(l, 'email_address', None)
-                    if em:
-                        today_unique_recipients.add(em.lower())
-                    comp = getattr(l, 'company_name', None)
-                    if comp:
-                        today_unique_companies.add(comp)
+                if isinstance(dt, str):
+                    try:
+                        dt = datetime.fromisoformat(dt.replace('Z', '+00:00'))
+                    except Exception:
+                        dt = None
+                if dt:
+                    if dt.tzinfo is None:
+                        dt_local = dt.replace(tzinfo=timezone.utc).astimezone(INDIA_TZ)
+                    else:
+                        dt_local = dt.astimezone(INDIA_TZ)
+                    if dt_local.date() == today_date:
+                        today_sent += 1
+                        em = getattr(l, 'recipient_email', None) or getattr(l, 'email_address', None)
+                        if em:
+                            today_unique_recipients.add(em.lower())
+                        comp = getattr(l, 'company_name', None)
+                        if comp:
+                            today_unique_companies.add(comp)
 
     return {
         "total_buyers": len(buyers),

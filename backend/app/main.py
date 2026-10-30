@@ -372,19 +372,15 @@ async def test_tradewind():
 @app.get("/api/build-info")
 def build_info():
     return {
-        "version": "1.4.3",
+        "version": "1.5.0",
+        "october_dates_included": ["2026-10-22", "2026-10-26", "2026-10-27", "2026-10-28"],
         "halloween_attachments": True,
         "email_tester_enabled": True,
         "brevo_safe": True,
-        "master_records_count": 621,
-        "origin_address": "Direct Manufacturer from Nepal • Wholesale • OEM • Private Label",
+        "master_records_count": 725,
         "reply_to_email": "rameshkrthakur1816@gmail.com",
         "company_email": "rameshkrthakur1816@gmail.com",
-        "batch_followup_enabled": True,
-        "automated_cadence_engine": True,
-        "attachments": ["OM_Enterprise_Handcrafted_Pieces_Poster.jpg", "OM_Enterprise_Special_Offer_Badge.jpg"],
-        "safe_delivery_mode": "Text-Only (Zero Attachments) enabled for Cold Outreach & Follow-ups",
-        "updated": "2026-10-23T14:20:00Z"
+        "updated": "2026-10-30T16:00:00Z"
     }
 
 # ── Frontend SPA & Static Assets Serving ──────────────────────────────

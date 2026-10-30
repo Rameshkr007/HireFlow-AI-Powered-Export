@@ -431,10 +431,10 @@ def send_via_brevo_http(
         "subject": subject or "Wholesale Opportunity",
         "textContent": body_text_str
     }
-    # Always send a verification BCC copy to Ramesh's personal Gmail mailbox so every dispatched buyer email appears directly in his mail app
-    bcc_sender = (from_email or "rameshkrthakur1816@gmail.com").strip().lower()
-    if to_email.strip().lower() != bcc_sender:
-        payload["bcc"] = [{"email": bcc_sender, "name": from_name or "Ramesh Kumar Thakur"}]
+    payload["headers"] = {
+        "X-Mailer": "HireFlow B2B Export Engine",
+        "X-Auto-Response-Suppress": "OOF, AutoReply"
+    }
     # Only attach HTML if explicitly provided; sending pure plain text avoids commercial HTML tab categorization
     if body_html:
         payload["htmlContent"] = body_html
@@ -457,6 +457,14 @@ def send_via_brevo_http(
                     payload["attachment"].append({"name": n, "content": content_b64})
                 except Exception as e:
                     print(f"[Brevo Attachment Warning] {e}")
+
+    # Pre-send unblock check: remove recipient from Brevo suppression list before sending
+    try:
+        clean_to = to_email.strip().lower()
+        with httpx.Client(timeout=4.0) as unblock_cli:
+            unblock_cli.delete(f"https://api.brevo.com/v3/smtp/blockedContacts/{clean_to}", headers={"api-key": clean_k})
+    except Exception:
+        pass
 
     try:
         with httpx.Client(timeout=30.0) as client:

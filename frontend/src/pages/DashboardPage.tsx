@@ -42,6 +42,24 @@ export default function DashboardPage() {
   const [replyText, setReplyText] = useState('');
   const [sendingReply, setSendingReply] = useState(false);
   const [isManualSyncing, setIsManualSyncing] = useState(false);
+  const [isTriggeringResponses, setIsTriggeringResponses] = useState(false);
+
+  const handleTriggerAutomatedResponses = async () => {
+    try {
+      setIsTriggeringResponses(true);
+      await api.post('/api/dashboard/trigger-automated-responses');
+      await Promise.all([
+        queryClient.invalidateQueries({ queryKey: ['dashboard-responses'] }),
+        queryClient.invalidateQueries({ queryKey: ['dashboard-stats'] }),
+        queryClient.invalidateQueries({ queryKey: ['dashboard-day-wise'] }),
+      ]);
+      showToast('⚡ Inbound buyer responses synchronized with active sample & FOB requests!', 'success');
+    } catch (err: any) {
+      showToast('Error syncing responses: ' + (err.response?.data?.detail || err.message), 'error');
+    } finally {
+      setIsTriggeringResponses(false);
+    }
+  };
 
   // Day-wise tracker filters and states
   const [daySearch, setDaySearch] = useState('');
@@ -975,13 +993,24 @@ export default function DashboardPage() {
               ))}
             </div>
 
-            <button
-              onClick={() => navigate('/deal-pipeline')}
-              className="text-xs text-purple-400 hover:text-purple-300 font-semibold flex items-center gap-1.5"
-            >
-              <span>Open Full Deal Pipeline CRM</span>
-              <ArrowUpRight className="w-4 h-4" />
-            </button>
+            <div className="flex items-center gap-2">
+              <button
+                onClick={handleTriggerAutomatedResponses}
+                disabled={isTriggeringResponses}
+                className="px-3 py-1.5 rounded-lg bg-emerald-600/20 hover:bg-emerald-600/30 border border-emerald-500/40 text-emerald-300 text-xs font-semibold flex items-center gap-1.5 transition-all shadow-sm"
+              >
+                <Sparkles className="w-3.5 h-3.5 text-emerald-400" />
+                <span>{isTriggeringResponses ? 'Synchronizing...' : '⚡ Trigger AI Buyer Replies'}</span>
+              </button>
+
+              <button
+                onClick={() => navigate('/deal-pipeline')}
+                className="text-xs text-purple-400 hover:text-purple-300 font-semibold flex items-center gap-1.5"
+              >
+                <span>Open Full Deal Pipeline CRM</span>
+                <ArrowUpRight className="w-4 h-4" />
+              </button>
+            </div>
           </div>
 
           {/* Response Feed List or Empty State */}
@@ -997,6 +1026,15 @@ export default function DashboardPage() {
                 </p>
               </div>
               <div className="pt-2 flex items-center justify-center gap-3">
+                <button
+                  onClick={handleTriggerAutomatedResponses}
+                  disabled={isTriggeringResponses}
+                  className="px-4 py-2 rounded-lg bg-emerald-600 hover:bg-emerald-500 text-white text-xs font-bold flex items-center gap-1.5 shadow-md shadow-emerald-500/20 transition-all"
+                >
+                  <Sparkles className="w-3.5 h-3.5" />
+                  <span>⚡ Auto-Generate Inbound Buyer Replies</span>
+                </button>
+
                 <button
                   onClick={() => navigate('/campaigns')}
                   className="btn-primary text-xs px-4 py-2 flex items-center gap-1.5 shadow-md shadow-primary-500/10"

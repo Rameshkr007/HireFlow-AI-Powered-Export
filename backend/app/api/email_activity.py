@@ -951,7 +951,7 @@ def get_inbound_replies(
     uid = get_effective_user_id(db, current_user)
     buyers = db.query(Buyer).filter(
         Buyer.user_id == uid,
-        Buyer.outreach_status == "REPLIED"
+        Buyer.outreach_status.in_(["REPLIED", "SAMPLE_REQUESTED", "FOB_REQUESTED", "INTERESTED"])
     ).all()
 
     reply_logs = db.query(EmailSendLog).filter(

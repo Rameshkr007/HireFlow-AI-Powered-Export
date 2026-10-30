@@ -37,11 +37,13 @@ def is_domain_mx_valid(domain: str) -> bool:
     try:
         import dns.resolver
         resolver = dns.resolver.Resolver()
-        resolver.timeout = 3.0
-        resolver.lifetime = 3.0
+        resolver.timeout = 1.2
+        resolver.lifetime = 1.5
         try:
             answers = resolver.resolve(clean_domain, 'MX')
             has_mx = len(answers) > 0
+        except dns.resolver.NXDOMAIN:
+            has_mx = False
         except Exception:
             # Fallback to Google / Cloudflare public DNS
             resolver.nameservers = ['8.8.8.8', '1.1.1.1']
@@ -50,8 +52,7 @@ def is_domain_mx_valid(domain: str) -> bool:
     except Exception:
         has_mx = False
         
-    if has_mx:
-        _MX_CACHE[clean_domain] = True
+    _MX_CACHE[clean_domain] = has_mx
     return has_mx
 
 

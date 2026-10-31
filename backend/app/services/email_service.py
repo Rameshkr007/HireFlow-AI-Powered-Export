@@ -431,10 +431,7 @@ def send_via_brevo_http(
         "subject": subject or "Wholesale Opportunity",
         "textContent": body_text_str
     }
-    payload["headers"] = {
-        "X-Mailer": "HireFlow B2B Export Engine",
-        "X-Auto-Response-Suppress": "OOF, AutoReply"
-    }
+
     # Only attach HTML if explicitly provided; sending pure plain text avoids commercial HTML tab categorization
     if body_html:
         payload["htmlContent"] = body_html

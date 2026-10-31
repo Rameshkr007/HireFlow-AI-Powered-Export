@@ -64,6 +64,10 @@ class Settings(BaseSettings):
     # Google Places & Maps API (Live California Retailers, Sound Healing Studios & Decor Stores)
     GOOGLE_PLACES_API_KEY: Optional[str] = None
 
+    # Snov.io B2B Intelligence & Decision Maker Verifier
+    SNOV_CLIENT_ID: Optional[str] = "5e3499743bc2f2790e84dec82f473c53"
+    SNOV_CLIENT_SECRET: Optional[str] = "5e1cf20fa5eaee733a18380bcf1e443e"
+
     class Config:
         env_file = ".env"
         extra = "allow"

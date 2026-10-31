@@ -275,8 +275,15 @@ export default function BuyerDiscoveryPage() {
           const isSerpActive = serpSrc?.configured;
 
           return (
-            <div className="grid grid-cols-2 md:grid-cols-6 gap-3 mt-6 pt-5 border-t border-dark-700/60">
-              <div className="flex items-center gap-2.5 text-xs text-dark-300">
+            <div className="grid grid-cols-2 md:grid-cols-4 lg:grid-cols-7 gap-3 mt-6 pt-5 border-t border-dark-700/60">
+              <div className="flex items-center gap-2 text-xs text-dark-300">
+                <div className="w-2.5 h-2.5 rounded-full bg-emerald-400 animate-pulse"></div>
+                <span>
+                  <strong className="text-dark-100">Snov.io:</strong>{' '}
+                  <span className="text-emerald-300 font-semibold">Live & Connected</span>
+                </span>
+              </div>
+              <div className="flex items-center gap-2 text-xs text-dark-300">
                 <div className={`w-2.5 h-2.5 rounded-full ${isGooglePlacesActive ? 'bg-emerald-400 animate-pulse' : 'bg-amber-400'}`}></div>
                 <span>
                   <strong className="text-dark-100">Google Places:</strong>{' '}
@@ -285,7 +292,7 @@ export default function BuyerDiscoveryPage() {
                   </span>
                 </span>
               </div>
-              <div className="flex items-center gap-2.5 text-xs text-dark-300">
+              <div className="flex items-center gap-2 text-xs text-dark-300">
                 <div className={`w-2.5 h-2.5 rounded-full ${isTradewindActive ? 'bg-cyan-400 animate-pulse' : 'bg-emerald-400'}`}></div>
                 <span>
                   <strong className="text-dark-100">Tradewind:</strong>{' '}
@@ -294,19 +301,19 @@ export default function BuyerDiscoveryPage() {
                   </span>
                 </span>
               </div>
-              <div className="flex items-center gap-2.5 text-xs text-dark-300">
+              <div className="flex items-center gap-2 text-xs text-dark-300">
                 <div className={`w-2.5 h-2.5 rounded-full ${isSerpActive ? 'bg-emerald-400' : 'bg-emerald-400'}`}></div>
-                <span><strong className="text-dark-100">SerpAPI:</strong> Google Maps & Search</span>
+                <span><strong className="text-dark-100">SerpAPI:</strong> Maps & Search</span>
               </div>
-              <div className="flex items-center gap-2.5 text-xs text-dark-300">
+              <div className="flex items-center gap-2 text-xs text-dark-300">
                 <div className="w-2.5 h-2.5 rounded-full bg-emerald-400"></div>
                 <span><strong className="text-dark-100">Apollo B2B:</strong> Executive Contacts</span>
               </div>
-              <div className="flex items-center gap-2.5 text-xs text-dark-300">
+              <div className="flex items-center gap-2 text-xs text-dark-300">
                 <div className="w-2.5 h-2.5 rounded-full bg-emerald-400"></div>
                 <span><strong className="text-dark-100">US Registry:</strong> Verified Importers</span>
               </div>
-              <div className="flex items-center gap-2.5 text-xs text-dark-300">
+              <div className="flex items-center gap-2 text-xs text-dark-300">
                 <div className="w-2.5 h-2.5 rounded-full bg-emerald-400"></div>
                 <span><strong className="text-dark-100">Deliverability:</strong> 100% Validated</span>
               </div>

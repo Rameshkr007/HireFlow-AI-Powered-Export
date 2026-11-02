@@ -27,6 +27,15 @@ from ..models.exporter_profile import ExporterProfile
 @contextmanager
 def force_ipv4():
     """Forces socket operations to IPv4, preventing [Errno 101] Network is unreachable on Render/Docker."""
+    is_on_cloud = bool(
+        os.environ.get("RENDER")
+        or os.environ.get("RENDER_EXTERNAL_HOSTNAME")
+        or os.environ.get("KUBERNETES_SERVICE_HOST")
+    )
+    if not is_on_cloud:
+        yield
+        return
+
     orig_getaddrinfo = socket.getaddrinfo
 
     def getaddrinfo_ipv4(host, port, family=0, type=0, proto=0, flags=0):
@@ -593,8 +602,8 @@ def send_smtp_email(
         from_name = smtp_config.get("from_name", "").strip() or "Ramesh Kumar Thakur | OM Enterprise"
         smtp_host = smtp_config["smtp_host"]
         smtp_port = int(smtp_config["smtp_port"])
-        smtp_user = smtp_config.get("smtp_user") or from_email
-        smtp_pass = smtp_config["smtp_password"]
+        smtp_user = (smtp_config.get("smtp_user") or from_email or "").strip()
+        smtp_pass = clean_password(smtp_config.get("smtp_password"))
         use_tls = smtp_config.get("use_tls", True)
         use_ssl = smtp_config.get("use_ssl", False)
         target_reply_to = (reply_to or smtp_config.get("reply_to") or from_email or "rameshkrthakur1816@gmail.com").strip()

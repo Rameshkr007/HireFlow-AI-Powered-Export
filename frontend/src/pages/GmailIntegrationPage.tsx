@@ -28,12 +28,12 @@ interface EmailSettings {
 
 const PROVIDER_PRESETS: Record<string, { name: string; host: string; port: number; tls: boolean; ssl: boolean; tip: string }> = {
   gmail: {
-    name: 'Google Gmail (Direct SMTP)',
+    name: 'Google Gmail (Direct SMTP SSL)',
     host: 'smtp.gmail.com',
-    port: 587,
-    tls: true,
-    ssl: false,
-    tip: 'Requires 16-character Google App Password from rameshkrthakur1816@gmail.com. (Best on Localhost)'
+    port: 465,
+    tls: false,
+    ssl: true,
+    tip: 'Direct SSL via Port 465. Requires 16-character Google App Password from rameshkrthakur1816@gmail.com. (Best on Localhost)'
   },
   brevo: {
     name: 'Brevo HTTP API (Port 443 - Cloud Safe)',

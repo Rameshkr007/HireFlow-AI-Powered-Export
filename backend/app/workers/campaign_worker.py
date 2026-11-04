@@ -355,8 +355,9 @@ def process_campaign(db: Session, campaign_id: int, user_id: int):
         except Exception:
             db.rollback()
 
-        # Delay between sends (responsive 1-2s pacing)
-        delay = min(campaign.delay_seconds or 2, 2)
+        # Delay between sends: respect configured delay to prevent SMTP burst rate-limiting
+        raw_delay = campaign.delay_seconds if campaign.delay_seconds is not None else 15
+        delay = max(5, min(raw_delay, 60))
         time.sleep(delay)
 
     # Mark campaign completed

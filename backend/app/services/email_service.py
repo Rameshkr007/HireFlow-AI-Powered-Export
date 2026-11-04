@@ -675,12 +675,19 @@ def send_smtp_email(
             with force_ipv4():
                 if is_ssl or port == 465:
                     context = ssl.create_default_context()
-                    server = smtplib.SMTP_SSL(host, port, context=context, timeout=15)
+                    server = smtplib.SMTP_SSL(host, port, context=context, timeout=20)
+                    server.ehlo()
                     server.login(smtp_user, smtp_pass)
                     server.sendmail(from_email, envelope_recipients, msg.as_string())
-                    server.quit()
+                    try:
+                        server.quit()
+                    except Exception:
+                        try:
+                            server.close()
+                        except Exception:
+                            pass
                 else:
-                    server = smtplib.SMTP(host, port, timeout=15)
+                    server = smtplib.SMTP(host, port, timeout=20)
                     server.ehlo()
                     if is_tls:
                         context = ssl.create_default_context()
@@ -688,7 +695,13 @@ def send_smtp_email(
                         server.ehlo()
                     server.login(smtp_user, smtp_pass)
                     server.sendmail(from_email, envelope_recipients, msg.as_string())
-                    server.quit()
+                    try:
+                        server.quit()
+                    except Exception:
+                        try:
+                            server.close()
+                        except Exception:
+                            pass
 
         # Try primary configured port with IPv4 forced (avoids [Errno 101] Network is unreachable on Render)
         try:
@@ -698,6 +711,8 @@ def send_smtp_email(
             raise
         except (OSError, smtplib.SMTPConnectError, socket.timeout) as first_err:
             # Fallback to alternate port (if 587 failed, try 465 SSL; if 465 failed, try 587 TLS)
+            import time
+            time.sleep(1.0)
             alt_port = 465 if smtp_port == 587 else 587
             alt_ssl = True if alt_port == 465 else False
             alt_tls = True if alt_port == 587 else False

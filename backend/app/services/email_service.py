@@ -703,23 +703,30 @@ def send_smtp_email(
                         except Exception:
                             pass
 
-        # Try primary configured port with IPv4 forced (avoids [Errno 101] Network is unreachable on Render)
-        try:
-            _dispatch_attempt(smtp_host, smtp_port, use_ssl, use_tls)
-            return True, None
-        except smtplib.SMTPAuthenticationError:
-            raise
-        except (OSError, smtplib.SMTPConnectError, socket.timeout) as first_err:
-            # Fallback to alternate port (if 587 failed, try 465 SSL; if 465 failed, try 587 TLS)
-            import time
-            time.sleep(1.0)
-            alt_port = 465 if smtp_port == 587 else 587
-            alt_ssl = True if alt_port == 465 else False
-            alt_tls = True if alt_port == 587 else False
+        # Try primary configured port with automatic retry for momentary connection glitches
+        last_primary_err = None
+        for attempt in range(2):
             try:
-                _dispatch_attempt(smtp_host, alt_port, alt_ssl, alt_tls)
+                _dispatch_attempt(smtp_host, smtp_port, use_ssl, use_tls)
                 return True, None
-            except Exception as second_err:
+            except smtplib.SMTPAuthenticationError:
+                raise
+            except (OSError, smtplib.SMTPConnectError, socket.timeout) as err:
+                last_primary_err = err
+                if attempt == 0:
+                    import time
+                    time.sleep(2.0)
+                    continue
+
+        # If primary port failed twice, try alternate fallback port
+        alt_port = 465 if smtp_port == 587 else 587
+        alt_ssl = True if alt_port == 465 else False
+        alt_tls = True if alt_port == 587 else False
+        first_err = last_primary_err
+        try:
+            _dispatch_attempt(smtp_host, alt_port, alt_ssl, alt_tls)
+            return True, None
+        except Exception as second_err:
                 err_text = str(second_err)
                 if "timed out" in err_text.lower() or "unexpectedly closed" in err_text.lower():
                     if is_on_render:

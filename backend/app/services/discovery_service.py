@@ -249,7 +249,7 @@ async def _search_google_places(product: str, country: str, buyer_type: str, lim
                         email = matched_exec["email"]
                     else:
                         buyer_name = f"{comp_name} Purchasing Team"
-                        email = f"contact@{domain}" if domain else f"info@{clean_name}.com"
+                        email = f"info@{domain}" if domain else f"info@{clean_name}.com"
 
                     rating_desc = f" (Google Rating: {rating}★, {review_count} reviews)" if rating else ""
                     desc = f"Verified commercial Google Business in {city}, {state}{rating_desc}. Active target for {product}."

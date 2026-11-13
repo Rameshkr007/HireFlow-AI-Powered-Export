@@ -26,21 +26,16 @@ from ..models.exporter_profile import ExporterProfile
 
 @contextmanager
 def force_ipv4():
-    """Forces socket operations to IPv4, preventing [Errno 101] Network is unreachable on Render/Docker."""
-    is_on_cloud = bool(
-        os.environ.get("RENDER")
-        or os.environ.get("RENDER_EXTERNAL_HOSTNAME")
-        or os.environ.get("KUBERNETES_SERVICE_HOST")
-    )
-    if not is_on_cloud:
-        yield
-        return
-
+    """Forces socket operations to IPv4, preventing flaky IPv6 drops/timeouts on Windows dual-stack & Render/Docker containers."""
     orig_getaddrinfo = socket.getaddrinfo
 
     def getaddrinfo_ipv4(host, port, family=0, type=0, proto=0, flags=0):
-        # Override family to AF_INET (IPv4) to avoid unreachable IPv6 routing in cloud containers
-        return orig_getaddrinfo(host, port, socket.AF_INET, type, proto, flags)
+        try:
+            # Force IPv4 AF_INET for stable, low-latency mail delivery without IPv6 route drops
+            return orig_getaddrinfo(host, port, socket.AF_INET, type, proto, flags)
+        except Exception:
+            # Graceful fallback to original resolution if IPv4-specific lookup errors
+            return orig_getaddrinfo(host, port, family, type, proto, flags)
 
     socket.getaddrinfo = getaddrinfo_ipv4
     try:

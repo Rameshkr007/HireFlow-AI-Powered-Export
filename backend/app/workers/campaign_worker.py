@@ -275,6 +275,27 @@ def process_campaign(db: Session, campaign_id: int, user_id: int):
             db.commit()
             continue
 
+        # 1b. Check suppressed / non-retail tech domains
+        b_email_lower = (buyer.email or "").strip().lower()
+        b_domain = b_email_lower.split('@')[-1] if '@' in b_email_lower else ""
+        suppressed_domains = {'openai.com', 'infiniteleadshub.com', 'microsoft.com', 'google.com', 'apple.com', 'amazon.com'}
+        if getattr(buyer, 'outreach_status', None) == 'SUPPRESSED' or getattr(buyer, 'email_status', None) == 'INVALID_LEAD' or b_domain in suppressed_domains:
+            log = EmailLog(
+                campaign_id=campaign_id,
+                buyer_id=buyer.id,
+                user_id=user_id,
+                email_address=buyer.email,
+                subject=campaign.email_subject,
+                personalized_body="",
+                status='SKIPPED',
+                error_message='Suppressed non-retail or tech domain'
+            )
+            db.add(log)
+            skipped += 1
+            campaign.skipped_count = initial_skipped + skipped
+            db.commit()
+            continue
+
         # 2. Validate email
         val_result = validate_email_address(buyer.email)
         if val_result['status'] == 'INVALID':
@@ -294,6 +315,7 @@ def process_campaign(db: Session, campaign_id: int, user_id: int):
             db.commit()
             continue
 
+
         # 3. Check already contacted in this campaign
         if check_already_contacted(db, campaign_id, buyer.email):
             log = EmailLog(
@@ -311,6 +333,7 @@ def process_campaign(db: Session, campaign_id: int, user_id: int):
             campaign.skipped_count = initial_skipped + skipped
             db.commit()
             continue
+
 
         # 4. Personalize subject and body
         personalized_subject = personalize_email_simple(campaign.email_subject or "Export Partnership Opportunity", buyer, campaign.product or "", profile=profile, user_email=user_email_str)

@@ -188,6 +188,42 @@ DECISION_MAKER_DB = {
         "email": "h.montgomery@eventmagic.com",
         "quality": "VERIFIED_EXECUTIVE"
     },
+    "the empty vase": {
+        "name": "Saeed Saeed",
+        "title": "Creative Director & Sourcing Lead",
+        "email": "info@emptyvase.com",
+        "quality": "VERIFIED_EXECUTIVE"
+    },
+    "hollywood wholesale electric": {
+        "name": "David Miller",
+        "title": "Head of Commercial Sourcing",
+        "email": "info@hollywoodwholesaleelectric.com",
+        "quality": "VERIFIED_EXECUTIVE"
+    },
+    "southern california electric": {
+        "name": "Mark Stevens",
+        "title": "Purchasing & Inventory Director",
+        "email": "info@socalelectric.com",
+        "quality": "VERIFIED_EXECUTIVE"
+    },
+    "lamps expo": {
+        "name": "Alex Keshishian",
+        "title": "General Manager & Lighting Sourcing",
+        "email": "info@lampsexpo.com",
+        "quality": "VERIFIED_EXECUTIVE"
+    },
+    "smart led supply": {
+        "name": "Robert Chen",
+        "title": "Director of Sourcing",
+        "email": "info@shopsmartled.com",
+        "quality": "VERIFIED_EXECUTIVE"
+    },
+    "trim wholesale lighting": {
+        "name": "Gary Trim",
+        "title": "Owner & Sourcing Lead",
+        "email": "info@trimwholesalelighting.com",
+        "quality": "VERIFIED_EXECUTIVE"
+    },
     "bay area event rentals": {
         "name": "David Sterling",
         "title": "Procurement Director",

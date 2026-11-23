@@ -139,7 +139,7 @@ async def _search_serp(product: str, country: str, buyer_type: str, limit: int) 
                     contact_email = matched_exec["email"]
                 else:
                     buyer_name = f"{company} Sourcing Lead"
-                    contact_email = f"purchasing@{domain}"
+                    contact_email = f"info@{domain}"
 
                 city = "Los Angeles" if is_ca else "New York"
                 state = "CA" if is_ca else "NY"
@@ -342,7 +342,7 @@ async def _search_apollo(product: str, country: str, buyer_type: str, limit: int
                         email = matched_exec["email"]
                     else:
                         buyer_name = f"{comp_name} Sourcing Director"
-                        email = f"purchasing@{domain}"
+                        email = f"info@{domain}"
 
                     keywords = o.get("keywords") or []
                     kw_str = f" Specializes in {', '.join(keywords[:3])}." if keywords else ""

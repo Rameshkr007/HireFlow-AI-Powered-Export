@@ -1,5 +1,28 @@
 [
   {
+    "id": "test_1794308141",
+    "user_id": 2,
+    "dispatched_at": "2026-11-10T16:25:41+05:30",
+    "to_email": "rameshkrthakur1816@gmail.com",
+    "template_id": "decor_lanterns_b2b",
+    "template_name": "OM Enterprise – Handcrafted Home Decor & Lanterns (B2B Formal)",
+    "subject": "Handcrafted Home Decor & Lanterns – OM Enterprise",
+    "body_preview": "Hello,\n\nGreetings from OM Enterprise!\n\nWe manufacture handcrafted home décor, metal lanterns, candle holders, and decorative jars.\n\nAre you open to reviewing our product catalog an...",
+    "sender_name": "Ramesh Kumar Thakur | OM Enterprise",
+    "reply_to": "rameshkrthakur1816@gmail.com",
+    "mode": "with_attachments",
+    "attachments_count": 1,
+    "attachments": [
+      "OM_Enterprise_Metal_Candle_Holder_Catalog.pdf"
+    ],
+    "provider": "gmail",
+    "status": "SENT",
+    "error": null,
+    "folder_placed": "pending_verification",
+    "spam_score": 70,
+    "placement_probability": "Spam / Junk Risk"
+  },
+  {
     "id": "test_1793108715",
     "user_id": 4,
     "dispatched_at": "2026-10-27T19:15:15+05:30",

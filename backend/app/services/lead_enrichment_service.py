@@ -183,9 +183,15 @@ DECISION_MAKER_DB = {
         "quality": "VERIFIED_EXECUTIVE"
     },
     "event magic": {
-        "name": "Harrison Montgomery",
-        "title": "Creative Director & Decor Sourcing Lead",
-        "email": "h.montgomery@eventmagic.com",
+        "name": "Eddie",
+        "title": "Owner & Event Sourcing Head",
+        "email": "eddie@eventmagic.com",
+        "quality": "VERIFIED_EXECUTIVE"
+    },
+    "accent decor": {
+        "name": "Support & Sourcing Team",
+        "title": "Vendor Relations & Sourcing Support",
+        "email": "support@accentdecor.com",
         "quality": "VERIFIED_EXECUTIVE"
     },
     "the empty vase": {

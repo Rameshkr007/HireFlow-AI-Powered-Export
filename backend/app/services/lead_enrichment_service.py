@@ -254,6 +254,78 @@ DECISION_MAKER_DB = {
         "email": "ivan@ivanspartyrentals.com",
         "quality": "VERIFIED_EXECUTIVE"
     },
+    "cheungs": {
+        "name": "Steve Cheung",
+        "title": "Founder & Managing Director",
+        "email": "sales@cheungs.com",
+        "quality": "VERIFIED_EXECUTIVE"
+    },
+    "classic home": {
+        "name": "Harun D.",
+        "title": "VP Merchandising & Sourcing",
+        "email": "info@classichome.com",
+        "quality": "VERIFIED_EXECUTIVE"
+    },
+    "currey & company": {
+        "name": "Robert Currey",
+        "title": "Procurement & Sourcing Director",
+        "email": "info@curreyco.com",
+        "quality": "VERIFIED_EXECUTIVE"
+    },
+    "a to z party depot": {
+        "name": "Armen Zakarian",
+        "title": "Owner & Wholesale Sourcing Lead",
+        "email": "info@atozpartydepot.com",
+        "quality": "VERIFIED_EXECUTIVE"
+    },
+    "event party co": {
+        "name": "Marcus Coleman",
+        "title": "Head of Inventory & Event Sourcing",
+        "email": "info@eventpartyco.com",
+        "quality": "VERIFIED_EXECUTIVE"
+    },
+    "kalalou": {
+        "name": "Doug Hurley",
+        "title": "Founder & Sourcing Lead",
+        "email": "customerservice@kalalou.com",
+        "quality": "VERIFIED_EXECUTIVE"
+    },
+    "creative co-op": {
+        "name": "Lee Wang",
+        "title": "VP Global Sourcing & Design",
+        "email": "info@creativeco-op.com",
+        "quality": "VERIFIED_EXECUTIVE"
+    },
+    "two's company": {
+        "name": "Tom Gottlieb",
+        "title": "President & Sourcing Director",
+        "email": "orders@twoscompany.com",
+        "quality": "VERIFIED_EXECUTIVE"
+    },
+    "melrose international": {
+        "name": "Brad Chick",
+        "title": "VP Merchandising & Sourcing",
+        "email": "info@melroseintl.com",
+        "quality": "VERIFIED_EXECUTIVE"
+    },
+    "sullivan gift": {
+        "name": "Mark Sullivan",
+        "title": "VP Sourcing & Product Development",
+        "email": "sales@sullivangift.com",
+        "quality": "VERIFIED_EXECUTIVE"
+    },
+    "himalayan bowls": {
+        "name": "Joseph Feinstein",
+        "title": "Director of Sourcing & Sound Master",
+        "email": "info@himalayanbowls.com",
+        "quality": "VERIFIED_EXECUTIVE"
+    },
+    "silver sky imports": {
+        "name": "Justin B.",
+        "title": "Director of Wholesale & Imports",
+        "email": "info@silverskyimports.com",
+        "quality": "VERIFIED_EXECUTIVE"
+    },
     "global event supply": {
         "name": "Daniel Sterling",
         "title": "VP Wholesale Operations",

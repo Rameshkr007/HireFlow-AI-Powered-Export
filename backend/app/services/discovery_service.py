@@ -552,19 +552,42 @@ async def _search_snov(
     from .snov_service import get_snov_domain_emails
 
     # High-volume California and US wholesale domains
-    curated_domains = [
-        {"domain": "classichome.com", "company": "Classic Home Inc", "city": "Los Angeles", "state": "CA"},
-        {"domain": "palecek.com", "company": "Palecek Imports", "city": "Richmond", "state": "CA"},
-        {"domain": "eventmagic.com", "company": "Event Magic", "city": "Oakland", "state": "CA"},
-        {"domain": "sagebrookhome.com", "company": "Sagebrook Home", "city": "Los Angeles", "state": "CA"},
-        {"domain": "abhomeinc.com", "company": "A&B Home Group Inc", "city": "Rancho Cucamonga", "state": "CA"},
-        {"domain": "curreyco.com", "company": "Currey & Company", "city": "Atlanta", "state": "GA"},
-        {"domain": "cyandesign.biz", "company": "Cyan Design", "city": "Fort Worth", "state": "TX"},
-        {"domain": "reginaandrew.com", "company": "Regina Andrew Design", "city": "Wyandotte", "state": "MI"},
-    ]
+    p_lower = (product or "").lower()
+    is_ca = "california" in (country or "").lower() or "ca" in (country or "").lower().split()
+
+    if "singing bowl" in p_lower or "sound" in p_lower or "bowl" in p_lower or "himalayan" in p_lower:
+        curated_domains = [
+            {"domain": "himalayanbowls.com", "company": "Himalayan Bowls LLC", "city": "San Francisco", "state": "CA"},
+            {"domain": "silverskyimports.com", "company": "Silver Sky Imports", "city": "Omaha", "state": "NE"},
+            {"domain": "sandiegosoundbath.com", "company": "San Diego Sound Bath Collective", "city": "San Diego", "state": "CA"},
+            {"domain": "globalwellnessimports.com", "company": "Global Wellness Imports LLC", "city": "Los Angeles", "state": "CA"},
+            {"domain": "bodhitree.com", "company": "Bodhi Tree Holistic", "city": "West Hollywood", "state": "CA"},
+        ]
+    elif is_ca:
+        curated_domains = [
+            {"domain": "sagebrookhome.com", "company": "Sagebrook Home", "city": "Los Angeles", "state": "CA"},
+            {"domain": "palecek.com", "company": "Palecek Imports", "city": "Richmond", "state": "CA"},
+            {"domain": "eventmagic.com", "company": "Event Magic", "city": "Oakland", "state": "CA"},
+            {"domain": "classichome.com", "company": "Classic Home Inc", "city": "Los Angeles", "state": "CA"},
+            {"domain": "cheungs.com", "company": "Cheungs - Home Decor", "city": "Santa Ana", "state": "CA"},
+            {"domain": "abhomeinc.com", "company": "A&B Home Group Inc", "city": "Rancho Cucamonga", "state": "CA"},
+            {"domain": "ivanspartyrentals.com", "company": "Ivan's Party Rental & Decoration", "city": "Santa Ana", "state": "CA"},
+            {"domain": "atozpartydepot.com", "company": "A to Z Party Depot", "city": "Burbank", "state": "CA"},
+        ]
+    else:
+        curated_domains = [
+            {"domain": "sagebrookhome.com", "company": "Sagebrook Home", "city": "Los Angeles", "state": "CA"},
+            {"domain": "palecek.com", "company": "Palecek Imports", "city": "Richmond", "state": "CA"},
+            {"domain": "eventmagic.com", "company": "Event Magic", "city": "Oakland", "state": "CA"},
+            {"domain": "curreyco.com", "company": "Currey & Company", "city": "Atlanta", "state": "GA"},
+            {"domain": "classichome.com", "company": "Classic Home Inc", "city": "Los Angeles", "state": "CA"},
+            {"domain": "cyandesign.biz", "company": "Cyan Design", "city": "Fort Worth", "state": "TX"},
+            {"domain": "kalalou.com", "company": "Kalalou", "city": "Jackson", "state": "MS"},
+            {"domain": "creativeco-op.com", "company": "Creative Co-Op", "city": "Memphis", "state": "TN"},
+        ]
 
     results = []
-    for item in curated_domains[:min(limit, 4)]:
+    for item in curated_domains[:max(limit, 6)]:
         try:
             leads = await asyncio.to_thread(get_snov_domain_emails, item["domain"], 2)
             for lead in leads:
@@ -615,38 +638,50 @@ async def discover_buyers(
     tasks = []
     task_names = []
 
-    # Engine A: Google Places API (New v1)
-    if settings.GOOGLE_PLACES_API_KEY:
-        tasks.append(_search_google_places(product, target_country, buyer_type, engine_limit))
-        task_names.append("Google Places API")
-
-    # Engine B: SerpAPI Intelligence
-    if settings.SERPAPI_KEY:
-        tasks.append(_search_serp(product, target_country, buyer_type, engine_limit))
-        task_names.append("SerpAPI Intelligence")
-
-    # Engine C: Apollo.io B2B Intelligence
-    if settings.APOLLO_API_KEY:
-        tasks.append(_search_apollo(product, target_country, buyer_type, engine_limit))
-        task_names.append("Apollo B2B")
-
-    # Engine D: Tradewind Trade & Customs Intelligence
-    tasks.append(_search_tradewind(product, target_country, buyer_type, engine_limit))
-    task_names.append("Tradewind Customs Intel")
-
-    # Engine E: Snov.io B2B Intelligence & Decision Maker Verifier
+    # Engine A: Snov.io B2B Intelligence & Decision Maker Verifier
     if getattr(settings, "SNOV_CLIENT_ID", None):
         tasks.append(_search_snov(product, target_country, buyer_type, engine_limit))
         task_names.append("Snov.io B2B Intelligence")
 
+    # Engine B: Google Places API (New v1)
+    if settings.GOOGLE_PLACES_API_KEY:
+        tasks.append(_search_google_places(product, target_country, buyer_type, engine_limit))
+        task_names.append("Google Places API")
+
+    # Engine C: SerpAPI Intelligence
+    if settings.SERPAPI_KEY:
+        tasks.append(_search_serp(product, target_country, buyer_type, engine_limit))
+        task_names.append("SerpAPI Intelligence")
+
+    # Engine D: Apollo.io B2B Intelligence
+    if settings.APOLLO_API_KEY:
+        tasks.append(_search_apollo(product, target_country, buyer_type, engine_limit))
+        task_names.append("Apollo B2B")
+
+    # Engine E: Tradewind Trade & Customs Intelligence
+    tasks.append(_search_tradewind(product, target_country, buyer_type, engine_limit))
+    task_names.append("Tradewind Customs Intel")
+
     # Run external tasks concurrently
     raw_results = await asyncio.gather(*tasks, return_exceptions=True)
 
+    # Collect engine results for fair round-robin interleaving
+    engine_results: Dict[str, List[Dict]] = {}
     for name, res in zip(task_names, raw_results):
         if isinstance(res, list) and res:
-            all_buyers.extend(res)
+            engine_results[name] = list(res)
         elif isinstance(res, Exception):
             logger.warning(f"Engine {name} error: {res}")
+
+    # Fair round-robin interleaving across all active engines so each engine is represented
+    max_count = max([len(v) for v in engine_results.values()]) if engine_results else 0
+    interleaved: List[Dict] = []
+    for idx in range(max_count):
+        for name in task_names:
+            if name in engine_results and idx < len(engine_results[name]):
+                interleaved.append(engine_results[name][idx])
+
+    all_buyers.extend(interleaved)
 
     # 2. Engine E: US Verified Enterprise Registry
     registry_buyers = _search_enterprise_registry(product, target_country, buyer_type, limit)
